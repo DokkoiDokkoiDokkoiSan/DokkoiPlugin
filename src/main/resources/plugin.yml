@@ -1,0 +1,4 @@
+name: Dokkoi
+version: '1.0-SNAPSHOT'
+main: org.meyason.dokkoi.Dokkoi
+api-version: '1.21'
