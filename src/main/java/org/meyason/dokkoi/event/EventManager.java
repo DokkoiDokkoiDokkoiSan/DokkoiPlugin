@@ -4,11 +4,11 @@ import org.bukkit.Bukkit;
 import org.meyason.dokkoi.Dokkoi;
 
 public class EventManager {
-    public EventManager(Dokkoi main){
-        init(main);
+    public EventManager(Dokkoi core){
+        init(core);
     }
 
-    private void init(Dokkoi main) {
+    private void init(Dokkoi core) {
         // Register your events here
     }
 }

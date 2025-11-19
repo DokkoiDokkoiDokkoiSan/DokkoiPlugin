@@ -2,6 +2,8 @@ package org.meyason.dokkoi.scheduler;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
+import org.meyason.dokkoi.constants.GameState;
+import org.meyason.dokkoi.exception.GameStateException;
 import org.meyason.dokkoi.game.Game;
 
 public class Scheduler extends BukkitRunnable {
@@ -9,16 +11,23 @@ public class Scheduler extends BukkitRunnable {
     public void run() {
         Game game = Game.getInstance();
         if (game.getGameState() == null) {
-            // 例外処理
-            return;
+            throw new GameStateException("Game state is not set.");
         }
 
         switch (game.getGameState()) {
             case WAITING:
-                // WAITING状態の処理
                 break;
             case STARTING:
-                // STARTING状態の処理
+                game.setNowTime(game.getNowTime() - 1);
+                if(game.getNowTime() < 0){
+                    game.prepPhase();
+                }
+                break;
+            case PREP:
+                game.setNowTime(game.getNowTime() - 1);
+                if(game.getNowTime() < 0){
+                    game.startGame();
+                }
                 break;
             case IN_GAME:
                 // IN_GAME状態の処理
