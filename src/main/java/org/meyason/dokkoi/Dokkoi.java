@@ -4,6 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import org.meyason.dokkoi.event.EventManager;
 import org.meyason.dokkoi.command.CommandManager;
+import org.meyason.dokkoi.game.Game;
 
 public final class Dokkoi extends JavaPlugin {
 
@@ -16,6 +17,8 @@ public final class Dokkoi extends JavaPlugin {
         instance = this;
         new EventManager(this);
         new CommandManager(this);
+
+        new Game();
     }
 
     @Override

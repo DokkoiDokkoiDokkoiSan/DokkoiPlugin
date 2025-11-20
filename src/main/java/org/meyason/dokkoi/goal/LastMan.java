@@ -10,7 +10,7 @@ import java.util.List;
 public class LastMan extends Goal {
 
     public LastMan() {
-        super("LastMan", "最後の一人になるまで生き残ろう！");
+        super("Last Man", "最後の一人になるまで生き残れ！");
     }
 
     @Override
@@ -27,7 +27,11 @@ public class LastMan extends Goal {
             return false;
         }
         // プレイヤーがリストの中にいなければfalse
-        if(alivePlayers.size() == 1 && alivePlayers.getFirst().getUniqueId().equals(this.player.getUniqueId())){
+        if(alivePlayers.stream().noneMatch(p -> p.getUniqueId().equals(this.player.getUniqueId()))){
+            this.player.sendMessage("お前はもう死んでいる。");
+            return false;
+        }
+        if(alivePlayers.size() == 1){
             this.player.sendMessage("よくやった。お前は最後の生き残りだ！");
             return true;
         }

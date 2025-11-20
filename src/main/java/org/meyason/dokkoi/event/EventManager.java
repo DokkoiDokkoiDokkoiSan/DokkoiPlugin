@@ -2,6 +2,7 @@ package org.meyason.dokkoi.event;
 
 import org.bukkit.Bukkit;
 import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.event.player.*;
 
 public class EventManager {
     public EventManager(Dokkoi core){
@@ -9,6 +10,9 @@ public class EventManager {
     }
 
     private void init(Dokkoi core) {
-        // Register your events here
+        core.getServer().getPluginManager().registerEvents(new AttackEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new DeathEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new SneakEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new JumpEvent(), core);
     }
 }

@@ -24,7 +24,7 @@ public class Collector extends Goal {
     }};
 
     public Collector() {
-        super("Collector", "指定されたアイテムを指定された分だけ探そう！");
+        super("Collector", "指定されたアイテムを指定された分だけ探せ！");
     }
 
     @Override
@@ -33,9 +33,8 @@ public class Collector extends Goal {
         this.itemNumber = rand.nextInt(1, 7);
         this.targetItem = targetItemList.get(rand.nextInt(targetItemList.size()));
         this.player = player;
-        this.player.sendMessage("ミッション：指定アイテムを指定分だけ集めろ。");
-        this.player.sendMessage("指定アイテム： " + targetItem.name());
-        this.player.sendMessage("指定個数： " + itemNumber + " 個");
+        this.player.sendMessage("§b指定アイテム： " + targetItem.name());
+        this.player.sendMessage("§b指定個数： " + itemNumber + " 個");
     }
 
     @Override
@@ -50,9 +49,9 @@ public class Collector extends Goal {
             this.player.sendMessage("よくやった！" + this.targetItem.name() + "をちょうど " + this.itemNumber + " 個集めた。");
             return true;
         } else if (count > this.itemNumber) {
-            this.player.sendMessage("集めすぎだ！");
+            this.player.sendMessage("集めすぎだ！" + this.targetItem.name() + "を " + this.itemNumber + " 個だけ集めるんだ。");
         }
-        this.player.sendMessage("足りてないぞ。ちゃんと集めることだ。");
+        this.player.sendMessage("なんだ、足りてないぞ。" + this.targetItem.name() + "を " + this.itemNumber + " 個集めるんだ。");
         return false;
     }
 }

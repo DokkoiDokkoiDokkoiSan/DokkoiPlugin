@@ -2,7 +2,6 @@ package org.meyason.dokkoi.scheduler;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
-import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.exception.GameStateException;
 import org.meyason.dokkoi.game.Game;
 
@@ -17,20 +16,26 @@ public class Scheduler extends BukkitRunnable {
         switch (game.getGameState()) {
             case WAITING:
                 break;
-            case STARTING:
+            case MATCHING:
                 game.setNowTime(game.getNowTime() - 1);
                 if(game.getNowTime() < 0){
                     game.prepPhase();
                 }
+                game.updateScoreboardDisplay();
                 break;
             case PREP:
                 game.setNowTime(game.getNowTime() - 1);
                 if(game.getNowTime() < 0){
                     game.startGame();
                 }
+                game.updateScoreboardDisplay();
                 break;
             case IN_GAME:
-                // IN_GAME状態の処理
+                game.setNowTime(game.getNowTime() - 1);
+                if(game.getNowTime() < 0){
+                    game.endGame();
+                }
+                game.updateScoreboardDisplay();
                 break;
             case END:
                 // END状態の処理
