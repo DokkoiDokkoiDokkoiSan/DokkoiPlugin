@@ -1,5 +1,7 @@
 package org.meyason.dokkoi.scheduler;
 
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import org.meyason.dokkoi.exception.GameStateException;
@@ -19,6 +21,7 @@ public class Scheduler extends BukkitRunnable {
             case MATCHING:
                 game.setNowTime(game.getNowTime() - 1);
                 if(game.getNowTime() < 0){
+                    Bukkit.getServer().broadcast(Component.text("§aマッチング完了。準備フェーズに移行します。"));
                     game.prepPhase();
                 }
                 game.updateScoreboardDisplay();

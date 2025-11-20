@@ -19,11 +19,19 @@ public class Killer extends Goal {
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
+        this.player = player;
         int totalPlayers = game.getAlivePlayers().size();
         int maxTargetNumber = Math.max(1, totalPlayers - 1);
         Random random = new Random();
-        this.targetKillNumber = random.nextInt(1, maxTargetNumber);
+        if(totalPlayers == 2){
+            this.targetKillNumber = 1;
+        }else{
+            this.targetKillNumber = random.nextInt(1, maxTargetNumber);
+        }
+    }
 
+    @Override
+    public void NoticeGoal() {
         this.player.sendMessage("§b目標人数：　" + this.targetKillNumber + " 人以上");
     }
 

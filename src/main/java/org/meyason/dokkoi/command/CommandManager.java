@@ -7,8 +7,8 @@ public class CommandManager {
     private final Dokkoi core;
 
     public CommandManager(Dokkoi core) {
-        init(core);
         this.core = core;
+        init(core);
     }
 
     private void init(Dokkoi core){

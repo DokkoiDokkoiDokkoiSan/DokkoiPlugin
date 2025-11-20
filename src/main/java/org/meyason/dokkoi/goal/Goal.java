@@ -34,5 +34,15 @@ public abstract class Goal implements Cloneable {
 
     public abstract void setGoal(Game game, Player player);
 
+    public abstract void NoticeGoal();
+
     public abstract boolean isAchieved();
+
+    public Goal clone() {
+        try {
+            return (Goal) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

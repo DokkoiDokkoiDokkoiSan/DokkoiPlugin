@@ -1,12 +1,15 @@
 name: Dokkoi
+main: org.meyason.dokkoi.Dokkoi
 version: '1.0-SNAPSHOT'
 main: org.meyason.dokkoi.Dokkoi
 api-version: '1.21'
 
 commands:
-  dokkoi.matching:
+  matching:
     description: マッチングを開始します．
+    usage: /matching
     default: op
-  dokkoi.reset:
+  reset:
     description: マッチングデータをリセットします．
+    usage: /reset
     default: op

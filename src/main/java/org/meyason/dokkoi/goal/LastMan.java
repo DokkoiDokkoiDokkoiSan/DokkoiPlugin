@@ -20,6 +20,11 @@ public class LastMan extends Goal {
     }
 
     @Override
+    public void NoticeGoal() {
+        return;
+    }
+
+    @Override
     public boolean isAchieved() {
         List<Player> alivePlayers = this.game.getAlivePlayers();
         if(alivePlayers.isEmpty()){

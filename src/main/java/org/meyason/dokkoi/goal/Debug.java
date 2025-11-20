@@ -20,6 +20,11 @@ public class Debug extends  Goal{
     }
 
     @Override
+    public void NoticeGoal(){
+        return;
+    }
+
+    @Override
     public boolean isAchieved(){
         player.sendMessage(Component.text("Sneak Count: " + sneakCount + ", Jump Count: " + jumpCount));
         if(jumpCount > 0){
