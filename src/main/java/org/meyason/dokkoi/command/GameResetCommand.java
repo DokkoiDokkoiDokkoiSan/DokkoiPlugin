@@ -15,7 +15,7 @@ public class GameResetCommand implements CommandExecutor {
             sender.sendMessage("このコマンドはプレイヤーのみ実行可能です。");
             return true;
         }
-        if(!player.hasPermission("dokkoi.reset")){
+        if(!player.hasPermission("reset")){
             player.sendMessage("§cあなたにはこのコマンドを実行する権限がありません。");
             return false;
         }

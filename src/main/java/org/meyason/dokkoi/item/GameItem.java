@@ -1,0 +1,68 @@
+package org.meyason.dokkoi.item;
+
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.constants.GameItemKeyString;
+import org.meyason.dokkoi.item.gacha.GachaMachine;
+
+import java.util.HashMap;
+
+public class GameItem {
+
+    private static HashMap<String, CustomItem> items = new HashMap<>();
+
+    public GameItem(){
+        items.put(GachaMachine.id, new GachaMachine());
+    }
+
+    public static CustomItem getItem(String id){
+        if(!items.containsKey(id)){
+            return null;
+        }
+
+        return items.get(id);
+    }
+
+    public static Boolean removeItem(Player player, String item_name, int amount){
+        PlayerInventory inventory = player.getInventory();
+        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+
+        for(ItemStack item : inventory.getContents()){
+            if(item != null && item.getItemMeta() != null){
+                if(item.getItemMeta().getPersistentDataContainer().has(itemKey) &&
+                   item.getItemMeta().getPersistentDataContainer().get(itemKey, org.bukkit.persistence.PersistentDataType.STRING).equals(item_name)){
+
+                    int itemAmount = item.getAmount();
+                    if(itemAmount >= amount){
+                        item.setAmount(itemAmount - amount);
+                        return true;
+                    } else {
+                        amount -= itemAmount;
+                        item.setAmount(0);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static String[] getItemIds(){
+        return items.keySet().toArray(new String[0]);
+    }
+
+    public static boolean isCustomItem(ItemStack item){
+        ItemMeta meta = item.getItemMeta();
+        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+        if(meta != null){
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            return container.has(itemKey, PersistentDataType.BOOLEAN);
+        }
+        return false;
+    }
+}

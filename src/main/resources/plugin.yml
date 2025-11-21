@@ -13,3 +13,7 @@ commands:
     description: マッチングデータをリセットします．
     usage: /reset
     default: op
+  goalfix:
+    description: 職業を固定します．None指定で解除します．
+    usage: /goalfix <player> <job>
+    default: op

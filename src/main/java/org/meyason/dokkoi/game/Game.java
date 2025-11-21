@@ -2,7 +2,6 @@ package org.meyason.dokkoi.game;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -14,7 +13,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.GoalList;
-import org.meyason.dokkoi.goal.Debug;
+import org.meyason.dokkoi.goal.GachaAddict;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.scheduler.Scheduler;
 
@@ -34,6 +33,7 @@ public class Game {
     private List<Player> joinedPlayers;
     private HashMap<Player, Goal> playerGoals;
     private HashMap<Player, Player> killerList;
+    private HashMap<Player, String> goalFixedPlayers;
 
     private final int minimumGameStartPlayers = 2;
 
@@ -102,11 +102,17 @@ public class Game {
 
         List<Goal> goalList = new ArrayList<>(GoalList.getAllGoals());
         for(Player player : joinedPlayers) {
-//            Goal goal = new Debug();
-            int randomIndex = (int) (Math.random() * goalList.size());
-            Goal goal = goalList.get(randomIndex).clone();
-            goal.setGoal(this, player);
-            playerGoals.put(player, goal);
+            if(getGoalFixedPlayers().containsKey(player)){
+                String goalName = getGoalFixedPlayers().get(player);
+                Goal goal = GoalList.getGoalByName(goalName).clone();
+                goal.setGoal(this, player);
+                playerGoals.put(player, goal);
+            }else {
+                int randomIndex = (int) (Math.random() * goalList.size());
+                Goal goal = goalList.get(randomIndex).clone();
+                goal.setGoal(this, player);
+                playerGoals.put(player, goal);
+            }
         }
     }
 
@@ -208,6 +214,9 @@ public class Game {
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
             objective.getScore("§a生存者数: §f" + getAlivePlayers().size() + "人").setScore(--i);
             objective.getScore("§e目標: §f" + playerGoals.get(player).getName()).setScore(--i);
+            if(playerGoals.get(player) instanceof GachaAddict gachaMan){
+                objective.getScore("§eガチャポイント: §f" + gachaMan.getGachaPoint() + "pt").setScore(--i);
+            }
         }
         player.setScoreboard(scoreboard);
     }
@@ -220,5 +229,17 @@ public class Game {
         ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
         Scoreboard scoreboard = scoreboardManager.getNewScoreboard();
         player.setScoreboard(scoreboard);
+    }
+
+    public void setGoalFixedPlayer(Player player, String goalName){
+        this.goalFixedPlayers.put(player, goalName);
+    }
+
+    public HashMap<Player, String> getGoalFixedPlayers(){
+        return this.goalFixedPlayers;
+    }
+
+    public void removeGoalFixedPlayer(Player player){
+        this.goalFixedPlayers.remove(player);
     }
 }

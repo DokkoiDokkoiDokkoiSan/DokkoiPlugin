@@ -16,7 +16,7 @@ public class MatchingStartCommand implements CommandExecutor {
             sender.sendMessage("このコマンドはプレイヤーのみ実行可能です。");
             return true;
         }
-        if(!player.hasPermission("dokkoi.matching")){
+        if(!player.hasPermission("matching")){
             player.sendMessage("§cあなたにはこのコマンドを実行する権限がありません。");
             return false;
         }

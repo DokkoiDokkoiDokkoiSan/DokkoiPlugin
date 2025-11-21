@@ -11,7 +11,6 @@ public class EventManager {
 
     private void init(Dokkoi core) {
         core.getServer().getPluginManager().registerEvents(new AttackEvent(), core);
-        core.getServer().getPluginManager().registerEvents(new DeathEvent(), core);
         core.getServer().getPluginManager().registerEvents(new SneakEvent(), core);
         core.getServer().getPluginManager().registerEvents(new JumpEvent(), core);
     }
