@@ -27,7 +27,7 @@ public class ShowPointItem extends AbstractItem {
         ItemMeta meta = item.getItemMeta();
         if(meta != null){
             Game game = Game.getInstance();
-            Goal goal = game.getPlayerGoals().get(player);
+            Goal goal = game.getGameStatesManager().getPlayerGoals().get(player);
             if(goal instanceof GachaAddict gachaAddict){
                 meta.setDisplayName("§a所持ポイント" + "§f: §e" + gachaAddict.getGachaPoint());
                 item.setItemMeta(meta);

@@ -11,11 +11,11 @@ public class Scheduler extends BukkitRunnable {
 
     public void run() {
         Game game = Game.getInstance();
-        if (game.getGameState() == null) {
+        if (game.getGameStatesManager().getGameState() == null) {
             throw new GameStateException("Game state is not set.");
         }
 
-        switch (game.getGameState()) {
+        switch (game.getGameStatesManager().getGameState()) {
             case WAITING:
                 break;
             case MATCHING:
@@ -38,7 +38,7 @@ public class Scheduler extends BukkitRunnable {
                 if(game.getNowTime() < 0){
                     game.endGame();
                 }
-                if(game.getAlivePlayers().size() <= 1){
+                if(game.getGameStatesManager().getAlivePlayers().size() <= 1){
                     game.endGame();
                 }
                 game.updateScoreboardDisplay();

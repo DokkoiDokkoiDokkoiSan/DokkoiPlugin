@@ -20,7 +20,7 @@ public class Killer extends Goal {
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-        int totalPlayers = game.getAlivePlayers().size();
+        int totalPlayers = game.getGameStatesManager().getAlivePlayers().size();
         int maxTargetNumber = Math.max(1, totalPlayers - 1);
         Random random = new Random();
         if(totalPlayers == 2){
@@ -38,7 +38,7 @@ public class Killer extends Goal {
     @Override
     public boolean isAchieved() {
         //killerListの中のkeyにPlayerのUUIDが指定分含まれているかどうかを確認
-        HashMap<Player, Player> killerList = game.getKillerList();
+        HashMap<Player, Player> killerList = game.getGameStatesManager().getKillerList();
         if(!killerList.containsKey(player)){
             player.sendMessage(Component.text("§c誰も殺せなかった。"));
             return false;

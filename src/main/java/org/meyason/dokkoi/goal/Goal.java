@@ -4,29 +4,35 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 
 public abstract class Goal implements Cloneable {
 
-    public final String name;
-    public String description;
+    private final String name;
+    private final String description;
 
-    public boolean isKilled;
-    public int killCount;
     public List<ItemStack> initialItems;
 
     public Player player;
-    public int maxHealth;
-    public int damage;
 
     public Game game;
+
+    public Tier tier;
+
+    private double damageMultiplier;
 
     public Goal(String name, String description) {
         this.name = name;
         this.description = description;
 
         this.player = null;
+        this.tier = null;
+        this.damageMultiplier = 1.0;
     }
+
+    public double getDamageMultiplier() {return damageMultiplier;}
+    public void setDamageMultiplier(double damageMultiplier) {this.damageMultiplier = damageMultiplier;}
 
     public String getName() {return this.name;}
 

@@ -16,8 +16,8 @@ public class JumpEvent implements Listener {
     public void onJump(PlayerJumpEvent event){
         Game game = Game.getInstance();
         Player player = event.getPlayer();
-        if(game.getPlayerGoals().containsKey(player)){
-            Goal goal = game.getPlayerGoals().get(player);
+        if(game.getGameStatesManager().getPlayerGoals().containsKey(player)){
+            Goal goal = game.getGameStatesManager().getPlayerGoals().get(player);
             if(goal instanceof Debug){
                 ((Debug) goal).incrementJumpCount();
             }
