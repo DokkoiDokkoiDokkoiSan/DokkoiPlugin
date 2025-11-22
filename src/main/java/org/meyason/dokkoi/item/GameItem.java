@@ -9,11 +9,11 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
-import org.meyason.dokkoi.item.executor.Skill;
-import org.meyason.dokkoi.item.executor.Ultimate;
+import org.meyason.dokkoi.item.job.Passive;
+import org.meyason.dokkoi.item.job.Skill;
+import org.meyason.dokkoi.item.job.Ultimate;
 import org.meyason.dokkoi.item.gacha.GachaMachine;
 
-import java.io.Console;
 import java.util.HashMap;
 
 public class GameItem {
@@ -28,6 +28,7 @@ public class GameItem {
         items.put(GachaMachine.id, new GachaMachine());
         items.put(GameItemKeyString.SKILL, new Skill());
         items.put(GameItemKeyString.ULTIMATE_SKILL, new Ultimate());
+        items.put(GameItemKeyString.PASSIVE_SKILL, new Passive());
     }
 
     public static CustomItem getItem(String id){

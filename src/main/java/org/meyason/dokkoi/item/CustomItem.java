@@ -17,6 +17,7 @@ public abstract class CustomItem {
     protected final String name;
     protected final ItemStack baseItem;
 
+    public String description = "";
     public boolean isUnique = false;
 
     protected Function<ItemStack, ItemStack> default_setting;
@@ -27,6 +28,9 @@ public abstract class CustomItem {
         this.baseItem = baseItem;
         registerItemFunction();
     }
+
+    public String getDescription() {return this.description;}
+    public void setDescription(String description) {this.description = description;}
 
     public String getId() {return this.id;}
 

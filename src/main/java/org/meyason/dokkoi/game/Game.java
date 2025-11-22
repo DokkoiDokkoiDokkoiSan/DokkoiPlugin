@@ -8,7 +8,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -20,14 +20,11 @@ import org.meyason.dokkoi.goal.GachaAddict;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.executor.Skill;
-import org.meyason.dokkoi.item.gacha.GachaMachine;
 import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.scheduler.Scheduler;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Game {
@@ -202,12 +199,32 @@ public class Game {
         PlayerInventory inventory = player.getInventory();
         inventory.clear();
 
+        CustomItem passive = GameItem.getItem(GameItemKeyString.PASSIVE_SKILL);
+        ItemStack passiveItem = passive.getItem();
+        ItemMeta pskillMeta = passiveItem.getItemMeta();
+        pskillMeta.setDisplayName(job.passive_skill_name);
+        List<Component> lore2 = job.passive_skill_description;
+        pskillMeta.lore(lore2);
+        passiveItem.setItemMeta(pskillMeta);
+        inventory.addItem(passiveItem);
+
         CustomItem skill = GameItem.getItem(GameItemKeyString.SKILL);
         ItemStack skillItem = skill.getItem();
+        ItemMeta skillMeta = skillItem.getItemMeta();
+        skillMeta.setDisplayName(job.normal_skill_name);
+        List<Component> lore = job.normal_skill_description;
+        skillMeta.lore(lore);
+        skillItem.setItemMeta(skillMeta);
         inventory.addItem(skillItem);
+
         if(goal.tier == Tier.TIER_3){
             CustomItem ultimateSkill = GameItem.getItem(GameItemKeyString.ULTIMATE_SKILL);
             ItemStack ultimateSkillItem = ultimateSkill.getItem();
+            ItemMeta uskillMeta = ultimateSkillItem.getItemMeta();
+            uskillMeta.setDisplayName(job.ultimate_skill_name);
+            List<Component> lore3 = job.ultimate_skill_description;
+            uskillMeta.lore(lore3);
+            ultimateSkillItem.setItemMeta(uskillMeta);
             inventory.addItem(ultimateSkillItem);
         }
     }

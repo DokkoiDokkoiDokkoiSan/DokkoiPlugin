@@ -1,5 +1,6 @@
 package org.meyason.dokkoi.job;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
@@ -10,6 +11,14 @@ public abstract class Job implements Cloneable {
 
     private final String name;
     private final String description;
+
+    public String passive_skill_name = "";
+    public String normal_skill_name = "";
+    public String ultimate_skill_name = "";
+
+    public List<Component> passive_skill_description;
+    public List<Component> normal_skill_description;
+    public List<Component> ultimate_skill_description;
 
     public Player player;
 

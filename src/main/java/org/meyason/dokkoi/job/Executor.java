@@ -1,5 +1,6 @@
 package org.meyason.dokkoi.job;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -19,6 +20,25 @@ public class Executor extends Job{
 
     public Executor() {
         super("執行者", "執行者", 30, 200);
+        passive_skill_name = "プロトペナルティ";
+        normal_skill_name = "ギルトペナルティ";
+        ultimate_skill_name = "ニクトペナルティ";
+        passive_skill_description = List.of(Component.text("§bプレイヤーを一人でも殺したプレイヤーから受けるダメージが半分になる。\n"));
+        normal_skill_description = List.of(
+                Component.text("§bスキルが命中したプレイヤーのキル数に応じてダメージ、デバフを与える。\n"),
+                Component.text("§cCT 30s\n"),
+                Component.text("§b0kill 固定5ダメージ与え、3秒間の§1鈍足§bを与える。\n"),
+                Component.text("1kill 固定10ダメージ与え、5秒間の§1鈍足、§2弱体化を与える\n"),
+                Component.text("2kill 固定20ダメージ与え、10秒間の§1鈍足§b、§2弱体化§b、§3盲目§bを与える。\n"),
+                Component.text("3kill 固定300ダメージ与える。")
+        );
+
+        ultimate_skill_description = List.of(
+                Component.text("§b自身の移動速度が10秒間4倍になる。\n"),
+                Component.text("試合中一度でも攻撃を行ったプレイヤーに10秒間の§1鈍足§bと§3盲目§bのデバフを与える。\n"),
+                Component.text("§cCT 200s")
+        );
+
     }
 
     public void setPlayer(Game game, Player player){

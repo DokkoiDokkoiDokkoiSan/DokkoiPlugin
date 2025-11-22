@@ -1,6 +1,5 @@
 package org.meyason.dokkoi.event.player;
 
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
@@ -18,14 +17,10 @@ import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
-import org.meyason.dokkoi.constants.JobList;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
-import org.meyason.dokkoi.goal.GachaAddict;
 import org.meyason.dokkoi.item.CustomItem;
-import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.executor.Skill;
 import org.meyason.dokkoi.item.gacha.GachaMachine;
 import org.meyason.dokkoi.item.gacha.menu.GachaPointMenu;
 import org.meyason.dokkoi.job.Executor;
