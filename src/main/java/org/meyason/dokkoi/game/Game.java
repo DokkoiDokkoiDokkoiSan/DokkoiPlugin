@@ -6,17 +6,25 @@ import org.bukkit.GameMode;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.constants.GameState;
-import org.meyason.dokkoi.constants.GoalList;
+import org.meyason.dokkoi.constants.*;
 import org.meyason.dokkoi.goal.GachaAddict;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.GameItem;
+import org.meyason.dokkoi.item.executor.Skill;
+import org.meyason.dokkoi.item.gacha.GachaMachine;
+import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.scheduler.Scheduler;
+import org.meyason.dokkoi.scheduler.SkillScheduler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,22 +34,16 @@ public class Game {
 
     private static Game instance;
 
-    private GameState gameState;
+    private GameStatesManager gameStatesManager;
 
     private BukkitTask scheduler;
-
-    private List<Player> alivePlayers;
-    private List<Player> joinedPlayers;
-    private HashMap<Player, Goal> playerGoals;
-    private HashMap<Player, Player> killerList;
-    private HashMap<Player, String> goalFixedPlayers;
 
     private final int minimumGameStartPlayers = 2;
 
     private int nowTime;
     public final int matchingPhaseTime = 5;
     public final int prepPhaseTime = 5;
-    public final int gamePhaseTime = 30;
+    public final int gamePhaseTime = 300;
     public final int resultPhaseTime = 10;
 
     private final boolean debugMode = false;
@@ -54,27 +56,18 @@ public class Game {
         return instance;
     }
 
-    public GameState getGameState() {return gameState;}
-    public void setGameState(GameState gameState) {this.gameState = gameState;}
-    public List<Player> getAlivePlayers() {return alivePlayers;}
-    public void setAlivePlayers(List<Player> alivePlayers) {this.alivePlayers = alivePlayers;}
-    public HashMap<Player, Goal> getPlayerGoals() {return playerGoals;}
-    public HashMap<Player, Player> getKillerList() {return killerList;}
     public int getNowTime() {return nowTime;}
     public void setNowTime(int nowTime) {this.nowTime = nowTime;}
+    public GameStatesManager getGameStatesManager() {return gameStatesManager;}
 
     public Game(){
         instance = this;
+        this.gameStatesManager = new GameStatesManager(this);
         init();
     }
 
     public void init(){
-        gameState = GameState.WAITING;
-        playerGoals = new HashMap<>();
-        alivePlayers = new ArrayList<>();
-        joinedPlayers = new ArrayList<>();
-        killerList = new HashMap<>();
-        goalFixedPlayers = new HashMap<>();
+        gameStatesManager.init();
         setNowTime(matchingPhaseTime);
     }
 
@@ -82,20 +75,20 @@ public class Game {
         if(Bukkit.getOnlinePlayers().size() < minimumGameStartPlayers){
             Component message = Component.text("§c参加者が最低人数(" + minimumGameStartPlayers + "人)に達していないため、ゲームを開始できません。");
             Bukkit.getServer().broadcast(message);
-            this.gameState = GameState.WAITING;
+            gameStatesManager.setGameState(GameState.WAITING);
             return;
         }
         Component message = Component.text("§aマッチングを開始。" + matchingPhaseTime + "秒後に目標が決定する。");
         Bukkit.getServer().broadcast(message);
 
-        setGameState(GameState.MATCHING);
+        gameStatesManager.setGameState(GameState.MATCHING);
         scheduler = new Scheduler().runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
 
         updateScoreboardDisplay();
 
         for(Player player : Bukkit.getOnlinePlayers()){
-            this.alivePlayers.add(player);
-            this.joinedPlayers.add(player);
+            gameStatesManager.addAlivePlayer(player);
+            gameStatesManager.addJoinedPlayer(player);
             player.getInventory().clear();
             player.getInventory().setHelmet(null);
             player.setHealth(20.0);
@@ -103,25 +96,23 @@ public class Game {
             player.setCustomNameVisible(false);
         }
 
-        List<Goal> goalList = new ArrayList<>(GoalList.getAllGoals());
-        for(Player player : joinedPlayers) {
-            if(getGoalFixedPlayers().containsKey(player)){
-                String goalName = getGoalFixedPlayers().get(player);
-                Goal goal = GoalList.getGoalByName(goalName).clone();
-                goal.setGoal(this, player);
-                playerGoals.put(player, goal);
-            }else {
-                int randomIndex = (int) (Math.random() * goalList.size());
-                Goal goal = goalList.get(randomIndex).clone();
-                goal.setGoal(this, player);
-                playerGoals.put(player, goal);
-            }
+        List<Job> jobList = new ArrayList<>(JobList.getAllJobs());
+        for(Player player : gameStatesManager.getJoinedPlayers()) {
+            int randomIndex = (int) (Math.random() * jobList.size());
+            Job job = jobList.get(randomIndex).clone();
+            gameStatesManager.getPlayerJobs().put(player, job);
+            job.setPlayer(this, player);
+            int randomGoalIndex = (int) (Math.random() * job.getGoals().size());
+            Goal goal = job.getGoals().get(randomGoalIndex).clone();
+            goal.setGoal(this, player);
+            gameStatesManager.getPlayerGoals().put(player, goal);
+
         }
     }
 
     public void prepPhase(){
         onGame = true;
-        setGameState(GameState.PREP);
+        gameStatesManager.setGameState(GameState.PREP);
         setNowTime(prepPhaseTime);
         // TODO:プレイヤーのテレポート
         Component message = Component.text("§a準備フェーズが開始。各自目標に備え準備せよ！");
@@ -135,29 +126,31 @@ public class Game {
             return;
         }
 
-        for (Player player : joinedPlayers) {
-            Goal goal = playerGoals.get(player);
-            player.sendMessage("§b一度しか言わないぞ。お前の目標は「§6" + goal.getDescription() + "§b」だ。");
-            goal.NoticeGoal();
+        for (Player player : gameStatesManager.getJoinedPlayers()) {
+            gameStatesManager.addKillCount(player);
+            playerNoticer(player);
         }
         // TODO:攻撃イベント、クリックイベントの無効化
     }
 
     public void startGame(){
-        setGameState(GameState.IN_GAME);
+        gameStatesManager.setGameState(GameState.IN_GAME);
         setNowTime(gamePhaseTime);
         Bukkit.getServer().broadcast(Component.text("§aゲーム開始！目標を達成せよ！"));
-
+        for(Player player : gameStatesManager.getAlivePlayers()){
+            player.setGameMode(GameMode.SURVIVAL);
+            SkillScheduler.chargeUltimateSkill(player, gameStatesManager);
+        }
     }
 
     public void endGame(){
-        setGameState(GameState.END);
+        gameStatesManager.setGameState(GameState.END);
         setNowTime(resultPhaseTime);
         Component message = Component.text("§aゲーム終了");
         Bukkit.getServer().broadcast(message);
         List<Player> clearPlayers = new ArrayList<>();
-        for(Player player : joinedPlayers){
-            if(getPlayerGoals().get(player).isAchieved()){
+        for(Player player : gameStatesManager.getJoinedPlayers()) {
+            if(gameStatesManager.getPlayerGoals().get(player).isAchieved()){
                 player.sendMessage("§aお前は目標を達成した！");
                 clearPlayers.add(player);
             }else{
@@ -171,7 +164,7 @@ public class Game {
             for(int i = 0; i < clearPlayers.size(); i++){
                 clearPlayerNames.append(clearPlayers.get(i).getName());
                 clearPlayerNames.append(": ");
-                clearPlayerNames.append(getPlayerGoals().get(clearPlayers.get(i)).getName());
+                clearPlayerNames.append(gameStatesManager.getPlayerGoals().get(clearPlayers.get(i)).getName());
                 if(i < clearPlayers.size() - 1){
                     clearPlayerNames.append("\n");
                 }
@@ -188,8 +181,8 @@ public class Game {
     public void resetGame(){
         if(!onGame) return;
         scheduler.cancel();
-        setGameState(GameState.WAITING);
-        for(Player player : joinedPlayers){
+        gameStatesManager.setGameState(GameState.WAITING);
+        for(Player player : gameStatesManager.getJoinedPlayers()){
             player.getInventory().clear();
             player.getInventory().setHelmet(null);
             player.setHealth(20.0);
@@ -200,6 +193,25 @@ public class Game {
         new Game();
     }
 
+    public void playerNoticer(Player player){
+        Job job = gameStatesManager.getPlayerJobs().get(player);
+        Goal goal = gameStatesManager.getPlayerGoals().get(player);
+
+        player.sendMessage("§bお前の役職は「§6" + job.getName() + "§b」、目標は「§6" + goal.getDescription() + "§b」だ。");
+
+        PlayerInventory inventory = player.getInventory();
+        inventory.clear();
+
+        CustomItem skill = GameItem.getItem(GameItemKeyString.SKILL);
+        ItemStack skillItem = skill.getItem();
+        inventory.addItem(skillItem);
+        if(goal.tier == Tier.TIER_3){
+            CustomItem ultimateSkill = GameItem.getItem(GameItemKeyString.ULTIMATE_SKILL);
+            ItemStack ultimateSkillItem = ultimateSkill.getItem();
+            inventory.addItem(ultimateSkillItem);
+        }
+    }
+
     public void updateScoreboardDisplay(){
         Bukkit.getOnlinePlayers().forEach(this::updateScoreboardDisplay);
     }
@@ -207,19 +219,19 @@ public class Game {
     public void updateScoreboardDisplay(Player player){
         ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
         Scoreboard scoreboard = scoreboardManager.getNewScoreboard();
-        Objective objective = scoreboard.registerNewObjective("DokkoiGame", "dummy", Component.text("§aステータス： " + gameState.getDisplayName()));
+        Objective objective = scoreboard.registerNewObjective("DokkoiGame", "dummy", Component.text("§aステータス： " + gameStatesManager.getGameState().getDisplayName()));
         objective.setDisplaySlot(org.bukkit.scoreboard.DisplaySlot.SIDEBAR);
 
         int i = 0;
 
-        if(getGameState() == GameState.MATCHING){
+        if(gameStatesManager.getGameState() == GameState.MATCHING){
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
             objective.getScore("§a参加者数: §f" + Bukkit.getOnlinePlayers().size() + "人").setScore(--i);
-        }else if(getGameState() == GameState.PREP || getGameState() == GameState.IN_GAME){
+        }else if(gameStatesManager.getGameState() == GameState.PREP || gameStatesManager.getGameState() == GameState.IN_GAME){
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
-            objective.getScore("§a生存者数: §f" + getAlivePlayers().size() + "人").setScore(--i);
-            objective.getScore("§e目標: §f" + playerGoals.get(player).getName()).setScore(--i);
-            if(playerGoals.get(player) instanceof GachaAddict gachaMan){
+            objective.getScore("§a生存者数: §f" + gameStatesManager.getAlivePlayers().size() + "人").setScore(--i);
+            objective.getScore("§e目標: §f" + gameStatesManager.getPlayerGoals().get(player).getName()).setScore(--i);
+            if(gameStatesManager.getPlayerGoals().get(player) instanceof GachaAddict gachaMan){
                 objective.getScore("§eガチャポイント: §f" + gachaMan.getGachaPoint() + "pt").setScore(--i);
             }
         }
@@ -236,15 +248,4 @@ public class Game {
         player.setScoreboard(scoreboard);
     }
 
-    public void setGoalFixedPlayer(Player player, String goalName){
-        this.goalFixedPlayers.put(player, goalName);
-    }
-
-    public HashMap<Player, String> getGoalFixedPlayers(){
-        return this.goalFixedPlayers;
-    }
-
-    public void removeGoalFixedPlayer(Player player){
-        this.goalFixedPlayers.remove(player);
-    }
 }

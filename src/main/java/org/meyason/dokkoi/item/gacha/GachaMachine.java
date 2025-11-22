@@ -56,7 +56,7 @@ public class GachaMachine extends CustomItem {
 
     public static boolean hasEnoughGachaPoint(Player player){
         Game game = Game.getInstance();
-        Goal goal = game.getPlayerGoals().get(player);
+        Goal goal = game.getGameStatesManager().getPlayerGoals().get(player);
         if(goal instanceof GachaAddict gachaAddict){
             int gachaPoint = gachaAddict.getGachaPoint();
             if(gachaPoint >= GachaAddict.gachaCost){
@@ -74,7 +74,7 @@ public class GachaMachine extends CustomItem {
         ItemStack itemStack = new ItemStack(material, 1);
         if(inventory.containsAtLeast(itemStack, 1)){
             Game game = Game.getInstance();
-            Goal goal = game.getPlayerGoals().get(player);
+            Goal goal = game.getGameStatesManager().getPlayerGoals().get(player);
             if(goal instanceof GachaAddict gachaAddict){
                 inventory.removeItem(itemStack);
                 int gachaPoint = gachaAddict.getGachaPoint();

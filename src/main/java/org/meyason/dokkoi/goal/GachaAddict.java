@@ -106,7 +106,7 @@ public class GachaAddict extends Goal {
 
     @Override
     public boolean isAchieved(){
-        if(!game.getAlivePlayers().contains(player)){
+        if(!game.getGameStatesManager().getAlivePlayers().contains(player)){
             return false;
         }
         PlayerInventory inventory = player.getInventory();

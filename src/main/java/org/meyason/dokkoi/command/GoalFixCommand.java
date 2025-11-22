@@ -36,11 +36,11 @@ public class GoalFixCommand implements CommandExecutor {
         }
         String goalName = args[1];
         if(GoalList.getAllGoalNames().contains(goalName)){
-            Game.getInstance().setGoalFixedPlayer(targetPlayer, goalName);
+            Game.getInstance().getGameStatesManager().addGoalFixedPlayer(targetPlayer, goalName);
             sender.sendMessage(Component.text("§aプレイヤー " + playerName + " の目標を " + goalName + " に設定しました。"));
             return true;
         }else if(goalName.equals("None") || goalName.equals("none")){
-            Game.getInstance().removeGoalFixedPlayer(targetPlayer);
+            Game.getInstance().getGameStatesManager().removeGoalFixedPlayer(targetPlayer);
             sender.sendMessage(Component.text("§aプレイヤー " + playerName + " の目標固定を解除しました。"));
             return true;
         }else{
