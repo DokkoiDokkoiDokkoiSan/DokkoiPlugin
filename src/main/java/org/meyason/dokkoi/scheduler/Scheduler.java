@@ -38,10 +38,17 @@ public class Scheduler extends BukkitRunnable {
                 if(game.getNowTime() < 0){
                     game.endGame();
                 }
+                if(game.getAlivePlayers().size() <= 1){
+                    game.endGame();
+                }
                 game.updateScoreboardDisplay();
                 break;
             case END:
-                // END状態の処理
+                game.setNowTime(game.getNowTime() - 1);
+                if(game.getNowTime() < 0){
+                    game.resetGame();
+                }
+                game.updateScoreboardDisplay();
                 break;
             default:
                 // その他の状態の処理

@@ -40,8 +40,9 @@ public class Game {
 
     private int nowTime;
     public final int matchingPhaseTime = 5;
-    public final int prepPhaseTime = 20;
-    public final int gamePhaseTime = 20;
+    public final int prepPhaseTime = 5;
+    public final int gamePhaseTime = 30;
+    public final int resultPhaseTime = 10;
 
     private final boolean debugMode = false;
     private boolean onGame = false;
@@ -151,6 +152,7 @@ public class Game {
 
     public void endGame(){
         setGameState(GameState.END);
+        setNowTime(resultPhaseTime);
         Component message = Component.text("§aゲーム終了");
         Bukkit.getServer().broadcast(message);
         List<Player> clearPlayers = new ArrayList<>();
