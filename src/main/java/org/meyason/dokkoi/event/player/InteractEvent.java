@@ -23,8 +23,10 @@ import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.gacha.GachaMachine;
 import org.meyason.dokkoi.item.gacha.menu.GachaPointMenu;
+import org.meyason.dokkoi.item.goal.KillerList;
 import org.meyason.dokkoi.job.Executor;
 import org.meyason.dokkoi.job.Job;
+import org.meyason.dokkoi.job.Lonely;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
 
 import java.util.*;
@@ -55,22 +57,8 @@ public class InteractEvent implements Listener {
             NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
             if (container.has(itemKey, PersistentDataType.STRING)) {
 
-                if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.GACHA_MACHINE)) {
-                    CustomItem customItem = CustomItem.getItem(item);
-                    if (customItem == null) {
-                        return;
-                    }
-                    if (customItem.isUnique && customItem.getId().equals(GachaMachine.id)) {
-                        event.setCancelled(true);
-                        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                            ItemStack newItem = GachaMachine.doGacha(event.getPlayer());
-                            event.getPlayer().getInventory().addItem(Objects.requireNonNull(newItem));
-                        } else {
-                            GachaPointMenu menu = new GachaPointMenu();
-                            menu.sendMenu(event.getPlayer());
-                        }
-                    }
-                }else if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.SKILL)){
+                // スキル発動
+                if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.SKILL)){
                     CustomItem customItem = CustomItem.getItem(item);
                     if (customItem == null) {
                         return;
@@ -81,17 +69,24 @@ public class InteractEvent implements Listener {
                     event.setCancelled(true);
                     GameStatesManager manager = game.getGameStatesManager();
                     Job job = manager.getPlayerJobs().get(player);
-                    if(SkillScheduler.isSkillCoolDown(player)){
+                    if(job.isSkillCoolDown(player)){
                         player.sendMessage("§cスキルはクールダウン中です。");
                         return;
                     }
+
+                    // 執行者
                     if(job instanceof Executor){
                         Vector direction = player.getEyeLocation().getDirection().normalize();
                         Vector velocity = direction.multiply(1.0);
                         Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+                        job.playSoundEffectSkill(player);
                         manager.addProjectileData(projectile, new ProjectileData(player));
-                        SkillScheduler.chargeSkill(player, manager);
+                    }else if(job instanceof Lonely lonely){
+                        lonely.skill();
+                        lonely.playSoundEffectSkill(player);
                     }
+
+                    job.chargeSkill(player, manager);
 
                 }else if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.ULTIMATE_SKILL)){
                     CustomItem customItem = CustomItem.getItem(item);
@@ -104,13 +99,33 @@ public class InteractEvent implements Listener {
                     event.setCancelled(true);
                     GameStatesManager manager = game.getGameStatesManager();
                     Job job = manager.getPlayerJobs().get(player);
-                    if(SkillScheduler.isUltimateSkillCoolDown(player)){
+                    if(job.isUltimateSkillCoolDown(player)){
                         player.sendMessage("§cアルティメットスキルはクールダウン中です。");
                         return;
                     }
                     if(job instanceof Executor executor){
                         executor.ultimate();
-                        SkillScheduler.chargeUltimateSkill(player, manager);
+                        executor.playSoundEffectUltimateSkill(player);
+                    }else if(job instanceof Lonely lonely){
+                        lonely.ultimate();
+                        lonely.playSoundEffectUltimateSkill(player);
+                    }
+
+                    job.chargeUltimateSkill(player, manager);
+
+                // アイテム類
+                }else if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.KILLER_LIST)){
+                    CustomItem customItem = CustomItem.getItem(item);
+                    if (customItem == null) {
+                        return;
+                    }
+                    if(event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK){
+                        return;
+                    }
+                    event.setCancelled(true);
+                    GameStatesManager manager = game.getGameStatesManager();
+                    if(customItem instanceof KillerList killerList){
+                        killerList.skill(manager);
                     }
                 }
 

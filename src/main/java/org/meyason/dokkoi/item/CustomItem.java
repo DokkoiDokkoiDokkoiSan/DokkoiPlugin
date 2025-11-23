@@ -15,7 +15,7 @@ public abstract class CustomItem {
 
     protected final String id;
     protected final String name;
-    protected final ItemStack baseItem;
+    protected ItemStack baseItem;
 
     public String description = "";
     public boolean isUnique = false;

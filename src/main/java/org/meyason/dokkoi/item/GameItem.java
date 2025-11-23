@@ -9,6 +9,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
+import org.meyason.dokkoi.item.goal.KillerList;
 import org.meyason.dokkoi.item.job.Passive;
 import org.meyason.dokkoi.item.job.Skill;
 import org.meyason.dokkoi.item.job.Ultimate;
@@ -29,6 +30,7 @@ public class GameItem {
         items.put(GameItemKeyString.SKILL, new Skill());
         items.put(GameItemKeyString.ULTIMATE_SKILL, new Ultimate());
         items.put(GameItemKeyString.PASSIVE_SKILL, new Passive());
+        items.put(GameItemKeyString.KILLER_LIST, new KillerList());
     }
 
     public static CustomItem getItem(String id){

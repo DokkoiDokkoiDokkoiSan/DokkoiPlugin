@@ -26,10 +26,15 @@ public class GameStatesManager {
     private HashMap<Player, String> goalFixedPlayers;
     private HashMap<Player, Integer> killCounts;
     private List<Player> attackedPlayers;
+    private List<Player> damagedPlayers;
     private HashMap<Entity, ProjectileData> projectileDataMap;
 
     private HashMap<Player, BukkitRunnable> skillCoolDownTasks;
     private HashMap<Player, BukkitRunnable> ultimateSkillCoolDownTasks;
+    private HashMap<Player, BukkitRunnable> coolDownScheduler;
+    private HashMap<Player, BukkitRunnable> itemCoolDownScheduler;
+
+    private boolean isEnableKillerList = false;
 
     public GameStatesManager(Game game) {
         this.game = game;
@@ -38,6 +43,7 @@ public class GameStatesManager {
 
     public void init(){
         this.gameState = GameState.WAITING;
+        this.isEnableKillerList = false;
         alivePlayers = new ArrayList<>();
         joinedPlayers = new ArrayList<>();
         playerGoals = new HashMap<>();
@@ -46,15 +52,21 @@ public class GameStatesManager {
         goalFixedPlayers = new HashMap<>();
         killCounts = new HashMap<>();
         attackedPlayers = new ArrayList<>();
+        damagedPlayers = new ArrayList<>();
         projectileDataMap = new HashMap<>();
         skillCoolDownTasks = new HashMap<>();
         ultimateSkillCoolDownTasks = new HashMap<>();
+        coolDownScheduler = new HashMap<>();
+        itemCoolDownScheduler = new HashMap<>();
     }
 
     public GameState getGameState() {
         return gameState;
     }
     public void setGameState(GameState gameState) {this.gameState = gameState;}
+
+    public boolean isEnableKillerList() {return isEnableKillerList;}
+    public void setEnableKillerList(boolean enableKillerList) {isEnableKillerList = enableKillerList;}
 
     public List<Player> getAlivePlayers() {return alivePlayers;}
     public void setAlivePlayers(List<Player> alivePlayers) {this.alivePlayers = alivePlayers;}
@@ -78,8 +90,8 @@ public class GameStatesManager {
 
     public HashMap<Player, Player> getKillerList() {return killerList;}
     public void setKillerList(HashMap<Player, Player> killerList) {this.killerList = killerList;}
-    public void addKiller(Player victim, Player killer) {this.killerList.put(victim, killer);}
-    public void removeKiller(Player victim) {this.killerList.remove(victim);}
+    public void addKiller(Player killer, Player victim) {this.killerList.put(killer, victim);}
+    public void removeKiller(Player killer) {this.killerList.remove(killer);}
 
     public HashMap<Player, String> getGoalFixedPlayers() {return goalFixedPlayers;}
     public void setGoalFixedPlayers(HashMap<Player, String> goalFixedPlayers) {this.goalFixedPlayers = goalFixedPlayers;}
@@ -95,8 +107,25 @@ public class GameStatesManager {
 
     public List<Player> getAttackedPlayers() {return attackedPlayers;}
     public void setAttackedPlayers(List<Player> attackedPlayers) {this.attackedPlayers = attackedPlayers;}
-    public void addAttackedPlayer(Player player) {this.attackedPlayers.add(player);}
-    public void removeAttackedPlayer(Player player) {this.attackedPlayers.remove(player);}
+    public void addAttackedPlayer(Player player) {
+        if(this.attackedPlayers.contains(player)) return;
+        this.attackedPlayers.add(player);
+    }
+    public void removeAttackedPlayer(Player player) {
+        if(!this.attackedPlayers.contains(player)) return;
+        this.attackedPlayers.remove(player);
+    }
+
+    public List<Player> getDamagedPlayers() {return damagedPlayers;}
+    public void setDamagedPlayers(List<Player> damagedPlayers) {this.damagedPlayers = damagedPlayers;}
+    public void addDamagedPlayer(Player player) {
+        if(this.damagedPlayers.contains(player)) return;
+        this.damagedPlayers.add(player);
+    }
+    public void removeDamagedPlayer(Player player) {
+        if(this.damagedPlayers.contains(player)) return;
+        this.damagedPlayers.remove(player);
+    }
 
     public HashMap<Entity, ProjectileData> getProjectileDataMap() {return projectileDataMap;}
     public void setProjectileDataMap(HashMap<Entity, ProjectileData> projectileDataMap) {this.projectileDataMap = projectileDataMap;}
@@ -112,5 +141,15 @@ public class GameStatesManager {
     public void setUltimateSkillCoolDownTasks(HashMap<Player, BukkitRunnable> ultimateSkillCoolDownTasks) {this.ultimateSkillCoolDownTasks = ultimateSkillCoolDownTasks;}
     public void addUltimateSkillCoolDownTask(Player player, BukkitRunnable task) {this.ultimateSkillCoolDownTasks.put(player, task);}
     public void removeUltimateSkillCoolDownTask(Player player) {this.ultimateSkillCoolDownTasks.remove(player);}
+
+    public HashMap<Player, BukkitRunnable> getCoolDownScheduler() {return coolDownScheduler;}
+    public void setCoolDownScheduler(HashMap<Player, BukkitRunnable> coolDownScheduler) {this.coolDownScheduler = coolDownScheduler;}
+    public void addCoolDownScheduler(Player player, BukkitRunnable task) {this.coolDownScheduler.put(player, task);}
+    public void removeCoolDownScheduler(Player player) {this.coolDownScheduler.remove(player);}
+
+    public HashMap<Player, BukkitRunnable> getItemCoolDownScheduler() {return itemCoolDownScheduler;}
+    public void setItemCoolDownScheduler(HashMap<Player, BukkitRunnable> itemCoolDownScheduler) {this.itemCoolDownScheduler = itemCoolDownScheduler;}
+    public void addItemCoolDownScheduler(Player player, BukkitRunnable task) {this.itemCoolDownScheduler.put(player, task);}
+    public void removeItemCoolDownScheduler(Player player) {this.itemCoolDownScheduler.remove(player);}
 
 }

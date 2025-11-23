@@ -14,6 +14,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
+import org.bukkit.scoreboard.Team;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.*;
 import org.meyason.dokkoi.goal.GachaAddict;
@@ -26,6 +27,7 @@ import org.meyason.dokkoi.scheduler.SkillScheduler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Game {
 
@@ -103,7 +105,7 @@ public class Game {
             Goal goal = job.getGoals().get(randomGoalIndex).clone();
             goal.setGoal(this, player);
             gameStatesManager.getPlayerGoals().put(player, goal);
-
+            job.attachGoal(goal);
         }
     }
 
@@ -112,7 +114,7 @@ public class Game {
         gameStatesManager.setGameState(GameState.PREP);
         setNowTime(prepPhaseTime);
         // TODO:プレイヤーのテレポート
-        Component message = Component.text("§a準備フェーズが開始。各自目標に備え準備せよ！");
+        Component message = Component.text("§a準備フェーズが開始。各自準備せよ！");
         message.append(Component.text("\n§e" + prepPhaseTime + "秒後にゲームが開始"));
         Bukkit.getServer().broadcast(message);
 
@@ -122,21 +124,38 @@ public class Game {
             resetGame();
             return;
         }
-
         for (Player player : gameStatesManager.getJoinedPlayers()) {
             gameStatesManager.addKillCount(player);
             playerNoticer(player);
         }
-        // TODO:攻撃イベント、クリックイベントの無効化
+
+        for (Player player : gameStatesManager.getJoinedPlayers()) {
+            Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+            Team team = scoreboard.getTeam("nametag");
+            if(team == null) team = scoreboard.registerNewTeam("nametag");
+            team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+            team.addEntry(player.getName());
+            player.setScoreboard(scoreboard);
+        }
     }
 
     public void startGame(){
         gameStatesManager.setGameState(GameState.IN_GAME);
         setNowTime(gamePhaseTime);
-        Bukkit.getServer().broadcast(Component.text("§aゲーム開始！目標を達成せよ！"));
+        Bukkit.getServer().broadcast(Component.text("§aゲーム開始！各自勝利条件を達成せよ！"));
+
         for(Player player : gameStatesManager.getAlivePlayers()){
             player.setGameMode(GameMode.SURVIVAL);
-            SkillScheduler.chargeUltimateSkill(player, gameStatesManager);
+            gameStatesManager.getPlayerJobs().get(player).chargeUltimateSkill(player, gameStatesManager);
+
+            SkillScheduler scheduler = new SkillScheduler(this, player);
+            scheduler.runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
+            gameStatesManager.addCoolDownScheduler(player, scheduler);
+
+            Job job = gameStatesManager.getPlayerJobs().get(player);
+            job.ready();
+
+            player.setCustomNameVisible(false);
         }
     }
 
@@ -145,6 +164,16 @@ public class Game {
         setNowTime(resultPhaseTime);
         Component message = Component.text("§aゲーム終了");
         Bukkit.getServer().broadcast(message);
+
+        for (Player player : gameStatesManager.getJoinedPlayers()) {
+            Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+            Team team = scoreboard.getTeam("nametag");
+            if(team == null) team = scoreboard.registerNewTeam("nametag");
+            team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
+            team.addEntry(player.getName());
+            player.setScoreboard(scoreboard);
+        }
+
         List<Player> clearPlayers = new ArrayList<>();
         for(Player player : gameStatesManager.getJoinedPlayers()) {
             if(gameStatesManager.getPlayerGoals().get(player).isAchieved()){
@@ -153,6 +182,7 @@ public class Game {
             }else{
                 player.sendMessage("§cお前は目標を達成できなかった...");
             }
+            player.setCustomNameVisible(true);
         }
         if(clearPlayers.isEmpty()){
             Bukkit.getServer().broadcast(Component.text("§c誰も目標を達成できなかった..."));
@@ -178,6 +208,14 @@ public class Game {
     public void resetGame(){
         if(!onGame) return;
         scheduler.cancel();
+        for(Player player : gameStatesManager.getJoinedPlayers()){
+            if(!player.isOnline()){
+                continue;
+            }
+            if(gameStatesManager.getCoolDownScheduler().containsKey(player)){
+                gameStatesManager.getCoolDownScheduler().get(player).cancel();
+            }
+        }
         gameStatesManager.setGameState(GameState.WAITING);
         for(Player player : gameStatesManager.getJoinedPlayers()){
             player.getInventory().clear();
@@ -194,7 +232,8 @@ public class Game {
         Job job = gameStatesManager.getPlayerJobs().get(player);
         Goal goal = gameStatesManager.getPlayerGoals().get(player);
 
-        player.sendMessage("§bお前の役職は「§6" + job.getName() + "§b」、目標は「§6" + goal.getDescription() + "§b」だ。");
+        player.sendMessage("§bお前の役職は「§6" + job.getName() + "§b」だ。");
+        player.sendMessage("§bお前の勝利条件は「§6" + goal.getName() + "§b」だ。");
 
         PlayerInventory inventory = player.getInventory();
         inventory.clear();
@@ -227,6 +266,8 @@ public class Game {
             ultimateSkillItem.setItemMeta(uskillMeta);
             inventory.addItem(ultimateSkillItem);
         }
+
+        goal.addItem();
     }
 
     public void updateScoreboardDisplay(){
@@ -243,11 +284,19 @@ public class Game {
 
         if(gameStatesManager.getGameState() == GameState.MATCHING){
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
-            objective.getScore("§a参加者数: §f" + Bukkit.getOnlinePlayers().size() + "人").setScore(--i);
-        }else if(gameStatesManager.getGameState() == GameState.PREP || gameStatesManager.getGameState() == GameState.IN_GAME){
+            objective.getScore("§a参加人数: §f" + Bukkit.getOnlinePlayers().size() + "人").setScore(--i);
+        }else if(gameStatesManager.getGameState() == GameState.PREP) {
+            objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
+            objective.getScore("§a参加人数: §f" + gameStatesManager.getJoinedPlayers().size() + "人").setScore(--i);
+            objective.getScore("§e役職: §f" + gameStatesManager.getPlayerJobs().get(player).getName()).setScore(--i);
+            objective.getScore("§e目標: §f" + gameStatesManager.getPlayerGoals().get(player).getName()).setScore(--i);
+        }else if(gameStatesManager.getGameState() == GameState.IN_GAME){
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
             objective.getScore("§a生存者数: §f" + gameStatesManager.getAlivePlayers().size() + "人").setScore(--i);
+            objective.getScore("§e役職: §f" + gameStatesManager.getPlayerJobs().get(player).getName()).setScore(--i);
             objective.getScore("§e目標: §f" + gameStatesManager.getPlayerGoals().get(player).getName()).setScore(--i);
+            objective.getScore("§aスキル: " + gameStatesManager.getPlayerJobs().get(player).getCoolTimeSkillViewer()).setScore(--i);
+            objective.getScore("§aULT: " + gameStatesManager.getPlayerJobs().get(player).getCoolTimeSkillUltimateViewer()).setScore(--i);
             if(gameStatesManager.getPlayerGoals().get(player) instanceof GachaAddict gachaMan){
                 objective.getScore("§eガチャポイント: §f" + gachaMan.getGachaPoint() + "pt").setScore(--i);
             }

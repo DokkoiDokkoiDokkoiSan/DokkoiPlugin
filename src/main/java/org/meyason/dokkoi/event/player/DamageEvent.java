@@ -18,9 +18,9 @@ public class DamageEvent implements Listener {
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event){
         Entity attacker = event.getDamager();
         Entity damaged = event.getEntity();
-        if(!(attacker instanceof Player killer) || !(damaged instanceof Player dead)) return;
+        if(!(attacker instanceof Player attackedPlayer) || !(damaged instanceof Player damagedPlayer)) return;
 
-        if(dead.getNoDamageTicks() >= 10){
+        if(damagedPlayer.getNoDamageTicks() >= 10){
             event.setCancelled(true);
             return;
         }
@@ -31,18 +31,20 @@ public class DamageEvent implements Listener {
             return;
         }
 
-        double damage = event.getFinalDamage() * gameStatesManager.getPlayerGoals().get(damaged).getDamageMultiplier();
+        gameStatesManager.addAttackedPlayer(attackedPlayer);
+        gameStatesManager.addDamagedPlayer(damagedPlayer);
 
-        if(gameStatesManager.getPlayerJobs().get(damaged).equals(JobList.EXECUTOR)) {
+        double damage = event.getFinalDamage() * gameStatesManager.getPlayerGoals().get(damaged).getDamageMultiplier();
+        if(gameStatesManager.getKillerList().containsKey(attacker) && gameStatesManager.getPlayerJobs().get(damaged).equals(JobList.EXECUTOR)) {
             damage /= 2.0;
         }
 
-        double afterHealth = dead.getHealth() - event.getFinalDamage();
+        double afterHealth = damagedPlayer.getHealth() - event.getFinalDamage();
         // 死亡処理
         if(afterHealth < 0) {
             event.setCancelled(true);
 
-            DeathEvent.kill(dead, killer);
+            DeathEvent.kill(damagedPlayer, attackedPlayer);
             return;
         }
     }
@@ -62,14 +64,19 @@ public class DamageEvent implements Listener {
             if (projectileData == null) {
                 return;
             }
-            Player attacker = projectileData.getAttacker();
-            Job job = manager.getPlayerJobs().get(attacker);
-            if(job instanceof Executor executor) {
-                if(livingEntity instanceof Player damaged) {
+
+            if(livingEntity instanceof Player damaged) {
+
+                Player attacker = projectileData.getAttacker();
+                manager.addAttackedPlayer(attacker);
+                manager.addDamagedPlayer(damaged);
+
+                Job job = manager.getPlayerJobs().get(attacker);
+                if (job instanceof Executor executor) {
                     executor.skill(damaged);
                 }
+                manager.removeProjectileData(snowball);
             }
-            manager.removeProjectileData(snowball);
         }
     }
 }
