@@ -40,7 +40,7 @@ public abstract class Goal implements Cloneable {
 
     public abstract void setGoal(Game game, Player player);
 
-    public abstract void NoticeGoal();
+    public abstract void addItem();
 
     public abstract boolean isAchieved();
 

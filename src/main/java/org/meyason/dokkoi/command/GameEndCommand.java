@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.meyason.dokkoi.game.Game;
 
-public class GameResetCommand implements CommandExecutor {
+public class GameEndCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -15,11 +15,11 @@ public class GameResetCommand implements CommandExecutor {
             sender.sendMessage("このコマンドはプレイヤーのみ実行可能です。");
             return true;
         }
-        if(!player.hasPermission("reset")){
+        if(!player.hasPermission("end")){
             player.sendMessage("§cあなたにはこのコマンドを実行する権限がありません。");
             return false;
         }
-        Game.getInstance().resetGame();
+        Game.getInstance().endGame();
 
         return true;
     }

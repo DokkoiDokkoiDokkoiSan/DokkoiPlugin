@@ -20,7 +20,7 @@ public class Debug extends  Goal{
     }
 
     @Override
-    public void NoticeGoal(){
+    public void addItem(){
         return;
     }
 

@@ -31,7 +31,7 @@ public class Killer extends Goal {
     }
 
     @Override
-    public void NoticeGoal() {
+    public void addItem() {
         this.player.sendMessage("§b目標人数：　" + this.targetKillNumber + " 人以上");
     }
 

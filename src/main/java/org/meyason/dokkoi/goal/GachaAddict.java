@@ -85,7 +85,7 @@ public class GachaAddict extends Goal {
     }
 
     @Override
-    public void NoticeGoal(){
+    public void addItem(){
         this.player.sendMessage("§bアイテムを消費し，§dガチャマシン§bを使用して§cSSR§bを引き当てろ！");
         this.player.sendMessage("§bポイント一覧:\n");
         for(Material material : pointMap.keySet()){

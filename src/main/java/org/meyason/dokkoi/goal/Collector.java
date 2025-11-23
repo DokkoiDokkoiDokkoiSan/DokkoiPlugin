@@ -47,7 +47,7 @@ public class Collector extends Goal {
     }
 
     @Override
-    public void NoticeGoal() {
+    public void addItem() {
         this.player.sendMessage("§b指定アイテム： " + itemNames.get(this.targetItem));
         this.player.sendMessage("§b指定個数： " + itemNumber + " 個");
         return;

@@ -4,52 +4,49 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
+import org.meyason.dokkoi.job.Job;
 
 public class SkillScheduler extends BukkitRunnable {
 
+    private Game game;
+    private Player player;
+
+    public SkillScheduler(Game game, Player player) {
+        this.game = game;
+        this.player = player;
+    }
+
     public void run() {
         Game game = Game.getInstance();
-    }
+        GameStatesManager gameStatesManager = game.getGameStatesManager();
+        if(!gameStatesManager.getAlivePlayers().contains(player)){
+            cancel();
+            return;
+        }
 
-    public static  void chargeUltimateSkill(Player player, GameStatesManager gameStatesManager){
-        BukkitRunnable ultimateInitTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!player.isOnline() || !gameStatesManager.getUltimateSkillCoolDownTasks().containsKey(player)) {
-                    cancel();
-                    return;
-                }
-                gameStatesManager.removeUltimateSkillCoolDownTask(player);
-            }
-        };
-        ultimateInitTask.runTaskLater(Dokkoi.getInstance(), gameStatesManager.getPlayerJobs().get(player).getCoolTimeSkillUltimate() * 20L);
-        gameStatesManager.addUltimateSkillCoolDownTask(player, ultimateInitTask);
-    }
+        Job job = gameStatesManager.getPlayerJobs().get(player);
+        if(gameStatesManager.getSkillCoolDownTasks().containsKey(player)){
+            int remainCoolTime = job.getRemainCoolTimeSkill();
+            job.setRemainCoolTimeSkill(remainCoolTime - 1);
+            job.setCoolTimeSkillViewer("§eチャージ§c" + job.getRemainCoolTimeSkill() + "秒");
+        }else{
+            job.setCoolTimeSkillViewer("§g§lREADY!");
+        }
 
-    public static void chargeSkill(Player player, GameStatesManager gameStatesManager){
-        BukkitRunnable skillInitTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!player.isOnline() || !gameStatesManager.getSkillCoolDownTasks().containsKey(player)) {
-                    cancel();
-                    return;
-                }
-                gameStatesManager.removeSkillCoolDownTask(player);
-            }
-        };
-        skillInitTask.runTaskLater(Dokkoi.getInstance(), gameStatesManager.getPlayerJobs().get(player).getCoolTimeSkill() * 20L);
-        gameStatesManager.addSkillCoolDownTask(player, skillInitTask);
-    }
+        if(gameStatesManager.getPlayerGoals().get(player).tier != Tier.TIER_3){
+            job.setCoolTimeSkillUltimateViewer("§4使用不可");
+            gameStatesManager.removeUltimateSkillCoolDownTask(player);
+        }else if(gameStatesManager.getUltimateSkillCoolDownTasks().containsKey(player)){
+            int remainCoolTime = job.getRemainCoolTimeSkillUltimate();
+            job.setRemainCoolTimeSkillUltimate(remainCoolTime - 1);
+            job.setCoolTimeSkillUltimateViewer("§eチャージ§c" + job.getRemainCoolTimeSkillUltimate() + "秒");
+        }else {
+            job.setCoolTimeSkillUltimateViewer("§g§lREADY!");
+        }
 
-    public static boolean isSkillCoolDown(Player player){
-        GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
-        return gameStatesManager.getSkillCoolDownTasks().containsKey(player);
-    }
-
-    public static boolean isUltimateSkillCoolDown(Player player){
-        GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
-        return gameStatesManager.getUltimateSkillCoolDownTasks().containsKey(player);
+        game.updateScoreboardDisplay(player);
     }
 }

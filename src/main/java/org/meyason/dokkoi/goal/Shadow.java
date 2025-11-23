@@ -1,17 +1,17 @@
 package org.meyason.dokkoi.goal;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 
 import java.util.List;
 
-public class LastMan extends Goal {
+public class Shadow extends Goal {
 
-    public LastMan() {
-        super("LastMan", "最後の一人になるまで生き残れ！");
+    public Shadow() {
+        super("Shadow", "ゲーム終了まで誰も攻撃せず、攻撃も受けずに生き残れ！");
     }
 
     @Override
@@ -19,7 +19,7 @@ public class LastMan extends Goal {
         this.game = game;
         this.player = player;
 
-        this.tier = Tier.TIER_1;
+        this.tier = Tier.TIER_3;
         setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
@@ -35,11 +35,15 @@ public class LastMan extends Goal {
             this.player.sendMessage("§4お前はもう死んでいる。");
             return false;
         }
-        if(alivePlayers.size() == 1){
-            this.player.sendMessage("§gよくやった。お前は最後の生き残りだ！");
-            return true;
+        if(this.game.getGameStatesManager().getAttackedPlayers().contains(this.player)){
+            this.player.sendMessage("§4お前は攻撃してしまった。");
+            return false;
         }
-        this.player.sendMessage("§4失敗だ。まだほかに生きているやつがいる。");
-        return false;
+        if(this.game.getGameStatesManager().getDamagedPlayers().contains(this.player)){
+            this.player.sendMessage("§4お前は攻撃を受けてしまった。");
+            return false;
+        }
+        this.player.sendMessage("§gよくやった。お前は真のぼっちだ！");
+        return true;
     }
 }

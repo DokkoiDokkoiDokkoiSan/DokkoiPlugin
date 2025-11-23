@@ -2,10 +2,15 @@ package org.meyason.dokkoi.scheduler;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import org.meyason.dokkoi.exception.GameStateException;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.job.Lonely;
 
 public class Scheduler extends BukkitRunnable {
 
@@ -40,6 +45,20 @@ public class Scheduler extends BukkitRunnable {
                 }
                 if(game.getGameStatesManager().getAlivePlayers().size() <= 1){
                     game.endGame();
+                }
+                if(game.getNowTime() % 100 == 0){
+                    for(Player player : game.getGameStatesManager().getAlivePlayers()){
+                        if(!player.isOnline() || player.getGameMode().equals(GameMode.SPECTATOR)){
+                            continue;
+                        }
+                        if(game.getGameStatesManager().getPlayerJobs().get(player) instanceof Lonely lonely){
+                            if(lonely.isUltimateActive){
+                                lonely.setUltimateActive(false);
+                                continue;
+                            }
+                        }
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 5 * 20, 1));
+                    }
                 }
                 game.updateScoreboardDisplay();
                 break;

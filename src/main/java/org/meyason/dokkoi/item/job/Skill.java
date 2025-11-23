@@ -1,4 +1,4 @@
-package org.meyason.dokkoi.item.executor;
+package org.meyason.dokkoi.item.job;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -11,7 +11,7 @@ public class Skill extends CustomItem {
     public static final String id = GameItemKeyString.SKILL;
 
     public Skill() {
-        super(id, "ギルトペナルティ", ItemStack.of(Material.BLACK_DYE));
+        super(id, "", ItemStack.of(Material.BLACK_DYE));
         isUnique = true;
     }
 

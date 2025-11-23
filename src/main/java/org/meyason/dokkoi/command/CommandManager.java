@@ -13,7 +13,7 @@ public class CommandManager {
 
     private void init(Dokkoi core){
         core.getCommand("matching").setExecutor(new MatchingStartCommand());
-        core.getCommand("reset").setExecutor(new GameResetCommand());
+        core.getCommand("end").setExecutor(new GameEndCommand());
         core.getCommand("goalfix").setExecutor(new GoalFixCommand());
 
     }
