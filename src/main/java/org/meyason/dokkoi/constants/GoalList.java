@@ -13,6 +13,8 @@ public class GoalList {
     public static final LastMan LASTMAN = new LastMan();
     public static final Shadow SHADOW = new Shadow();
     public static final Police POLICE = new Police();
+    public static final Killer KILLER = new Killer();
+    public static final CarpetBombing CARPETBOMBING = new CarpetBombing();
 
     private static final HashMap<String, Goal> goalMap = new HashMap<>();
 
@@ -21,6 +23,8 @@ public class GoalList {
         goalMap.put(LASTMAN.getName(), LASTMAN);
         goalMap.put(SHADOW.getName(), SHADOW);
         goalMap.put(POLICE.getName(), POLICE);
+        goalMap.put(KILLER.getName(), KILLER);
+        goalMap.put(CARPETBOMBING.getName(), CARPETBOMBING);
     }
 
     public static List<Goal> getAllGoals(){

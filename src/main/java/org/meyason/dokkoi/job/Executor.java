@@ -92,8 +92,6 @@ public class Executor extends Job{
         }else{
             DeathEvent.kill(target, player);
         }
-        setRemainCoolTimeSkill(getCoolTimeSkill());
-        return;
     }
 
     public void ultimate(){
@@ -110,7 +108,5 @@ public class Executor extends Job{
                 player.setWalkSpeed(0.2f);
             }
         }.runTaskLater(Dokkoi.getInstance(), 20L * 10L);
-
-        setRemainCoolTimeSkillUltimate(getCoolTimeSkillUltimate());
     }
 }

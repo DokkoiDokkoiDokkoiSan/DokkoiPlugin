@@ -3,9 +3,11 @@ package org.meyason.dokkoi.goal;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
+import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 public class Killer extends Goal {
@@ -13,26 +15,20 @@ public class Killer extends Goal {
     public int targetKillNumber;
 
     public Killer() {
-        super("Killer", "指定した人数のプレイヤーを殺せ。");
+        super("Killer", "自らの手で全てのプレイヤーを殺害せよ！");
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-        int totalPlayers = game.getGameStatesManager().getAlivePlayers().size();
-        int maxTargetNumber = Math.max(1, totalPlayers - 1);
-        Random random = new Random();
-        if(totalPlayers == 2){
-            this.targetKillNumber = 1;
-        }else{
-            this.targetKillNumber = random.nextInt(1, maxTargetNumber);
-        }
+
+        this.tier = Tier.TIER_1;
+        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§b目標人数：　" + this.targetKillNumber + " 人以上");
     }
 
     @Override
@@ -43,15 +39,18 @@ public class Killer extends Goal {
             player.sendMessage(Component.text("§c誰も殺せなかった。"));
             return false;
         }
-        int killedPlayers = 0;
-        for (Player killed : killerList.values()) {
-            killedPlayers++;
-        }
-        if (killedPlayers < targetKillNumber) {
-            player.sendMessage(Component.text("§c目標人数に達しなかった。"));
+        if(game.getGameStatesManager().getAlivePlayers().size() > 1){
+            player.sendMessage("§c全てのプレイヤーを殺害できなかった。");
             return false;
         }
-        player.sendMessage("§aよくやった！目標人数を達成した。");
+        List<Player> killers = killerList.values().stream().distinct().toList();
+        for(Player p : killers){
+            if(!killers.equals(this.player)){
+                player.sendMessage("§c全てのプレイヤーを自らの手で殺害できなかった。");
+                return false;
+            }
+        }
+        player.sendMessage("§aよくやった！お前は全てのプレイヤーを殺害した！");
         return true;
     }
 }

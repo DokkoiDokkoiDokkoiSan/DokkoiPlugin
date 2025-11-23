@@ -1,0 +1,215 @@
+package org.meyason.dokkoi.job;
+
+import net.kyori.adventure.text.Component;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
+import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.constants.GameState;
+import org.meyason.dokkoi.constants.GoalList;
+import org.meyason.dokkoi.constants.Tier;
+import org.meyason.dokkoi.event.player.DeathEvent;
+import org.meyason.dokkoi.game.CalculateAreaPlayers;
+import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.goal.Goal;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Bomber extends Job {
+
+    public int killCount = 0;
+
+    private BukkitTask smokeTask;
+
+    public Bomber() {
+        super("爆弾魔", "爆弾のプロ", 20, 100);
+        passive_skill_name = "無敵の人";
+        normal_skill_name = "ブラストパック";
+        ultimate_skill_name = "割と臭いガス爆弾";
+        skillSound = Sound.ENTITY_FIREWORK_ROCKET_BLAST_FAR;
+        skillVolume = 1.0f;
+        skillPitch = 0.8f;
+
+        ultimateSkillSound = Sound.ENTITY_GENERIC_EXPLODE;
+        ultimateSkillVolume = 10.0f;
+        ultimateSkillPitch = 1.0f;
+    }
+
+    public void setPlayer(Game game, Player player){
+        this.game = game;
+        this.player = player;
+        this.goals = List.of(
+                GoalList.KILLER,
+                GoalList.CARPETBOMBING
+        );
+    }
+
+    public void attachGoal(Goal goal){
+        this.goal = goal;
+        if(goal.tier == Tier.TIER_1){
+            twiceCoolTimeSkill();
+        }
+        passive_skill_description = List.of(
+                Component.text("§bHPが0になった瞬間爆発を起こし、半径5m以内にいるプレイヤー、または芸人を巻き込んで自爆する。"),
+                Component.text("§b爆発に巻き込まれたプレイヤー・芸人は即死する。プレイヤーか芸人を巻き込んだ場合、その場で復活できる。")
+        );
+
+        normal_skill_description = List.of(
+                Component.text("§bダメージの無いノックバック爆弾を投げることができる。"),
+                Component.text("§cCT " + getCoolTimeSkill() + "秒")
+        );
+
+        ultimate_skill_description = List.of(
+                Component.text("§b半径20mに煙幕を30秒間発生させる爆弾を投げる。"),
+                Component.text("煙幕の中では自分は移動速度増加Lv2、相手は移動速度低下Lv1を受ける。"),
+                Component.text("§cCT " + getCoolTimeSkillUltimate() + "秒")
+        );
+    }
+
+    public void ready(){}
+
+    public boolean passive(){
+        this.player.spawnParticle(Particle.EXPLOSION_EMITTER, this.player.getLocation(), 1);
+        this.player.getWorld().playSound(this.player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 3.0f, 1.0f);
+        List<Player> hitPlayer = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 5);
+        if(hitPlayer.isEmpty()){
+            this.player.sendMessage("§cあなたは独りで§l§4自爆§r§cしました");
+            return false;
+        }
+
+        for(Player p : hitPlayer){
+            DeathEvent.kill(p, this.player);
+            killCount++;
+        }
+
+        this.player.setHealth(20.0);
+        this.player.sendMessage("§aあなたは§l§4自爆§r§aしましたが、プレイヤーを巻き込んだため復活しました");
+        return true;
+    }
+
+    public void skill(Location location, List<Player> effectedPlayers){
+        location.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, location, 2);
+        location.getWorld().playSound(location, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 10.0f, 1.0f);
+        for(Player p : effectedPlayers){
+            Vector knockBack = p.getLocation().toVector().subtract(location.toVector()).normalize().multiply(3);
+            p.setVelocity(knockBack);
+        }
+        return;
+    }
+
+    public void ultimate(Location impactLocation) {
+        // パーティクルとサウンド（着弾時だけ一度）
+        impactLocation.getWorld().spawnParticle(
+                Particle.CAMPFIRE_SIGNAL_SMOKE,
+                impactLocation,
+                200,
+                10, 5, 10, 0.01
+        );
+        impactLocation.getWorld().playSound(
+                impactLocation,
+                ultimateSkillSound,
+                ultimateSkillVolume,
+                ultimateSkillPitch
+        );
+
+        // 既存の煙幕タスクがあれば停止
+        if (smokeTask != null && !smokeTask.isCancelled()) {
+            smokeTask.cancel();
+        }
+
+        spawnAreaParticles(impactLocation);
+
+        final double radius = 20.0;
+        final long durationTick = 20L * 30; // 30秒
+        final long intervalTick = 10L;      // 0.5秒ごとに判定
+
+        long startTick = Bukkit.getCurrentTick();
+
+        // 煙幕タスク開始
+        smokeTask = Bukkit.getScheduler().runTaskTimer(
+                Dokkoi.getInstance(),       // Game からプラグインインスタンスを取得するメソッドを用意しておく
+                () -> {
+                    long now = Bukkit.getCurrentTick();
+                    if (now - startTick >= durationTick) {
+                        // 30秒経過でタスク終了
+                        smokeTask.cancel();
+                        return;
+                    }
+                    if(game.getGameStatesManager().getGameState() != GameState.IN_GAME){
+                        smokeTask.cancel();
+                        return;
+                    }
+
+                    List<Player> targets = game.getGameStatesManager().getAlivePlayers();
+                    for (Player p : targets) {
+                        if (!p.getWorld().equals(impactLocation.getWorld())) {
+                            continue;
+                        }
+                        if (p.getLocation().distanceSquared(impactLocation) > radius * radius) {
+                            continue;
+                        }
+
+                        // 常に短い時間で上書きし続ける（ここでは1.5秒）
+                        int effectDuration = 30; // tick
+
+                        if (p.getUniqueId().equals(player.getUniqueId())) {
+                            // 自分: 移動速度上昇Lv2
+                            p.addPotionEffect(new PotionEffect(
+                                    PotionEffectType.SPEED,
+                                    effectDuration,
+                                    1,
+                                    false,
+                                    false,
+                                    true
+                            ));
+                        } else {
+                            // 相手: 移動速度低下Lv1
+                            p.addPotionEffect(new PotionEffect(
+                                    PotionEffectType.SLOWNESS,
+                                    effectDuration,
+                                    0,
+                                    false,
+                                    false,
+                                    true
+                            ));
+                        }
+                    }
+                },
+                0L,
+                intervalTick
+        );
+    }
+
+    private void spawnAreaParticles(Location impactLocation) {
+        long durationTick = 20L * 30; // 30秒
+        long intervalTick = 20L;      // 0.5秒ごとに発生（重かったら20L=1秒に）
+
+        new BukkitRunnable() {
+            long elapsed = 0L;
+
+            @Override
+            public void run() {
+                if (elapsed >= durationTick) {
+                    cancel();
+                    return;
+                }
+                elapsed += intervalTick;
+
+                // 中心を基準に、少なめのパーティクルで広めに見せる
+                impactLocation.getWorld().spawnParticle(
+                        Particle.CAMPFIRE_SIGNAL_SMOKE,
+                        impactLocation,
+                        100,              // 個数を抑える
+                        8, 4, 8,         // x,y,zオフセットで広げる
+                        0.01             // extra（0付近でランダム感）
+                );
+            }
+        }.runTaskTimer(Dokkoi.getInstance(), 0L, intervalTick);
+    }
+
+}

@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GoalList;
+import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.Goal;
@@ -13,6 +14,7 @@ import org.meyason.dokkoi.goal.Police;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.goal.KillerList;
+import org.meyason.dokkoi.job.Bomber;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,23 @@ public class DeathEvent {
 
     public static void kill(Player dead, Player killer){
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
+
+        if(manager.getPlayerJobs().get(dead) instanceof Bomber bomber){
+            if(bomber.passive()){
+                return;
+            }
+        }
+
+        if(manager.getPlayerGoals().get(dead).tier == Tier.TIER_3 &&
+                !manager.getPlayerGoals().get(dead).isRevived){
+            manager.getPlayerGoals().get(dead).isRevived = true;
+            dead.sendMessage("§aあなたは§l§4復活§r§aしました");
+            // いったん2mうしろにテレポート TODO: マップ内にランダムテレポート
+            dead.teleport(dead.getLocation().subtract(dead.getLocation().getDirection().setY(0).normalize().multiply(2)));
+            dead.setHealth(20.0);
+            return;
+        }
+
         manager.removeAlivePlayer(dead);
         manager.getKillerList().put(killer, dead);
         manager.removeAttackedPlayer(dead);

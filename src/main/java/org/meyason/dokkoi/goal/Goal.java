@@ -22,6 +22,8 @@ public abstract class Goal implements Cloneable {
 
     private double damageMultiplier;
 
+    public boolean isRevived = false;
+
     public Goal(String name, String description) {
         this.name = name;
         this.description = description;

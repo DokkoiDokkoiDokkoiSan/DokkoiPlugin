@@ -4,13 +4,18 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.JobList;
+import org.meyason.dokkoi.game.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
+import org.meyason.dokkoi.job.Bomber;
 import org.meyason.dokkoi.job.Executor;
 import org.meyason.dokkoi.job.Job;
+
+import java.util.List;
 
 public class DamageEvent implements Listener {
 
@@ -65,13 +70,25 @@ public class DamageEvent implements Listener {
                 return;
             }
 
+            Player attacker = projectileData.getAttacker();
+
+            Job job = manager.getPlayerJobs().get(attacker);
+            if (job instanceof Bomber bomber) {
+                String attackItem = projectileData.getItem();
+                if(attackItem.equals(GameItemKeyString.SKILL)) {
+                    List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attacker, snowball.getLocation(), 10);
+                    bomber.skill(snowball.getLocation(), effectedPlayers);
+                }else if(attackItem.equals(GameItemKeyString.ULTIMATE_SKILL)){
+                    bomber.ultimate(snowball.getLocation());
+                }
+                return;
+            }
+
             if(livingEntity instanceof Player damaged) {
 
-                Player attacker = projectileData.getAttacker();
                 manager.addAttackedPlayer(attacker);
                 manager.addDamagedPlayer(damaged);
 
-                Job job = manager.getPlayerJobs().get(attacker);
                 if (job instanceof Executor executor) {
                     executor.skill(damaged);
                 }

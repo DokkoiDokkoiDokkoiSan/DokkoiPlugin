@@ -26,14 +26,14 @@ public class KillerList extends CustomItem {
     private Game game;
 
     public KillerList() {
-        super(id, "殺すリスト", ItemStack.of(Material.PAPER));
+        super(id, "殺すノート", ItemStack.of(Material.PAPER));
         this.baseItem = ItemStack.of(Material.WRITTEN_BOOK);
         BookMeta bookMeta = (BookMeta) baseItem.getItemMeta();
-        bookMeta.setTitle("§6殺すリスト");
+        bookMeta.setTitle("§6殺すノート");
         bookMeta.setAuthor("Dokkoi");
         List<Component> lore = List.of(
-                Component.text("§7殺人をしたプレイヤー名が自身のチャットログにアナウンスされ、リストに記入される。"),
-                Component.text("§7また、リストを左クリックすることで記入されたプレイヤーに発光を10秒間付与する。"),
+                Component.text("§7殺人をしたプレイヤー名が自身のチャットログにアナウンスされ、ノートに記入される。"),
+                Component.text("§7また、ノートを左クリックすることで記入されたプレイヤーに発光を10秒間付与する。"),
                 Component.text("§cCT 30秒\n"),
                 Component.text("§bこれらのプレイヤーをすべて殺害せよ。")
         );
@@ -56,22 +56,25 @@ public class KillerList extends CustomItem {
     public void setPlayer(Game game, Player player){
         this.game = game;
         this.player = player;
-        player.sendMessage(Component.text("§b殺すリストを手に入れた！"));
+        player.sendMessage(Component.text("§b殺すノートを手に入れた！"));
         game.getGameStatesManager().setEnableKillerList(true);
     }
 
     public void updateKillerList(){
+        this.player.getInventory().removeItem(this.baseItem);
         BookMeta bookMeta = (BookMeta) this.baseItem.getItemMeta();
         List<Player> killerList = new ArrayList<>(game.getGameStatesManager().getKillerList().keySet());
-        Component names = Component.text("");
+        String names = "";
         for(Player p : killerList){
             if(!game.getGameStatesManager().getAlivePlayers().contains(p)){
                 killerList.remove(p);
             }
-            names = names.append(Component.text("・" + p.getName() + "\n"));
+            names = names.concat("§c- " + p.getName() + "\n");
         }
-        bookMeta.addPages(names);
+        bookMeta.setPages(names);
         this.baseItem.setItemMeta(bookMeta);
+        //アイテム更新
+        this.player.getInventory().addItem(this.baseItem);
     }
 
     public void skill(GameStatesManager gameStatesManager){

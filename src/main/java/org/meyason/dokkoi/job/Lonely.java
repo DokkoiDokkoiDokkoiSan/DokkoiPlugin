@@ -101,8 +101,6 @@ public class Lonely extends Job {
             target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 1));
             target.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 10 * 20, 1));
         }
-
-        setRemainCoolTimeSkill(getCoolTimeSkill());
     }
 
     public void ultimate(){

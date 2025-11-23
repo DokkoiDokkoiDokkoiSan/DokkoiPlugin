@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.event;
 
 import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.event.block.ProjectileHitBlockEvent;
 import org.meyason.dokkoi.event.player.*;
 
 public class EventManager {
@@ -13,5 +14,6 @@ public class EventManager {
         core.getServer().getPluginManager().registerEvents(new SneakEvent(), core);
         core.getServer().getPluginManager().registerEvents(new JumpEvent(), core);
         core.getServer().getPluginManager().registerEvents(new InteractEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new ProjectileHitBlockEvent(), core);
     }
 }

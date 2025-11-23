@@ -42,7 +42,6 @@ public class Police extends Goal {
         if(item instanceof KillerList list){
             this.killerList = list;
             this.killerList.setPlayer(game, player);
-            this.killerList.updateKillerList();
         }
         inventory.addItem(killerListItem);
         return;

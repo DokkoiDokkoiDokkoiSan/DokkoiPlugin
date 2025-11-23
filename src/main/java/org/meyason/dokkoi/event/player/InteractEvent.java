@@ -24,6 +24,7 @@ import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.gacha.GachaMachine;
 import org.meyason.dokkoi.item.gacha.menu.GachaPointMenu;
 import org.meyason.dokkoi.item.goal.KillerList;
+import org.meyason.dokkoi.job.Bomber;
 import org.meyason.dokkoi.job.Executor;
 import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.job.Lonely;
@@ -80,12 +81,19 @@ public class InteractEvent implements Listener {
                         Vector velocity = direction.multiply(1.0);
                         Snowball projectile = player.launchProjectile(Snowball.class, velocity);
                         job.playSoundEffectSkill(player);
-                        manager.addProjectileData(projectile, new ProjectileData(player));
+                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
                     }else if(job instanceof Lonely lonely){
                         lonely.skill();
                         lonely.playSoundEffectSkill(player);
+                    }else if(job instanceof Bomber bomber){
+                        Vector direction = player.getEyeLocation().getDirection().normalize();
+                        Vector velocity = direction.multiply(2.0);
+                        Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+                        job.playSoundEffectSkill(player);
+                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
                     }
 
+                    job.setRemainCoolTimeSkill(job.getCoolTimeSkill());
                     job.chargeSkill(player, manager);
 
                 }else if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.ULTIMATE_SKILL)){
@@ -109,8 +117,15 @@ public class InteractEvent implements Listener {
                     }else if(job instanceof Lonely lonely){
                         lonely.ultimate();
                         lonely.playSoundEffectUltimateSkill(player);
+                    }else if(job instanceof Bomber bomber){
+                        Vector direction = player.getEyeLocation().getDirection().normalize();
+                        Vector velocity = direction.multiply(2.0);
+                        Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+                        job.playSoundEffectUltimateSkill(player);
+                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.ULTIMATE_SKILL));
                     }
 
+                    job.setRemainCoolTimeSkillUltimate(job.getCoolTimeSkillUltimate());
                     job.chargeUltimateSkill(player, manager);
 
                 // アイテム類
