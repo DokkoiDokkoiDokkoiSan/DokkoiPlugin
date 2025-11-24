@@ -10,11 +10,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.item.goal.KillerList;
-import org.meyason.dokkoi.item.goal.Tier3PlayerList;
-import org.meyason.dokkoi.item.job.Passive;
-import org.meyason.dokkoi.item.job.Rapier;
-import org.meyason.dokkoi.item.job.Skill;
-import org.meyason.dokkoi.item.job.Ultimate;
+import org.meyason.dokkoi.item.goal.TierPlayerList;
+import org.meyason.dokkoi.item.job.*;
 import org.meyason.dokkoi.item.gacha.GachaMachine;
 
 import java.util.HashMap;
@@ -34,7 +31,8 @@ public class GameItem {
         items.put(GameItemKeyString.PASSIVE_SKILL, new Passive());
         items.put(GameItemKeyString.KILLER_LIST, new KillerList());
         items.put(GameItemKeyString.RAPIER, new Rapier());
-        items.put(GameItemKeyString.TIER3PLAYERLIST, new Tier3PlayerList());
+        items.put(GameItemKeyString.TIERPLAYERLIST, new TierPlayerList());
+        items.put(GameItemKeyString.KETSUMOU, new Ketsumou());
     }
 
     public static CustomItem getItem(String id){

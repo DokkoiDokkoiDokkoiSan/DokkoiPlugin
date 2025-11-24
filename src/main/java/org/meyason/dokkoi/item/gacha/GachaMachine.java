@@ -21,7 +21,7 @@ public class GachaMachine extends CustomItem {
     public static final String id = "gacha_machine";
 
     public GachaMachine() {
-        super(id, "Gacha Machine", ItemStack.of(Material.COAL));
+        super(id, "Gacha Machine", ItemStack.of(Material.COAL), 1);
         isUnique = true;
     }
 

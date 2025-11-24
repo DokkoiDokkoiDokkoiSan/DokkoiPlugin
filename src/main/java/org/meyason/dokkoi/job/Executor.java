@@ -32,7 +32,7 @@ public class Executor extends Job{
         ultimateSkillSound = Sound.BLOCK_ANVIL_PLACE;
         ultimateSkillVolume = 1.0f;
         ultimateSkillPitch = 0.6f;
-
+        setRemainCoolTimeSkillUltimate(200);
     }
 
     public void setPlayer(Game game, Player player){
@@ -53,10 +53,10 @@ public class Executor extends Job{
         normal_skill_description = List.of(
                 Component.text("§bスキルが命中したプレイヤーのキル数に応じてダメージ、デバフを与える。\n"),
                 Component.text("§cCT " + getCoolTimeSkill() + "秒\n"),
-                Component.text("§b0kill 固定5ダメージ与え、3秒間の§1鈍足§bを与える。\n"),
-                Component.text("1kill 固定10ダメージ与え、5秒間の§1鈍足、§2弱体化を与える\n"),
-                Component.text("2kill 固定20ダメージ与え、10秒間の§1鈍足§b、§2弱体化§b、§3盲目§bを与える。\n"),
-                Component.text("3kill 固定300ダメージ与える。")
+                Component.text("§a0kill §b固定5ダメージ与え、3秒間の§1鈍足§bを与える。\n"),
+                Component.text("§a1kill §b固定20ダメージ与え、5秒間の§1鈍足§b、与ダメージ2低下を与える。\n"),
+                Component.text("§a2kill §b固定40ダメージ与え、10秒間の§1鈍足§b、与ダメージ5低下、§3盲目§bを与える。\n"),
+                Component.text("§a3kill §b固定500ダメージ与える。")
         );
 
         ultimate_skill_description = List.of(
@@ -76,21 +76,33 @@ public class Executor extends Job{
             damage = 5;
             target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 3 * 20, 1));
         }else if(killCount == 1){
-            damage = 10;
-            target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 5 * 20, 1));
-            target.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 5 * 20, 1));
-        }else if(killCount == 2){
             damage = 20;
+            target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 5 * 20, 2));
+            game.getGameStatesManager().addAdditionalDamage(target, -2);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    game.getGameStatesManager().addAdditionalDamage(target, 2);
+                }
+            }.runTaskLater(Dokkoi.getInstance(), 5 * 20L);
+        }else if(killCount == 2){
+            damage = 40;
             target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 10 * 20, 1));
-            target.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 10 * 20, 1));
             target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 1));
+            game.getGameStatesManager().addAdditionalDamage(target, -5);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    game.getGameStatesManager().addAdditionalDamage(target, 5);
+                }
+            }.runTaskLater(Dokkoi.getInstance(), 10 * 20L);
         }else{
-            damage = 300;
+            damage = 500;
         }
         if(damage < target.getHealth()){
             target.setHealth(target.getHealth() - damage);
         }else{
-            DeathEvent.kill(target, player);
+            DeathEvent.kill(player, target);
         }
     }
 

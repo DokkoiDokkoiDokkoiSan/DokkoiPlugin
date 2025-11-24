@@ -1,6 +1,5 @@
 package org.meyason.dokkoi.constants;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class GameItemKeyString {
@@ -10,7 +9,9 @@ public class GameItemKeyString {
     public static final String GACHA_MACHINE = "gacha_machine";
     public static final String KILLER_LIST = "killer_list";
     public static final String RAPIER = "rapier";
-    public static final String TIER3PLAYERLIST = "tier3_player_list";
+    public static final String TIERPLAYERLIST = "tier_player_list";
+
+    public static final String KETSUMOU = "ketsumou";
 
     public static final String SKILL = "skill";
     public static final String ULTIMATE_SKILL = "ultimate_skill";
@@ -21,10 +22,11 @@ public class GameItemKeyString {
         GACHA_MACHINE,
         KILLER_LIST,
         RAPIER,
-        TIER3PLAYERLIST,
+        TIERPLAYERLIST,
         SKILL,
         ULTIMATE_SKILL,
-        PASSIVE_SKILL
+        PASSIVE_SKILL,
+        KETSUMOU
     );
 
     public static List<String> getGameItemKeyStringHashMap() {return gameItemKeyStringHashMap;}

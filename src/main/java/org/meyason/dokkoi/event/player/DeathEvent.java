@@ -10,6 +10,7 @@ import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.goal.MassTierKiller;
 import org.meyason.dokkoi.goal.Police;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public class DeathEvent {
 
-    public static void kill(Player dead, Player killer){
+    public static void kill(Player killer, Player dead){
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
 
         if(manager.getPlayerJobs().get(dead) instanceof Bomber bomber){

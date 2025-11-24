@@ -10,9 +10,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.GameItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,15 +28,15 @@ public class KillerList extends CustomItem {
     private Game game;
 
     public KillerList() {
-        super(id, "殺すノート", ItemStack.of(Material.PAPER));
+        super(id, "殺すノート", ItemStack.of(Material.PAPER), 1);
         this.baseItem = ItemStack.of(Material.WRITTEN_BOOK);
         BookMeta bookMeta = (BookMeta) baseItem.getItemMeta();
         bookMeta.setTitle("§6殺すノート");
-        bookMeta.setAuthor("Dokkoi");
+        bookMeta.setAuthor("二階堂真紅");
         List<Component> lore = List.of(
                 Component.text("§7殺人をしたプレイヤー名が自身のチャットログにアナウンスされ、ノートに記入される。"),
                 Component.text("§7また、ノートを左クリックすることで記入されたプレイヤーに発光を10秒間付与する。"),
-                Component.text("§cCT 30秒\n"),
+                Component.text("§cCT 30秒"),
                 Component.text("§bこれらのプレイヤーをすべて殺害せよ。")
         );
         bookMeta.lore(lore);
@@ -56,13 +58,13 @@ public class KillerList extends CustomItem {
     public void setPlayer(Game game, Player player){
         this.game = game;
         this.player = player;
-        player.sendMessage(Component.text("§6殺すノート§bを手に入れた！"));
+        player.sendMessage(Component.text("§a殺すノート§bを手に入れた！"));
         game.getGameStatesManager().setEnableKillerList(true);
     }
 
     public void updateKillerList(){
-        this.player.getInventory().removeItem(this.baseItem);
         ItemStack book = baseItem.clone();
+        GameItem.removeItem(player, GameItemKeyString.KILLER_LIST, 1);
         BookMeta bookMeta = (BookMeta) book.getItemMeta();
         List<Player> killerPlayers = new ArrayList<>(game.getGameStatesManager().getKillerList().keySet());
         StringBuilder names = new StringBuilder();
@@ -101,6 +103,4 @@ public class KillerList extends CustomItem {
         itemInitTask.runTaskLater(Dokkoi.getInstance(), 30 * 20L);
         gameStatesManager.addItemCoolDownScheduler(player, itemInitTask);
     }
-
-
 }

@@ -1,9 +1,8 @@
 package org.meyason.dokkoi.event.entity;
 
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Trident;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
@@ -22,12 +21,12 @@ public class LaunchEvent implements Listener {
         Projectile projectile = event.getEntity();
         Game game = Game.getInstance();
         GameStatesManager manager = game.getGameStatesManager();
-        if(projectile instanceof Trident trident){
-            ProjectileSource projectileSource = trident.getShooter();
+        if(projectile.getType() == EntityType.TRIDENT){
+            ProjectileSource projectileSource = projectile.getShooter();
             if(projectileSource instanceof Player player){
                 if(manager.getPlayerJobs().get(player) instanceof IronMaiden){
                     ProjectileData projectileData = new ProjectileData(player, Rapier.id);
-                    manager.addProjectileData(trident, projectileData);
+                    manager.addProjectileData(projectile, projectileData);
                 }
             }
 

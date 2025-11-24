@@ -1,7 +1,6 @@
 name: Dokkoi
 main: org.meyason.dokkoi.Dokkoi
 version: '1.0-SNAPSHOT'
-main: org.meyason.dokkoi.Dokkoi
 api-version: '1.21'
 
 commands:
@@ -16,4 +15,8 @@ commands:
   goalfix:
     description: 職業を固定します．None指定で解除します．
     usage: /goalfix <player> <job>
+    default: op
+  spawnentity:
+    description: エンティティをスポーンさせます．
+    usage: /spawnentity <entity id>
     default: op

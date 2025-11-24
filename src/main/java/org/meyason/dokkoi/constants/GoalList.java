@@ -2,7 +2,6 @@ package org.meyason.dokkoi.constants;
 
 import org.meyason.dokkoi.goal.*;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,8 +14,9 @@ public class GoalList {
     public static final Police POLICE = new Police();
     public static final Killer KILLER = new Killer();
     public static final CarpetBombing CARPETBOMBING = new CarpetBombing();
-    public static final Tier3Killer TIER3KILLER = new Tier3Killer();
+    public static final MassTierKiller MASSTIERKILLER = new MassTierKiller();
     public static final MaidenGazer MAIDENGAZER = new MaidenGazer();
+    public static final ComedianKiller COMEDIANKILLER = new ComedianKiller();
 
     private static final HashMap<String, Goal> goalMap = new HashMap<>();
 
@@ -27,8 +27,9 @@ public class GoalList {
         goalMap.put(POLICE.getName(), POLICE);
         goalMap.put(KILLER.getName(), KILLER);
         goalMap.put(CARPETBOMBING.getName(), CARPETBOMBING);
-        goalMap.put(TIER3KILLER.getName(), TIER3KILLER);
+        goalMap.put(MASSTIERKILLER.getName(), MASSTIERKILLER);
         goalMap.put(MAIDENGAZER.getName(), MAIDENGAZER);
+        goalMap.put(COMEDIANKILLER.getName(), COMEDIANKILLER);
     }
 
     public static List<Goal> getAllGoals(){

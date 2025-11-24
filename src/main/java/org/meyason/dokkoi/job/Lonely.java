@@ -51,6 +51,7 @@ public class Lonely extends Job {
         ultimateSkillVolume = 1.0f;
         ultimateSkillPitch = 0.9f;
 
+        setRemainCoolTimeSkillUltimate(5);
     }
 
     public void setPlayer(Game game, Player player){

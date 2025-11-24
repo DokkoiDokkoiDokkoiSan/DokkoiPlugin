@@ -2,7 +2,9 @@ package org.meyason.dokkoi.job;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -12,6 +14,7 @@ import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
+import org.meyason.dokkoi.entity.Comedian;
 import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.game.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
@@ -23,6 +26,8 @@ import java.util.List;
 public class Bomber extends Job {
 
     public int killCount = 0;
+
+    private int killComedian = 0;
 
     private BukkitTask smokeTask;
 
@@ -38,15 +43,21 @@ public class Bomber extends Job {
         ultimateSkillSound = Sound.ENTITY_GENERIC_EXPLODE;
         ultimateSkillVolume = 10.0f;
         ultimateSkillPitch = 1.0f;
+        setRemainCoolTimeSkillUltimate(100);
     }
 
     public void setPlayer(Game game, Player player){
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.KILLER,
-                GoalList.CARPETBOMBING
+//                GoalList.KILLER,
+//                GoalList.CARPETBOMBING,
+                GoalList.COMEDIANKILLER
         );
+    }
+
+    public int getKillComedian(){
+        return killComedian;
     }
 
     public void attachGoal(Goal goal){
@@ -77,18 +88,37 @@ public class Bomber extends Job {
         this.player.spawnParticle(Particle.EXPLOSION_EMITTER, this.player.getLocation(), 1);
         this.player.getWorld().playSound(this.player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 3.0f, 1.0f);
         List<Player> hitPlayer = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 5);
-        if(hitPlayer.isEmpty()){
+
+        boolean isKilledComedian = false;
+
+        for(Entity entity : player.getNearbyEntities(5, 5, 5)){
+            if(entity instanceof Villager villager){
+                Comedian comedian = Comedian.getComedianByVillager(villager);
+                if(comedian != null){
+                    villager.setHealth(0.0);
+                    villager.remove();
+                    this.player.sendMessage("§bあなたは芸人 §a" + comedian.getName() + " §bを巻き込んで§l§4自爆§r§aしました");
+                    Bukkit.getServer().broadcast(Component.text("§c§l" + comedian.getDeathMessage()));
+                    isKilledComedian = true;
+                    killComedian++;
+                }
+            }
+        }
+
+        if(hitPlayer.isEmpty() && !isKilledComedian){
             this.player.sendMessage("§cあなたは独りで§l§4自爆§r§cしました");
             return false;
         }
 
         for(Player p : hitPlayer){
-            DeathEvent.kill(p, this.player);
+            DeathEvent.kill(this.player, p);
             killCount++;
         }
 
         this.player.setHealth(20.0);
-        this.player.sendMessage("§aあなたは§l§4自爆§r§aしましたが、プレイヤーを巻き込んだため復活しました");
+        if(!isKilledComedian){
+            this.player.sendMessage("§aあなたは§l§4自爆§r§aしましたが、プレイヤーを巻き込んだため復活しました");
+        }
         return true;
     }
 
@@ -97,6 +127,8 @@ public class Bomber extends Job {
         location.getWorld().playSound(location, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 10.0f, 1.0f);
         for(Player p : effectedPlayers){
             Vector knockBack = p.getLocation().toVector().subtract(location.toVector()).normalize().multiply(3);
+            // Yは抑制
+            knockBack.setY(0.1);
             p.setVelocity(knockBack);
         }
         return;

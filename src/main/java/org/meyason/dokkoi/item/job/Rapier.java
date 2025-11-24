@@ -1,10 +1,12 @@
 package org.meyason.dokkoi.item.job;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Trident;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -21,7 +23,7 @@ public class Rapier extends CustomItem {
     private Player player;
 
     public Rapier(){
-        super(id, "レイピア", ItemStack.of(Material.TRIDENT));
+        super(id, "レイピア", ItemStack.of(Material.TRIDENT), 1);
         isUnique = true;
     }
 
@@ -39,10 +41,10 @@ public class Rapier extends CustomItem {
     public void setPlayer(Game game, Player player){
         this.game = game;
         this.player = player;
-        player.sendMessage(Component.text("§bレイピアを手に入れた！"));
+        player.sendMessage(Component.text("§aレイピア§bを手に入れた！"));
     }
 
-    public void activate(Location loc){
+    public void activate(Trident trident, Location loc){
         if (loc == null || loc.getWorld() == null) {
             return;
         }
@@ -56,6 +58,7 @@ public class Rapier extends CustomItem {
             @Override
             public void run() {
                 if (!game.getGameStatesManager().getGameState().equals(GameState.IN_GAME)) {
+                    trident.remove();
                     this.cancel();
                     return;
                 }
@@ -70,12 +73,13 @@ public class Rapier extends CustomItem {
                     }
 
                     // 現在位置を基準に向きだけを着弾地点へ向ける
-                    Location targetLoc = target.getLocation().clone();
+                    Location targetLoc = target.getEyeLocation().clone();
                     targetLoc.setDirection(
                             hitLocation.toVector().subtract(targetLoc.toVector())
                     );
+                    targetLoc.setY(target.getY());
                     target.teleport(targetLoc);
-                    target.sendMessage(Component.text("§c[鉄処女]あれ見てみろ！かす！"));
+                    target.sendActionBar(Component.text("c[鉄処女]あれ見てみろ！かす！"));
                 }
             }
         };

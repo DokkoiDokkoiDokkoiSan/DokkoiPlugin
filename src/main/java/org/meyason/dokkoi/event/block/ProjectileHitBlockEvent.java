@@ -1,9 +1,8 @@
 package org.meyason.dokkoi.event.block;
 
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
-import org.bukkit.entity.Trident;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockEvent;
@@ -45,6 +44,7 @@ public class ProjectileHitBlockEvent implements Listener {
             if (job instanceof Bomber bomber) {
                 if(attackItem.equals(GameItemKeyString.SKILL)) {
                     List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attacker, event.getHitBlock().getLocation(), 10);
+                    effectedPlayers.add(attacker);
                     bomber.skill(event.getHitBlock().getLocation(), effectedPlayers);
                 }else if(attackItem.equals(GameItemKeyString.ULTIMATE_SKILL)){
                     bomber.ultimate(event.getHitBlock().getLocation());
@@ -57,8 +57,15 @@ public class ProjectileHitBlockEvent implements Listener {
             if (projectileData == null) {
                 return;
             }
-            if(trident instanceof Rapier rapier){
-                rapier.activate(trident.getLocation());
+            trident.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
+            if(projectileData.getItem().equals(Rapier.id)) {
+                Player attacker = projectileData.getAttacker();
+
+                Job job = manager.getPlayerJobs().get(attacker);
+                if(job instanceof IronMaiden ironMaiden){
+                    Rapier rapier = ironMaiden.getRapier();
+                    rapier.activate(trident, trident.getLocation());
+                }
             }
         }
     }

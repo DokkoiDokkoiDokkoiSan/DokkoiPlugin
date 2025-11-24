@@ -2,6 +2,7 @@ package org.meyason.dokkoi.job;
 
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -20,6 +21,7 @@ import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.goal.MassTierKiller;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.job.Rapier;
@@ -29,6 +31,8 @@ import java.util.List;
 public class IronMaiden extends Job {
 
     public boolean isUsingSkill = false;
+
+    private Rapier hadRapier;
 
     private int count = 0;
 
@@ -44,19 +48,24 @@ public class IronMaiden extends Job {
         ultimateSkillSound = Sound.ENTITY_ITEM_PICKUP;
         ultimateSkillVolume = 1.0f;
         ultimateSkillPitch = 1.0f;
+        setRemainCoolTimeSkillUltimate(200);
     }
 
     public void setPlayer(Game game, Player player){
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.TIER3KILLER
+                GoalList.MASSTIERKILLER,
+                GoalList.MAIDENGAZER,
+                GoalList.POLICE
         );
     }
 
     public int getCount(){
-        return count;
+        return count / 2;
     }
+
+    public Rapier getRapier(){return hadRapier;}
 
     public void attachGoal(Goal goal){
         this.goal = goal;
@@ -80,7 +89,12 @@ public class IronMaiden extends Job {
         );
     }
 
-    public void ready(){passive();}
+    public void ready(){
+        if(goal instanceof MassTierKiller massTierKiller){
+            massTierKiller.updateList();
+        }
+        passive();
+    }
 
     public void passive(){
         BukkitRunnable passiveTask = new BukkitRunnable(){
@@ -120,27 +134,29 @@ public class IronMaiden extends Job {
                         }
                     }
                     if (target instanceof Player targetPlayer) {
-                        Vector toTargetVec = targetPlayer.getEyeLocation().toVector().subtract(player.getEyeLocation().toVector()).normalize();
-                        if (!isUsingSkill) {
-                            toTargetVec.multiply(-1);
+                        if(targetPlayer.getGameMode() != GameMode.SPECTATOR) {
+                            Vector toTargetVec = targetPlayer.getEyeLocation().toVector().subtract(player.getEyeLocation().toVector()).normalize();
+                            if (!isUsingSkill) {
+                                toTargetVec.multiply(-1);
+                            }
+                            Location targetLookAt = targetPlayer.getEyeLocation().setDirection(toTargetVec);
+                            targetLookAt.setX(targetPlayer.getLocation().getX());
+                            targetLookAt.setY(targetPlayer.getLocation().getY());
+                            targetLookAt.setZ(targetPlayer.getLocation().getZ());
+                            targetPlayer.teleport(targetLookAt);
+                            targetPlayer.playSound(targetPlayer, Sound.ENTITY_VILLAGER_NO, 0.2f, 1.0f);
+                            if (isUsingSkill) {
+                                targetPlayer.sendActionBar(Component.text("§c[鉄処女]あっち見ろ！あほ！"));
+                            } else {
+                                targetPlayer.sendActionBar(Component.text("§c[鉄処女]こっち見ろ！ばか！"));
+                            }
+                            count += 1;
                         }
-                        Location targetLookAt = player.getEyeLocation().setDirection(toTargetVec);
-                        targetLookAt.setX(player.getLocation().getX());
-                        targetLookAt.setY(player.getLocation().getY());
-                        targetLookAt.setZ(player.getLocation().getZ());
-                        targetPlayer.teleport(targetLookAt);
-                        targetPlayer.playSound(targetPlayer, Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-                        if(isUsingSkill){
-                            targetPlayer.sendMessage(Component.text("§c[鉄処女]あっち見ろ！あほ！"));
-                        }else {
-                            targetPlayer.sendMessage(Component.text("§c[鉄処女]こっち見ろ！ばか！"));
-                        }
-                        count++;
                     }
                 }
             }
         };
-        passiveTask.runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
+        passiveTask.runTaskTimer(Dokkoi.getInstance(), 0L, 10L);
     }
 
     public void skill(){
@@ -161,8 +177,17 @@ public class IronMaiden extends Job {
         }
         ItemStack itemStack = rapier.getItem();
         PlayerInventory inv = player.getInventory();
+
+        if(hadRapier != null) {
+            if (inv.contains(hadRapier.getItem())) {
+                this.player.sendMessage("§6レイピアを先に投擲してください。");
+                return;
+            }
+        }
+
         if(rapier instanceof Rapier rapierItem){
             rapierItem.setPlayer(game, player);
+            this.hadRapier = rapierItem;
         }
         inv.addItem(itemStack);
     }

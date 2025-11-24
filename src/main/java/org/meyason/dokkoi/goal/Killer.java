@@ -44,9 +44,9 @@ public class Killer extends Goal {
             player.sendMessage("§c全てのプレイヤーを殺害できなかった。");
             return false;
         }
-        List<Player> killers = killerList.values().stream().distinct().toList();
+        List<Player> killers = killerList.keySet().stream().distinct().toList();
         for(Player p : killers){
-            if(!killers.equals(this.player)){
+            if(!player.equals(p)){
                 player.sendMessage("§c全てのプレイヤーを自らの手で殺害できなかった。");
                 return false;
             }
