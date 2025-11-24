@@ -15,6 +15,8 @@ public class GoalList {
     public static final Police POLICE = new Police();
     public static final Killer KILLER = new Killer();
     public static final CarpetBombing CARPETBOMBING = new CarpetBombing();
+    public static final Tier3Killer TIER3KILLER = new Tier3Killer();
+    public static final MaidenGazer MAIDENGAZER = new MaidenGazer();
 
     private static final HashMap<String, Goal> goalMap = new HashMap<>();
 
@@ -25,6 +27,8 @@ public class GoalList {
         goalMap.put(POLICE.getName(), POLICE);
         goalMap.put(KILLER.getName(), KILLER);
         goalMap.put(CARPETBOMBING.getName(), CARPETBOMBING);
+        goalMap.put(TIER3KILLER.getName(), TIER3KILLER);
+        goalMap.put(MAIDENGAZER.getName(), MAIDENGAZER);
     }
 
     public static List<Goal> getAllGoals(){

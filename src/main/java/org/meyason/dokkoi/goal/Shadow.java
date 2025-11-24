@@ -25,6 +25,7 @@ public class Shadow extends Goal {
 
     @Override
     public void addItem() {
+        this.player.sendMessage("§bゲーム終了まで誰も攻撃せず、攻撃も受けずに生き残れ！");
         return;
     }
 
@@ -43,7 +44,7 @@ public class Shadow extends Goal {
             this.player.sendMessage("§4お前は攻撃を受けてしまった。");
             return false;
         }
-        this.player.sendMessage("§gよくやった。お前は真のぼっちだ！");
+        this.player.sendMessage("§6よくやった。お前は真のぼっちだ！");
         return true;
     }
 }

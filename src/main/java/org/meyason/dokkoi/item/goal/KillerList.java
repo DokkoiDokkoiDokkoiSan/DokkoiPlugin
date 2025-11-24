@@ -56,25 +56,27 @@ public class KillerList extends CustomItem {
     public void setPlayer(Game game, Player player){
         this.game = game;
         this.player = player;
-        player.sendMessage(Component.text("§b殺すノートを手に入れた！"));
+        player.sendMessage(Component.text("§6殺すノート§bを手に入れた！"));
         game.getGameStatesManager().setEnableKillerList(true);
     }
 
     public void updateKillerList(){
         this.player.getInventory().removeItem(this.baseItem);
-        BookMeta bookMeta = (BookMeta) this.baseItem.getItemMeta();
-        List<Player> killerList = new ArrayList<>(game.getGameStatesManager().getKillerList().keySet());
-        String names = "";
-        for(Player p : killerList){
+        ItemStack book = baseItem.clone();
+        BookMeta bookMeta = (BookMeta) book.getItemMeta();
+        List<Player> killerPlayers = new ArrayList<>(game.getGameStatesManager().getKillerList().keySet());
+        StringBuilder names = new StringBuilder();
+        for(Player p : killerPlayers){
             if(!game.getGameStatesManager().getAlivePlayers().contains(p)){
-                killerList.remove(p);
+                names.append("§4§m- ").append(p.getName()).append("\n");
             }
-            names = names.concat("§c- " + p.getName() + "\n");
+            names.append("§2- ").append(p.getName()).append("\n");
         }
-        bookMeta.setPages(names);
-        this.baseItem.setItemMeta(bookMeta);
+        bookMeta.setPages(names.toString());
+        book.setItemMeta(bookMeta);
+        this.baseItem = book;
         //アイテム更新
-        this.player.getInventory().addItem(this.baseItem);
+        this.player.getInventory().addItem(book);
     }
 
     public void skill(GameStatesManager gameStatesManager){

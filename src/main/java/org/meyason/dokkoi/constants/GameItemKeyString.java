@@ -9,6 +9,8 @@ public class GameItemKeyString {
 
     public static final String GACHA_MACHINE = "gacha_machine";
     public static final String KILLER_LIST = "killer_list";
+    public static final String RAPIER = "rapier";
+    public static final String TIER3PLAYERLIST = "tier3_player_list";
 
     public static final String SKILL = "skill";
     public static final String ULTIMATE_SKILL = "ultimate_skill";
@@ -18,6 +20,8 @@ public class GameItemKeyString {
         ITEM_NAME,
         GACHA_MACHINE,
         KILLER_LIST,
+        RAPIER,
+        TIER3PLAYERLIST,
         SKILL,
         ULTIMATE_SKILL,
         PASSIVE_SKILL

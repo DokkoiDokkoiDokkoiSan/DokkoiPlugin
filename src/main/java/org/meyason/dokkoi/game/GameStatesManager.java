@@ -3,6 +3,7 @@ package org.meyason.dokkoi.game;
 import it.unimi.dsi.fastutil.Hash;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Trident;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.goal.Goal;
@@ -33,6 +34,7 @@ public class GameStatesManager {
     private HashMap<Player, BukkitRunnable> ultimateSkillCoolDownTasks;
     private HashMap<Player, BukkitRunnable> coolDownScheduler;
     private HashMap<Player, BukkitRunnable> itemCoolDownScheduler;
+    private HashMap<Trident, BukkitRunnable> tridentDespawnWatchDogs;
 
     private boolean isEnableKillerList = false;
 
@@ -58,6 +60,25 @@ public class GameStatesManager {
         ultimateSkillCoolDownTasks = new HashMap<>();
         coolDownScheduler = new HashMap<>();
         itemCoolDownScheduler = new HashMap<>();
+        tridentDespawnWatchDogs = new HashMap<>();
+    }
+
+    public void clearAll(){
+        alivePlayers.clear();
+        joinedPlayers.clear();
+        playerGoals.clear();
+        playerJobs.clear();
+        killerList.clear();
+        goalFixedPlayers.clear();
+        killCounts.clear();
+        attackedPlayers.clear();
+        damagedPlayers.clear();
+        projectileDataMap.clear();
+        skillCoolDownTasks.clear();
+        ultimateSkillCoolDownTasks.clear();
+        coolDownScheduler.clear();
+        itemCoolDownScheduler.clear();
+        tridentDespawnWatchDogs.clear();
     }
 
     public GameState getGameState() {
@@ -152,4 +173,8 @@ public class GameStatesManager {
     public void addItemCoolDownScheduler(Player player, BukkitRunnable task) {this.itemCoolDownScheduler.put(player, task);}
     public void removeItemCoolDownScheduler(Player player) {this.itemCoolDownScheduler.remove(player);}
 
+    public HashMap<Trident, BukkitRunnable> getTridentDespawnWatchDogs() {return tridentDespawnWatchDogs;}
+    public void setTridentDespawnWatchDogs(HashMap<Trident, BukkitRunnable> tridentDespawnWatchDogs) {this.tridentDespawnWatchDogs = tridentDespawnWatchDogs;}
+    public void addTridentDespawnWatchDog(Trident trident, BukkitRunnable task) {this.tridentDespawnWatchDogs.put(trident, task);}
+    public void removeTridentDespawnWatchDog(Trident trident) {this.tridentDespawnWatchDogs.remove(trident);}
 }

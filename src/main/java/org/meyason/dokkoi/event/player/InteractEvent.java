@@ -24,10 +24,7 @@ import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.gacha.GachaMachine;
 import org.meyason.dokkoi.item.gacha.menu.GachaPointMenu;
 import org.meyason.dokkoi.item.goal.KillerList;
-import org.meyason.dokkoi.job.Bomber;
-import org.meyason.dokkoi.job.Executor;
-import org.meyason.dokkoi.job.Job;
-import org.meyason.dokkoi.job.Lonely;
+import org.meyason.dokkoi.job.*;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
 
 import java.util.*;
@@ -91,6 +88,9 @@ public class InteractEvent implements Listener {
                         Snowball projectile = player.launchProjectile(Snowball.class, velocity);
                         job.playSoundEffectSkill(player);
                         manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
+                    }else if(job instanceof IronMaiden ironMaiden) {
+                        ironMaiden.skill();
+                        ironMaiden.playSoundEffectSkill(player);
                     }
 
                     job.setRemainCoolTimeSkill(job.getCoolTimeSkill());
@@ -123,6 +123,9 @@ public class InteractEvent implements Listener {
                         Snowball projectile = player.launchProjectile(Snowball.class, velocity);
                         job.playSoundEffectUltimateSkill(player);
                         manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.ULTIMATE_SKILL));
+                    }else if(job instanceof IronMaiden ironMaiden){
+                        ironMaiden.ultimate();
+                        ironMaiden.playSoundEffectUltimateSkill(player);
                     }
 
                     job.setRemainCoolTimeSkillUltimate(job.getCoolTimeSkillUltimate());

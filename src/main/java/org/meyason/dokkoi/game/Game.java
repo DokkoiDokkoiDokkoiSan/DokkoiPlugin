@@ -19,6 +19,7 @@ import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.*;
 import org.meyason.dokkoi.goal.GachaAddict;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.goal.MaidenGazer;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.job.Job;
@@ -99,6 +100,7 @@ public class Game {
         for(Player player : gameStatesManager.getJoinedPlayers()) {
             int randomIndex = (int) (Math.random() * jobList.size());
             Job job = jobList.get(randomIndex).clone();
+            jobList.remove(randomIndex);
             gameStatesManager.getPlayerJobs().put(player, job);
             job.setPlayer(this, player);
             int randomGoalIndex = (int) (Math.random() * job.getGoals().size());
@@ -225,6 +227,7 @@ public class Game {
             player.setCustomNameVisible(true);
             player.setGameMode(GameMode.CREATIVE);
         }
+        gameStatesManager.clearAll();
         new Game();
     }
 
@@ -297,8 +300,11 @@ public class Game {
             objective.getScore("§e目標: §f" + gameStatesManager.getPlayerGoals().get(player).getName()).setScore(--i);
             objective.getScore("§aスキル: " + gameStatesManager.getPlayerJobs().get(player).getCoolTimeSkillViewer()).setScore(--i);
             objective.getScore("§aULT: " + gameStatesManager.getPlayerJobs().get(player).getCoolTimeSkillUltimateViewer()).setScore(--i);
+
             if(gameStatesManager.getPlayerGoals().get(player) instanceof GachaAddict gachaMan){
                 objective.getScore("§eガチャポイント: §f" + gachaMan.getGachaPoint() + "pt").setScore(--i);
+            }else if(gameStatesManager.getPlayerGoals().get(player) instanceof MaidenGazer maidenGazer){
+                objective.getScore("§e視線誘導した時間: §f" + maidenGazer.getPoint() + "秒").setScore(--i);
             }
         }
         player.setScoreboard(scoreboard);

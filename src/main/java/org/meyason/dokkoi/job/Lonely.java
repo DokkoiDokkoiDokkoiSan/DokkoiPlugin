@@ -33,6 +33,9 @@ public class Lonely extends Job {
     public boolean isUltimateActive = false;
     public void setUltimateActive(boolean isUltimateActive) {return;}
 
+    public long lastAttackedTime = 0L;
+    public long lastDamagedTime = 0L;
+
     public Lonely() {
         super("孤独者", "ぼっち", 50, 5);
 
@@ -81,6 +84,8 @@ public class Lonely extends Job {
     }
 
     public void ready(){
+        lastAttackedTime = System.currentTimeMillis();
+        lastDamagedTime = System.currentTimeMillis();
         passive();
     }
 
@@ -124,7 +129,6 @@ public class Lonely extends Job {
 
     public void passive(){
         BukkitRunnable passiveTask = new BukkitRunnable(){
-            int count = 0;
             boolean isHide = false;
             @Override
             public void run() {
@@ -139,17 +143,13 @@ public class Lonely extends Job {
                     return;
                 }
 
-                if(!game.getGameStatesManager().getDamagedPlayers().contains(player) && !game.getGameStatesManager().getAttackedPlayers().contains(player)){
-                    count++;
-                    if(count >= 30){
-                        if(!isHide){
-                            player.sendMessage(Component.text("§a[孤独者] §b気配が薄れていく……"));
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
-                            isHide = true;
-                        }
+                if(isPeacefulFor30Sec()){
+                    if(!isHide){
+                        player.sendMessage(Component.text("§a[孤独者] §b気配が薄れていく……"));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
+                        isHide = true;
                     }
                 }else{
-                    count = 0;
                     if(player.hasPotionEffect(PotionEffectType.INVISIBILITY)){
                         if(isHide) {
                             player.sendMessage(Component.text("§c[孤独者] §bばれてしまった。透明化が解除された。"));
@@ -161,5 +161,14 @@ public class Lonely extends Job {
             }
         };
         passiveTask.runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
+    }
+
+    public boolean isPeacefulFor30Sec() {
+        long now = System.currentTimeMillis();
+        long lastAction = Math.max(lastAttackedTime, lastDamagedTime);
+        if (lastAction == 0L) {
+            return true;
+        }
+        return now - lastAction >= 30_000L;
     }
 }

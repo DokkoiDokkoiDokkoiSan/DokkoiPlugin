@@ -31,10 +31,10 @@ public class Police extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§b殺人を犯した他のプレイヤーを全員殺せ！\n");
+        this.player.sendMessage("§b殺人を犯した他のプレイヤーを全員殺せ！");
         CustomItem item = GameItem.getItem(KillerList.id);
         if(item == null){
-            this.player.sendMessage("§6エラーが発生しました．管理者に連絡してください：殺すリスト取得失敗");
+            this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：殺すリスト取得失敗");
             return;
         }
         ItemStack killerListItem = item.getItem();
@@ -60,7 +60,7 @@ public class Police extends Goal {
             }
         }
 
-        this.player.sendMessage("§gよくやった。街に平和が戻った！");
+        this.player.sendMessage("§6よくやった。街に平和が戻った！");
         return true;
     }
 }

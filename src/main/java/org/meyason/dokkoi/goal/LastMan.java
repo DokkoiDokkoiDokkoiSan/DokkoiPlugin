@@ -25,6 +25,7 @@ public class LastMan extends Goal {
 
     @Override
     public void addItem() {
+        this.player.sendMessage("§b最後の一人になるまで生き残れ！");
         return;
     }
 
@@ -36,7 +37,7 @@ public class LastMan extends Goal {
             return false;
         }
         if(alivePlayers.size() == 1){
-            this.player.sendMessage("§gよくやった。お前は最後の生き残りだ！");
+            this.player.sendMessage("§6よくやった。お前は最後の生き残りだ！");
             return true;
         }
         this.player.sendMessage("§4失敗だ。まだほかに生きているやつがいる。");

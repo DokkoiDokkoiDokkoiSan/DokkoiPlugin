@@ -14,6 +14,7 @@ import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.job.Bomber;
 import org.meyason.dokkoi.job.Executor;
 import org.meyason.dokkoi.job.Job;
+import org.meyason.dokkoi.job.Lonely;
 
 import java.util.List;
 
@@ -38,6 +39,12 @@ public class DamageEvent implements Listener {
 
         gameStatesManager.addAttackedPlayer(attackedPlayer);
         gameStatesManager.addDamagedPlayer(damagedPlayer);
+
+        if(gameStatesManager.getPlayerJobs().get(attackedPlayer) instanceof Lonely lonely){
+            lonely.lastAttackedTime = System.currentTimeMillis();
+        }else if(gameStatesManager.getPlayerJobs().get(damagedPlayer) instanceof Lonely lonely){
+            lonely.lastDamagedTime = System.currentTimeMillis();
+        }
 
         double damage = event.getFinalDamage() * gameStatesManager.getPlayerGoals().get(damaged).getDamageMultiplier();
         if(gameStatesManager.getKillerList().containsKey(attacker) && gameStatesManager.getPlayerJobs().get(damaged).equals(JobList.EXECUTOR)) {

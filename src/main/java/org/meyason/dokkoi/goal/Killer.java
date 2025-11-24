@@ -29,11 +29,12 @@ public class Killer extends Goal {
 
     @Override
     public void addItem() {
+        this.player.sendMessage("§b自らの手で全てのプレイヤーを殺害せよ！");
     }
 
     @Override
     public boolean isAchieved() {
-        //killerListの中のkeyにPlayerのUUIDが指定分含まれているかどうかを確認
+        //killerListの中のkeyにPlayerが指定分含まれているかどうかを確認
         HashMap<Player, Player> killerList = game.getGameStatesManager().getKillerList();
         if(!killerList.containsKey(player)){
             player.sendMessage(Component.text("§c誰も殺せなかった。"));
@@ -50,7 +51,7 @@ public class Killer extends Goal {
                 return false;
             }
         }
-        player.sendMessage("§aよくやった！お前は全てのプレイヤーを殺害した！");
+        player.sendMessage("§6よくやった！お前は全てのプレイヤーを殺害した！");
         return true;
     }
 }

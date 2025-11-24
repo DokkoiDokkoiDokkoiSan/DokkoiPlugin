@@ -3,6 +3,7 @@ package org.meyason.dokkoi.event.block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.entity.Trident;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockEvent;
@@ -12,8 +13,10 @@ import org.meyason.dokkoi.game.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
+import org.meyason.dokkoi.item.job.Rapier;
 import org.meyason.dokkoi.job.Bomber;
 import org.meyason.dokkoi.job.Executor;
+import org.meyason.dokkoi.job.IronMaiden;
 import org.meyason.dokkoi.job.Job;
 
 import java.util.List;
@@ -25,8 +28,10 @@ public class ProjectileHitBlockEvent implements Listener {
         if(event.getHitBlock() == null){
             return;
         }
+
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
         Entity entity = event.getEntity();
+
         if(entity instanceof Snowball snowball) {
             ProjectileData projectileData = manager.getProjectileDataMap().get(snowball);
             if (projectileData == null) {
@@ -47,6 +52,14 @@ public class ProjectileHitBlockEvent implements Listener {
             }
             manager.removeProjectileData(snowball);
 
+        }else if(entity instanceof Trident trident){
+            ProjectileData projectileData = manager.getProjectileDataMap().get(trident);
+            if (projectileData == null) {
+                return;
+            }
+            if(trident instanceof Rapier rapier){
+                rapier.activate(trident.getLocation());
+            }
         }
     }
 }
