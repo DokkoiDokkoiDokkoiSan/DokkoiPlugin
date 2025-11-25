@@ -18,7 +18,7 @@ public class HealingCristal extends CustomItem {
     public HealingCristal() {
         super(id,"§a回復結晶§r", ItemStack.of(Material.END_CRYSTAL),64);
         List<Component> lore = List.of(
-                Component.text()
+                Component.txt()
         )
     }
 }
