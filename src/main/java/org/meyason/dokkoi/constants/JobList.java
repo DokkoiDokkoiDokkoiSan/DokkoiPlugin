@@ -1,9 +1,7 @@
 package org.meyason.dokkoi.constants;
 
 import org.bukkit.entity.Player;
-import org.meyason.dokkoi.job.Executor;
-import org.meyason.dokkoi.job.Job;
-import org.meyason.dokkoi.job.Lonely;
+import org.meyason.dokkoi.job.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,12 +11,18 @@ public class JobList {
 
     public static final Executor EXECUTOR = new Executor();
     public static final Lonely LONELY = new Lonely();
+    public static final Bomber BOMBER = new Bomber();
+    public static final IronMaiden IRONMAIDEN = new IronMaiden();
+    public static final Explorer EXPLORER = new Explorer();
 
     private static final HashMap<String, Job> jobMap = new HashMap<String, Job>();
 
     static{
         jobMap.put(EXECUTOR.getName(), EXECUTOR);
-        jobMap.put(LONELY.getName(), LONELY);
+//        jobMap.put(LONELY.getName(), LONELY);
+//        jobMap.put(BOMBER.getName(), BOMBER);
+        jobMap.put(IRONMAIDEN.getName(), IRONMAIDEN);
+        jobMap.put(EXPLORER.getName(), EXPLORER);
     }
 
     public static List<Job> getAllJobs(){

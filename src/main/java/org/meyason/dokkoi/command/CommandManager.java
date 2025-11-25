@@ -15,6 +15,6 @@ public class CommandManager {
         core.getCommand("matching").setExecutor(new MatchingStartCommand());
         core.getCommand("end").setExecutor(new GameEndCommand());
         core.getCommand("goalfix").setExecutor(new GoalFixCommand());
-
+        core.getCommand("spawnentity").setExecutor(new SpawnEntityCommand());
     }
 }

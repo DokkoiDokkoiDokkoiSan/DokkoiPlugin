@@ -11,7 +11,7 @@ public class Passive extends CustomItem {
     public static final String id = GameItemKeyString.PASSIVE_SKILL;
 
     public Passive(){
-        super(id, "", ItemStack.of(Material.BLUE_DYE));
+        super(id, "", ItemStack.of(Material.BLUE_DYE), 1);
         isUnique = true;
     }
 

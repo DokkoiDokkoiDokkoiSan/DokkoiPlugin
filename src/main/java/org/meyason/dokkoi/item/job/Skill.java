@@ -11,7 +11,7 @@ public class Skill extends CustomItem {
     public static final String id = GameItemKeyString.SKILL;
 
     public Skill() {
-        super(id, "", ItemStack.of(Material.BLACK_DYE));
+        super(id, "", ItemStack.of(Material.BLACK_DYE), 1);
         isUnique = true;
     }
 

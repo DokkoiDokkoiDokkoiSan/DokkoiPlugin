@@ -9,11 +9,9 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
-import org.meyason.dokkoi.item.goal.KillerList;
-import org.meyason.dokkoi.item.job.Passive;
-import org.meyason.dokkoi.item.job.Skill;
-import org.meyason.dokkoi.item.job.Ultimate;
-import org.meyason.dokkoi.item.gacha.GachaMachine;
+import org.meyason.dokkoi.item.job.gacha.*;
+import org.meyason.dokkoi.item.goal.*;
+import org.meyason.dokkoi.item.job.*;
 
 import java.util.HashMap;
 
@@ -31,6 +29,14 @@ public class GameItem {
         items.put(GameItemKeyString.ULTIMATE_SKILL, new Ultimate());
         items.put(GameItemKeyString.PASSIVE_SKILL, new Passive());
         items.put(GameItemKeyString.KILLER_LIST, new KillerList());
+        items.put(GameItemKeyString.RAPIER, new Rapier());
+        items.put(GameItemKeyString.TIERPLAYERLIST, new TierPlayerList());
+        items.put(GameItemKeyString.KETSUMOU, new Ketsumou());
+        items.put(GameItemKeyString.BURIBURIGUARD, new BuriBuriGuard());
+        items.put(GameItemKeyString.STRONGESTBALL, new StrongestBall());
+        items.put(GameItemKeyString.STRONGESTSTRONGESTBALL, new StrongestStrongestBall());
+        items.put(GameItemKeyString.STRONGESTSTRONGESTSTRONGESTBALL, new StrongestStrongestStrongestBall());
+
     }
 
     public static CustomItem getItem(String id){
