@@ -28,19 +28,23 @@ public class CarpetBombing extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§b自爆攻撃で他人を巻き込んで殺せ！");
-        this.player.sendMessage("§b指定人数： §a§l" + goalNumber + "§b人");
+        this.player.sendMessage("§2自爆攻撃で他人を巻き込んで殺せ！");
+        this.player.sendMessage("§2指定人数： §a§l" + goalNumber + "§2人");
         return;
     }
 
     @Override
     public boolean isAchieved() {
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+            this.player.sendMessage("§cお前はもう死んでいる。");
+            return false;
+        }
         if(game.getGameStatesManager().getPlayerJobs().get(player) instanceof Bomber bomber) {
             if (bomber.killCount >= goalNumber){
                 this.player.sendMessage("§6よくやった。お前は立派な爆弾魔だ！");
                 return true;
             }
-            this.player.sendMessage("§4失敗だ。まだ目標人数に達していない。");
+            this.player.sendMessage("§c失敗だ。まだ目標人数に達していない。");
             return false;
         }
         return false;

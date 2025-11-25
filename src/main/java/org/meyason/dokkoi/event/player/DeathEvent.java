@@ -47,8 +47,8 @@ public class DeathEvent {
         manager.removeDamagedPlayer(dead);
 
         dead.sendMessage("§cあなたは§l§4死亡§r§cしました");
-        dead.sendMessage("§eキルしたプレイヤー: §l§4" + killer.getName() + "§r§e");
-        killer.sendMessage("§aあなたは§l§4" + dead.getName() + "§r§aを倒しました");
+        dead.sendMessage("§eキルしたプレイヤー: §l§c" + killer.getName() + "§r§e");
+        killer.sendMessage("§aあなたは§l§6" + dead.getName() + "§r§aを倒しました");
 
         if(manager.isEnableKillerList()){
             HashMap<Player, Goal> playerGoals = manager.getPlayerGoals();
@@ -56,7 +56,7 @@ public class DeathEvent {
                 Goal goal = playerGoals.get(p);
                 if(goal instanceof Police police){
                     if(p.equals(killer)){continue;}
-                    p.sendMessage("§c[殺すノート] §e" + killer.getName() + " が " + dead.getName() + " を倒しました");
+                    p.sendMessage("§a[殺すノート] §c" + killer.getName() + "§a が " + dead.getName() + " §aを倒しました");
                     police.killerList.updateKillerList();
                 }
             }

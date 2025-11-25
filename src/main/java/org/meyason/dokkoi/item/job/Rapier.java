@@ -15,6 +15,8 @@ import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 
+import java.util.List;
+
 public class Rapier extends CustomItem {
 
     public static final String id = "rapier";
@@ -23,8 +25,16 @@ public class Rapier extends CustomItem {
     private Player player;
 
     public Rapier(){
-        super(id, "レイピア", ItemStack.of(Material.TRIDENT), 1);
+        super(id, "§aレイピア", ItemStack.of(Material.TRIDENT), 1);
         isUnique = true;
+        List<Component> lore = List.of(
+                Component.text("§5割とかっこいいレイピア、なんか先端クッソ白くね？"),
+                Component.text(""),
+                Component.text("§5効果"),
+                Component.text("§5投げて着弾した位置から半径10m以内にいるプレイヤーの視線をレイピアに固定し続ける。"),
+                Component.text("§5自然消滅はしない。")
+        );
+        setDescription(lore);
     }
 
     @Override
@@ -79,7 +89,7 @@ public class Rapier extends CustomItem {
                     );
                     targetLoc.setY(target.getY());
                     target.teleport(targetLoc);
-                    target.sendActionBar(Component.text("c[鉄処女]あれ見てみろ！かす！"));
+                    target.sendActionBar(Component.text("§c[鉄処女]あれ見てみろ！かす！"));
                 }
             }
         };

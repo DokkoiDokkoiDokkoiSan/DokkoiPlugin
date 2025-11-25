@@ -32,11 +32,11 @@ public class Bomber extends Job {
     private BukkitTask smokeTask;
 
     public Bomber() {
-        super("爆弾魔", "爆弾のプロ", 20, 100);
-        passive_skill_name = "無敵の人";
-        normal_skill_name = "ブラストパック";
-        ultimate_skill_name = "割と臭いガス爆弾";
-        skillSound = Sound.ENTITY_FIREWORK_ROCKET_BLAST_FAR;
+        super("§9爆弾魔", "爆弾のプロ", 20, 100);
+        passive_skill_name = "§7無敵の人";
+        normal_skill_name = "§3ブラストパック";
+        ultimate_skill_name = "§56割と臭いガス爆弾";
+        skillSound = Sound.ENTITY_TNT_PRIMED;
         skillVolume = 1.0f;
         skillPitch = 0.8f;
 
@@ -50,8 +50,8 @@ public class Bomber extends Job {
         this.game = game;
         this.player = player;
         this.goals = List.of(
-//                GoalList.KILLER,
-//                GoalList.CARPETBOMBING,
+                GoalList.KILLER,
+                GoalList.CARPETBOMBING,
                 GoalList.COMEDIANKILLER
         );
     }
@@ -66,18 +66,18 @@ public class Bomber extends Job {
             twiceCoolTimeSkill();
         }
         passive_skill_description = List.of(
-                Component.text("§bHPが0になった瞬間爆発を起こし、半径5m以内にいるプレイヤー、または芸人を巻き込んで自爆する。"),
-                Component.text("§b爆発に巻き込まれたプレイヤー・芸人は即死する。プレイヤーか芸人を巻き込んだ場合、その場で復活できる。")
+                Component.text("§5HPが0になった瞬間爆発を起こし、半径5m以内にいるプレイヤー、または芸人を巻き込んで自爆する。"),
+                Component.text("§5爆発に巻き込まれたプレイヤー・芸人は即死する。プレイヤーか芸人を巻き込んだ場合、その場で復活できる。")
         );
 
         normal_skill_description = List.of(
-                Component.text("§bダメージの無いノックバック爆弾を投げることができる。"),
+                Component.text("§5ダメージの無いノックバック爆弾を投げることができる。"),
                 Component.text("§cCT " + getCoolTimeSkill() + "秒")
         );
 
         ultimate_skill_description = List.of(
-                Component.text("§b半径20mに煙幕を30秒間発生させる爆弾を投げる。"),
-                Component.text("煙幕の中では自分は移動速度増加Lv2、相手は移動速度低下Lv1を受ける。"),
+                Component.text("§5半径20mに煙幕を30秒間発生させる爆弾を投げる。"),
+                Component.text("§5煙幕の中では自分は移動速度増加Lv2、相手は移動速度低下Lv1を受ける。"),
                 Component.text("§cCT " + getCoolTimeSkillUltimate() + "秒")
         );
     }
@@ -117,7 +117,7 @@ public class Bomber extends Job {
 
         this.player.setHealth(20.0);
         if(!isKilledComedian){
-            this.player.sendMessage("§aあなたは§l§4自爆§r§aしましたが、プレイヤーを巻き込んだため復活しました");
+            this.player.sendMessage("§bあなたは§l§4自爆§r§bしましたが、プレイヤーを巻き込んだため復活しました");
         }
         return true;
     }

@@ -11,6 +11,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
+import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
@@ -28,18 +29,22 @@ public class KillerList extends CustomItem {
     private Game game;
 
     public KillerList() {
-        super(id, "殺すノート", ItemStack.of(Material.PAPER), 1);
+        super(id, "§a殺すノート", ItemStack.of(Material.PAPER), 1);
         this.baseItem = ItemStack.of(Material.WRITTEN_BOOK);
         BookMeta bookMeta = (BookMeta) baseItem.getItemMeta();
-        bookMeta.setTitle("§6殺すノート");
-        bookMeta.setAuthor("二階堂真紅");
+        bookMeta.setTitle("§a殺すノート");
+        bookMeta.setAuthor("§6二階堂真紅");
         List<Component> lore = List.of(
-                Component.text("§7殺人をしたプレイヤー名が自身のチャットログにアナウンスされ、ノートに記入される。"),
-                Component.text("§7また、ノートを左クリックすることで記入されたプレイヤーに発光を10秒間付与する。"),
+                Component.text("§5なんかでかいトカゲが落としたメモ帳。勝手に文字書かれる、こわ。"),
+                Component.text(""),
+                Component.text("§5効果"),
+                Component.text("§5殺人をしたプレイヤー名が自身のチャットログにアナウンスされ、ノートに記入される。"),
+                Component.text("§5また、ノートを左クリックすることで記入されたプレイヤーに発光を10秒間付与する。"),
                 Component.text("§cCT 30秒"),
                 Component.text("§bこれらのプレイヤーをすべて殺害せよ。")
         );
         bookMeta.lore(lore);
+        setDescription(lore);
         baseItem.setItemMeta(bookMeta);
         isUnique = true;
     }
@@ -93,6 +98,10 @@ public class KillerList extends CustomItem {
         BukkitRunnable itemInitTask = new BukkitRunnable() {
             @Override
             public void run() {
+                if(gameStatesManager.getGameState() != GameState.IN_GAME) {
+                    cancel();
+                    return;
+                }
                 if (!player.isOnline() || !gameStatesManager.getItemCoolDownScheduler().containsKey(player)) {
                     cancel();
                     return;

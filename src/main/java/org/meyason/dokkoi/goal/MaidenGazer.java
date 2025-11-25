@@ -27,7 +27,7 @@ public class MaidenGazer extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§bパッシブ『こっち見ろ！ばか！』で視線誘導を合計60秒間発動させろ！");
+        this.player.sendMessage("§2パッシブ『こっち見ろ！ばか！』で視線誘導を合計60秒間発動させろ！");
     }
 
     public int getPoint(){
@@ -36,11 +36,15 @@ public class MaidenGazer extends Goal {
 
     @Override
     public boolean isAchieved(){
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+            this.player.sendMessage("§cお前はもう死んでいる。");
+            return false;
+        }
         if(getPoint() >= 60){
             this.player.sendMessage("§6みんなが俺のことを見たのを見たぞ！");
             return true;
         }
-        this.player.sendMessage("§4誰もお前のことなんか見ちゃいない");
+        this.player.sendMessage("§c誰もお前のことなんか見ちゃいない");
         return false;
     }
 }

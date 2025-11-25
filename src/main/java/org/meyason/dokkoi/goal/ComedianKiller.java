@@ -25,11 +25,15 @@ public class ComedianKiller extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§bマップ内に存在する§a小島よしお§b・§aハリウッドザコシショウ§b・§aオードリー若林§b・§aパンサー尾形§b・§aビビる大木§bのどれか3人以上をパッシブスキルの自爆で倒せ！");
+        this.player.sendMessage("§2マップ内に存在する§a小島よしお§2・§aハリウッドザコシショウ§2・§aオードリー若林§2・§aパンサー尾形§2・§aビビる大木§2のどれか§b3人以上§2をパッシブスキルで倒せ！");
     }
 
     @Override
     public boolean isAchieved() {
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+            this.player.sendMessage("§cお前はもう死んでいる。");
+            return false;
+        }
         Job job = game.getGameStatesManager().getPlayerJobs().get(player);
         if(job instanceof Bomber bomber){
             this.killCount = bomber.getKillComedian();
@@ -38,7 +42,7 @@ public class ComedianKiller extends Goal {
             this.player.sendMessage("§6よくやった！芸人を3人自爆で殺した！");
             return true;
         }
-        this.player.sendMessage("§4失敗だ。芸人を3人自爆で殺せなかった。");
+        this.player.sendMessage("§c失敗だ。芸人を3人自爆で殺せなかった。");
         return false;
     }
 }

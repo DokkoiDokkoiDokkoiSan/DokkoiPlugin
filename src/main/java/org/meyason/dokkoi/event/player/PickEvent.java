@@ -72,7 +72,7 @@ public class PickEvent implements Listener {
 
         Job job = Game.getInstance().getGameStatesManager().getPlayerJobs().get(player);
 
-        // チェストのKetsumouをクリックし、インベントリに入れるとき（増える）
+        // チェストのKetsumouをクリックし、シフトでインベントリに入れるとき
         if (clickedIsTop && slotIsKetsumou) {
             // シフトクリックで一気に移動
             if (event.getClick().isShiftClick()) {
@@ -84,7 +84,7 @@ public class PickEvent implements Listener {
             }
         }
 
-        // インベントリのKetsumouをチェストに入れるとき（減る）
+        // インベントリのKetsumouをシフトでチェストに入れるとき
         if (clickedIsBottom && slotIsKetsumou) {
             if (event.getClick().isShiftClick()) {
                 if (job instanceof Explorer explorer) {

@@ -10,6 +10,10 @@ public class GameItemKeyString {
     public static final String KILLER_LIST = "killer_list";
     public static final String RAPIER = "rapier";
     public static final String TIERPLAYERLIST = "tier_player_list";
+    public static final String BURIBURIGUARD = "buri_buri_guard";
+    public static final String STRONGESTBALL = "strongest_ball";
+    public static final String STRONGESTSTRONGESTBALL = "strongest_strongest_ball";
+    public static final String STRONGESTSTRONGESTSTRONGESTBALL = "strongest_strongest_strongest_ball";
 
     public static final String KETSUMOU = "ketsumou";
 
@@ -26,7 +30,11 @@ public class GameItemKeyString {
         SKILL,
         ULTIMATE_SKILL,
         PASSIVE_SKILL,
-        KETSUMOU
+        KETSUMOU,
+        BURIBURIGUARD,
+        STRONGESTBALL,
+        STRONGESTSTRONGESTBALL,
+        STRONGESTSTRONGESTSTRONGESTBALL
     );
 
     public static List<String> getGameItemKeyStringHashMap() {return gameItemKeyStringHashMap;}

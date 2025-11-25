@@ -16,9 +16,11 @@ import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.*;
 import org.meyason.dokkoi.goal.GachaAddict;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.goal.KetsumouHunter;
 import org.meyason.dokkoi.goal.MaidenGazer;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
+import org.meyason.dokkoi.job.Explorer;
 import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.scheduler.Scheduler;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
@@ -134,6 +136,7 @@ public class Game {
         for (Player player : gameStatesManager.getJoinedPlayers()) {
             gameStatesManager.addKillCount(player);
             gameStatesManager.addAdditionalDamage(player, 0);
+            gameStatesManager.addDamageCutPercent(player, 0);
             playerNoticer(player);
         }
 
@@ -300,10 +303,18 @@ public class Game {
             objective.getScore("§aスキル: " + gameStatesManager.getPlayerJobs().get(player).getCoolTimeSkillViewer()).setScore(--i);
             objective.getScore("§aULT: " + gameStatesManager.getPlayerJobs().get(player).getCoolTimeSkillUltimateViewer()).setScore(--i);
 
-            if(gameStatesManager.getPlayerGoals().get(player) instanceof GachaAddict gachaMan){
+            Job job = gameStatesManager.getPlayerJobs().get(player);
+            Goal goal = gameStatesManager.getPlayerGoals().get(player);
+            if(goal instanceof GachaAddict gachaMan){
                 objective.getScore("§eガチャポイント: §f" + gachaMan.getGachaPoint() + "pt").setScore(--i);
-            }else if(gameStatesManager.getPlayerGoals().get(player) instanceof MaidenGazer maidenGazer){
+            }else if(goal instanceof MaidenGazer maidenGazer){
                 objective.getScore("§e視線誘導した時間: §f" + maidenGazer.getPoint() + "秒").setScore(--i);
+            }
+            if(job instanceof Explorer explorer){
+                objective.getScore("§e発見した§9§lけつ毛§r§e: §f" + explorer.getHaveKetsumouCount() + "個").setScore(--i);
+                if(goal instanceof KetsumouHunter ketsumouHunter){
+                    objective.getScore("§e目標の§9§lけつ毛§r§e: §f" + ketsumouHunter.getTargetKetsumouCount() + "個").setScore(--i);
+                }
             }
         }
         player.setScoreboard(scoreboard);

@@ -30,6 +30,7 @@ public class GameStatesManager {
     private List<Player> damagedPlayers;
     private HashMap<Entity, ProjectileData> projectileDataMap;
     private HashMap<Player, Integer> additionalDamage;
+    private HashMap<Player, Integer> damageCutPercent;
 
     private HashMap<Player, BukkitRunnable> skillCoolDownTasks;
     private HashMap<Player, BukkitRunnable> ultimateSkillCoolDownTasks;
@@ -60,6 +61,7 @@ public class GameStatesManager {
         damagedPlayers = new ArrayList<>();
         projectileDataMap = new HashMap<>();
         additionalDamage = new HashMap<>();
+        damageCutPercent = new HashMap<>();
         skillCoolDownTasks = new HashMap<>();
         ultimateSkillCoolDownTasks = new HashMap<>();
         coolDownScheduler = new HashMap<>();
@@ -80,6 +82,7 @@ public class GameStatesManager {
         damagedPlayers.clear();
         projectileDataMap.clear();
         additionalDamage.clear();
+        damageCutPercent.clear();
         skillCoolDownTasks.clear();
         ultimateSkillCoolDownTasks.clear();
         coolDownScheduler.clear();
@@ -99,6 +102,7 @@ public class GameStatesManager {
         removeAttackedPlayer(player);
         removeDamagedPlayer(player);
         removeAdditionalDamage(player);
+        removeDamageCutPercent(player);
         removeSkillCoolDownTask(player);
         removeUltimateSkillCoolDownTask(player);
         removeCoolDownScheduler(player);
@@ -214,6 +218,19 @@ public class GameStatesManager {
     public void removeAdditionalDamage(Player player) {
         if(!this.additionalDamage.containsKey(player)) {return;}
         this.additionalDamage.remove(player);
+    }
+
+    public HashMap<Player, Integer> getDamageCutPercent() {return damageCutPercent;}
+    public void setDamageCutPercent(HashMap<Player, Integer> damageCutPercent) {this.damageCutPercent = damageCutPercent;}
+    public void addDamageCutPercent(Player player, int percent) {
+        this.damageCutPercent.put(player, percent);
+    }
+    public void editDamageCutPercent(Player player, int percent) {
+        this.damageCutPercent.put(player, this.damageCutPercent.getOrDefault(player, 0) + percent);
+    }
+    public void removeDamageCutPercent(Player player) {
+        if(!this.damageCutPercent.containsKey(player)) {return;}
+        this.damageCutPercent.remove(player);
     }
 
     public HashMap<Player, BukkitRunnable> getUltimateSkillCoolDownTasks() {return ultimateSkillCoolDownTasks;}

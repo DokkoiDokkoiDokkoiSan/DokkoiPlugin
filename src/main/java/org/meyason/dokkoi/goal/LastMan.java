@@ -25,22 +25,21 @@ public class LastMan extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§b最後の一人になるまで生き残れ！");
+        this.player.sendMessage("§2最後の一人になるまで生き残れ！");
         return;
     }
 
     @Override
     public boolean isAchieved() {
-        List<Player> alivePlayers = this.game.getGameStatesManager().getAlivePlayers();
-        if(alivePlayers.stream().noneMatch(p -> p.getUniqueId().equals(this.player.getUniqueId()))){
-            this.player.sendMessage("§4お前はもう死んでいる。");
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+            this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
-        if(alivePlayers.size() == 1){
+        if(this.game.getGameStatesManager().getAlivePlayers().size() == 1){
             this.player.sendMessage("§6よくやった。お前は最後の生き残りだ！");
             return true;
         }
-        this.player.sendMessage("§4失敗だ。まだほかに生きているやつがいる。");
+        this.player.sendMessage("§c失敗だ。まだほかに生きているやつがいる。");
         return false;
     }
 }

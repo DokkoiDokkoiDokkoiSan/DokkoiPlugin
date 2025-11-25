@@ -21,10 +21,10 @@ import java.util.List;
 public class Executor extends Job{
 
     public Executor() {
-        super("執行者", "執行者", 30, 200);
-        passive_skill_name = "プロトペナルティ";
-        normal_skill_name = "ギルトペナルティ";
-        ultimate_skill_name = "ニクトペナルティ";
+        super("§9執行者", "執行者", 30, 200);
+        passive_skill_name = "§7プロトペナルティ";
+        normal_skill_name = "§3ギルトペナルティ";
+        ultimate_skill_name = "§6ニクトペナルティ";
         skillSound = Sound.ENTITY_PHANTOM_BITE;
         skillVolume = 1.0f;
         skillPitch = 0.8f;
@@ -39,7 +39,8 @@ public class Executor extends Job{
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.POLICE
+                GoalList.POLICE,
+                GoalList.DEFENDER
         );
     }
 
@@ -48,21 +49,21 @@ public class Executor extends Job{
         if(goal.tier == Tier.TIER_1){
             twiceCoolTimeSkill();
         }
-        passive_skill_description = List.of(Component.text("§bプレイヤーを一人でも殺したプレイヤーから受けるダメージが半分になる。\n"));
+        passive_skill_description = List.of(Component.text("§5プレイヤーを一人でも殺したプレイヤーから受けるダメージが半分になる。"));
 
         normal_skill_description = List.of(
-                Component.text("§bスキルが命中したプレイヤーのキル数に応じてダメージ、デバフを与える。\n"),
-                Component.text("§cCT " + getCoolTimeSkill() + "秒\n"),
-                Component.text("§a0kill §b固定5ダメージ与え、3秒間の§1鈍足§bを与える。\n"),
-                Component.text("§a1kill §b固定20ダメージ与え、5秒間の§1鈍足§b、与ダメージ2低下を与える。\n"),
-                Component.text("§a2kill §b固定40ダメージ与え、10秒間の§1鈍足§b、与ダメージ5低下、§3盲目§bを与える。\n"),
-                Component.text("§a3kill §b固定500ダメージ与える。")
+                Component.text("§5スキルが命中したプレイヤーのキル数に応じてダメージ、デバフを与える。"),
+                Component.text("§cCT " + getCoolTimeSkill() + "秒"),
+                Component.text("§a0kill §5固定5ダメージ与え、3秒間の§1鈍足"),
+                Component.text("§a1kill §5固定20ダメージ与え、5秒間の§1鈍足§5、与ダメージ2減少"),
+                Component.text("§a2kill §5固定40ダメージ与え、10秒間の§1鈍足§5、与ダメージ5減少、§3盲目"),
+                Component.text("§a3kill §5固定500ダメージ与える。")
         );
 
         ultimate_skill_description = List.of(
-                Component.text("§b自身の移動速度が10秒間4倍になる。\n"),
-                Component.text("試合中一度でも攻撃を行ったプレイヤーに10秒間の§1鈍足§bと§3盲目§bのデバフを与える。\n"),
-                Component.text("§cCT " + getCoolTimeSkillUltimate() + "秒" +"\n")
+                Component.text("§5自身の移動速度が10秒間4倍になる。"),
+                Component.text("§5試合中一度でも攻撃を行ったプレイヤーに10秒間の§1鈍足§5と§3盲目§5のデバフを与える。"),
+                Component.text("§cCT " + getCoolTimeSkillUltimate() + "秒")
         );
     }
 

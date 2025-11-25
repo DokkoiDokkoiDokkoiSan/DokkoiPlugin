@@ -31,7 +31,7 @@ public class Police extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§b殺人を犯した他のプレイヤーを全員殺せ！");
+        this.player.sendMessage("§2殺人を犯した他のプレイヤーを全員殺せ！");
         CustomItem item = GameItem.getItem(KillerList.id);
         if(item == null){
             this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：殺すリスト取得失敗");
@@ -50,12 +50,16 @@ public class Police extends Goal {
     @Override
     public boolean isAchieved() {
         List<Player> alivePlayers = this.game.getGameStatesManager().getAlivePlayers();
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+            this.player.sendMessage("§cお前はもう死んでいる。");
+            return false;
+        }
 
         List<Player> killerlayers = this.game.getGameStatesManager().getKillerList().keySet().stream().toList();
         for(Player p : alivePlayers) {
             if (killerlayers.stream().anyMatch(ap -> ap.getUniqueId().equals(p.getUniqueId()))) {
                 if(p.equals(this.player)){continue;}
-                this.player.sendMessage("§4失敗だ。街に暴力が蔓延している。");
+                this.player.sendMessage("§c失敗だ。街に暴力が蔓延している。");
                 return false;
             }
         }

@@ -62,7 +62,7 @@ public class MassTierKiller extends Goal {
             this.targetTier = Tier.TIER_3;
             this.tierString = "Tier 3";
         }
-        this.player.sendMessage("§b勝利条件が§a§l" + this.tierString + "§bのプレイヤーを全員殺害せよ！");
+        this.player.sendMessage("§2勝利条件が§a§l" + this.tierString + "§r§2のプレイヤーを全員殺害せよ！");
         CustomItem item = GameItem.getItem(TierPlayerList.id);
         if(item == null){
             this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：魔女図鑑取得失敗");
@@ -86,13 +86,17 @@ public class MassTierKiller extends Goal {
 
     @Override
     public boolean isAchieved() {
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+            this.player.sendMessage("§cお前はもう死んでいる。");
+            return false;
+        }
         for(Player targetPlayer : game.getGameStatesManager().getAlivePlayers()){
             Goal goal = game.getGameStatesManager().getPlayerGoals().get(targetPlayer);
             if(targetPlayer.equals(this.player)){
                 continue;
             }
             if(goal.tier == this.targetTier){
-                this.player.sendMessage("§4全ての" + this.tierString + "プレイヤーを殺害できなかった。");
+                this.player.sendMessage("§c全ての" + this.tierString + "プレイヤーを殺害できなかった。");
                 return false;
             }
         }

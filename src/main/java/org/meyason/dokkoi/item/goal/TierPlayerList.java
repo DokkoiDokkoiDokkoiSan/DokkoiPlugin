@@ -23,17 +23,21 @@ public class TierPlayerList extends CustomItem {
     private Game game;
 
     public TierPlayerList() {
-        super(id, "魔女図鑑", ItemStack.of(Material.PAPER), 1);
+        super(id, "§a魔女図鑑", ItemStack.of(Material.PAPER), 1);
         this.baseItem = ItemStack.of(Material.WRITTEN_BOOK);
         BookMeta bookMeta = (BookMeta) baseItem.getItemMeta();
-        bookMeta.setTitle("§6魔女図鑑");
-        bookMeta.setAuthor("二階堂真紅");
+        bookMeta.setTitle("§a魔女図鑑");
+        bookMeta.setAuthor("§6二階堂真紅");
         List<Component> lore = List.of(
-                Component.text("§7一番選択された数が多いtierの勝利条件を選んだプレイヤーの名前が記入されている。名前の割に魔女の情報は一つも書いてない。"),
-                Component.text("§7本を開くとその勝利条件を選んだプレイヤーの名前が記入されている。"),
+                Component.text("§5名前の割に魔女の情報は一つも書いてない。"),
+                Component.text(""),
+                Component.text("§5効果"),
+                Component.text("§5一番選択された数が多いtierの勝利条件を選んだプレイヤーの名前が記入されている。"),
+                Component.text("§5本を開くとその勝利条件を選んだプレイヤーの名前が記入されている。"),
                 Component.text("§bこれらのプレイヤーをすべて殺害せよ。")
         );
         bookMeta.lore(lore);
+        setDescription(lore);
         baseItem.setItemMeta(bookMeta);
         isUnique = true;
     }

@@ -14,6 +14,7 @@ import org.meyason.dokkoi.job.Explorer;
 import org.meyason.dokkoi.job.Job;
 
 import java.time.Duration;
+import java.util.List;
 
 public class Ketsumou extends CustomItem {
 
@@ -23,8 +24,14 @@ public class Ketsumou extends CustomItem {
     public static final String id = "ketsumou";
 
     public Ketsumou() {
-        super(id, "けつ毛(けつもう", ItemStack.of(Material.PALE_HANGING_MOSS), 1);
-        isUnique = true;
+        super(id, "§9§lけつ毛(けつもう)§r", ItemStack.of(Material.PALE_HANGING_MOSS), 1);
+        List<Component> lore = List.of(
+                Component.text("§5冒険者が一生かけて探し求めている§9§lけつ毛§r§5。"),
+                Component.text(""),
+                Component.text("§5効果"),
+                Component.text("§5冒険者以外が拾うと強力なデバフを受ける。")
+        );
+        setDescription(lore);
     }
 
     @Override
@@ -50,7 +57,7 @@ public class Ketsumou extends CustomItem {
             picker.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 3));
             picker.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));
             gameStatesManager.addAdditionalDamage(picker, -500);
-            picker.sendMessage(Component.text("§c§lこれはお前のけつ毛ではない。"));
+            picker.sendActionBar(Component.text("§cこれはお前の§9§lけつ毛§r§cではない。"));
             return;
         }
     }

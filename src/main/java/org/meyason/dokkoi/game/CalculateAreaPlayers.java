@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.game;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -12,6 +13,9 @@ public class CalculateAreaPlayers {
         List<Player> playersInArea = new ArrayList<Player>();
         for(Player p : game.getGameStatesManager().getAlivePlayers()){
             if(p.getUniqueId().equals(exceptPlayer.getUniqueId())){
+                continue;
+            }
+            if(!game.getGameStatesManager().getAlivePlayers().contains(p)){
                 continue;
             }
             Location target = p.getLocation();

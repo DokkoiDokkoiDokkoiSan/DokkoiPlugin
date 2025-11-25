@@ -17,6 +17,9 @@ public class GoalList {
     public static final MassTierKiller MASSTIERKILLER = new MassTierKiller();
     public static final MaidenGazer MAIDENGAZER = new MaidenGazer();
     public static final ComedianKiller COMEDIANKILLER = new ComedianKiller();
+    public static final KetsumouHunter KETSUMOUHUNTER = new KetsumouHunter();
+    public static final KetsumouPirate KETSUMOUPIRATE = new KetsumouPirate();
+    public static final Defender DEFENDER = new Defender();
 
     private static final HashMap<String, Goal> goalMap = new HashMap<>();
 
@@ -30,6 +33,9 @@ public class GoalList {
         goalMap.put(MASSTIERKILLER.getName(), MASSTIERKILLER);
         goalMap.put(MAIDENGAZER.getName(), MAIDENGAZER);
         goalMap.put(COMEDIANKILLER.getName(), COMEDIANKILLER);
+        goalMap.put(KETSUMOUHUNTER.getName(), KETSUMOUHUNTER);
+        goalMap.put(KETSUMOUPIRATE.getName(), KETSUMOUPIRATE);
+        goalMap.put(DEFENDER.getName(), DEFENDER);
     }
 
     public static List<Goal> getAllGoals(){

@@ -25,23 +25,22 @@ public class Shadow extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§bゲーム終了まで誰も攻撃せず、攻撃も受けずに生き残れ！");
+        this.player.sendMessage("§2ゲーム終了まで誰も攻撃せず、攻撃も受けずに生き残れ！");
         return;
     }
 
     @Override
     public boolean isAchieved() {
-        List<Player> alivePlayers = this.game.getGameStatesManager().getAlivePlayers();
-        if(alivePlayers.stream().noneMatch(p -> p.getUniqueId().equals(this.player.getUniqueId()))){
-            this.player.sendMessage("§4お前はもう死んでいる。");
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+            this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
         if(this.game.getGameStatesManager().getAttackedPlayers().contains(this.player)){
-            this.player.sendMessage("§4お前は攻撃してしまった。");
+            this.player.sendMessage("§cお前は攻撃してしまった。");
             return false;
         }
         if(this.game.getGameStatesManager().getDamagedPlayers().contains(this.player)){
-            this.player.sendMessage("§4お前は攻撃を受けてしまった。");
+            this.player.sendMessage("§cお前は攻撃を受けてしまった。");
             return false;
         }
         this.player.sendMessage("§6よくやった。お前は真のぼっちだ！");

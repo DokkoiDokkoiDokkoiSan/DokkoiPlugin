@@ -37,12 +37,12 @@ public class IronMaiden extends Job {
     private int count = 0;
 
     public IronMaiden() {
-        super("鉄処女", "鉄処女", 30, 200);
-        passive_skill_name = "こっち見ろ！ばか！";
-        normal_skill_name = "あっち見ろ！あほ！";
-        ultimate_skill_name = "あれ見てみろ！かす！";
+        super("§9鉄処女", "鉄処女", 30, 200);
+        passive_skill_name = "§7こっち見ろ！ばか！";
+        normal_skill_name = "§3あっち見ろ！あほ！";
+        ultimate_skill_name = "§6あれ見てみろ！かす！";
 
-        skillSound = Sound.ITEM_TRIDENT_RETURN;
+        skillSound = Sound.ENTITY_ELDER_GUARDIAN_CURSE;
         skillVolume = 1.0f;
         skillPitch = 1.0f;
         ultimateSkillSound = Sound.ENTITY_ITEM_PICKUP;
@@ -73,18 +73,18 @@ public class IronMaiden extends Job {
             twiceCoolTimeSkill();
         }
         passive_skill_description = List.of(
-                Component.text("§bプレイヤーのことを見ている間そのプレイヤーの視線を自分に固定させる。")
+                Component.text("§5プレイヤーのことを見ている間そのプレイヤーの視線を自分に固定させる。")
         );
 
         normal_skill_description = List.of(
-                Component.text("§bパッシブの視線誘導を10秒間180°後ろに視線を固定に変更する。"),
+                Component.text("§5パッシブの視線誘導を10秒間180°後ろに視線を固定に変更する。"),
                 Component.text("§cCT " + getCoolTimeSkill() + "秒")
         );
 
         ultimate_skill_description = List.of(
-                Component.text("§bレイピアを手に入れる。"),
-                Component.text("§bレイピアを投げて着弾した位置から半径10m以内にいるプレイヤーの視線をレイピアに固定し続ける。"),
-                Component.text("§bまた、自分は視線固定の効果を受けない。"),
+                Component.text("§5レイピアを手に入れる。"),
+                Component.text("§5レイピアを投げて着弾した位置から半径10m以内にいるプレイヤーの視線をレイピアに固定し続ける。"),
+                Component.text("§5また、自分は視線固定の効果を受けない。"),
                 Component.text("§cCT " + getCoolTimeSkillUltimate() + "秒")
         );
     }

@@ -13,10 +13,7 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.item.job.Rapier;
-import org.meyason.dokkoi.job.Bomber;
-import org.meyason.dokkoi.job.Executor;
-import org.meyason.dokkoi.job.IronMaiden;
-import org.meyason.dokkoi.job.Job;
+import org.meyason.dokkoi.job.*;
 
 import java.util.List;
 
@@ -48,6 +45,10 @@ public class ProjectileHitBlockEvent implements Listener {
                     bomber.skill(event.getHitBlock().getLocation(), effectedPlayers);
                 }else if(attackItem.equals(GameItemKeyString.ULTIMATE_SKILL)){
                     bomber.ultimate(event.getHitBlock().getLocation());
+                }
+            }else if(job instanceof Explorer explorer) {
+                if(attackItem.equals(GameItemKeyString.SKILL)) {
+                    explorer.skill(snowball);
                 }
             }
             manager.removeProjectileData(snowball);
