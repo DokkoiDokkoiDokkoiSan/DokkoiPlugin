@@ -1,5 +1,7 @@
 package org.meyason.dokkoi.event.player;
 
+import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
@@ -21,12 +23,8 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.item.CustomItem;
-import org.meyason.dokkoi.item.gacha.GachaMachine;
-import org.meyason.dokkoi.item.gacha.menu.GachaPointMenu;
 import org.meyason.dokkoi.item.goal.KillerList;
-import org.meyason.dokkoi.job.Executor;
-import org.meyason.dokkoi.job.Job;
-import org.meyason.dokkoi.job.Lonely;
+import org.meyason.dokkoi.job.*;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
 
 import java.util.*;
@@ -70,22 +68,40 @@ public class InteractEvent implements Listener {
                     GameStatesManager manager = game.getGameStatesManager();
                     Job job = manager.getPlayerJobs().get(player);
                     if(job.isSkillCoolDown(player)){
-                        player.sendMessage("§cスキルはクールダウン中です。");
+                        player.sendActionBar(Component.text("§cスキルはクールダウン中です。"));
                         return;
                     }
 
+                    job.playSoundEffectSkill(player);
                     // 執行者
                     if(job instanceof Executor){
                         Vector direction = player.getEyeLocation().getDirection().normalize();
-                        Vector velocity = direction.multiply(1.0);
+                        Vector velocity = direction.multiply(3.0);
                         Snowball projectile = player.launchProjectile(Snowball.class, velocity);
-                        job.playSoundEffectSkill(player);
-                        manager.addProjectileData(projectile, new ProjectileData(player));
+                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
                     }else if(job instanceof Lonely lonely){
                         lonely.skill();
-                        lonely.playSoundEffectSkill(player);
+                    }else if(job instanceof Bomber bomber){
+                        Vector direction = player.getEyeLocation().getDirection().normalize();
+                        Vector velocity = direction.multiply(2.0);
+                        Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
+                    }else if(job instanceof IronMaiden ironMaiden) {
+                        ironMaiden.skill();
+                    }else if(job instanceof Explorer explorer) {
+                        Vector direction = player.getEyeLocation().getDirection().normalize();
+                        Vector velocity = direction.multiply(2.0);
+                        Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+                        ItemStack itemStack = new ItemStack(Material.PALE_HANGING_MOSS);
+                        ItemMeta itemMeta = itemStack.getItemMeta();
+                        if(itemMeta != null){
+                            itemStack.setItemMeta(itemMeta);
+                        }
+                        projectile.setItem(itemStack);
+                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
                     }
 
+                    job.setRemainCoolTimeSkill(job.getCoolTimeSkill());
                     job.chargeSkill(player, manager);
 
                 }else if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.ULTIMATE_SKILL)){
@@ -100,17 +116,26 @@ public class InteractEvent implements Listener {
                     GameStatesManager manager = game.getGameStatesManager();
                     Job job = manager.getPlayerJobs().get(player);
                     if(job.isUltimateSkillCoolDown(player)){
-                        player.sendMessage("§cアルティメットスキルはクールダウン中です。");
+                        player.sendActionBar(Component.text("§cアルティメットはクールダウン中です。"));
                         return;
                     }
+                    job.playSoundEffectUltimateSkill(player);
                     if(job instanceof Executor executor){
                         executor.ultimate();
-                        executor.playSoundEffectUltimateSkill(player);
                     }else if(job instanceof Lonely lonely){
                         lonely.ultimate();
-                        lonely.playSoundEffectUltimateSkill(player);
+                    }else if(job instanceof Bomber bomber){
+                        Vector direction = player.getEyeLocation().getDirection().normalize();
+                        Vector velocity = direction.multiply(2.0);
+                        Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.ULTIMATE_SKILL));
+                    }else if(job instanceof IronMaiden ironMaiden){
+                        ironMaiden.ultimate();
+                    }else if(job instanceof Explorer explorer){
+                        explorer.ultimate();
                     }
 
+                    job.setRemainCoolTimeSkillUltimate(job.getCoolTimeSkillUltimate());
                     job.chargeUltimateSkill(player, manager);
 
                 // アイテム類

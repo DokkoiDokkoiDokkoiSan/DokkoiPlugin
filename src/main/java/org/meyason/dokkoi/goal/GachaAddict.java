@@ -7,7 +7,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.gacha.GachaMachine;
+import org.meyason.dokkoi.item.job.gacha.GachaMachine;
 
 import java.util.HashMap;
 import java.util.List;

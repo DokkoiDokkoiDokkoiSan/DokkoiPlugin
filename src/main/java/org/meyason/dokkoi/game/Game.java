@@ -10,17 +10,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.*;
 
-import org.bukkit.scoreboard.Team;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.*;
 import org.meyason.dokkoi.goal.GachaAddict;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.goal.KetsumouHunter;
+import org.meyason.dokkoi.goal.MaidenGazer;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
+import org.meyason.dokkoi.job.Explorer;
 import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.scheduler.Scheduler;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
@@ -37,7 +37,7 @@ public class Game {
 
     private BukkitTask scheduler;
 
-    private final int minimumGameStartPlayers = 2;
+    public final int minimumGameStartPlayers = 2;
 
     private int nowTime;
     public final int matchingPhaseTime = 5;
@@ -83,14 +83,25 @@ public class Game {
         gameStatesManager.setGameState(GameState.MATCHING);
         scheduler = new Scheduler().runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
 
-        updateScoreboardDisplay();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+            Team team = scoreboard.getTeam("nametag");
+            if(team == null) team = scoreboard.registerNewTeam("nametag");
+            team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+            team.addEntry(player.getName());
+            player.setScoreboard(scoreboard);
+        }
 
+        updateScoreboardDisplay();
+    }
+
+    public void prepPhase(){
         for(Player player : Bukkit.getOnlinePlayers()){
             gameStatesManager.addAlivePlayer(player);
             gameStatesManager.addJoinedPlayer(player);
             player.getInventory().clear();
             player.getInventory().setHelmet(null);
-            player.setHealth(20.0);
+            player.setHealth(40.0);
             player.setFoodLevel(20);
             player.setCustomNameVisible(false);
         }
@@ -99,6 +110,7 @@ public class Game {
         for(Player player : gameStatesManager.getJoinedPlayers()) {
             int randomIndex = (int) (Math.random() * jobList.size());
             Job job = jobList.get(randomIndex).clone();
+            jobList.remove(randomIndex);
             gameStatesManager.getPlayerJobs().put(player, job);
             job.setPlayer(this, player);
             int randomGoalIndex = (int) (Math.random() * job.getGoals().size());
@@ -107,9 +119,6 @@ public class Game {
             gameStatesManager.getPlayerGoals().put(player, goal);
             job.attachGoal(goal);
         }
-    }
-
-    public void prepPhase(){
         onGame = true;
         gameStatesManager.setGameState(GameState.PREP);
         setNowTime(prepPhaseTime);
@@ -126,17 +135,11 @@ public class Game {
         }
         for (Player player : gameStatesManager.getJoinedPlayers()) {
             gameStatesManager.addKillCount(player);
+            gameStatesManager.addAdditionalDamage(player, 0);
+            gameStatesManager.addDamageCutPercent(player, 0);
             playerNoticer(player);
         }
 
-        for (Player player : gameStatesManager.getJoinedPlayers()) {
-            Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-            Team team = scoreboard.getTeam("nametag");
-            if(team == null) team = scoreboard.registerNewTeam("nametag");
-            team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
-            team.addEntry(player.getName());
-            player.setScoreboard(scoreboard);
-        }
     }
 
     public void startGame(){
@@ -147,6 +150,7 @@ public class Game {
         for(Player player : gameStatesManager.getAlivePlayers()){
             player.setGameMode(GameMode.SURVIVAL);
             gameStatesManager.getPlayerJobs().get(player).chargeUltimateSkill(player, gameStatesManager);
+            updateScoreboardDisplay(player);
 
             SkillScheduler scheduler = new SkillScheduler(this, player);
             scheduler.runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
@@ -196,7 +200,7 @@ public class Game {
                     clearPlayerNames.append("\n");
                 }
             }
-            Bukkit.getServer().broadcast(Component.text("§a目標を達成したプレイヤー\n §e" + clearPlayerNames));
+            Bukkit.getServer().broadcast(Component.text("§a目標を達成したプレイヤー\n§e" + clearPlayerNames));
         }
         for(Player player : clearPlayers){
             player.getWorld().spawnParticle(Particle.FIREWORK, player.getLocation().add(0,1,0), 100, 1,1,1, 0.1);
@@ -225,6 +229,7 @@ public class Game {
             player.setCustomNameVisible(true);
             player.setGameMode(GameMode.CREATIVE);
         }
+        gameStatesManager.clearAll();
         new Game();
     }
 
@@ -277,7 +282,7 @@ public class Game {
     public void updateScoreboardDisplay(Player player){
         ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
         Scoreboard scoreboard = scoreboardManager.getNewScoreboard();
-        Objective objective = scoreboard.registerNewObjective("DokkoiGame", "dummy", Component.text("§aステータス： " + gameStatesManager.getGameState().getDisplayName()));
+        Objective objective = scoreboard.registerNewObjective(player.getName(), Criteria.DUMMY, "§aステータス： " + gameStatesManager.getGameState().getDisplayName());
         objective.setDisplaySlot(org.bukkit.scoreboard.DisplaySlot.SIDEBAR);
 
         int i = 0;
@@ -297,8 +302,19 @@ public class Game {
             objective.getScore("§e目標: §f" + gameStatesManager.getPlayerGoals().get(player).getName()).setScore(--i);
             objective.getScore("§aスキル: " + gameStatesManager.getPlayerJobs().get(player).getCoolTimeSkillViewer()).setScore(--i);
             objective.getScore("§aULT: " + gameStatesManager.getPlayerJobs().get(player).getCoolTimeSkillUltimateViewer()).setScore(--i);
-            if(gameStatesManager.getPlayerGoals().get(player) instanceof GachaAddict gachaMan){
+
+            Job job = gameStatesManager.getPlayerJobs().get(player);
+            Goal goal = gameStatesManager.getPlayerGoals().get(player);
+            if(goal instanceof GachaAddict gachaMan){
                 objective.getScore("§eガチャポイント: §f" + gachaMan.getGachaPoint() + "pt").setScore(--i);
+            }else if(goal instanceof MaidenGazer maidenGazer){
+                objective.getScore("§e視線誘導した時間: §f" + maidenGazer.getPoint() + "秒").setScore(--i);
+            }
+            if(job instanceof Explorer explorer){
+                objective.getScore("§e発見した§9§lけつ毛§r§e: §f" + explorer.getHaveKetsumouCount() + "個").setScore(--i);
+                if(goal instanceof KetsumouHunter ketsumouHunter){
+                    objective.getScore("§e目標の§9§lけつ毛§r§e: §f" + ketsumouHunter.getTargetKetsumouCount() + "個").setScore(--i);
+                }
             }
         }
         player.setScoreboard(scoreboard);

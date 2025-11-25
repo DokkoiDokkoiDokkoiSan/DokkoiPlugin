@@ -11,7 +11,7 @@ public class Ultimate extends CustomItem {
     public static final String id = GameItemKeyString.ULTIMATE_SKILL;
 
     public Ultimate() {
-        super(id, "", ItemStack.of(Material.YELLOW_DYE));
+        super(id, "", ItemStack.of(Material.YELLOW_DYE), 1);
         isUnique = true;
     }
 
