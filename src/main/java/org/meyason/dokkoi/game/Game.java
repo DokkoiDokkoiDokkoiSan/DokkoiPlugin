@@ -101,6 +101,7 @@ public class Game {
             gameStatesManager.addJoinedPlayer(player);
             player.getInventory().clear();
             player.getInventory().setHelmet(null);
+            player.setMaxHealth(40.0);
             player.setHealth(40.0);
             player.setFoodLevel(20);
             player.setCustomNameVisible(false);
@@ -180,6 +181,8 @@ public class Game {
 
         List<Player> clearPlayers = new ArrayList<>();
         for(Player player : gameStatesManager.getJoinedPlayers()) {
+            //全部のポーション効果消す
+            player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
             if(gameStatesManager.getPlayerGoals().get(player).isAchieved()){
                 player.sendMessage("§aお前は目標を達成した！");
                 clearPlayers.add(player);

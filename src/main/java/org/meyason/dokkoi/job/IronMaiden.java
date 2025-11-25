@@ -37,7 +37,7 @@ public class IronMaiden extends Job {
     private int count = 0;
 
     public IronMaiden() {
-        super("§9鉄処女", "鉄処女", 30, 200);
+        super("鉄処女", "鉄処女", 30, 200);
         passive_skill_name = "§7こっち見ろ！ばか！";
         normal_skill_name = "§3あっち見ろ！あほ！";
         ultimate_skill_name = "§6あれ見てみろ！かす！";

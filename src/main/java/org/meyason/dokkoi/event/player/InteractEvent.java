@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -24,6 +25,7 @@ import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.goal.KillerList;
+import org.meyason.dokkoi.item.job.Ketsumou;
 import org.meyason.dokkoi.job.*;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
 
@@ -98,6 +100,18 @@ public class InteractEvent implements Listener {
                             itemStack.setItemMeta(itemMeta);
                         }
                         projectile.setItem(itemStack);
+
+                        for(ItemStack iS : player.getInventory().getContents()){
+                            if(iS == null) continue;
+                            if(iS.getItemMeta() != null){
+                                CustomItem cI = CustomItem.getItem(iS);
+                                if(cI instanceof Ketsumou){
+                                    player.getInventory().removeItem(iS);
+                                    break;
+                                }
+                            }
+                        }
+
                         manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
                     }
 

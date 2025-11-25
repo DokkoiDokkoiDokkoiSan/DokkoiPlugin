@@ -36,8 +36,8 @@ public class DeathEvent {
             manager.getPlayerGoals().get(dead).isRevived = true;
             dead.sendMessage("§aあなたはティア3勝利条件なので，§l§4復活§r§aしました");
             // いったん2mうしろにテレポート TODO: マップ内にランダムテレポート
-            dead.teleport(dead.getLocation().subtract(dead.getLocation().getDirection().setY(0).normalize().multiply(2)));
-            dead.setHealth(20.0);
+            dead.teleport(dead.getLocation().subtract(dead.getLocation().getDirection().setY(0).normalize().multiply(1)));
+            dead.setHealth(40.0);
             return;
         }
 

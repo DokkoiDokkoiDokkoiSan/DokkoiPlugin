@@ -32,7 +32,7 @@ public class Bomber extends Job {
     private BukkitTask smokeTask;
 
     public Bomber() {
-        super("§9爆弾魔", "爆弾のプロ", 20, 100);
+        super("爆弾魔", "爆弾のプロ", 20, 100);
         passive_skill_name = "§7無敵の人";
         normal_skill_name = "§3ブラストパック";
         ultimate_skill_name = "§56割と臭いガス爆弾";

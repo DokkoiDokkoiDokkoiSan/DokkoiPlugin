@@ -149,22 +149,10 @@ public class DamageEvent implements Listener {
                 Job job = gameStatesManager.getPlayerJobs().get(attackedPlayer);
                 if(job instanceof IronMaiden ironMaiden){
                     event.setCancelled(true);
-                    //仮のトライデントをスポーンさせ，真下に突き刺しとく
-                    Trident dummyTrident = attackedPlayer.getWorld().spawn(trident.getLocation().add(0.1, 0.1, 0), Trident.class);
-                    // あたったエンティティの真下のブロックに突き刺す
-                    Location loc = trident.getLocation();
-                    Entity damager = event.getEntity();
-                    Location damagedLocation = damager.getLocation();
-                    loc.setY(damagedLocation.getY());
-                    // 下方向かつ入射した方向へのベクトル
-                    Vector downwardVector = new Vector(0, -1, 0).add(trident.getVelocity().setY(0).normalize().multiply(2));
-
-                    dummyTrident.setVelocity(downwardVector);
-                    dummyTrident.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
-                    dummyTrident.setDamage(0);
 
                     Rapier rapier = ironMaiden.getRapier();
-                    rapier.activate(trident, loc);
+                    rapier.activate(trident, trident.getLocation());
+                    gameStatesManager.removeProjectileData(trident);
                     return;
                 }
             }
@@ -195,7 +183,7 @@ public class DamageEvent implements Listener {
                 //自分が放つ矢が着弾した位置に爆発を起こす。爆発は当たった対象に固定10ダメージを与える。
                 arrow.getWorld().spawnParticle(Particle.EXPLOSION, arrow.getLocation(), 1);
                 arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10.0F, 1.0F);
-                List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attackedPlayer, arrow.getLocation(), 5);
+                List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attackedPlayer, arrow.getLocation(), 3);
                 effectedPlayers.add(attackedPlayer);
                 gameStatesManager.addAttackedPlayer(attackedPlayer);
                 for (Player damaged : effectedPlayers) {
