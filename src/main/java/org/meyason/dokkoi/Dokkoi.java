@@ -1,29 +1,44 @@
 package org.meyason.dokkoi;
 
-import org.bukkit.plugin.java.JavaPlugin;
-
+import com.google.inject.Inject;
 import org.meyason.dokkoi.event.EventManager;
 import org.meyason.dokkoi.command.CommandManager;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.GameItem;
 
-public final class Dokkoi extends JavaPlugin {
+import org.spongepowered.api.Server;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
+import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
+import org.spongepowered.plugin.builtin.jvm.Plugin;
+
+@Plugin("dokkoi")
+public final class Dokkoi {
 
     private static Dokkoi instance;
 
-    public static Dokkoi getInstance() {return instance;}
+    @Inject
+    private org.spongepowered.api.event.EventManager spongeEventManager;
 
-    @Override
-    public void onEnable() {
+    public Dokkoi() {
         instance = this;
-        new EventManager(this);
+    }
+
+    public static Dokkoi getInstance() {
+        return instance;
+    }
+
+    @Listener
+    public void onInitialize(final StartedEngineEvent<Server> event) {
+        // Sponge 用に必要な初期化処理
+        new EventManager(this, spongeEventManager);
         new CommandManager(this);
         new GameItem();
         new Game();
     }
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    @Listener
+    public void onShutdown(final StoppingEngineEvent<Server> event) {
     }
 }
+

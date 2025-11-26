@@ -11,8 +11,8 @@ version = '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
     maven {
-        name = "papermc-repo"
-        url = "https://repo.papermc.io/repository/maven-public/"
+        name = "sponge"
+        url = "https://repo.spongepowered.org/maven"
     }
     maven {
         name = "anvil-gui"
@@ -23,11 +23,12 @@ repositories {
         url 'https://repo.xenondevs.xyz/releases'
     }
 }
+def spongeApiVersion = '13.0.0'
 
 dependencies {
     implementation 'net.wesjd:anvilgui:1.10.2-SNAPSHOT'
     implementation "xyz.xenondevs.invui:invui:1.47"
-    compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
+    compileOnly("org.spongepowered:spongeapi:${spongeApiVersion}")
 }
 
 def targetJavaVersion = 21

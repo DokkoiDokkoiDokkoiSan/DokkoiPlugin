@@ -1,6 +1,5 @@
 package org.meyason.dokkoi.event;
 
-import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.event.block.ProjectileHitBlockEvent;
 import org.meyason.dokkoi.event.entity.DespawnEvent;
@@ -12,7 +11,7 @@ public class EventManager {
         init(core);
     }
 
-    private void init(Dokkoi core) {
+    private void init(Dokkoi core, org.spongepowered.api.event.EventManager spongeEventManager) {
         core.getServer().getPluginManager().registerEvents(new DamageEvent(), core);
 //        core.getServer().getPluginManager().registerEvents(new SneakEvent(), core);
 //        core.getServer().getPluginManager().registerEvents(new JumpEvent(), core);
@@ -22,5 +21,6 @@ public class EventManager {
         core.getServer().getPluginManager().registerEvents(new DespawnEvent(), core);
         core.getServer().getPluginManager().registerEvents(new LogoutEvent(), core);
         core.getServer().getPluginManager().registerEvents(new PickEvent(), core);
+        spongeEventManager.registerListeners(core, new DamageEvent());
     }
 }
