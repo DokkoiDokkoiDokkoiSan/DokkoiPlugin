@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.meyason.dokkoi.constants.Tier;
+import org.meyason.dokkoi.exception.NoDefenderTargetPlayerException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
@@ -41,15 +42,7 @@ public class Defender extends Goal {
 
     @Override
     public void addItem() {
-        //プレイヤー抽選
-        List<Player> players = game.getGameStatesManager().getAlivePlayers();
-        players.remove(this.player);
-        Player target = players.get(new Random().nextInt(players.size()));
-        if(target != null){
-            this.targetPlayer = target;
-        }
-
-        this.player.sendMessage("§2生存者を §6" + targetPlayer.getName() + " §2と自分の二人だけにせよ！");
+        setTargetPlayer();
         CustomItem item = GameItem.getItem(BuriBuriGuard.id);
         if(item == null){
             this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：ブリブリガード取得失敗");
@@ -65,6 +58,18 @@ public class Defender extends Goal {
         return;
     }
 
+    public void setTargetPlayer(){
+        //プレイヤー抽選
+        List<Player> players = game.getGameStatesManager().getAlivePlayers();
+        players.remove(this.player);
+        Player target = players.get(new Random().nextInt(players.size()));
+        if(target != null){
+            this.targetPlayer = target;
+            this.player.sendMessage("§2生存者を §6" + targetPlayer.getName() + " §2と自分の二人だけにせよ！");
+            return;
+        }
+        throw new NoDefenderTargetPlayerException("Defenderのターゲットプレイヤーの設定に失敗しました。");
+    }
 
     @Override
     public boolean isAchieved() {

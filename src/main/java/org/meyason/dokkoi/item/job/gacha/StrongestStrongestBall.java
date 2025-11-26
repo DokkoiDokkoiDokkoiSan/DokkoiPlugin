@@ -22,7 +22,7 @@ public class StrongestStrongestBall extends CustomItem {
         List<Component> lore = List.of(
                 Component.text("§5最強のおじさんから摘出したたまたまを磨いたもの。なんか結構光ってきた。"),
                 Component.text(""),
-                Component.text("§5効果"),
+                Component.text("§b効果"),
                 Component.text("§5インベントリに存在している間、死亡しなくなり、プレイヤーに攻撃をすることができなくなる。"),
                 Component.text("§5手に持っている間、移動速度増加Lv10を受ける。捨てることが出来ない。")
         );

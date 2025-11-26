@@ -37,7 +37,7 @@ public class Lonely extends Job {
     public long lastDamagedTime = 0L;
 
     public Lonely() {
-        super("§9孤独者", "ぼっち", 50, 5);
+        super("孤独者", "ぼっち", 50, 5);
 
         passive_skill_name = "§730歳独身";
         normal_skill_name = "§3人、発見！退却～！ｗ";

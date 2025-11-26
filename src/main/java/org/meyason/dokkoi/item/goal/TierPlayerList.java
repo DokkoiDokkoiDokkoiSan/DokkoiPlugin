@@ -31,7 +31,7 @@ public class TierPlayerList extends CustomItem {
         List<Component> lore = List.of(
                 Component.text("§5名前の割に魔女の情報は一つも書いてない。"),
                 Component.text(""),
-                Component.text("§5効果"),
+                Component.text("§b効果"),
                 Component.text("§5一番選択された数が多いtierの勝利条件を選んだプレイヤーの名前が記入されている。"),
                 Component.text("§5本を開くとその勝利条件を選んだプレイヤーの名前が記入されている。"),
                 Component.text("§bこれらのプレイヤーをすべて殺害せよ。")

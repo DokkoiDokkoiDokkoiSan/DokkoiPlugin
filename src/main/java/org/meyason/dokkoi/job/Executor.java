@@ -21,7 +21,7 @@ import java.util.List;
 public class Executor extends Job{
 
     public Executor() {
-        super("§9執行者", "執行者", 30, 200);
+        super("執行者", "執行者", 30, 200);
         passive_skill_name = "§7プロトペナルティ";
         normal_skill_name = "§3ギルトペナルティ";
         ultimate_skill_name = "§6ニクトペナルティ";

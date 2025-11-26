@@ -2,12 +2,19 @@ package org.meyason.dokkoi.event.player;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.meyason.dokkoi.constants.GameState;
+import org.meyason.dokkoi.constants.GoalList;
+import org.meyason.dokkoi.exception.NoDefenderTargetPlayerException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
+import org.meyason.dokkoi.goal.Defender;
+import org.meyason.dokkoi.goal.Goal;
+
+import java.util.Objects;
 
 public class LogoutEvent implements Listener {
 
@@ -22,6 +29,23 @@ public class LogoutEvent implements Listener {
             if(gameStatesManager.getAlivePlayers().size() < game.minimumGameStartPlayers){
                 Bukkit.getServer().broadcast(Component.text("最小人数に満たないため、マッチを中断します。"));
                 game.endGame();
+            }
+
+            if(gameStatesManager.getPlayerGoals().containsValue(GoalList.DEFENDER)){
+                Defender defender = null;
+                Player defenderPlayer = null;
+                for(Player p : gameStatesManager.getAlivePlayers()){
+                    Goal goal = gameStatesManager.getPlayerGoals().get(p);
+                    if(goal instanceof Defender def){
+                        defenderPlayer = p;
+                        defender = def;
+                        break;
+                    }
+                }
+                if(defenderPlayer != null){return;}
+
+                Objects.requireNonNull(defender).setTargetPlayer();
+                defenderPlayer.sendMessage(Component.text("§6あなたの守護対象がログアウトしたため、新たに守護対象を選定しました。"));
             }
         }
     }

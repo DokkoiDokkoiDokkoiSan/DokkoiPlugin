@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -23,7 +24,9 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.goal.BuriBuriGuard;
 import org.meyason.dokkoi.item.goal.KillerList;
+import org.meyason.dokkoi.item.job.Ketsumou;
 import org.meyason.dokkoi.job.*;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
 
@@ -44,6 +47,12 @@ public class InteractEvent implements Listener {
             }
 
         }else if(game.getGameStatesManager().getGameState() == GameState.IN_GAME) {
+
+            if(event.getClickedBlock() instanceof Container container){
+                if(game.getGameStatesManager().getPlayerJobs().get(player) instanceof Prayer prayer){
+                    prayer.addGachaCount(game, player);
+                }
+            }
 
             ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
             if (!item.hasItemMeta()) {
@@ -98,7 +107,24 @@ public class InteractEvent implements Listener {
                             itemStack.setItemMeta(itemMeta);
                         }
                         projectile.setItem(itemStack);
+
+                        for(ItemStack iS : player.getInventory().getContents()){
+                            if(iS == null) continue;
+                            if(iS.getItemMeta() != null){
+                                CustomItem cI = CustomItem.getItem(iS);
+                                if(cI instanceof Ketsumou){
+                                    player.getInventory().removeItem(iS);
+                                    break;
+                                }
+                            }
+                        }
                         manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
+                    }else if(job instanceof Prayer prayer) {
+                        if(prayer.getGachaCount() <= 0){
+                            player.sendActionBar(Component.text("§cガチャポイントが足りません。"));
+                            return;
+                        }
+                        prayer.skill();
                     }
 
                     job.setRemainCoolTimeSkill(job.getCoolTimeSkill());
@@ -133,6 +159,8 @@ public class InteractEvent implements Listener {
                         ironMaiden.ultimate();
                     }else if(job instanceof Explorer explorer){
                         explorer.ultimate();
+                    }else if(job instanceof Prayer prayer){
+                        prayer.ultimate();
                     }
 
                     job.setRemainCoolTimeSkillUltimate(job.getCoolTimeSkillUltimate());
@@ -151,6 +179,18 @@ public class InteractEvent implements Listener {
                     GameStatesManager manager = game.getGameStatesManager();
                     if(customItem instanceof KillerList killerList){
                         killerList.skill(manager);
+                    }
+                }else if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.BURIBURIGUARD)){
+                    CustomItem customItem = CustomItem.getItem(item);
+                    if (customItem == null) {
+                        return;
+                    }
+                    if(event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK){
+                        return;
+                    }
+                    event.setCancelled(true);
+                    if(customItem instanceof BuriBuriGuard buriburiguard){
+                        buriburiguard.skill();
                     }
                 }
 

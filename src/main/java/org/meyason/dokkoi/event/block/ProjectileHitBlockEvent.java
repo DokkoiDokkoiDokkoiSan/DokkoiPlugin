@@ -2,12 +2,15 @@ package org.meyason.dokkoi.event.block;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.meyason.dokkoi.constants.GameItemKeyString;
+import org.meyason.dokkoi.event.player.DamageEvent;
 import org.meyason.dokkoi.game.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
@@ -40,7 +43,7 @@ public class ProjectileHitBlockEvent implements Listener {
             Job job = manager.getPlayerJobs().get(attacker);
             if (job instanceof Bomber bomber) {
                 if(attackItem.equals(GameItemKeyString.SKILL)) {
-                    List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attacker, event.getHitBlock().getLocation(), 10);
+                    List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attacker, event.getHitBlock().getLocation(), 1);
                     effectedPlayers.add(attacker);
                     bomber.skill(event.getHitBlock().getLocation(), effectedPlayers);
                 }else if(attackItem.equals(GameItemKeyString.ULTIMATE_SKILL)){
@@ -68,6 +71,28 @@ public class ProjectileHitBlockEvent implements Listener {
                     rapier.activate(trident, trident.getLocation());
                 }
             }
+        }else if(entity instanceof Arrow arrow){
+            ProjectileData projectileData = manager.getProjectileDataMap().get(arrow);
+            if (projectileData == null) {
+                return;
+            }
+
+            Player attacker = projectileData.getAttacker();
+            if(manager.getPlayerJobs().get(attacker) instanceof Explorer) {
+                //自分が放つ矢が着弾した位置に爆発を起こす。爆発は当たった対象に固定10ダメージを与える。
+                arrow.getWorld().spawnParticle(Particle.EXPLOSION, arrow.getLocation(), 1);
+                arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10.0F, 1.0F);
+                List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attacker, arrow.getLocation(), 3);
+                effectedPlayers.add(attacker);
+                manager.addAttackedPlayer(attacker);
+                for (Player damaged : effectedPlayers) {
+                    DamageEvent.calculateDamage(attacker, damaged, 10.0);
+                    manager.addDamagedPlayer(damaged);
+                }
+                manager.removeProjectileData(arrow);
+                return;
+            }
+            manager.removeProjectileData(arrow);
         }
     }
 }
