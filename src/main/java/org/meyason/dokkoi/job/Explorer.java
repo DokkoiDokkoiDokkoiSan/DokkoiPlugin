@@ -44,6 +44,7 @@ public class Explorer extends Job {
         ultimateSkillVolume = 10.0f;
         ultimateSkillPitch = 1.0f;
 
+        setRemainCoolTimeSkillUltimate(200);
     }
 
     public boolean isKetsumouMode(){
@@ -187,33 +188,35 @@ public class Explorer extends Job {
     }
 
     private void spawnAreaParticles(Location impactLocation) {
-        long durationTick = 20L * 5; // 5秒
+        long durationTick = 20L * 3; // 5秒
         long intervalTick = 20L;
         Location location = impactLocation.clone();
         double x = location.getX();
         double y = location.getY();
         double z = location.getZ();// 0.5秒ごとに発生（重かったら20L=1秒に）
 
-//        new BukkitRunnable() {
-//            long elapsed = 0L;
-//
-//            @Override
-//            public void run() {
-//                if (elapsed >= durationTick) {
-//                    cancel();
-//                    return;
-//                }
-//                elapsed += intervalTick;
-//
-//                // 中心を基準に、少なめのパーティクルで広めに見せる
-//                location.getWorld().spawnParticle(
-//                        Particle.DRAGON_BREATH,
-//                        x, y, z,
-//                        100,              // 個数を抑える
-//                        0.0, 0.0, 0.0,
-//                        Particle.DRAGON_BREATH.getDataType() //これなに？わからん
-//                );
-//            }
-//        }.runTaskTimer(Dokkoi.getInstance(), 0L, intervalTick);
+        Float dragonBreath = 1.0f;
+
+        new BukkitRunnable() {
+            long elapsed = 0L;
+
+            @Override
+            public void run() {
+                if (elapsed >= durationTick) {
+                    cancel();
+                    return;
+                }
+                elapsed += intervalTick;
+
+                // 中心を基準に、少なめのパーティクルで広めに見せる
+                location.getWorld().spawnParticle(
+                        Particle.DRAGON_BREATH,
+                        location.getX(), location.getY(), location.getZ(),
+                        100,              // 個数を抑える
+                        3.0, 1.5, 3.0, 0.1,
+                        dragonBreath
+                );
+            }
+        }.runTaskTimer(Dokkoi.getInstance(), 0L, intervalTick);
     }
 }

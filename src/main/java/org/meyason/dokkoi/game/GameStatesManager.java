@@ -1,6 +1,5 @@
 package org.meyason.dokkoi.game;
 
-import it.unimi.dsi.fastutil.Hash;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
@@ -225,7 +224,7 @@ public class GameStatesManager {
     public void addDamageCutPercent(Player player, int percent) {
         this.damageCutPercent.put(player, percent);
     }
-    public void editDamageCutPercent(Player player, int percent) {
+    public void calcDamageCutPercent(Player player, int percent) {
         this.damageCutPercent.put(player, this.damageCutPercent.getOrDefault(player, 0) + percent);
     }
     public void removeDamageCutPercent(Player player) {

@@ -14,7 +14,6 @@ import org.meyason.dokkoi.goal.Defender;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BuriBuriGuard extends CustomItem {
@@ -33,7 +32,7 @@ public class BuriBuriGuard extends CustomItem {
         List<Component> lore = List.of(
                 Component.text("§5ぶりぶりしている侍が使っている剣を模して作られた剣。めっちゃ人守れる。"),
                 Component.text(""),
-                Component.text("§5効果"),
+                Component.text("§b効果"),
                 Component.text("§5攻撃力2、剣を使用すると10秒間勝利条件で指定されているプレイヤーが受けるダメージを0にする。"),
                 Component.text("§cCT 20秒")
         );
@@ -81,7 +80,7 @@ public class BuriBuriGuard extends CustomItem {
                     return;
                 }
                 gameStatesManager.removeItemCoolDownScheduler(player);
-                gameStatesManager.editDamageCutPercent(targetPlayer, -100);
+                gameStatesManager.calcDamageCutPercent(targetPlayer, -100);
             }
         };
         itemInitTask.runTaskLater(Dokkoi.getInstance(), 10 * 20L);

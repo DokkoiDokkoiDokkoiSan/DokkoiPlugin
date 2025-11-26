@@ -27,7 +27,7 @@ public class Ketsumou extends CustomItem {
         List<Component> lore = List.of(
                 Component.text("§5冒険者が一生かけて探し求めている§9§lけつ毛§r§5。"),
                 Component.text(""),
-                Component.text("§5効果"),
+                Component.text("§b効果"),
                 Component.text("§5冒険者以外が拾うと強力なデバフを受ける。")
         );
         setDescription(lore);

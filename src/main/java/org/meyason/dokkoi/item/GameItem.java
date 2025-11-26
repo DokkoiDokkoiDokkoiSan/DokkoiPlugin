@@ -9,6 +9,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
+import org.meyason.dokkoi.item.food.*;
 import org.meyason.dokkoi.item.job.gacha.*;
 import org.meyason.dokkoi.item.goal.*;
 import org.meyason.dokkoi.item.job.*;
@@ -36,6 +37,7 @@ public class GameItem {
         items.put(GameItemKeyString.STRONGESTBALL, new StrongestBall());
         items.put(GameItemKeyString.STRONGESTSTRONGESTBALL, new StrongestStrongestBall());
         items.put(GameItemKeyString.STRONGESTSTRONGESTSTRONGESTBALL, new StrongestStrongestStrongestBall());
+        items.put(GameItemKeyString.GOLDENCARROT, new GoldenCarrot());
 
     }
 
