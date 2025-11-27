@@ -7,7 +7,7 @@ import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.goal.KillerList;
+import org.meyason.dokkoi.item.goalitem.KillerList;
 
 import java.util.List;
 

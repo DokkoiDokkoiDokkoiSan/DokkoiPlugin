@@ -5,9 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.meyason.dokkoi.game.Game;
-import org.meyason.dokkoi.item.CustomItem;
-import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.job.gacha.GachaMachine;
 
 import java.util.HashMap;
 import java.util.List;
@@ -91,17 +88,6 @@ public class GachaAddict extends Goal {
         for(Material material : pointMap.keySet()){
             this.player.sendMessage(" - " + nameMap.get(material) + ": " + pointMap.get(material) + "ポイント\n");
         }
-        CustomItem item = GameItem.getItem(GachaMachine.id);
-        if(item == null){
-            this.player.sendMessage("§6エラーが発生しました．管理者に連絡してください：ガチャマシン取得失敗");
-            return;
-        }
-        ItemStack gachaMachine = item.getItem();
-        PlayerInventory inventory = player.getInventory();
-        inventory.addItem(gachaMachine);
-        this.player.sendMessage("§b左クリックでガチャを回す");
-        this.player.sendMessage("§6右クリックでポイント交換メニューを開く");
-
     }
 
     @Override

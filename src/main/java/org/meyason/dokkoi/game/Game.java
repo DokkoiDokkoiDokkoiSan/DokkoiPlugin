@@ -22,6 +22,7 @@ import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.job.Explorer;
 import org.meyason.dokkoi.job.Job;
+import org.meyason.dokkoi.job.Prayer;
 import org.meyason.dokkoi.scheduler.Scheduler;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
 
@@ -138,6 +139,7 @@ public class Game {
             gameStatesManager.addKillCount(player);
             gameStatesManager.addAdditionalDamage(player, 0);
             gameStatesManager.addDamageCutPercent(player, 0);
+            gameStatesManager.addIsDeactivateDamageOnce(player, false);
             playerNoticer(player);
         }
 
@@ -318,6 +320,9 @@ public class Game {
                 if(goal instanceof KetsumouHunter ketsumouHunter){
                     objective.getScore("§e目標の§9§lけつ毛§r§e: §f" + ketsumouHunter.getTargetKetsumouCount() + "個").setScore(--i);
                 }
+            }else if(job instanceof Prayer prayer){
+                objective.getScore("§eガチャポイント: §f" + prayer.getGachaPoint()).setScore(--i);
+                objective.getScore("§eガチャ回数: §f" + prayer.getGachaCount() + "回").setScore(--i);
             }
         }
         player.setScoreboard(scoreboard);

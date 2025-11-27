@@ -30,6 +30,7 @@ public class GameStatesManager {
     private HashMap<Entity, ProjectileData> projectileDataMap;
     private HashMap<Player, Integer> additionalDamage;
     private HashMap<Player, Integer> damageCutPercent;
+    private HashMap<Player, Boolean> isDeactivateDamageOnce;
 
     private HashMap<Player, BukkitRunnable> skillCoolDownTasks;
     private HashMap<Player, BukkitRunnable> ultimateSkillCoolDownTasks;
@@ -61,6 +62,7 @@ public class GameStatesManager {
         projectileDataMap = new HashMap<>();
         additionalDamage = new HashMap<>();
         damageCutPercent = new HashMap<>();
+        isDeactivateDamageOnce = new HashMap<>();
         skillCoolDownTasks = new HashMap<>();
         ultimateSkillCoolDownTasks = new HashMap<>();
         coolDownScheduler = new HashMap<>();
@@ -82,6 +84,7 @@ public class GameStatesManager {
         projectileDataMap.clear();
         additionalDamage.clear();
         damageCutPercent.clear();
+        isDeactivateDamageOnce.clear();
         skillCoolDownTasks.clear();
         ultimateSkillCoolDownTasks.clear();
         coolDownScheduler.clear();
@@ -102,6 +105,7 @@ public class GameStatesManager {
         removeDamagedPlayer(player);
         removeAdditionalDamage(player);
         removeDamageCutPercent(player);
+        removeIsDeactivateDamageOnce(player);
         removeSkillCoolDownTask(player);
         removeUltimateSkillCoolDownTask(player);
         removeCoolDownScheduler(player);
@@ -230,6 +234,16 @@ public class GameStatesManager {
     public void removeDamageCutPercent(Player player) {
         if(!this.damageCutPercent.containsKey(player)) {return;}
         this.damageCutPercent.remove(player);
+    }
+
+    public HashMap<Player, Boolean> getIsDeactivateDamageOnce() {return isDeactivateDamageOnce;}
+    public void setIsDeactivateDamageOnce(HashMap<Player, Boolean> isDeactivateDamageOnce) {this.isDeactivateDamageOnce = isDeactivateDamageOnce;}
+    public void addIsDeactivateDamageOnce(Player player, boolean value) {
+        this.isDeactivateDamageOnce.put(player, value);
+    }
+    public void removeIsDeactivateDamageOnce(Player player) {
+        if(!this.isDeactivateDamageOnce.containsKey(player)) {return;}
+        this.isDeactivateDamageOnce.remove(player);
     }
 
     public HashMap<Player, BukkitRunnable> getUltimateSkillCoolDownTasks() {return ultimateSkillCoolDownTasks;}

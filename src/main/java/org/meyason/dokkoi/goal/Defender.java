@@ -9,8 +9,7 @@ import org.meyason.dokkoi.exception.NoDefenderTargetPlayerException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.goal.BuriBuriGuard;
-import org.meyason.dokkoi.item.goal.KillerList;
+import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 
 import java.util.List;
 import java.util.Random;

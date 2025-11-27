@@ -19,9 +19,12 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.job.gacha.GachaMachine;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Prayer extends Job {
 
@@ -53,7 +56,17 @@ public class Prayer extends Job {
 
     public static final HashMap<String, List<String>> rarityEffectMap = new HashMap<>(){{
         put(R, List.of(
+                GameItemKeyString.BAKEDPOTATO
+        ));
+        put(SR, List.of(
+                GameItemKeyString.ARCHERARMOR,
                 GameItemKeyString.GOLDENCARROT
+        ));
+        put(UR, List.of(
+                GameItemKeyString.LONGSWORD
+        ));
+        put(LR, List.of(
+                GameItemKeyString.THUNDERJAVELIN
         ));
         put(KETSU, List.of(GameItemKeyString.STRONGESTBALL));
         put(KETSUGE, List.of(GameItemKeyString.STRONGESTSTRONGESTBALL));
@@ -61,13 +74,13 @@ public class Prayer extends Job {
     }};
 
     private List<Location> alreadyOpenedChests = new ArrayList<>();
-    public void addLocationToAlreadyOpenedChests(Location loc){
-        if(alreadyOpenedChests.contains(loc)){return;}
+    public boolean addLocationToAlreadyOpenedChests(Location loc){
+        if(alreadyOpenedChests.contains(loc)){return false;}
         alreadyOpenedChests.add(loc);
-        gachaPoint++;
+        return true;
     }
 
-    private int gachaPoint = 0;
+    private int gachaPoint = 1000;
     public int getGachaPoint(){
         return gachaPoint;
     }
@@ -113,7 +126,7 @@ public class Prayer extends Job {
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.LASTMAN
+                GoalList.SHADOW
         );
     }
 
@@ -149,14 +162,6 @@ public class Prayer extends Job {
     }
 
     public void ready(){
-        CustomItem item = GameItem.getItem(GachaMachine.id);
-        if(item == null){
-            this.player.sendMessage("§6エラーが発生しました．管理者に連絡してください：ガチャマシン取得失敗");
-            return;
-        }
-        ItemStack gachaMachine = item.getItem();
-        PlayerInventory inventory = player.getInventory();
-        inventory.addItem(gachaMachine);
         this.player.sendMessage("§b右クリックでガチャを回す");
     }
 

@@ -1,4 +1,4 @@
-package org.meyason.dokkoi.item.goal;
+package org.meyason.dokkoi.item.goalitem;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -18,7 +18,6 @@ import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class KillerList extends CustomItem {

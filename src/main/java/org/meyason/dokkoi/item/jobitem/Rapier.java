@@ -1,7 +1,6 @@
-package org.meyason.dokkoi.item.job;
+package org.meyason.dokkoi.item.jobitem;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;

@@ -1,6 +1,6 @@
 package org.meyason.dokkoi.event.player;
 
-import org.bukkit.Location;
+import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -8,9 +8,14 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.projectiles.ProjectileSource;
-import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.EntityID;
 import org.meyason.dokkoi.constants.GameItemKeyString;
@@ -21,10 +26,14 @@ import org.meyason.dokkoi.game.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
-import org.meyason.dokkoi.item.job.Rapier;
+import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.battleitem.ArcherArmor;
+import org.meyason.dokkoi.item.jobitem.Rapier;
 import org.meyason.dokkoi.job.*;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class DamageEvent implements Listener {
 
@@ -56,6 +65,10 @@ public class DamageEvent implements Listener {
         }
 
         event.setCancelled(true);
+        if(disableDamageOnce(gameStatesManager, damagedPlayer)){
+            return;
+        }
+
         double damage = event.getFinalDamage();
         calculateDamage(attackedPlayer, damagedPlayer, damage);
 
@@ -79,6 +92,12 @@ public class DamageEvent implements Listener {
         Player damagedPlayer = null;
         Entity damagedEntity = event.getEntity();
         double damage = event.getFinalDamage();
+
+        if(damagedEntity instanceof Player dp){
+            if(disableDamageOnce(gameStatesManager, dp)){
+                return;
+            }
+        }
 
         // だいたいのスキル系投擲物はsnowball
         if(event.getDamager() instanceof Snowball snowball) {
@@ -232,6 +251,25 @@ public class DamageEvent implements Listener {
         }
     }
 
+    @EventHandler
+    public static void onEntityDamage(EntityDamageEvent event){
+        if(event.getEntity() instanceof Player player){
+            Game game = Game.getInstance();
+            GameStatesManager gameStatesManager = game.getGameStatesManager();
+            if(gameStatesManager.getGameState() != GameState.IN_GAME) {
+                event.setCancelled(true);
+                return;
+            }
+
+            EntityDamageEvent.DamageCause cause = Optional.ofNullable(event.getEntity().getLastDamageCause())
+                    .map(EntityDamageEvent::getCause)
+                    .orElse(null);
+            if(cause == EntityDamageEvent.DamageCause.FALL){
+                event.setCancelled(true);
+            }
+        }
+    }
+
     public static void calculateDamage(Entity attacker, Entity damaged, double damage){
         if(attacker == null || damaged == null) {
             return;
@@ -263,5 +301,23 @@ public class DamageEvent implements Listener {
                 DeathEvent.kill(attackerPlayer, damagedPlayer);
             }
         }
+    }
+
+    public static boolean disableDamageOnce(GameStatesManager manager, Player player){
+        if(manager.getIsDeactivateDamageOnce().get(player)){
+            ItemStack item = player.getInventory().getChestplate();
+            if(item != null){
+                CustomItem customItem = (CustomItem) item.getItemMeta();
+                if(customItem instanceof ArcherArmor){
+                    player.getInventory().setChestplate(null);
+                    player.sendMessage(Component.text("§a弓使いの鎧§bの効果が発動した！"));
+                }
+            }else{
+                player.sendMessage(Component.text("§aカタクナール§bの効果が発動した！"));
+            }
+            manager.getIsDeactivateDamageOnce().put(player, false);
+            return true;
+        }
+        return false;
     }
 }

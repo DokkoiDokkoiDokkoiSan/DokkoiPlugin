@@ -5,16 +5,13 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.meyason.dokkoi.constants.GameItemKeyString;
-import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.Goal;
-import org.meyason.dokkoi.goal.MassTierKiller;
 import org.meyason.dokkoi.goal.Police;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.goal.KillerList;
 import org.meyason.dokkoi.job.Bomber;
 
 import java.util.HashMap;
@@ -63,7 +60,7 @@ public class DeathEvent {
         }
 
         dead.setGameMode(GameMode.SPECTATOR);
-        dead.setHealth(20.0);
+        dead.setHealth(40.0);
 
         World world = dead.getWorld();
         List<String> gameItemList = GameItemKeyString.getGameItemKeyStringHashMap();

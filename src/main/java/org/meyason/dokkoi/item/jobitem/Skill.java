@@ -1,4 +1,4 @@
-package org.meyason.dokkoi.item.job;
+package org.meyason.dokkoi.item.jobitem;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

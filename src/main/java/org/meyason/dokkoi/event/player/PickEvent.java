@@ -6,7 +6,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -15,8 +14,7 @@ import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
-import org.meyason.dokkoi.item.job.Ketsumou;
-import org.meyason.dokkoi.job.Explorer;
+import org.meyason.dokkoi.item.jobitem.Ketsumou;
 import org.meyason.dokkoi.job.Job;
 
 public class PickEvent implements Listener {
@@ -69,6 +67,21 @@ public class PickEvent implements Listener {
 
 
         Job job = Game.getInstance().getGameStatesManager().getPlayerJobs().get(player);
+
+        // チェストのKetsumouをクリックし、シフトでインベントリに入れるとき
+        if (clickedIsTop && slotIsKetsumou) {
+            // シフトクリックで一気に移動
+            if (event.getClick().isShiftClick()) {
+                Ketsumou.activate(player);
+            }
+        }
+
+        // インベントリのKetsumouをシフトでチェストに入れるとき
+        if (clickedIsBottom && slotIsKetsumou) {
+            if (event.getClick().isShiftClick()) {
+                Ketsumou.deactivate(player);
+            }
+        }
 
         // インベントリのKetsumouとカーソルの別のアイテムを交代するとき
         // スロット: Ketsumou, カーソル: Ketsumou以外（減る）

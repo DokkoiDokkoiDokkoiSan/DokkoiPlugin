@@ -8,7 +8,7 @@ import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.goal.TierPlayerList;
+import org.meyason.dokkoi.item.goalitem.TierPlayerList;
 
 
 public class MassTierKiller extends Goal {

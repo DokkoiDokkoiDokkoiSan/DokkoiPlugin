@@ -14,15 +14,17 @@ public class JobList {
     public static final Bomber BOMBER = new Bomber();
     public static final IronMaiden IRONMAIDEN = new IronMaiden();
     public static final Explorer EXPLORER = new Explorer();
+    public static final Prayer PRAYER = new Prayer();
 
     private static final HashMap<String, Job> jobMap = new HashMap<String, Job>();
 
     static{
 //        jobMap.put(EXECUTOR.getName(), EXECUTOR);
 //        jobMap.put(LONELY.getName(), LONELY);
-        jobMap.put(BOMBER.getName(), BOMBER);
-        jobMap.put(IRONMAIDEN.getName(), IRONMAIDEN);
+//        jobMap.put(BOMBER.getName(), BOMBER);
+//        jobMap.put(IRONMAIDEN.getName(), IRONMAIDEN);
         jobMap.put(EXPLORER.getName(), EXPLORER);
+        jobMap.put(PRAYER.getName(), PRAYER);
     }
 
     public static List<Job> getAllJobs(){

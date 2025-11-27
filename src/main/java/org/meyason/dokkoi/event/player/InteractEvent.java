@@ -12,7 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -24,13 +23,12 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.item.CustomItem;
-import org.meyason.dokkoi.item.goal.BuriBuriGuard;
-import org.meyason.dokkoi.item.goal.KillerList;
-import org.meyason.dokkoi.item.job.Ketsumou;
+import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
+import org.meyason.dokkoi.item.goalitem.KillerList;
+import org.meyason.dokkoi.item.jobitem.Ketsumou;
 import org.meyason.dokkoi.job.*;
-import org.meyason.dokkoi.scheduler.SkillScheduler;
 
-import java.util.*;
+import java.util.Objects;
 
 public class InteractEvent implements Listener {
 
@@ -50,7 +48,10 @@ public class InteractEvent implements Listener {
 
             if(event.getClickedBlock() instanceof Container container){
                 if(game.getGameStatesManager().getPlayerJobs().get(player) instanceof Prayer prayer){
-                    prayer.addGachaCount(game, player);
+                    if(prayer.addLocationToAlreadyOpenedChests(container.getLocation())){
+                        player.sendMessage(Component.text("§b[ガチャポイント]§b このチェストは初めて開ける。ガチャポイントを1獲得しました。"));
+                        prayer.addGachaCount(game, player);
+                    }
                 }
             }
 
@@ -120,7 +121,7 @@ public class InteractEvent implements Listener {
                         }
                         manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
                     }else if(job instanceof Prayer prayer) {
-                        if(prayer.getGachaCount() <= 0){
+                        if(prayer.getGachaPoint() <= 0){
                             player.sendActionBar(Component.text("§cガチャポイントが足りません。"));
                             return;
                         }
@@ -198,7 +199,8 @@ public class InteractEvent implements Listener {
             }
 
         }
-
-
     }
+
+
+
 }

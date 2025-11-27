@@ -1,4 +1,4 @@
-package org.meyason.dokkoi.item.goal;
+package org.meyason.dokkoi.item.goalitem;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
