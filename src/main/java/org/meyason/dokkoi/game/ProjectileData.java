@@ -1,11 +1,10 @@
 package org.meyason.dokkoi.game;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.job.Job;
+import org.spongepowered.api.entity.living.player.Player;
 
 public class ProjectileData {
 

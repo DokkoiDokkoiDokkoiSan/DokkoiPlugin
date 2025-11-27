@@ -1,16 +1,15 @@
 package org.meyason.dokkoi.game;
 
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Trident;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.meyason.dokkoi.constants.EntityID;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.job.Job;
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.trader.Villager;
+import org.spongepowered.api.entity.projectile.arrow.Trident;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class GameStatesManager {
 
@@ -30,6 +29,8 @@ public class GameStatesManager {
     private HashMap<Entity, ProjectileData> projectileDataMap;
     private HashMap<Player, Integer> additionalDamage;
     private HashMap<Player, Integer> damageCutPercent;
+
+    private HashMap<UUID, EntityID> entityIDMap;
 
     private HashMap<Player, BukkitRunnable> skillCoolDownTasks;
     private HashMap<Player, BukkitRunnable> ultimateSkillCoolDownTasks;
@@ -61,6 +62,9 @@ public class GameStatesManager {
         projectileDataMap = new HashMap<>();
         additionalDamage = new HashMap<>();
         damageCutPercent = new HashMap<>();
+
+        entityIDMap = new HashMap<>();
+
         skillCoolDownTasks = new HashMap<>();
         ultimateSkillCoolDownTasks = new HashMap<>();
         coolDownScheduler = new HashMap<>();
@@ -82,6 +86,9 @@ public class GameStatesManager {
         projectileDataMap.clear();
         additionalDamage.clear();
         damageCutPercent.clear();
+
+        entityIDMap.clear();
+
         skillCoolDownTasks.clear();
         ultimateSkillCoolDownTasks.clear();
         coolDownScheduler.clear();
@@ -200,6 +207,20 @@ public class GameStatesManager {
     public void setProjectileDataMap(HashMap<Entity, ProjectileData> projectileDataMap) {this.projectileDataMap = projectileDataMap;}
     public void addProjectileData(Entity entity, ProjectileData data) {this.projectileDataMap.put(entity, data);}
     public void removeProjectileData(Entity entity) {this.projectileDataMap.remove(entity);}
+
+    public HashMap<UUID, EntityID> getEntityIDMap() {return entityIDMap;}
+    public void setEntityIDMap(HashMap<UUID, EntityID> entityIDMap) {this.entityIDMap = entityIDMap;}
+    public void addEntityID(UUID uuid, EntityID entityID) {this.entityIDMap.put(uuid, entityID);}
+    public void removeEntityID(UUID uuid) {
+        if(!this.entityIDMap.containsKey(uuid)) {return;}
+        this.entityIDMap.remove(uuid);
+    }
+    public boolean isComedian(Villager villager) {
+        EntityID entityID = this.entityIDMap.get(villager.uniqueId());
+        if(entityID == null) {return false;}
+        return Objects.equals(entityID.getType(), "comedian");
+    }
+
 
     public HashMap<Player, BukkitRunnable> getSkillCoolDownTasks() {return skillCoolDownTasks;}
     public void setSkillCoolDownTasks(HashMap<Player, BukkitRunnable> skillCoolDownTasks) {this.skillCoolDownTasks = skillCoolDownTasks;}

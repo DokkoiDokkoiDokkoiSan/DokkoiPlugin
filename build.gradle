@@ -26,6 +26,7 @@ repositories {
 def spongeApiVersion = '13.0.0'
 
 dependencies {
+    implementation 'org.slf4j:slf4j-api:1.7.30'
     implementation 'net.wesjd:anvilgui:1.10.2-SNAPSHOT'
     implementation "xyz.xenondevs.invui:invui:1.47"
     compileOnly("org.spongepowered:spongeapi:${spongeApiVersion}")
