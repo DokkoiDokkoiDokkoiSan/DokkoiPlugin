@@ -20,3 +20,7 @@ commands:
     description: エンティティをスポーンさせます．
     usage: /spawnentity <entity id>
     default: op
+  getitem:
+    description: アイテムを取得します．
+    usage: /getitem <item id> <amount>
+    default: op

@@ -37,7 +37,7 @@ public class KillerList extends CustomItem {
         List<Component> lore = List.of(
                 Component.text("§5なんかでかいトカゲが落としたメモ帳。勝手に文字書かれる、こわ。"),
                 Component.text(""),
-                Component.text("§5効果"),
+                Component.text("§b効果"),
                 Component.text("§5殺人をしたプレイヤー名が自身のチャットログにアナウンスされ、ノートに記入される。"),
                 Component.text("§5また、ノートを左クリックすることで記入されたプレイヤーに発光を10秒間付与する。"),
                 Component.text("§cCT 30秒"),

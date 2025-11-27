@@ -1,7 +1,9 @@
 package org.meyason.dokkoi.job;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
@@ -29,7 +31,7 @@ public class Explorer extends Job {
     private boolean ketsumouMode = false;
 
     public Explorer() {
-        super("§9冒険者", "冒険者", 5, 200);
+        super("冒険者", "冒険者", 5, 200);
         passive_skill_name = "§9§lけつ毛(けつもう)§r§7の力";
         normal_skill_name = "§9§lけつ毛§r§3、投げつけてみた！【けつ】【KETSU】【おしり】【山吹権蔵】";
         ultimate_skill_name = "§6爆発するタイプの§9§lけつ毛(けつもう)";
@@ -42,6 +44,7 @@ public class Explorer extends Job {
         ultimateSkillVolume = 10.0f;
         ultimateSkillPitch = 1.0f;
 
+        setRemainCoolTimeSkillUltimate(200);
     }
 
     public boolean isKetsumouMode(){
@@ -91,31 +94,28 @@ public class Explorer extends Job {
         );
     }
 
-    public void ready(){passive();}
+    public void ready(){
+        passive(0);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 1));
+        game.getGameStatesManager().addAdditionalDamage(player, -500);
+    }
 
-    public void passive(){
-        int ketsumouCountBefore = haveKetsumouCount;
-        this.haveKetsumouCount = 0;
-        PlayerInventory inventory = player.getInventory();
-        for(ItemStack item : inventory.getContents()){
-            if(item == null) continue;
-            if(item.getItemMeta() != null){
-                CustomItem customItem = CustomItem.getItem(item);
-                if(customItem instanceof Ketsumou ketsumou){
-                    haveKetsumouCount++;
-                }
-            }
-        }
-        if(haveKetsumouCount == ketsumouCountBefore){return;}
-        if(haveKetsumouCount > ketsumouCountBefore){
+    public void passive(int nowCount){
+        if(haveKetsumouCount == nowCount){return;}
+        player.sendMessage("before" + haveKetsumouCount + " now " + nowCount);
+        if(haveKetsumouCount < nowCount){
+            this.haveKetsumouCount = nowCount;
             incrementKetsumouEffect();
         }else {
+            this.haveKetsumouCount = nowCount;
             decrementKetsumouEffect();
         }
     }
 
     public void skill(Snowball snowball){
         // 着弾後の処理
+        Location location = snowball.getLocation();
+        spawnAreaParticles(location);
         new BukkitRunnable(){
             @Override
             public void run(){
@@ -123,8 +123,8 @@ public class Explorer extends Job {
                 List<Player> players = CalculateAreaPlayers.getPlayersInArea(game, player, snowball.getLocation(), 3.0);
                 for(Player target : players){
                     if(target.equals(player)) continue;
-                    target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 5 * 20, 10));
-                    target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 5 * 20, 10));
+                    target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 5 * 20, 1000));
+                    target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 5 * 20, 1000));
                 }
                 // けつ毛をアイテム化
                 Location location = snowball.getLocation();
@@ -148,6 +148,7 @@ public class Explorer extends Job {
 
     public void decrementKetsumouEffect(){
         player.sendMessage(Component.text("§9§lけつ毛§r§cの力が弱まった..."));
+        player.sendMessage(this.haveKetsumouCount + "");
         // 1から0に、4から3に、7から6に、9から8に減ったとき効果を変化
         if(haveKetsumouCount == 0){
             player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 1));
@@ -168,6 +169,7 @@ public class Explorer extends Job {
 
     public void incrementKetsumouEffect(){
         player.sendMessage(Component.text("§9§lけつ毛§r§aの力が強まった！"));
+        player.sendMessage(this.haveKetsumouCount + "");
         // 0から1に、3から4に、6から7に、8から9に増えたとき効果を変化
         if(haveKetsumouCount == 1){
             player.removePotionEffect(PotionEffectType.SLOWNESS);
@@ -183,5 +185,38 @@ public class Explorer extends Job {
             game.getGameStatesManager().addAdditionalDamage(player, 1);
             ketsumouMode = true;
         }
+    }
+
+    private void spawnAreaParticles(Location impactLocation) {
+        long durationTick = 20L * 3; // 5秒
+        long intervalTick = 20L;
+        Location location = impactLocation.clone();
+        double x = location.getX();
+        double y = location.getY();
+        double z = location.getZ();// 0.5秒ごとに発生（重かったら20L=1秒に）
+
+        Float dragonBreath = 1.0f;
+
+        new BukkitRunnable() {
+            long elapsed = 0L;
+
+            @Override
+            public void run() {
+                if (elapsed >= durationTick) {
+                    cancel();
+                    return;
+                }
+                elapsed += intervalTick;
+
+                // 中心を基準に、少なめのパーティクルで広めに見せる
+                location.getWorld().spawnParticle(
+                        Particle.DRAGON_BREATH,
+                        location.getX(), location.getY(), location.getZ(),
+                        100,              // 個数を抑える
+                        3.0, 1.5, 3.0, 0.1,
+                        dragonBreath
+                );
+            }
+        }.runTaskTimer(Dokkoi.getInstance(), 0L, intervalTick);
     }
 }
