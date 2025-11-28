@@ -18,6 +18,10 @@ import org.meyason.dokkoi.item.goalitem.*;
 import org.meyason.dokkoi.item.jobitem.*;
 import org.meyason.dokkoi.item.weapon.*;
 import org.meyason.dokkoi.item.battleitem.*;
+import org.meyason.dokkoi.item.battleitems.HealingCrystal;
+import org.meyason.dokkoi.item.job.gacha.*;
+import org.meyason.dokkoi.item.goal.*;
+import org.meyason.dokkoi.item.job.*;
 
 import java.util.HashMap;
 
@@ -37,6 +41,7 @@ public class GameItem {
         items.put(GameItemKeyString.RAPIER, new Rapier());
         items.put(GameItemKeyString.TIERPLAYERLIST, new TierPlayerList());
         items.put(GameItemKeyString.KETSUMOU, new Ketsumou());
+        items.put(GameItemKeyString.HEARINGCRYSTAL, new HealingCrystal());
         items.put(GameItemKeyString.BURIBURIGUARD, new BuriBuriGuard());
         items.put(GameItemKeyString.STRONGESTBALL, new StrongestBall());
         items.put(GameItemKeyString.STRONGESTSTRONGESTBALL, new StrongestStrongestBall());

@@ -18,6 +18,7 @@ public class GameItemKeyString {
     public static final String STRONGESTSTRONGESTSTRONGESTBALL = "strongest_strongest_strongest_ball";
 
     public static final String KETSUMOU = "ketsumou";
+    public static final String HEARING_CRYSTAL = "healing_crystal";
 
     public static final String SKILL = "skill";
     public static final String ULTIMATE_SKILL = "ultimate_skill";
@@ -44,6 +45,7 @@ public class GameItemKeyString {
         ULTIMATE_SKILL,
         PASSIVE_SKILL,
         KETSUMOU,
+        HEARING_CRYSTAL,
         BURIBURIGUARD,
         STRONGESTBALL,
         STRONGESTSTRONGESTBALL,
