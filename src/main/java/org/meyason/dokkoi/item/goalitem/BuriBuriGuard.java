@@ -60,7 +60,7 @@ public class BuriBuriGuard extends CustomItem {
         }
     }
 
-    public void skill(){
+    public void skill(Player player, Player targetPlayer){
         GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
         if(gameStatesManager.getItemCoolDownScheduler().containsKey(player)){
             player.sendMessage("§cクールタイム中です");

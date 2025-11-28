@@ -38,12 +38,12 @@ public class Defender extends Goal {
         setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
-
     @Override
     public void addItem() {
         setTargetPlayer();
         CustomItem item = GameItem.getItem(BuriBuriGuard.id);
         this.buriBuriGuard = (BuriBuriGuard) item;
+        this.buriBuriGuard.setPlayer(game, player);
         ItemStack itemStack = buriBuriGuard.getItem();
         if(itemStack == null){
             this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：ブリブリガード取得失敗");

@@ -23,6 +23,7 @@ import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
+import org.meyason.dokkoi.goal.Defender;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
@@ -192,7 +193,8 @@ public class InteractEvent implements Listener {
                     }
                     event.setCancelled(true);
                     if(customItem instanceof BuriBuriGuard buriburiguard){
-                        buriburiguard.skill();
+                        Defender defender = (Defender) game.getGameStatesManager().getPlayerGoals().get(player);
+                        buriburiguard.skill(player, defender.getTargetPlayer());
                     }
                 }else if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.TSUYOKUNARU)){
                     CustomItem customItem = CustomItem.getItem(item);
