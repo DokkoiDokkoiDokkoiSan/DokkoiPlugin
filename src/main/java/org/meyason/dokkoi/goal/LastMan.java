@@ -1,12 +1,10 @@
 package org.meyason.dokkoi.goal;
 
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
-
-import java.util.List;
 
 public class LastMan extends Goal {
 
@@ -26,6 +24,8 @@ public class LastMan extends Goal {
     @Override
     public void addItem() {
         this.player.sendMessage("§2最後の一人になるまで生き残れ！");
+        this.player.sendMessage(Component.text("§b----------------------------"));
+        this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e全てのプレイヤー"));
         return;
     }
 
@@ -41,5 +41,10 @@ public class LastMan extends Goal {
         }
         this.player.sendMessage("§c失敗だ。まだほかに生きているやつがいる。");
         return false;
+    }
+
+    @Override
+    public boolean isKillable(Player targetPlayer){
+        return true;
     }
 }

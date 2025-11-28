@@ -30,6 +30,9 @@ public class GameStatesManager {
     private HashMap<Entity, ProjectileData> projectileDataMap;
     private HashMap<Player, Integer> additionalDamage;
     private HashMap<Player, Integer> damageCutPercent;
+    private HashMap<Player, Boolean> isDeactivateDamageOnce;
+
+    private HashMap<Player, Long> moneyMap;
 
     private HashMap<Player, BukkitRunnable> skillCoolDownTasks;
     private HashMap<Player, BukkitRunnable> ultimateSkillCoolDownTasks;
@@ -61,6 +64,8 @@ public class GameStatesManager {
         projectileDataMap = new HashMap<>();
         additionalDamage = new HashMap<>();
         damageCutPercent = new HashMap<>();
+        isDeactivateDamageOnce = new HashMap<>();
+        moneyMap = new HashMap<>();
         skillCoolDownTasks = new HashMap<>();
         ultimateSkillCoolDownTasks = new HashMap<>();
         coolDownScheduler = new HashMap<>();
@@ -82,6 +87,8 @@ public class GameStatesManager {
         projectileDataMap.clear();
         additionalDamage.clear();
         damageCutPercent.clear();
+        isDeactivateDamageOnce.clear();
+        moneyMap.clear();
         skillCoolDownTasks.clear();
         ultimateSkillCoolDownTasks.clear();
         coolDownScheduler.clear();
@@ -102,6 +109,8 @@ public class GameStatesManager {
         removeDamagedPlayer(player);
         removeAdditionalDamage(player);
         removeDamageCutPercent(player);
+        removeIsDeactivateDamageOnce(player);
+        removeMoneyMap(player);
         removeSkillCoolDownTask(player);
         removeUltimateSkillCoolDownTask(player);
         removeCoolDownScheduler(player);
@@ -230,6 +239,34 @@ public class GameStatesManager {
     public void removeDamageCutPercent(Player player) {
         if(!this.damageCutPercent.containsKey(player)) {return;}
         this.damageCutPercent.remove(player);
+    }
+
+    public HashMap<Player, Boolean> getIsDeactivateDamageOnce() {return isDeactivateDamageOnce;}
+    public void setIsDeactivateDamageOnce(HashMap<Player, Boolean> isDeactivateDamageOnce) {this.isDeactivateDamageOnce = isDeactivateDamageOnce;}
+    public void addIsDeactivateDamageOnce(Player player, boolean value) {
+        this.isDeactivateDamageOnce.put(player, value);
+    }
+    public void removeIsDeactivateDamageOnce(Player player) {
+        if(!this.isDeactivateDamageOnce.containsKey(player)) {return;}
+        this.isDeactivateDamageOnce.remove(player);
+    }
+
+    public HashMap<Player, Long> getMoneyMap() {return moneyMap;}
+    public void setMoneyMap(HashMap<Player, Long> moneyMap) {this.moneyMap = moneyMap;}
+    public void addMoneyMap(Player player, long amount) {
+        this.moneyMap.put(player, this.moneyMap.getOrDefault(player, 0L) + amount);
+    }
+    public boolean reduceMoneyMap(Player player, long amount) {
+        if(!this.moneyMap.containsKey(player)) {return false;}
+        long currentMoney = this.moneyMap.get(player);
+        long newMoney = currentMoney - amount;
+        if(newMoney < 0) {return false;}
+        this.moneyMap.put(player, newMoney);
+        return true;
+    }
+    public void removeMoneyMap(Player player) {
+        if(!this.moneyMap.containsKey(player)) {return;}
+        this.moneyMap.remove(player);
     }
 
     public HashMap<Player, BukkitRunnable> getUltimateSkillCoolDownTasks() {return ultimateSkillCoolDownTasks;}
