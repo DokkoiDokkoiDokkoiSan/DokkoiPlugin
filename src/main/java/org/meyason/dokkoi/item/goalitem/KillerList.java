@@ -86,14 +86,14 @@ public class KillerList extends CustomItem {
         this.targetPlayerList = killerPlayers;
     }
 
-    public void skill(GameStatesManager gameStatesManager){
+    public void skill(GameStatesManager gameStatesManager, Player player){
         if(gameStatesManager.getItemCoolDownScheduler().containsKey(player)){
             player.sendMessage("§cクールタイム中です");
             return;
         }
         List<Player> killerList = new ArrayList<>(game.getGameStatesManager().getKillerList().keySet());
-        for(Player player : killerList){
-            player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 10 * 20, 1));
+        for(Player p : killerList){
+            p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 10 * 20, 1));
         }
         BukkitRunnable itemInitTask = new BukkitRunnable() {
             @Override

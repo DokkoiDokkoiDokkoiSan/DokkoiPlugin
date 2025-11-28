@@ -29,9 +29,6 @@ import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
 import org.meyason.dokkoi.item.jobitem.Ketsumou;
 import org.meyason.dokkoi.item.battleitems.HealingCrystal;
-import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
-import org.meyason.dokkoi.item.goalitem.KillerList;
-import org.meyason.dokkoi.item.jobitem.Ketsumou;
 import org.meyason.dokkoi.job.*;
 
 import java.util.Objects;
@@ -94,15 +91,15 @@ public class InteractEvent implements Listener {
                         Vector direction = player.getEyeLocation().getDirection().normalize();
                         Vector velocity = direction.multiply(3.0);
                         Snowball projectile = player.launchProjectile(Snowball.class, velocity);
-                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
-                    } else if (job instanceof Lonely lonely) {
+                        manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
+                    }else if(job instanceof Lonely lonely){
                         lonely.skill();
                     } else if (job instanceof Bomber bomber) {
                         Vector direction = player.getEyeLocation().getDirection().normalize();
                         Vector velocity = direction.multiply(2.0);
                         Snowball projectile = player.launchProjectile(Snowball.class, velocity);
-                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
-                    } else if (job instanceof IronMaiden ironMaiden) {
+                        manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
+                    }else if(job instanceof IronMaiden ironMaiden) {
                         ironMaiden.skill();
                     } else if (job instanceof Explorer explorer) {
                         Vector direction = player.getEyeLocation().getDirection().normalize();
@@ -125,9 +122,9 @@ public class InteractEvent implements Listener {
                                 }
                             }
                         }
-                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
-                    } else if (job instanceof Prayer prayer) {
-                        if (prayer.getGachaCount() <= 0) {
+                        manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
+                    }else if(job instanceof Prayer prayer) {
+                        if(prayer.getGachaPoint() <= 0){
                             player.sendActionBar(Component.text("§cガチャポイントが足りません。"));
                             return;
                         }
@@ -161,8 +158,8 @@ public class InteractEvent implements Listener {
                         Vector direction = player.getEyeLocation().getDirection().normalize();
                         Vector velocity = direction.multiply(2.0);
                         Snowball projectile = player.launchProjectile(Snowball.class, velocity);
-                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.ULTIMATE_SKILL));
-                    } else if (job instanceof IronMaiden ironMaiden) {
+                        manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
+                    }else if(job instanceof IronMaiden ironMaiden){
                         ironMaiden.ultimate();
                     } else if (job instanceof Explorer explorer) {
                         explorer.ultimate();
@@ -185,7 +182,7 @@ public class InteractEvent implements Listener {
                     event.setCancelled(true);
                     GameStatesManager manager = game.getGameStatesManager();
                     if (customItem instanceof KillerList killerList) {
-                        killerList.skill(manager);
+                        killerList.skill(manager, player);
                     }
                 } else if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.BURIBURIGUARD)) {
                     CustomItem customItem = CustomItem.getItem(item);
@@ -196,9 +193,21 @@ public class InteractEvent implements Listener {
                         return;
                     }
                     event.setCancelled(true);
-                    if (customItem instanceof BuriBuriGuard buriburiguard) {
-                        buriburiguard.skill();
+                    if(customItem instanceof BuriBuriGuard buriburiguard){
+                        Defender defender = (Defender) game.getGameStatesManager().getPlayerGoals().get(player);
+                        buriburiguard.skill(player, defender.getTargetPlayer());
                     }
+                }else if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.TSUYOKUNARU)){
+                    CustomItem customItem = CustomItem.getItem(item);
+                    if (customItem == null) {
+                        return;
+                    }
+                    if(event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK){
+                        return;
+                    }
+                    event.setCancelled(true);
+                    game.getGameStatesManager().addIsDeactivateDamageOnce(player, true);
+                }else if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.HEARING_CRYSTAL)) {
                 } else if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.HEALINGCRYSTAL)) {
                     CustomItem customItem = CustomItem.getItem(item);
                     if (customItem == null) {
@@ -208,7 +217,7 @@ public class InteractEvent implements Listener {
                         return;
                     }
                     event.setCancelled(true);
-                    if (customItem instanceof HealingCrystal healingCrystal) {
+                    if (customItem instanceof HealingCrystal) {
                         if (player.getHealth() == player.getMaxHealth()) {
                             player.sendMessage("§4既に最大体力です。");
                             return;
@@ -218,7 +227,7 @@ public class InteractEvent implements Listener {
                             newHealth = player.getMaxHealth();
                         }
                         player.setHealth(newHealth);
-                        player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE,10,1);
+                        player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 10, 1);
                         player.sendMessage("§a回復結晶を使用した！");
 
                         item.setAmount(item.getAmount() - 1);

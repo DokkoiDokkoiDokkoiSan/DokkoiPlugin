@@ -43,6 +43,7 @@ public class RedHelmet extends CustomItem {
                 leatherMeta.setColor(org.bukkit.Color.RED);
                 leatherMeta.addEnchant(Enchantment.BINDING_CURSE, 1, true); // ついでに呪い
                 item.setItemMeta(leatherMeta);
+                this.baseItem = item;
             }
             return item;
         };
@@ -56,7 +57,6 @@ public class RedHelmet extends CustomItem {
         }
         player.getInventory().setHelmet(this.baseItem);
         player.setHealth(1);
-        player.setMaxHealth(1);
         //毒
         player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, Integer.MAX_VALUE, 255, false, false));
     }

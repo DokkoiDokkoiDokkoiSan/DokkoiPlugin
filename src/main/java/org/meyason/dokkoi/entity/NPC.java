@@ -18,4 +18,13 @@ public enum NPC {
         return name;
     }
 
+    public static NPC getNPCById(String id) {
+        for (NPC npc : values()) {
+            if (npc.getId().equals(id)) {
+                return npc;
+            }
+        }
+        return null;
+    }
+
 }
