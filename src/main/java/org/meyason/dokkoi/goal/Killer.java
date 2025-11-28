@@ -8,7 +8,6 @@ import org.meyason.dokkoi.game.Game;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 public class Killer extends Goal {
 
@@ -30,6 +29,8 @@ public class Killer extends Goal {
     @Override
     public void addItem() {
         this.player.sendMessage("§2自らの手で全てのプレイヤーを殺害せよ！");
+        this.player.sendMessage(Component.text("§b----------------------------"));
+        this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e全てのプレイヤー"));
     }
 
     @Override
@@ -56,6 +57,11 @@ public class Killer extends Goal {
             }
         }
         player.sendMessage("§6よくやった！お前は全てのプレイヤーを殺害した！");
+        return true;
+    }
+
+    @Override
+    public boolean isKillable(Player targetPlayer){
         return true;
     }
 }

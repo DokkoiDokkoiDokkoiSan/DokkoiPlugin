@@ -14,20 +14,17 @@ import org.bukkit.scoreboard.*;
 
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.*;
-import org.meyason.dokkoi.goal.GachaAddict;
-import org.meyason.dokkoi.goal.Goal;
-import org.meyason.dokkoi.goal.KetsumouHunter;
-import org.meyason.dokkoi.goal.MaidenGazer;
+import org.meyason.dokkoi.goal.*;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.job.Explorer;
 import org.meyason.dokkoi.job.Job;
+import org.meyason.dokkoi.job.Prayer;
 import org.meyason.dokkoi.scheduler.Scheduler;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Game {
 
@@ -42,7 +39,7 @@ public class Game {
     private int nowTime;
     public final int matchingPhaseTime = 5;
     public final int prepPhaseTime = 5;
-    public final int gamePhaseTime = 300;
+    public final int gamePhaseTime = 600;
     public final int resultPhaseTime = 10;
 
     private final boolean debugMode = false;
@@ -134,12 +131,30 @@ public class Game {
             resetGame();
             return;
         }
+        int tier1Count = 0;
+        int tier2Count = 0;
+        int tier3Count = 0;
         for (Player player : gameStatesManager.getJoinedPlayers()) {
             gameStatesManager.addKillCount(player);
             gameStatesManager.addAdditionalDamage(player, 0);
             gameStatesManager.addDamageCutPercent(player, 0);
+            gameStatesManager.addIsDeactivateDamageOnce(player, false);
+            gameStatesManager.addMoneyMap(player, 0L);
             playerNoticer(player);
+            Goal goal = gameStatesManager.getPlayerGoals().get(player);
+            if(goal.tier == Tier.TIER_1){
+                tier1Count++;
+            }else if(goal.tier == Tier.TIER_2){
+                tier2Count++;
+            }else if(goal.tier == Tier.TIER_3) {
+                tier3Count++;
+            }
         }
+        Component goalTierMessage = Component.text("§a本ゲームの勝利条件内訳: §f");
+        goalTierMessage.append(Component.text("§6TIER 1 : " + tier1Count + "人, "));
+        goalTierMessage.append(Component.text("§bTIER 2 : " + tier2Count + "人, "));
+        goalTierMessage.append(Component.text("§cTIER 3 : " + tier3Count + "人"));
+        Bukkit.getServer().broadcast(goalTierMessage);
 
     }
 
@@ -184,7 +199,7 @@ public class Game {
             //全部のポーション効果消す
             player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
             if(gameStatesManager.getPlayerGoals().get(player).isAchieved()){
-                player.sendMessage("§aお前は目標を達成した！");
+                player.sendMessage("§6お前は目標を達成した！");
                 clearPlayers.add(player);
             }else{
                 player.sendMessage("§cお前は目標を達成できなかった...");
@@ -301,6 +316,7 @@ public class Game {
         }else if(gameStatesManager.getGameState() == GameState.IN_GAME){
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
             objective.getScore("§a生存者数: §f" + gameStatesManager.getAlivePlayers().size() + "人").setScore(--i);
+            objective.getScore("§d所持モネイ: §f" + gameStatesManager.getMoneyMap().get(player) + "モネイ").setScore(--i);
             objective.getScore("§e役職: §f" + gameStatesManager.getPlayerJobs().get(player).getName()).setScore(--i);
             objective.getScore("§e目標: §f" + gameStatesManager.getPlayerGoals().get(player).getName()).setScore(--i);
             objective.getScore("§aスキル: " + gameStatesManager.getPlayerJobs().get(player).getCoolTimeSkillViewer()).setScore(--i);
@@ -308,16 +324,43 @@ public class Game {
 
             Job job = gameStatesManager.getPlayerJobs().get(player);
             Goal goal = gameStatesManager.getPlayerGoals().get(player);
-            if(goal instanceof GachaAddict gachaMan){
-                objective.getScore("§eガチャポイント: §f" + gachaMan.getGachaPoint() + "pt").setScore(--i);
-            }else if(goal instanceof MaidenGazer maidenGazer){
+            String achievedColor = "6";
+            if(goal instanceof MaidenGazer maidenGazer){
                 objective.getScore("§e視線誘導した時間: §f" + maidenGazer.getPoint() + "秒").setScore(--i);
-            }
-            if(job instanceof Explorer explorer){
-                objective.getScore("§e発見した§9§lけつ毛§r§e: §f" + explorer.getHaveKetsumouCount() + "個").setScore(--i);
-                if(goal instanceof KetsumouHunter ketsumouHunter){
-                    objective.getScore("§e目標の§9§lけつ毛§r§e: §f" + ketsumouHunter.getTargetKetsumouCount() + "個").setScore(--i);
+            }else if(goal instanceof CarpetBombing carpetBombing){
+                String color = "c";
+                if(carpetBombing.getKillCount() >= carpetBombing.goalNumber){
+                    color = achievedColor;
                 }
+                objective.getScore("§e目標人数: §f" + carpetBombing.goalNumber + "人").setScore(--i);
+                objective.getScore("§e自爆による殺害人数: " + color + carpetBombing.getKillCount() + "人").setScore(--i);
+            }else if(goal instanceof Defender defender){
+                objective.getScore("§e護衛対象: §f" + defender.getTargetPlayer().getName()).setScore(--i);
+            }else if(goal instanceof Killer || goal instanceof LastMan){
+                objective.getScore("§e残り生存者: §f" + gameStatesManager.getAlivePlayers().size()).setScore(--i);
+            }else if(goal instanceof MassTierKiller massTierKiller){
+                objective.getScore("§eターゲットのTier: §f" + massTierKiller.tier.name()).setScore(--i);
+            }
+
+            if(job instanceof Explorer explorer){
+                if(goal instanceof KetsumouHunter ketsumouHunter){
+                    String color = "c";
+                    if(ketsumouHunter.getTargetKetsumouCount() <= explorer.getHaveKetsumouCount()) {
+                        color = achievedColor;
+                    }
+                    objective.getScore("§e目標の§9§lけつ毛§r§e: " + color + ketsumouHunter.getTargetKetsumouCount() + "個").setScore(--i);
+                }else if(goal instanceof KetsumouPirate){
+                    int targetNum = 9;
+                    String color = "c";
+                    if(targetNum <= explorer.getHaveKetsumouCount()) {
+                        color = achievedColor;
+                    }
+                    objective.getScore("§e目標の§9§lけつ毛§r§e: " + color + targetNum + "個").setScore(--i);
+                }
+                objective.getScore("§e発見した§9§lけつ毛§r§e: §f" + explorer.getHaveKetsumouCount() + "個").setScore(--i);
+            }else if(job instanceof Prayer prayer){
+                objective.getScore("§eガチャポイント: §f" + prayer.getGachaPoint()).setScore(--i);
+                objective.getScore("§eガチャ回数: §f" + prayer.getGachaCount() + "回").setScore(--i);
             }
         }
         player.setScoreboard(scoreboard);

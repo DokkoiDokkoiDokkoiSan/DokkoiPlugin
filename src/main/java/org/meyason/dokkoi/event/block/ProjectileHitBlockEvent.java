@@ -1,13 +1,10 @@
 package org.meyason.dokkoi.event.block;
 
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.event.player.DamageEvent;
@@ -15,7 +12,7 @@ import org.meyason.dokkoi.game.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
-import org.meyason.dokkoi.item.job.Rapier;
+import org.meyason.dokkoi.item.jobitem.Rapier;
 import org.meyason.dokkoi.job.*;
 
 import java.util.List;

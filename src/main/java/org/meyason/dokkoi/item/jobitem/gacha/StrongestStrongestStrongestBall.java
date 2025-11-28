@@ -1,4 +1,4 @@
-package org.meyason.dokkoi.item.job.gacha;
+package org.meyason.dokkoi.item.jobitem.gacha;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;

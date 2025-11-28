@@ -63,4 +63,14 @@ public class GameEntity {
         villager.getPersistentDataContainer().set(new NamespacedKey(Dokkoi.getInstance(), comedian.getId()), PersistentDataType.STRING, deathMessage);
     }
 
+    public static void spawnDealer(Location location){
+        String name = NPC.DEALER.getName();
+        World world = location.getWorld();
+        Villager villager = (Villager) world.spawnEntity(location, EntityType.VILLAGER);
+        villager.setCustomName(name);
+        villager.setCustomNameVisible(true);
+        villager.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
+        villager.getEquipment().setItemInOffHand(new ItemStack(Material.AIR));
+    }
+
 }

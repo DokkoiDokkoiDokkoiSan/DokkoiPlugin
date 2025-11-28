@@ -7,7 +7,6 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.job.Explorer;
 import org.meyason.dokkoi.job.Job;
 
-import java.util.List;
 import java.util.Random;
 
 public class KetsumouHunter extends Goal {
@@ -37,6 +36,9 @@ public class KetsumouHunter extends Goal {
         int maxKetsumou = 5;
         this.targetKetsumouCount = new Random().nextInt(minKetsumou, maxKetsumou + 1);
         this.player.sendMessage("§2マップ内に散りばめられている§9§lけつ毛§r§2を§e§l" + this.targetKetsumouCount + "個§r§2集めろ！");
+        this.player.sendMessage(Component.text("§b----------------------------"));
+        this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e0 人"));
+        this.player.sendMessage(Component.text("§bこれ以上殺害するとペナルティが付与される"));
         return;
     }
 
@@ -54,6 +56,11 @@ public class KetsumouHunter extends Goal {
             }
         }
         this.player.sendMessage(Component.text("§c目標数の§9§lけつ毛§r§cを集められなかった。"));
+        return false;
+    }
+
+    @Override
+    public boolean isKillable(Player targetPlayer){
         return false;
     }
 }

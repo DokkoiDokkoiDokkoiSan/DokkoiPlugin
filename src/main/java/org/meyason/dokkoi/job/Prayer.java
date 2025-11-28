@@ -19,9 +19,12 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.job.gacha.GachaMachine;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Prayer extends Job {
 
@@ -53,7 +56,17 @@ public class Prayer extends Job {
 
     public static final HashMap<String, List<String>> rarityEffectMap = new HashMap<>(){{
         put(R, List.of(
+                GameItemKeyString.BAKEDPOTATO
+        ));
+        put(SR, List.of(
+                GameItemKeyString.ARCHERARMOR,
                 GameItemKeyString.GOLDENCARROT
+        ));
+        put(UR, List.of(
+                GameItemKeyString.LONGSWORD
+        ));
+        put(LR, List.of(
+                GameItemKeyString.THUNDERJAVELIN
         ));
         put(KETSU, List.of(GameItemKeyString.STRONGESTBALL));
         put(KETSUGE, List.of(GameItemKeyString.STRONGESTSTRONGESTBALL));
@@ -61,13 +74,13 @@ public class Prayer extends Job {
     }};
 
     private List<Location> alreadyOpenedChests = new ArrayList<>();
-    public void addLocationToAlreadyOpenedChests(Location loc){
-        if(alreadyOpenedChests.contains(loc)){return;}
+    public boolean addLocationToAlreadyOpenedChests(Location loc){
+        if(alreadyOpenedChests.contains(loc)){return false;}
         alreadyOpenedChests.add(loc);
-        gachaPoint++;
+        return true;
     }
 
-    private int gachaPoint = 0;
+    private int gachaPoint = 1000;
     public int getGachaPoint(){
         return gachaPoint;
     }
@@ -84,11 +97,9 @@ public class Prayer extends Job {
 
     public void addGachaCount(Game game, Player player){
         gachaCount++;
-        if(gachaCount % 10 == 0){
+        if(gachaCount % 20 == 0){
             game.getGameStatesManager().addAdditionalDamage(player, 1);
-            player.setMaxHealth(player.getMaxHealth() + 10);
-            player.setHealth(player.getHealth() + 10);
-            player.sendMessage("§bガチャ回転数が10回溜まったので、与ダメージが1と最大体力が10増加しました。");
+            player.sendMessage("§bガチャ回転数が20回溜まったので、与ダメージが1と最大体力が10増加しました。");
         }
     }
 
@@ -113,7 +124,9 @@ public class Prayer extends Job {
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.LASTMAN
+                GoalList.GACHABEGINNER,
+                GoalList.PACHIASU,
+                GoalList.GAMBLERMASTER
         );
     }
 
@@ -123,7 +136,7 @@ public class Prayer extends Job {
             twiceCoolTimeSkill();
         }
         passive_skill_description = List.of(
-                Component.text("§5ガチャ回転数が10回溜まる度に与ダメージが1と最大体力が10増加する。"),
+                Component.text("§5ガチャ回転数が20回溜まる度に与ダメージが1増加する。"),
                 Component.text("§5開けたことのないチェストを開く度に『ガチャポイント』が貰える。")
         );
 
@@ -149,14 +162,6 @@ public class Prayer extends Job {
     }
 
     public void ready(){
-        CustomItem item = GameItem.getItem(GachaMachine.id);
-        if(item == null){
-            this.player.sendMessage("§6エラーが発生しました．管理者に連絡してください：ガチャマシン取得失敗");
-            return;
-        }
-        ItemStack gachaMachine = item.getItem();
-        PlayerInventory inventory = player.getInventory();
-        inventory.addItem(gachaMachine);
         this.player.sendMessage("§b右クリックでガチャを回す");
     }
 

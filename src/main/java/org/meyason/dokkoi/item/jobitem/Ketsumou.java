@@ -1,4 +1,4 @@
-package org.meyason.dokkoi.item.job;
+package org.meyason.dokkoi.item.jobitem;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;

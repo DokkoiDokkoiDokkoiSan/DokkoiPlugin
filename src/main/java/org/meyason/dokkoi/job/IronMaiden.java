@@ -1,6 +1,5 @@
 package org.meyason.dokkoi.job;
 
-import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -24,7 +23,7 @@ import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.goal.MassTierKiller;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.job.Rapier;
+import org.meyason.dokkoi.item.jobitem.Rapier;
 
 import java.util.List;
 

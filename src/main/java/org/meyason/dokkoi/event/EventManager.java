@@ -22,5 +22,6 @@ public class EventManager {
         core.getServer().getPluginManager().registerEvents(new DespawnEvent(), core);
         core.getServer().getPluginManager().registerEvents(new LogoutEvent(), core);
         core.getServer().getPluginManager().registerEvents(new PickEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new PotionEffectEvent(), core);
     }
 }
