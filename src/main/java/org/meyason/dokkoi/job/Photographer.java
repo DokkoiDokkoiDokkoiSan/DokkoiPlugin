@@ -29,7 +29,8 @@ public class Photographer extends Job {
 
     @Override
     public void setPlayer(Game game, Player player) {
-
+        this.game = game;
+        this.player = player;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class Photographer extends Job {
                 Component.text("§a1～3人　与ダメージが1増加が常時付与されている。"),
                 Component.text("§a4～6人　与ダメージが2増加、移動速度上昇Lv1が常時付与されている。"),
                 Component.text("§a7～8人　与ダメージが4増加、移動速度上昇Lv1が常時付与されている。"),
-                Component.text("§a9人　与ダメージが5増加、移動速度上昇Lv2が常時付与されている。また、自分以外の全てのプレイヤーを常時発光させる。"),
+                Component.text("§a9人　与ダメージが5増加、移動速度上昇Lv2が常時付与されている。また、自分以外の全てのプレイヤーを常時発光させる。")
         );
 
         normal_skill_description = List.of(
