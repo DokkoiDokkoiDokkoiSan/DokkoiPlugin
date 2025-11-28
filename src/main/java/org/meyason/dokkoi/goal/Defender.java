@@ -43,17 +43,13 @@ public class Defender extends Goal {
     public void addItem() {
         setTargetPlayer();
         CustomItem item = GameItem.getItem(BuriBuriGuard.id);
-        if(item == null){
+        this.buriBuriGuard = (BuriBuriGuard) item;
+        ItemStack itemStack = buriBuriGuard.getItem();
+        if(itemStack == null){
             this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：ブリブリガード取得失敗");
             return;
         }
-        ItemStack itemStack = item.getItem();
-        PlayerInventory inventory = player.getInventory();
-        if(item instanceof BuriBuriGuard buriburiGuard){
-            this.buriBuriGuard = buriburiGuard;
-            this.buriBuriGuard.setPlayer(game, player);
-        }
-        inventory.addItem(itemStack);
+        player.getInventory().addItem(itemStack);
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e護衛対象と自分以外の生存者"));
         this.player.sendMessage(Component.text("§bこれ以外を殺害するとペナルティが付与される"));
@@ -65,7 +61,7 @@ public class Defender extends Goal {
         List<Player> players = game.getGameStatesManager().getAlivePlayers();
         List<Player> copyPlayers = new java.util.ArrayList<>(List.copyOf(players));
         copyPlayers.remove(this.player);
-        Player target = copyPlayers.get(new Random().nextInt(players.size()));
+        Player target = copyPlayers.get(new Random().nextInt(players.size()-1));
         if(target != null){
             this.targetPlayer = target;
             this.player.sendMessage("§2生存者を §6" + targetPlayer.getName() + " §2と自分の二人だけにせよ！");

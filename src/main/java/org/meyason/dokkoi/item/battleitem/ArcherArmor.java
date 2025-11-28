@@ -34,6 +34,7 @@ public class ArcherArmor extends CustomItem {
             ItemMeta meta = item.getItemMeta();
             if(meta != null){
                 item.setItemMeta(meta);
+                this.baseItem = item;
             }
             return item;
         };
@@ -43,14 +44,6 @@ public class ArcherArmor extends CustomItem {
         this.game = game;
         this.player = player;
         player.sendMessage(Component.text("§aロングソード§bを手に入れた！"));
-    }
-
-    public void activate(){
-        ItemStack item = player.getInventory().getChestplate();
-        if(item != null && item.isSimilar(this.baseItem)){
-            player.getInventory().setChestplate(null);
-            player.sendMessage(Component.text("§a弓使いの鎧§bの効果が発動した！"));
-        }
     }
 
 }

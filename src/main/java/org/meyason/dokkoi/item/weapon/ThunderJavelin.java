@@ -47,7 +47,7 @@ public class ThunderJavelin extends CustomItem {
         };
     }
 
-    public void activate(Trident trident){
+    public static void activate(Trident trident){
         Location location = trident.getLocation();
         Player shooter = (Player) trident.getShooter();
         trident.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);

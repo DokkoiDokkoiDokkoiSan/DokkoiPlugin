@@ -1,5 +1,6 @@
 package org.meyason.dokkoi.item;
 
+import com.google.gson.InstanceCreator;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -9,6 +10,8 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
+import org.meyason.dokkoi.exception.NoGameItemException;
+import org.meyason.dokkoi.item.dealeritem.Tsuyokunaru;
 import org.meyason.dokkoi.item.food.*;
 import org.meyason.dokkoi.item.jobitem.gacha.*;
 import org.meyason.dokkoi.item.goalitem.*;
@@ -27,7 +30,6 @@ public class GameItem {
     }
 
     public void registerItem(){
-//        items.put(GachaMachine.id, new GachaMachine());
         items.put(GameItemKeyString.SKILL, new Skill());
         items.put(GameItemKeyString.ULTIMATE_SKILL, new Ultimate());
         items.put(GameItemKeyString.PASSIVE_SKILL, new Passive());
@@ -49,9 +51,9 @@ public class GameItem {
 
     public static CustomItem getItem(String id){
         if(!items.containsKey(id)){
-            return null;
+            throw new NoGameItemException("untilized item id: " + id);
         }
-        return items.get(id);
+        return items.get(id).clone();
     }
 
     public static Boolean removeItem(Player player, String item_name, int amount){
@@ -61,7 +63,7 @@ public class GameItem {
         for(ItemStack item : inventory.getContents()){
             if(item != null && item.getItemMeta() != null){
                 if(item.getItemMeta().getPersistentDataContainer().has(itemKey) &&
-                   item.getItemMeta().getPersistentDataContainer().get(itemKey, org.bukkit.persistence.PersistentDataType.STRING).equals(item_name)){
+                   item.getItemMeta().getPersistentDataContainer().get(itemKey, PersistentDataType.STRING).equals(item_name)){
 
                     int itemAmount = item.getAmount();
                     if(itemAmount >= amount){

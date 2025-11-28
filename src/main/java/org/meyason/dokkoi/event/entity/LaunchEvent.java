@@ -33,15 +33,16 @@ public class LaunchEvent implements Listener {
         if(projectile.getType() == EntityType.TRIDENT){
             ProjectileSource projectileSource = projectile.getShooter();
             if(projectileSource instanceof Player player){
-                if(manager.getPlayerJobs().get(player) instanceof IronMaiden){
+                if(manager.getPlayerJobs().get(player) instanceof IronMaiden ironMaiden){
+                    Rapier rapier = ironMaiden.getRapier();
                     player.playSound(player, Sound.ITEM_TRIDENT_RIPTIDE_1, 1.0f, 1.0f);
-                    ProjectileData projectileData = new ProjectileData(player, Rapier.id);
+                    ProjectileData projectileData = new ProjectileData(player, projectile, Rapier.id);
                     manager.addProjectileData(projectile, projectileData);
                 }
                 CustomItem customItem = CustomItem.getItem(player.getInventory().getItemInMainHand());
                 if(customItem != null){
-                    if(customItem instanceof ThunderJavelin){
-                        ProjectileData projectileData = new ProjectileData(player, ThunderJavelin.id);
+                    if(customItem instanceof ThunderJavelin thunderJavelin){
+                        ProjectileData projectileData = new ProjectileData(player, projectile, ThunderJavelin.id);
                         manager.addProjectileData(projectile, projectileData);
                     }
                 }
@@ -51,7 +52,7 @@ public class LaunchEvent implements Listener {
             if(projectileSource instanceof Player player){
                 if(manager.getPlayerJobs().get(player) instanceof Explorer explorer){
                     if(explorer.isKetsumouMode()){
-                        ProjectileData projectileData = new ProjectileData(player, Material.ARROW.name());
+                        ProjectileData projectileData = new ProjectileData(player, projectile, Material.ARROW.name());
                         manager.addProjectileData(projectile, projectileData);
                     }
                 }

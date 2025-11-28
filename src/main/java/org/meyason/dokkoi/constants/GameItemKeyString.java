@@ -32,6 +32,8 @@ public class GameItemKeyString {
     public static final String ARCHERARMOR = "archer_armor";
     public static final String REDHELMET = "red_helmet";
 
+    public static final String TSUYOKUNARU = "tsuyokunaru";
+
     private static final List<String> gameItemKeyStringHashMap = List.of(
         ITEM_NAME,
         GACHA_MACHINE,
@@ -51,7 +53,8 @@ public class GameItemKeyString {
         ARCHERARMOR,
         BAKEDPOTATO,
         THUNDERJAVELIN,
-        REDHELMET
+        REDHELMET,
+        TSUYOKUNARU
     );
 
     public static List<String> getGameItemKeyStringHashMap() {return gameItemKeyStringHashMap;}

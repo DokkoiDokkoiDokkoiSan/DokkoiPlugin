@@ -89,14 +89,14 @@ public class InteractEvent implements Listener {
                         Vector direction = player.getEyeLocation().getDirection().normalize();
                         Vector velocity = direction.multiply(3.0);
                         Snowball projectile = player.launchProjectile(Snowball.class, velocity);
-                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
+                        manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
                     }else if(job instanceof Lonely lonely){
                         lonely.skill();
                     }else if(job instanceof Bomber bomber){
                         Vector direction = player.getEyeLocation().getDirection().normalize();
                         Vector velocity = direction.multiply(2.0);
                         Snowball projectile = player.launchProjectile(Snowball.class, velocity);
-                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
+                        manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
                     }else if(job instanceof IronMaiden ironMaiden) {
                         ironMaiden.skill();
                     }else if(job instanceof Explorer explorer) {
@@ -120,7 +120,7 @@ public class InteractEvent implements Listener {
                                 }
                             }
                         }
-                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.SKILL));
+                        manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
                     }else if(job instanceof Prayer prayer) {
                         if(prayer.getGachaPoint() <= 0){
                             player.sendActionBar(Component.text("§cガチャポイントが足りません。"));
@@ -156,7 +156,7 @@ public class InteractEvent implements Listener {
                         Vector direction = player.getEyeLocation().getDirection().normalize();
                         Vector velocity = direction.multiply(2.0);
                         Snowball projectile = player.launchProjectile(Snowball.class, velocity);
-                        manager.addProjectileData(projectile, new ProjectileData(player, GameItemKeyString.ULTIMATE_SKILL));
+                        manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
                     }else if(job instanceof IronMaiden ironMaiden){
                         ironMaiden.ultimate();
                     }else if(job instanceof Explorer explorer){
@@ -194,6 +194,16 @@ public class InteractEvent implements Listener {
                     if(customItem instanceof BuriBuriGuard buriburiguard){
                         buriburiguard.skill();
                     }
+                }else if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.TSUYOKUNARU)){
+                    CustomItem customItem = CustomItem.getItem(item);
+                    if (customItem == null) {
+                        return;
+                    }
+                    if(event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK){
+                        return;
+                    }
+                    event.setCancelled(true);
+                    game.getGameStatesManager().addIsDeactivateDamageOnce(player, true);
                 }
 
 

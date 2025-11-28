@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class CustomItem {
+public abstract class CustomItem implements Cloneable {
 
     protected final String id;
     protected final String name;
@@ -70,4 +70,14 @@ public abstract class CustomItem {
     }
 
     protected abstract void registerItemFunction();
+
+    @Override
+    public CustomItem clone() {
+        try {
+            return (CustomItem) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
+    }
+
 }

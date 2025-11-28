@@ -1,7 +1,6 @@
 package org.meyason.dokkoi.event.player;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.*;
@@ -9,19 +8,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.projectiles.ProjectileSource;
-import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.constants.EntityID;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.JobList;
-import org.meyason.dokkoi.entity.Comedian;
 import org.meyason.dokkoi.game.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
@@ -32,7 +23,6 @@ import org.meyason.dokkoi.item.jobitem.Rapier;
 import org.meyason.dokkoi.job.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public class DamageEvent implements Listener {
@@ -114,7 +104,7 @@ public class DamageEvent implements Listener {
 
             // 当たったエンティティがプレイヤーじゃなくてもいい場合はこっち
             if (job instanceof Bomber bomber) {
-                String attackItem = projectileData.getItem();
+                String attackItem = projectileData.getCustomItemName();
                 if(attackItem.equals(GameItemKeyString.SKILL)) {
                     List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attackedPlayer, snowball.getLocation(), 10);
                     bomber.skill(snowball.getLocation(), effectedPlayers);
@@ -124,7 +114,7 @@ public class DamageEvent implements Listener {
                 gameStatesManager.removeProjectileData(snowball);
                 return;
             }else if(job instanceof Explorer explorer) {
-                String attackItem = projectileData.getItem();
+                String attackItem = projectileData.getCustomItemName();
                 if(attackItem.equals(GameItemKeyString.SKILL)) {
                     explorer.skill(snowball);
                 }
@@ -158,7 +148,7 @@ public class DamageEvent implements Listener {
                 return;
             }
             trident.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
-            if(projectileData.getItem().equals(Rapier.id)) {
+            if(projectileData.getCustomItemName().equals(Rapier.id)) {
                 attackedPlayer = projectileData.getAttacker();
                 if(gameStatesManager.getPlayerJobs().get(attackedPlayer) instanceof Lonely lonely){
                     lonely.lastAttackedTime = System.currentTimeMillis();
@@ -205,7 +195,6 @@ public class DamageEvent implements Listener {
                 effectedPlayers.add(attackedPlayer);
                 gameStatesManager.addAttackedPlayer(attackedPlayer);
                 for (Player damaged : effectedPlayers) {
-                    calculateDamage(attackedPlayer, damaged, 10.0);
                     gameStatesManager.addDamagedPlayer(damaged);
                 }
                 gameStatesManager.removeProjectileData(arrow);
@@ -287,6 +276,9 @@ public class DamageEvent implements Listener {
             // 死亡処理
             if (afterHealth <= 0) {
                 DeathEvent.kill(attackerPlayer, damagedPlayer);
+            }else{
+                damagedPlayer.damage(damage);
+//                damagedPlayer.setHealth(afterHealth);
             }
         }
     }
