@@ -25,11 +25,11 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.item.CustomItem;
-import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
-import org.meyason.dokkoi.item.goalitem.KillerList;
-import org.meyason.dokkoi.item.jobitem.Ketsumou;
-import org.meyason.dokkoi.item.battleitems.HealingCrystal;
+import org.meyason.dokkoi.item.goalitem.*;
+import org.meyason.dokkoi.item.jobitem.*;
+import org.meyason.dokkoi.item.battleitems.*;
 import org.meyason.dokkoi.job.*;
+import org.meyason.dokkoi.goal.*;
 
 import java.util.Objects;
 
@@ -207,7 +207,6 @@ public class InteractEvent implements Listener {
                     }
                     event.setCancelled(true);
                     game.getGameStatesManager().addIsDeactivateDamageOnce(player, true);
-                }else if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.HEARING_CRYSTAL)) {
                 } else if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.HEALINGCRYSTAL)) {
                     CustomItem customItem = CustomItem.getItem(item);
                     if (customItem == null) {
