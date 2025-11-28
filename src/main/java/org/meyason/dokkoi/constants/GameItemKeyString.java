@@ -16,7 +16,7 @@ public class GameItemKeyString {
     public static final String STRONGESTSTRONGESTSTRONGESTBALL = "strongest_strongest_strongest_ball";
 
     public static final String KETSUMOU = "ketsumou";
-    public static final String HEARINGCRISTAL = "healing_cristal";
+    public static final String HEARINGCRISTAL = "healingcristal";
 
     public static final String SKILL = "skill";
     public static final String ULTIMATE_SKILL = "ultimate_skill";

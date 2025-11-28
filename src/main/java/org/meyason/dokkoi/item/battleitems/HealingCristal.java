@@ -17,14 +17,14 @@ public class HealingCristal extends CustomItem {
     private Game game;
     private Player player;
 
-    public static final String id = "HealingCristal";
+    public static final String id = "healingcristal";
 
     public HealingCristal() {
         super(id,"§a回復結晶§r", ItemStack.of(Material.END_CRYSTAL),64);
         List<Component> lore = List.of(
                 Component.text("§5回復力が強そうな結晶。"),
                 Component.text(""),
-                Component.text("§5効果"),
+                Component.text("§b効果"),
                 Component.text("§5使用すると体力を5回復する。")
         );
         setDescription(lore);
