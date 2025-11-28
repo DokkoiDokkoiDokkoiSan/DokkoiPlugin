@@ -47,6 +47,7 @@ public class GameItem {
         items.put(GameItemKeyString.BAKEDPOTATO, new BakedPotato());
         items.put(GameItemKeyString.THUNDERJAVELIN, new ThunderJavelin());
         items.put(GameItemKeyString.REDHELMET, new RedHelmet());
+        items.put(GameItemKeyString.PUMPKINPIE, new PumpkinPie());
     }
 
     public static CustomItem getItem(String id){

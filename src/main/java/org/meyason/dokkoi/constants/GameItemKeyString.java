@@ -26,6 +26,7 @@ public class GameItemKeyString {
 
     public static final String GOLDENCARROT = "golden_carrot";
     public static final String BAKEDPOTATO = "baked_potato";
+    public static final String PUMPKINPIE = "pumpkin_pie";
 
     public static final String LONGSWORD = "long_sword";
     public static final String THUNDERJAVELIN = "thunder_javelin";
@@ -56,7 +57,8 @@ public class GameItemKeyString {
         BAKEDPOTATO,
         THUNDERJAVELIN,
         REDHELMET,
-        TSUYOKUNARU
+        TSUYOKUNARU,
+        PUMPKINPIE
     );
 
     public static List<String> getGameItemKeyStringHashMap() {return gameItemKeyStringHashMap;}
