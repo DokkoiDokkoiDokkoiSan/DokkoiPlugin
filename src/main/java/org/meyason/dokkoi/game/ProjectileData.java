@@ -2,7 +2,6 @@ package org.meyason.dokkoi.game;
 
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.meyason.dokkoi.item.CustomItem;
 
 public class ProjectileData {
 

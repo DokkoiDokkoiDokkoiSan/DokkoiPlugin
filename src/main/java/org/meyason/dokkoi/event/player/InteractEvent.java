@@ -25,15 +25,11 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.goal.Defender;
-import org.meyason.dokkoi.goal.Police;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
 import org.meyason.dokkoi.item.jobitem.Ketsumou;
 import org.meyason.dokkoi.item.battleitems.HealingCrystal;
-import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
-import org.meyason.dokkoi.item.goalitem.KillerList;
-import org.meyason.dokkoi.item.jobitem.Ketsumou;
 import org.meyason.dokkoi.job.*;
 
 import java.util.Objects;

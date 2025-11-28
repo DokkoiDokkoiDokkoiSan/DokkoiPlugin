@@ -3,7 +3,6 @@ package org.meyason.dokkoi.goal;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.exception.NoDefenderTargetPlayerException;
 import org.meyason.dokkoi.game.Game;
