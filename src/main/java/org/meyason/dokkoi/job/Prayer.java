@@ -124,10 +124,9 @@ public class Prayer extends Job {
         this.game = game;
         this.player = player;
         this.goals = List.of(
-//                GoalList.GACHABEGINNER,
-//                GoalList.PACHIASU,
-//                GoalList.GAMBLERMASTER,
-                GoalList.DEFENDER
+                GoalList.GACHABEGINNER,
+                GoalList.PACHIASU,
+                GoalList.GAMBLERMASTER
         );
     }
 

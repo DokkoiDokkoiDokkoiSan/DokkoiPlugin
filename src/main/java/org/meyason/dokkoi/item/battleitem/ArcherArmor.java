@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ArcherArmor extends CustomItem {
 
-    public static final String id = "golden_armor";
+    public static final String id = "archer_armor";
 
     public Game game;
     private Player player;

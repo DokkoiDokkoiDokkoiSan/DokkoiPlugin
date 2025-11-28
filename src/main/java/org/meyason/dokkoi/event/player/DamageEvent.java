@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.event.player;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.*;
@@ -9,7 +10,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.projectiles.ProjectileSource;
+import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.JobList;
@@ -23,6 +28,7 @@ import org.meyason.dokkoi.item.jobitem.Rapier;
 import org.meyason.dokkoi.job.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class DamageEvent implements Listener {
@@ -287,10 +293,17 @@ public class DamageEvent implements Listener {
         if(manager.getIsDeactivateDamageOnce().get(player)){
             ItemStack item = player.getInventory().getChestplate();
             if(item != null){
-                CustomItem customItem = (CustomItem) item.getItemMeta();
-                if(customItem instanceof ArcherArmor){
-                    player.getInventory().setChestplate(null);
-                    player.sendMessage(Component.text("§a弓使いの鎧§bの効果が発動した！"));
+                if(!item.hasItemMeta()){return true;}
+                ItemMeta meta = item.getItemMeta();
+                if(meta != null){
+                    PersistentDataContainer container = meta.getPersistentDataContainer();
+                    NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+                    if(container.has(itemKey, PersistentDataType.STRING)){
+                        if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.ARCHERARMOR)){
+                            player.getInventory().setChestplate(null);
+                            player.sendMessage(Component.text("§a弓使いの鎧§bの効果が発動した！"));
+                        }
+                    }
                 }
             }else{
                 player.sendMessage(Component.text("§aカタクナール§bの効果が発動した！"));

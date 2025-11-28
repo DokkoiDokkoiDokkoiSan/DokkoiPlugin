@@ -113,8 +113,6 @@ public class PickEvent implements Listener {
     public void onClosePlayerInventory(InventoryCloseEvent event) {
         if (!(event.getPlayer() instanceof Player player)) return;
 
-        player.sendMessage("aaaa");
-
         PlayerInventory playerInventory = player.getInventory();
 
         ItemStack chest = playerInventory.getChestplate();
@@ -129,7 +127,6 @@ public class PickEvent implements Listener {
                     if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.ARCHERARMOR)){
                         isArcherArmorEquipped = true;
 
-                        player.sendMessage("bbbb");
                     }
                 }
             }

@@ -25,6 +25,7 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.goal.Defender;
+import org.meyason.dokkoi.goal.Police;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
@@ -186,7 +187,7 @@ public class InteractEvent implements Listener {
                     event.setCancelled(true);
                     GameStatesManager manager = game.getGameStatesManager();
                     if (customItem instanceof KillerList killerList) {
-                        killerList.skill(manager);
+                        killerList.skill(manager, player);
                     }
                 } else if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.BURIBURIGUARD)) {
                     CustomItem customItem = CustomItem.getItem(item);
@@ -211,16 +212,7 @@ public class InteractEvent implements Listener {
                     }
                     event.setCancelled(true);
                     game.getGameStatesManager().addIsDeactivateDamageOnce(player, true);
-                }
-
-
-            }
-
-        }
-    }
-
-
-                } else if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.HEARING_CRYSTAL)) {
+                }else if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.HEARING_CRYSTAL)) {
                     CustomItem customItem = CustomItem.getItem(item);
                     if (customItem == null) {
                         return;
@@ -229,7 +221,7 @@ public class InteractEvent implements Listener {
                         return;
                     }
                     event.setCancelled(true);
-                    if (customItem instanceof HealingCrystal healingCrystal) {
+                    if (customItem instanceof HealingCrystal) {
                         if (player.getHealth() == player.getMaxHealth()) {
                             player.sendMessage("§4既に最大体力です。");
                             return;
@@ -239,7 +231,7 @@ public class InteractEvent implements Listener {
                             newHealth = player.getMaxHealth();
                         }
                         player.setHealth(newHealth);
-                        player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE,10,1);
+                        player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 10, 1);
                         player.sendMessage("§a回復結晶を使用した！");
 
                         item.setAmount(item.getAmount() - 1);
