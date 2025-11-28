@@ -199,7 +199,7 @@ public class InteractEvent implements Listener {
                     if (customItem instanceof BuriBuriGuard buriburiguard) {
                         buriburiguard.skill();
                     }
-                } else if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.HEARING_CRYSTAL)) {
+                } else if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.HEALINGCRYSTAL)) {
                     CustomItem customItem = CustomItem.getItem(item);
                     if (customItem == null) {
                         return;
