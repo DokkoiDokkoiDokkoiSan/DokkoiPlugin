@@ -10,7 +10,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.item.food.*;
-import org.meyason.dokkoi.item.battleitems.HealingCristal;
+import org.meyason.dokkoi.item.battleitems.HealingCrystal;
 import org.meyason.dokkoi.item.job.gacha.*;
 import org.meyason.dokkoi.item.goal.*;
 import org.meyason.dokkoi.item.job.*;
@@ -34,7 +34,7 @@ public class GameItem {
         items.put(GameItemKeyString.RAPIER, new Rapier());
         items.put(GameItemKeyString.TIERPLAYERLIST, new TierPlayerList());
         items.put(GameItemKeyString.KETSUMOU, new Ketsumou());
-        items.put(GameItemKeyString.HEARINGCRISTAL, new HealingCristal());
+        items.put(GameItemKeyString.HEARINGCRYSTAL, new HealingCrystal());
         items.put(GameItemKeyString.BURIBURIGUARD, new BuriBuriGuard());
         items.put(GameItemKeyString.STRONGESTBALL, new StrongestBall());
         items.put(GameItemKeyString.STRONGESTSTRONGESTBALL, new StrongestStrongestBall());
