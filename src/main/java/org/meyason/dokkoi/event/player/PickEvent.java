@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -38,11 +39,7 @@ public class PickEvent implements Listener {
 
                 CustomItem customItem = CustomItem.getItem(item);
                 if(customItem instanceof Ketsumou){
-                    if(job instanceof Explorer explorer){
-                        explorer.passive();
-                    }else{
-                        Ketsumou.deactivate(player);
-                    }
+                    Ketsumou.deactivate(player);
                 }
             }
         }
@@ -52,8 +49,8 @@ public class PickEvent implements Listener {
     public void onInventoryClick(InventoryClickEvent event){
         if (!(event.getWhoClicked() instanceof Player player)) return;
 
-        ItemStack slotItem   = event.getCurrentItem(); // クリックしたスロットの中身
-        ItemStack cursorItem = event.getCursor();      // カーソル上の中身
+        ItemStack slotItem   = event.getCurrentItem();
+        ItemStack cursorItem = event.getCursor();
 
         // Ketsumou判定
         java.util.function.Predicate<ItemStack> isKetsumou = stack -> {
@@ -70,49 +67,19 @@ public class PickEvent implements Listener {
         boolean clickedIsBottom = event.getClickedInventory() != null
                 && event.getClickedInventory().equals(player.getOpenInventory().getBottomInventory());
 
+
         Job job = Game.getInstance().getGameStatesManager().getPlayerJobs().get(player);
-
-        // チェストのKetsumouをクリックし、シフトでインベントリに入れるとき
-        if (clickedIsTop && slotIsKetsumou) {
-            // シフトクリックで一気に移動
-            if (event.getClick().isShiftClick()) {
-                if (job instanceof Explorer explorer) {
-                    explorer.passive();
-                } else {
-                    Ketsumou.activate(player);
-                }
-            }
-        }
-
-        // インベントリのKetsumouをシフトでチェストに入れるとき
-        if (clickedIsBottom && slotIsKetsumou) {
-            if (event.getClick().isShiftClick()) {
-                if (job instanceof Explorer explorer) {
-                    explorer.passive();
-                } else {
-                    Ketsumou.deactivate(player);
-                }
-            }
-        }
 
         // インベントリのKetsumouとカーソルの別のアイテムを交代するとき
         // スロット: Ketsumou, カーソル: Ketsumou以外（減る）
         if (clickedIsBottom && slotIsKetsumou && !cursorIsKetsumou) {
-            if (job instanceof Explorer explorer) {
-                explorer.passive();
-            } else {
-                Ketsumou.deactivate(player);
-            }
+            Ketsumou.deactivate(player);
         }
 
         //  カーソルのKetsumouとインベントリの別のアイテムを交代するとき
         // カーソル: Ketsumou, スロット: Ketsumou以外（増える）
         if (clickedIsBottom && cursorIsKetsumou && !slotIsKetsumou) {
-            if (job instanceof Explorer explorer) {
-                explorer.passive();
-            } else {
-                Ketsumou.activate(player);
-            }
+            Ketsumou.activate(player);
         }
     }
 
@@ -131,11 +98,7 @@ public class PickEvent implements Listener {
             if(itemName != null){
                 CustomItem customItem = CustomItem.getItem(item);
                 if(customItem instanceof Ketsumou){
-                    if(job instanceof Explorer explorer){
-                        explorer.passive();
-                    }else{
-                        Ketsumou.activate(player);
-                    }
+                    Ketsumou.activate(player);
                 }
             }
         }

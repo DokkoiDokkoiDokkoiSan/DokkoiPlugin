@@ -22,6 +22,8 @@ public class GameItemKeyString {
     public static final String ULTIMATE_SKILL = "ultimate_skill";
     public static final String PASSIVE_SKILL = "passive_skill";
 
+    public static final String GOLDENCARROT = "golden_carrot";
+
     private static final List<String> gameItemKeyStringHashMap = List.of(
         ITEM_NAME,
         GACHA_MACHINE,
@@ -36,7 +38,8 @@ public class GameItemKeyString {
         BURIBURIGUARD,
         STRONGESTBALL,
         STRONGESTSTRONGESTBALL,
-        STRONGESTSTRONGESTSTRONGESTBALL
+        STRONGESTSTRONGESTSTRONGESTBALL,
+        GOLDENCARROT
     );
 
     public static List<String> getGameItemKeyStringHashMap() {return gameItemKeyStringHashMap;}

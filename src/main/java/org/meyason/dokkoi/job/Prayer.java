@@ -1,16 +1,19 @@
 package org.meyason.dokkoi.job;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
+import org.meyason.dokkoi.event.player.DamageEvent;
+import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.game.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
@@ -49,6 +52,9 @@ public class Prayer extends Job {
     }};
 
     public static final HashMap<String, List<String>> rarityEffectMap = new HashMap<>(){{
+        put(R, List.of(
+                GameItemKeyString.GOLDENCARROT
+        ));
         put(KETSU, List.of(GameItemKeyString.STRONGESTBALL));
         put(KETSUGE, List.of(GameItemKeyString.STRONGESTSTRONGESTBALL));
         put(KETSUMOU, List.of(GameItemKeyString.STRONGESTSTRONGESTSTRONGESTBALL));
@@ -70,11 +76,18 @@ public class Prayer extends Job {
     public int getGachaCount(){
         return gachaCount;
     }
+
+    private boolean onLREffect = false;
+    public boolean isOnLREffect(){
+        return onLREffect;
+    }
+
     public void addGachaCount(Game game, Player player){
         gachaCount++;
         if(gachaCount % 10 == 0){
             game.getGameStatesManager().addAdditionalDamage(player, 1);
             player.setMaxHealth(player.getMaxHealth() + 10);
+            player.setHealth(player.getHealth() + 10);
             player.sendMessage("§bガチャ回転数が10回溜まったので、与ダメージが1と最大体力が10増加しました。");
         }
     }
@@ -86,13 +99,14 @@ public class Prayer extends Job {
         normal_skill_name = "§3全回転";
         ultimate_skill_name = "§650:50";
 
-        skillSound = Sound.UI_TOAST_CHALLENGE_COMPLETE;
+        skillSound = Sound.BLOCK_END_PORTAL_FRAME_FILL;
         skillVolume = 1.0f;
         skillPitch = 1.2f;
 
-        ultimateSkillSound = Sound.BLOCK_PORTAL_TRAVEL;
+        ultimateSkillSound = Sound.ENTITY_ENDER_DRAGON_AMBIENT;
         ultimateSkillVolume = 1.0f;
         ultimateSkillPitch = 1.0f;
+        setRemainCoolTimeSkillUltimate(300);
     }
 
     public void setPlayer(Game game, Player player){
@@ -158,6 +172,9 @@ public class Prayer extends Job {
                 break;
             }
         }
+        if(gachaCount == 49){
+            selectedRarity = KETSU;
+        }
         List<String> itemList = rarityEffectMap.get(selectedRarity);
         if(itemList == null){
             player.sendMessage("§6エラーが発生しました．管理者に連絡してください：ガチャアイテムリスト取得失敗");
@@ -165,10 +182,11 @@ public class Prayer extends Job {
         }
         String itemName = itemList.get(new Random().nextInt(itemList.size()));
         CustomItem item = GameItem.getItem(itemName);
-         if(item == null){
-              player.sendMessage("§6エラーが発生しました．管理者に連絡してください：ガチャアイテム取得失敗");
-              return;
-         }
+        if(item == null){
+            player.sendMessage("§6エラーが発生しました．管理者に連絡してください：ガチャアイテム取得失敗");
+            return;
+        }
+        gachaPoint -= 1;
         ItemStack rewardItem = item.getItem();
         PlayerInventory inventory = player.getInventory();
         inventory.addItem(rewardItem);
@@ -177,8 +195,102 @@ public class Prayer extends Job {
             Bukkit.getServer().broadcast((Component.text("§6§l[ガチャ速報] §e" + player.getName() + "§aがガチャで" +selectedRarity+ " " + item.getName() + "§aを引き当てた！")));
         }
         addGachaCount(game, player);
+
+        //レアリティに応じた効果を発動
         if(Objects.equals(selectedRarity, R)) {
             List<Player> targets = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 20);
+            for(Player target : targets){
+                DamageEvent.calculateDamage(player, target, 1);
+            }
+        }else if(Objects.equals(selectedRarity, SR)) {
+            List<Player> targets = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 20);
+            for(Player target : targets){
+                target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20 * 10, 2));
+            }
+        }else if(Objects.equals(selectedRarity, UR)) {
+            List<Player> targets = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 20);
+            for(Player target : targets){
+                game.getGameStatesManager().addAdditionalDamage(target, -500);
+            }
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    for(Player target : targets){
+                        if(!target.isOnline()){
+                            continue;
+                        }
+                        game.getGameStatesManager().addAdditionalDamage(target, 500);
+                    }
+                }
+            }.runTaskLater(Dokkoi.getInstance(), 20 * 10);
+        }else if(Objects.equals(selectedRarity, LR)) {
+            game.getGameStatesManager().addDamageCutPercent(player, 100);
+            onLREffect = true;
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if(!player.isOnline()){
+                        cancel();
+                        return;
+                    }
+                    onLREffect = false;
+                    game.getGameStatesManager().addDamageCutPercent(player, -100);
+                }
+            }.runTaskTimer(Dokkoi.getInstance(), 0, 10 * 20);
+        }else if(Objects.equals(selectedRarity, KETSU)) {
+            player.spawnParticle(Particle.FIREWORK, player.getLocation(), 1, 0.1, 0.1, 0.1);
+            List<Player> targets = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 20);
+            for(Player target : targets){
+                target.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20 * 10, 255));
+                target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20 * 10, 255));
+            }
+        }else if(Objects.equals(selectedRarity, KETSUGE)) {
+            player.spawnParticle(Particle.FIREWORK, player.getLocation(), 3, 1, 1, 1);
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
+            List<Player> targets = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 10);
+            for(Player target : targets){
+                DeathEvent.kill(player, target);
+            }
+        }else if(Objects.equals(selectedRarity, KETSUMOU)) {
+            player.spawnParticle(Particle.EXPLOSION_EMITTER, player.getLocation(), 5, 1, 1, 1);
+            player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0F, 1.0F);
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
+            List<Player> targets = new ArrayList<>(game.getGameStatesManager().getAlivePlayers());
+            for(Player target : targets){
+                if(target.equals(player)) continue;
+                if(!target.isOnline()) continue;
+                DeathEvent.kill(player, target);
+            }
         }
+    }
+
+    public void ultimate(){
+        List<Player> alivePlayers = new ArrayList<>(game.getGameStatesManager().getAlivePlayers());
+        alivePlayers.remove(player);
+        if(alivePlayers.isEmpty()){
+            player.sendMessage("§c他に生存者がいないため、異空間に転移できませんでした。");
+            return;
+        }
+        Player target = alivePlayers.get(new Random().nextInt(alivePlayers.size()));
+        // TODO: 異空間
+        player.sendMessage("§a" + target.getName() + "§aと異空間に転移しました。どちらかが死ぬまで戻れません。");
+        target.sendMessage("§a" + player.getName() + "§aと異空間に転移しました。どちらかが死ぬまで戻れません。");
+        player.sendMessage("§a抽選中...");
+        target.sendMessage("§a抽選中...");
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                double result = Math.random();
+                if (result < 0.5) {
+                    DeathEvent.kill(target, player);
+                    player.sendMessage("§aあなたの勝利です。");
+                    target.sendMessage("§cあなたは敗北しました。");
+                } else {
+                    DeathEvent.kill(player, target);
+                    target.sendMessage("§aあなたの勝利です。");
+                    player.sendMessage("§cあなたは敗北しました。");
+                }
+            }
+        }.runTaskLater(Dokkoi.getInstance(), 20 * 5);
     }
 }
