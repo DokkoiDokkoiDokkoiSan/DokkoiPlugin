@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
@@ -37,18 +38,16 @@ public class GetItemCommand implements CommandExecutor {
             return false;
         }
 
-        CustomItem item = GameItem.getItem(itemId);
-
-        if(item == null){
+        try{
+            CustomItem item = GameItem.getItem(itemId);
+            ItemStack itemStack = item.getItem();
+            itemStack.setAmount(amount);
+            player.getInventory().addItem(itemStack);
+            player.sendMessage("§a" + item.getName() + "§bを" + amount + "個手に入れた！");
+        }catch (NoGameItemException e) {
             player.sendMessage("§c指定されたIDのアイテムは存在しません。");
             return false;
         }
-        ItemStack itemStack = item.getItem();
-        itemStack.setAmount(amount);
-        player.getInventory().addItem(itemStack);
-        player.sendMessage("§a" + item.getName() + "§bを" + amount + "個手に入れた！");
-
-
         return true;
     }
 }
