@@ -1,20 +1,19 @@
 package org.meyason.dokkoi.event.player;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.meyason.dokkoi.constants.GameItemKeyString;
-import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.Goal;
-import org.meyason.dokkoi.goal.MassTierKiller;
 import org.meyason.dokkoi.goal.Police;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.goal.KillerList;
+import org.meyason.dokkoi.item.battleitem.RedHelmet;
 import org.meyason.dokkoi.job.Bomber;
 
 import java.util.HashMap;
@@ -50,6 +49,17 @@ public class DeathEvent {
         dead.sendMessage("§eキルしたプレイヤー: §l§c" + killer.getName() + "§r§e");
         killer.sendMessage("§aあなたは§l§6" + dead.getName() + "§r§aを倒しました");
 
+        if(!manager.getPlayerGoals().get(killer).isKillable(dead)){
+            killer.sendMessage("§c注意: §6" + dead.getName() + " §cを倒しましたが，あなたの勝利条件には含まれていません");
+            killer.sendMessage("§c倒した相手が勝利条件に含まれていないため，赤い帽子がかぶせられます");
+            RedHelmet item = (RedHelmet) GameItem.getItem(GameItemKeyString.REDHELMET);
+            if(item == null){
+                killer.sendMessage(Component.text("§4エラーが発生しました．管理者に連絡してください：赤い帽子取得失敗"));
+                return;
+            }
+            item.setPlayerHead(killer);
+        }
+
         if(manager.isEnableKillerList()){
             HashMap<Player, Goal> playerGoals = manager.getPlayerGoals();
             for(Player p : manager.getAlivePlayers()){
@@ -63,7 +73,7 @@ public class DeathEvent {
         }
 
         dead.setGameMode(GameMode.SPECTATOR);
-        dead.setHealth(20.0);
+        dead.setHealth(40.0);
 
         World world = dead.getWorld();
         List<String> gameItemList = GameItemKeyString.getGameItemKeyStringHashMap();

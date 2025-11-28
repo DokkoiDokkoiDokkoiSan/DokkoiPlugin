@@ -1,5 +1,6 @@
 package org.meyason.dokkoi.goal;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -7,7 +8,7 @@ import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.goal.KillerList;
+import org.meyason.dokkoi.item.goalitem.KillerList;
 
 import java.util.List;
 
@@ -44,6 +45,9 @@ public class Police extends Goal {
             this.killerList.setPlayer(game, player);
         }
         inventory.addItem(killerListItem);
+        this.player.sendMessage(Component.text("§b----------------------------"));
+        this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e殺すリストに記載されたプレイヤーのみ"));
+        this.player.sendMessage(Component.text("§bこれ以外を殺害するとペナルティが付与される"));
         return;
     }
 
@@ -66,5 +70,14 @@ public class Police extends Goal {
 
         this.player.sendMessage("§6よくやった。街に平和が戻った！");
         return true;
+    }
+
+    @Override
+    public boolean isKillable(Player targetPlayer){
+        List<Player> targetPlayers = this.game.getGameStatesManager().getKillerList().keySet().stream().toList();
+        if(targetPlayers.contains(targetPlayer)){
+            return true;
+        }
+        return false;
     }
 }

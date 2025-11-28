@@ -1,5 +1,7 @@
 package org.meyason.dokkoi.constants;
 
+import org.meyason.dokkoi.item.battleitem.ArcherArmor;
+
 import java.util.List;
 
 public class GameItemKeyString {
@@ -22,6 +24,13 @@ public class GameItemKeyString {
     public static final String PASSIVE_SKILL = "passive_skill";
 
     public static final String GOLDENCARROT = "golden_carrot";
+    public static final String BAKEDPOTATO = "baked_potato";
+
+    public static final String LONGSWORD = "long_sword";
+    public static final String THUNDERJAVELIN = "thunder_javelin";
+
+    public static final String ARCHERARMOR = "archer_armor";
+    public static final String REDHELMET = "red_helmet";
 
     private static final List<String> gameItemKeyStringHashMap = List.of(
         ITEM_NAME,
@@ -37,7 +46,12 @@ public class GameItemKeyString {
         STRONGESTBALL,
         STRONGESTSTRONGESTBALL,
         STRONGESTSTRONGESTSTRONGESTBALL,
-        GOLDENCARROT
+        GOLDENCARROT,
+        LONGSWORD,
+        ARCHERARMOR,
+        BAKEDPOTATO,
+        THUNDERJAVELIN,
+        REDHELMET
     );
 
     public static List<String> getGameItemKeyStringHashMap() {return gameItemKeyStringHashMap;}

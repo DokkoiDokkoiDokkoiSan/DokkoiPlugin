@@ -1,4 +1,4 @@
-package org.meyason.dokkoi.item.goal;
+package org.meyason.dokkoi.item.goalitem;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -18,7 +18,6 @@ import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class KillerList extends CustomItem {
@@ -28,24 +27,10 @@ public class KillerList extends CustomItem {
     private Player player;
     private Game game;
 
+    private List<Player> targetPlayerList = new ArrayList<>();
+
     public KillerList() {
-        super(id, "§a殺すノート", ItemStack.of(Material.PAPER), 1);
-        this.baseItem = ItemStack.of(Material.WRITTEN_BOOK);
-        BookMeta bookMeta = (BookMeta) baseItem.getItemMeta();
-        bookMeta.setTitle("§a殺すノート");
-        bookMeta.setAuthor("§6二階堂真紅");
-        List<Component> lore = List.of(
-                Component.text("§5なんかでかいトカゲが落としたメモ帳。勝手に文字書かれる、こわ。"),
-                Component.text(""),
-                Component.text("§b効果"),
-                Component.text("§5殺人をしたプレイヤー名が自身のチャットログにアナウンスされ、ノートに記入される。"),
-                Component.text("§5また、ノートを左クリックすることで記入されたプレイヤーに発光を10秒間付与する。"),
-                Component.text("§cCT 30秒"),
-                Component.text("§bこれらのプレイヤーをすべて殺害せよ。")
-        );
-        bookMeta.lore(lore);
-        setDescription(lore);
-        baseItem.setItemMeta(bookMeta);
+        super(id, "§a殺すノート", ItemStack.of(Material.WRITTEN_BOOK), 1);
         isUnique = true;
     }
 
@@ -54,7 +39,21 @@ public class KillerList extends CustomItem {
         default_setting = (item) -> {
             ItemMeta meta = item.getItemMeta();
             if(meta != null){
-                item.setItemMeta(meta);
+                BookMeta bookMeta = (BookMeta) item.getItemMeta();
+                bookMeta.setTitle("§a殺すノート");
+                bookMeta.setAuthor("§6二階堂真紅");
+                List<Component> lore = List.of(
+                        Component.text("§5なんかでかいトカゲが落としたメモ帳。勝手に文字書かれる、こわ。"),
+                        Component.text(""),
+                        Component.text("§b効果"),
+                        Component.text("§5殺人をしたプレイヤー名が自身のチャットログにアナウンスされ、ノートに記入される。"),
+                        Component.text("§5また、ノートを左クリックすることで記入されたプレイヤーに発光を10秒間付与する。"),
+                        Component.text("§cCT 30秒"),
+                        Component.text("§bこれらのプレイヤーをすべて殺害せよ。")
+                );
+                bookMeta.lore(lore);
+                setDescription(lore);
+                item.setItemMeta(bookMeta);
             }
             return item;
         };
@@ -84,6 +83,7 @@ public class KillerList extends CustomItem {
         this.baseItem = book;
         //アイテム更新
         this.player.getInventory().addItem(book);
+        this.targetPlayerList = killerPlayers;
     }
 
     public void skill(GameStatesManager gameStatesManager){
@@ -111,5 +111,9 @@ public class KillerList extends CustomItem {
         };
         itemInitTask.runTaskLater(Dokkoi.getInstance(), 30 * 20L);
         gameStatesManager.addItemCoolDownScheduler(player, itemInitTask);
+    }
+
+    public List<Player> getTargetPlayerList() {
+        return targetPlayerList;
     }
 }
