@@ -40,7 +40,6 @@ public class GameItem {
         items.put(GameItemKeyString.STRONGESTSTRONGESTBALL, new StrongestStrongestBall());
         items.put(GameItemKeyString.STRONGESTSTRONGESTSTRONGESTBALL, new StrongestStrongestStrongestBall());
         items.put(GameItemKeyString.GOLDENCARROT, new GoldenCarrot());
-
     }
 
     public static CustomItem getItem(String id){
