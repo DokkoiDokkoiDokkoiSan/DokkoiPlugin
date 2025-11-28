@@ -5,7 +5,8 @@ public enum EntityID {
     ZAKOSHI("zakoshi", "comedian"),
     WAKABAYASHI("wakabayashi", "comedian"),
     OGATA("ogata", "comedian"),
-    OOKI("ooki", "comedian"),;
+    OOKI("ooki", "comedian"),
+    DEALER("dealer", "npc");
 
     private final String id;
     private final String type;

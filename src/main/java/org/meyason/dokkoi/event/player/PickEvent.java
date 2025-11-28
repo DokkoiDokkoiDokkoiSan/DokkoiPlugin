@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -13,7 +14,9 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.battleitem.ArcherArmor;
 import org.meyason.dokkoi.item.jobitem.Ketsumou;
 import org.meyason.dokkoi.job.Job;
 
@@ -25,7 +28,7 @@ public class PickEvent implements Listener {
         if(!item.hasItemMeta()){return;}
 
         Player player = event.getPlayer();
-        Job job = Game.getInstance().getGameStatesManager().getPlayerJobs().get(player);
+        GameStatesManager manager = Game.getInstance().getGameStatesManager();
         ItemMeta meta = item.getItemMeta();
 
         PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -38,6 +41,8 @@ public class PickEvent implements Listener {
                 CustomItem customItem = CustomItem.getItem(item);
                 if(customItem instanceof Ketsumou){
                     Ketsumou.deactivate(player);
+                }else if(customItem instanceof ArcherArmor){
+                    manager.addIsDeactivateDamageOnce(player, false);
                 }
             }
         }
@@ -94,6 +99,42 @@ public class PickEvent implements Listener {
         if (clickedIsBottom && cursorIsKetsumou && !slotIsKetsumou) {
             Ketsumou.activate(player);
         }
+
+        // チェストプレートにArcherArmorを装備するとき
+        if (clickedIsBottom && slotItem != null) {
+            CustomItem customItem = CustomItem.getItem(slotItem);
+            if(customItem instanceof ArcherArmor){
+                Game.getInstance().getGameStatesManager().addIsDeactivateDamageOnce(player, true);
+            }
+        }
+        // チェストプレートからArcherArmorを外すとき
+        if (clickedIsBottom) {
+            CustomItem customItem = CustomItem.getItem(cursorItem);
+            if(customItem instanceof ArcherArmor){
+                Game.getInstance().getGameStatesManager().addIsDeactivateDamageOnce(player, false);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onClosePlayerInventory(InventoryCloseEvent event) {
+        if (!(event.getPlayer() instanceof Player player)) return;
+
+        ItemStack chest = player.getInventory().getChestplate();
+        boolean isArcherArmorEquipped = false;
+
+        if (chest != null && chest.hasItemMeta()) {
+            CustomItem ci = CustomItem.getItem(chest);
+            if (ci instanceof ArcherArmor) {
+                isArcherArmorEquipped = true;
+            }
+        }
+
+        // ArcherArmor を装備しているなら true, 外れているなら false を設定
+        Game.getInstance()
+                .getGameStatesManager()
+                .addIsDeactivateDamageOnce(player, isArcherArmorEquipped);
+
     }
 
     @EventHandler

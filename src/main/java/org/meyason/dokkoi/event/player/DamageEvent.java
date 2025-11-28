@@ -64,14 +64,13 @@ public class DamageEvent implements Listener {
             lonely.lastDamagedTime = System.currentTimeMillis();
         }
 
-        event.setCancelled(true);
         if(disableDamageOnce(gameStatesManager, damagedPlayer)){
             return;
         }
 
         double damage = event.getFinalDamage();
+        event.setCancelled(true);
         calculateDamage(attackedPlayer, damagedPlayer, damage);
-
     }
 
     // エンティティからのダメージ
@@ -238,17 +237,6 @@ public class DamageEvent implements Listener {
         if(gameStatesManager.getPlayerJobs().get(attacker) instanceof Lonely lonely){
             lonely.lastAttackedTime = System.currentTimeMillis();
         }
-
-        if(damaged instanceof Villager villager){
-            for(EntityID entityID : EntityID.values()){
-                if(villager.getPersistentDataContainer().has(new NamespacedKey(Dokkoi.getInstance(), entityID.getId()), PersistentDataType.STRING)){
-                    if(Comedian.isComedianByID(entityID.getId())){
-                        event.setCancelled(true);
-                        return;
-                    }
-                }
-            }
-        }
     }
 
     @EventHandler
@@ -315,7 +303,7 @@ public class DamageEvent implements Listener {
             }else{
                 player.sendMessage(Component.text("§aカタクナール§bの効果が発動した！"));
             }
-            manager.getIsDeactivateDamageOnce().put(player, false);
+            manager.addIsDeactivateDamageOnce(player, false);
             return true;
         }
         return false;

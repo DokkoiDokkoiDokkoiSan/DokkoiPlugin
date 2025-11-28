@@ -1,5 +1,6 @@
 package org.meyason.dokkoi.goal;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
@@ -28,6 +29,9 @@ public class MaidenGazer extends Goal {
     @Override
     public void addItem() {
         this.player.sendMessage("§2パッシブ『こっち見ろ！ばか！』で視線誘導を合計60秒間発動させろ！");
+        this.player.sendMessage(Component.text("§b----------------------------"));
+        this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e0 人"));
+        this.player.sendMessage(Component.text("§bこれ以上殺害するとペナルティが付与される"));
     }
 
     public int getPoint(){
@@ -45,6 +49,11 @@ public class MaidenGazer extends Goal {
             return true;
         }
         this.player.sendMessage("§c誰もお前のことなんか見ちゃいない");
+        return false;
+    }
+
+    @Override
+    public boolean isKillable(Player targetPlayer){
         return false;
     }
 }

@@ -75,6 +75,9 @@ public class MassTierKiller extends Goal {
             this.tierPlayerList.setPlayer(game, player);
         }
         inventory.addItem(tierListItem);
+        this.player.sendMessage(Component.text("§b----------------------------"));
+        this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e勝利条件が" + this.tierString + "§bのプレイヤー全員"));
+        this.player.sendMessage(Component.text("§bこれ以外を殺害するとペナルティが付与される"));
     }
 
     public void updateList(){
@@ -91,16 +94,20 @@ public class MassTierKiller extends Goal {
             return false;
         }
         for(Player targetPlayer : game.getGameStatesManager().getAlivePlayers()){
-            Goal goal = game.getGameStatesManager().getPlayerGoals().get(targetPlayer);
             if(targetPlayer.equals(this.player)){
                 continue;
             }
-            if(goal.tier == this.targetTier){
+            if(tierPlayerList.getTargetPlayers().contains(targetPlayer)){
                 this.player.sendMessage("§c全ての" + this.tierString + "プレイヤーを殺害できなかった。");
                 return false;
             }
         }
         this.player.sendMessage(Component.text("§6全ての" + this.tierString + "プレイヤーを殺害した！"));
         return true;
+    }
+
+    @Override
+    public boolean isKillable(Player targetPlayer){
+        return tierPlayerList.getTargetPlayers().contains(targetPlayer);
     }
 }

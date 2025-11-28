@@ -20,6 +20,9 @@ public class GoalList {
     public static final KetsumouHunter KETSUMOUHUNTER = new KetsumouHunter();
     public static final KetsumouPirate KETSUMOUPIRATE = new KetsumouPirate();
     public static final Defender DEFENDER = new Defender();
+    public static final GachaBeginner GACHABEGINNER = new GachaBeginner();
+    public static final Pachikasu PACHIASU = new Pachikasu();
+    public static final GamblerMaster GAMBLERMASTER = new GamblerMaster();
 
     private static final HashMap<String, Goal> goalMap = new HashMap<>();
 
@@ -36,6 +39,9 @@ public class GoalList {
         goalMap.put(KETSUMOUHUNTER.getName(), KETSUMOUHUNTER);
         goalMap.put(KETSUMOUPIRATE.getName(), KETSUMOUPIRATE);
         goalMap.put(DEFENDER.getName(), DEFENDER);
+        goalMap.put(GACHABEGINNER.getName(), GACHABEGINNER);
+        goalMap.put(PACHIASU.getName(), PACHIASU);
+        goalMap.put(GAMBLERMASTER.getName(), GAMBLERMASTER);
     }
 
     public static List<Goal> getAllGoals(){

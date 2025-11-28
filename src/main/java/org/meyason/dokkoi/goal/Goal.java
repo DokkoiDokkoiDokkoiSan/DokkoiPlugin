@@ -46,6 +46,8 @@ public abstract class Goal implements Cloneable {
 
     public abstract boolean isAchieved();
 
+    public abstract boolean isKillable(Player targetPlayer);
+
     public Goal clone() {
         try {
             return (Goal) super.clone();

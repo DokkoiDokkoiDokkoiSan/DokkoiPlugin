@@ -2,17 +2,16 @@ package org.meyason.dokkoi.goal;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.inventory.ItemStack;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestStrongestBall;
 
-import java.util.List;
+public class GamblerMaster extends Goal {
 
-public class Shadow extends Goal {
-
-    public Shadow() {
-        super("Shadow", "ゲーム終了まで誰も攻撃せず、攻撃も受けずに生き残れ！");
+    public GamblerMaster() {
+        super("GachaBeginner", "ガチで最強のたまたまを手に入れろ！");
     }
 
     @Override
@@ -24,9 +23,10 @@ public class Shadow extends Goal {
         setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
+
     @Override
     public void addItem() {
-        this.player.sendMessage("§2ゲーム終了まで誰も攻撃せず、攻撃も受けずに生き残れ！");
+        this.player.sendMessage(Component.text("§2ガチで最強のたまたまを手に入れろ！"));
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e0 人"));
         this.player.sendMessage(Component.text("§bこれ以上殺害するとペナルティが付与される"));
@@ -36,19 +36,20 @@ public class Shadow extends Goal {
     @Override
     public boolean isAchieved() {
         if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
-            this.player.sendMessage("§cお前はもう死んでいる。");
+            this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;
         }
-        if(this.game.getGameStatesManager().getAttackedPlayers().contains(this.player)){
-            this.player.sendMessage("§cお前は攻撃してしまった。");
-            return false;
+        for(ItemStack itemStack : player.getInventory()){
+            if(itemStack != null && itemStack.getItemMeta() != null){
+                CustomItem customItem = CustomItem.getItem(itemStack);
+                if(customItem instanceof StrongestStrongestStrongestBall){
+                    this.player.sendMessage(Component.text("§6今すぐパチスロに行け！"));
+                    return true;
+                }
+            }
         }
-        if(this.game.getGameStatesManager().getDamagedPlayers().contains(this.player)){
-            this.player.sendMessage("§cお前は攻撃を受けてしまった。");
-            return false;
-        }
-        this.player.sendMessage("§6よくやった。お前は真のぼっちだ！");
-        return true;
+        this.player.sendMessage(Component.text("§cギャンブラーとしてはまだまだだな。"));
+        return false;
     }
 
     @Override

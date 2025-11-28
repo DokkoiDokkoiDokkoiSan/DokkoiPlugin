@@ -54,14 +54,18 @@ public class Defender extends Goal {
             this.buriBuriGuard.setPlayer(game, player);
         }
         inventory.addItem(itemStack);
+        this.player.sendMessage(Component.text("§b----------------------------"));
+        this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e護衛対象と自分以外の生存者"));
+        this.player.sendMessage(Component.text("§bこれ以外を殺害するとペナルティが付与される"));
         return;
     }
 
     public void setTargetPlayer(){
         //プレイヤー抽選
         List<Player> players = game.getGameStatesManager().getAlivePlayers();
-        players.remove(this.player);
-        Player target = players.get(new Random().nextInt(players.size()));
+        List<Player> copyPlayers = new java.util.ArrayList<>(List.copyOf(players));
+        copyPlayers.remove(this.player);
+        Player target = copyPlayers.get(new Random().nextInt(players.size()));
         if(target != null){
             this.targetPlayer = target;
             this.player.sendMessage("§2生存者を §6" + targetPlayer.getName() + " §2と自分の二人だけにせよ！");
@@ -99,6 +103,14 @@ public class Defender extends Goal {
 
         this.player.sendMessage("多分つぶしたと思うけどもしこのメッセージが出てきたら状況を運営に報告してください．");
         return false;
+    }
+
+    @Override
+    public boolean isKillable(Player targetPlayer) {
+        if(targetPlayer.equals(this.player) || targetPlayer.equals(this.targetPlayer)){
+            return false;
+        }
+        return true;
     }
 
 }

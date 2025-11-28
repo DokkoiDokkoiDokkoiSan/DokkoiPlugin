@@ -97,11 +97,9 @@ public class Prayer extends Job {
 
     public void addGachaCount(Game game, Player player){
         gachaCount++;
-        if(gachaCount % 10 == 0){
+        if(gachaCount % 20 == 0){
             game.getGameStatesManager().addAdditionalDamage(player, 1);
-            player.setMaxHealth(player.getMaxHealth() + 10);
-            player.setHealth(player.getHealth() + 10);
-            player.sendMessage("§bガチャ回転数が10回溜まったので、与ダメージが1と最大体力が10増加しました。");
+            player.sendMessage("§bガチャ回転数が20回溜まったので、与ダメージが1と最大体力が10増加しました。");
         }
     }
 
@@ -126,7 +124,9 @@ public class Prayer extends Job {
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.SHADOW
+                GoalList.GACHABEGINNER,
+                GoalList.PACHIASU,
+                GoalList.GAMBLERMASTER
         );
     }
 
@@ -136,7 +136,7 @@ public class Prayer extends Job {
             twiceCoolTimeSkill();
         }
         passive_skill_description = List.of(
-                Component.text("§5ガチャ回転数が10回溜まる度に与ダメージが1と最大体力が10増加する。"),
+                Component.text("§5ガチャ回転数が20回溜まる度に与ダメージが1増加する。"),
                 Component.text("§5開けたことのないチェストを開く度に『ガチャポイント』が貰える。")
         );
 

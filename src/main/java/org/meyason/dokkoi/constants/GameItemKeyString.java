@@ -30,6 +30,7 @@ public class GameItemKeyString {
     public static final String THUNDERJAVELIN = "thunder_javelin";
 
     public static final String ARCHERARMOR = "archer_armor";
+    public static final String REDHELMET = "red_helmet";
 
     private static final List<String> gameItemKeyStringHashMap = List.of(
         ITEM_NAME,
@@ -49,7 +50,8 @@ public class GameItemKeyString {
         LONGSWORD,
         ARCHERARMOR,
         BAKEDPOTATO,
-        THUNDERJAVELIN
+        THUNDERJAVELIN,
+        REDHELMET
     );
 
     public static List<String> getGameItemKeyStringHashMap() {return gameItemKeyStringHashMap;}

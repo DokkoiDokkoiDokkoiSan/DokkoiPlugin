@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
@@ -46,9 +47,9 @@ public class InteractEvent implements Listener {
 
         }else if(game.getGameStatesManager().getGameState() == GameState.IN_GAME) {
 
-            if(event.getClickedBlock() instanceof Container container){
+            if(event.getClickedBlock() instanceof Chest chest){
                 if(game.getGameStatesManager().getPlayerJobs().get(player) instanceof Prayer prayer){
-                    if(prayer.addLocationToAlreadyOpenedChests(container.getLocation())){
+                    if(prayer.addLocationToAlreadyOpenedChests(chest.getLocation())){
                         player.sendMessage(Component.text("§b[ガチャポイント]§b このチェストは初めて開ける。ガチャポイントを1獲得しました。"));
                         prayer.addGachaCount(game, player);
                     }

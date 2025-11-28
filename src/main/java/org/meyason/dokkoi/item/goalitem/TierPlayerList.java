@@ -22,6 +22,8 @@ public class TierPlayerList extends CustomItem {
     private Player player;
     private Game game;
 
+    private List<Player> targetPlayers = new ArrayList<>();
+
     public TierPlayerList() {
         super(id, "§a魔女図鑑", ItemStack.of(Material.PAPER), 1);
         this.baseItem = ItemStack.of(Material.WRITTEN_BOOK);
@@ -68,6 +70,7 @@ public class TierPlayerList extends CustomItem {
         for(Player p : players){
             if(game.getGameStatesManager().getPlayerGoals().get(p).tier == targetTier) {
                 names.append("§2- ").append(p.getName()).append("\n");
+                targetPlayers.add(p);
             }
         }
         bookMeta.setPages(names.toString());
@@ -75,5 +78,9 @@ public class TierPlayerList extends CustomItem {
         this.baseItem = book;
         //アイテム更新
         this.player.getInventory().addItem(book);
+    }
+
+    public List<Player> getTargetPlayers(){
+        return targetPlayers;
     }
 }
