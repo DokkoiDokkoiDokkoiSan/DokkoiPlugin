@@ -29,9 +29,9 @@ import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
 import org.meyason.dokkoi.item.jobitem.Ketsumou;
 import org.meyason.dokkoi.item.battleitems.HealingCrystal;
-import org.meyason.dokkoi.item.goal.BuriBuriGuard;
-import org.meyason.dokkoi.item.goal.KillerList;
-import org.meyason.dokkoi.item.job.Ketsumou;
+import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
+import org.meyason.dokkoi.item.goalitem.KillerList;
+import org.meyason.dokkoi.item.jobitem.Ketsumou;
 import org.meyason.dokkoi.job.*;
 
 import java.util.Objects;
