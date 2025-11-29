@@ -26,7 +26,7 @@ public class GachaBeginner extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage(Component.text("§2最強のたまたまを手に入れろ！"));
+        this.player.sendMessage(Component.text("§e最強のたまたまを手に入れろ！"));
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e0 人"));
         this.player.sendMessage(Component.text("§bこれ以上殺害するとペナルティが付与される"));

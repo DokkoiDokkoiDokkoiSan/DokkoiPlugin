@@ -31,8 +31,8 @@ public class CarpetBombing extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§2自爆攻撃で他人を巻き込んで殺せ！");
-        this.player.sendMessage("§2指定人数： §a§l" + goalNumber + "§2人");
+        this.player.sendMessage("§e自爆攻撃で他人を巻き込んで殺せ！");
+        this.player.sendMessage("§e指定人数： §a§l" + goalNumber + "§2人");
         this.bomber = (Bomber) game.getGameStatesManager().getPlayerJobs().get(this.player.getUniqueId());
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e" + goalNumber + " 人"));

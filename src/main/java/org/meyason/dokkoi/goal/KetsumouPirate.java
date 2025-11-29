@@ -27,7 +27,7 @@ public class KetsumouPirate extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§2マップ内に散りばめられている§9§lけつ毛§r§2を§e§l" + this.targetKetsumouCount + "個§r§2集めろ！");
+        this.player.sendMessage("§eマップ内に散りばめられている§9§lけつ毛§r§eを§e§l" + this.targetKetsumouCount + "個§r§e集めろ！");
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e0 人"));
         this.player.sendMessage(Component.text("§bこれ以上殺害するとペナルティが付与される"));

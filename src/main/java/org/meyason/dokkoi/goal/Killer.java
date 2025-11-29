@@ -29,7 +29,7 @@ public class Killer extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§2自らの手で全てのプレイヤーを殺害せよ！");
+        this.player.sendMessage("§e自らの手で全てのプレイヤーを殺害せよ！");
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e全てのプレイヤー"));
     }

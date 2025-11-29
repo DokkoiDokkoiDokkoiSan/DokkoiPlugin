@@ -353,7 +353,6 @@ public class DamageEvent implements Listener {
 
     public static boolean disableDamageOnce(GameStatesManager manager, Player player){
         if(manager.getIsDeactivateDamageOnce().get(player.getUniqueId())){
-            player.sendMessage("aaa");
             ItemStack item = player.getInventory().getChestplate();
             if(item != null){
                 ItemMeta meta = item.getItemMeta();

@@ -23,7 +23,7 @@ public class Shadow extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§2ゲーム終了まで誰も攻撃せず、攻撃も受けずに生き残れ！");
+        this.player.sendMessage("§eゲーム終了まで誰も攻撃せず、攻撃も受けずに生き残れ！");
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e0 人"));
         this.player.sendMessage(Component.text("§bこれ以上殺害するとペナルティが付与される"));

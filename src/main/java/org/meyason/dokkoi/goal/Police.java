@@ -33,7 +33,7 @@ public class Police extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§2殺人を犯した他のプレイヤーを全員殺せ！");
+        this.player.sendMessage("§e殺人を犯した他のプレイヤーを全員殺せ！");
         CustomItem item = GameItem.getItem(KillerList.id);
         if(item == null){
             this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：殺すリスト取得失敗");

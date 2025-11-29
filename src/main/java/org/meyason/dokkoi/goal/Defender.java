@@ -66,7 +66,7 @@ public class Defender extends Goal {
         Player target = Bukkit.getPlayer(targetUUID);
         if(target != null){
             this.targetPlayer = target;
-            this.player.sendMessage("§2生存者を §6" + targetPlayer.getName() + " §2と自分の二人だけにせよ！");
+            this.player.sendMessage("§e生存者を §6" + targetPlayer.getName() + " §eと自分の二人だけにせよ！");
             return;
         }
         throw new NoDefenderTargetPlayerException("Defenderのターゲットプレイヤーの設定に失敗しました。");

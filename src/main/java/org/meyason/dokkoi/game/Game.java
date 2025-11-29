@@ -231,6 +231,7 @@ public class Game {
         }else{
             StringBuilder clearPlayerNames = new StringBuilder();
             for(int i = 0; i < clearPlayers.size(); i++){
+                clearPlayerNames.append("§e");
                 clearPlayerNames.append(clearPlayers.get(i).getName());
                 clearPlayerNames.append(": ");
                 clearPlayerNames.append(gameStatesManager.getPlayerGoals().get(clearPlayers.get(i).getUniqueId()).getName());
@@ -238,7 +239,7 @@ public class Game {
                     clearPlayerNames.append("\n");
                 }
             }
-            Bukkit.getServer().broadcast(Component.text("§a目標を達成したプレイヤー\n§e" + clearPlayerNames));
+            Bukkit.getServer().broadcast(Component.text("§a目標を達成したプレイヤー\n" + clearPlayerNames));
         }
         for(Player player : clearPlayers){
             player.getWorld().spawnParticle(Particle.FIREWORK, player.getLocation().add(0,1,0), 100, 1,1,1, 0.1);
@@ -365,7 +366,7 @@ public class Game {
             }else if(goal instanceof Killer || goal instanceof LastMan){
                 objective.getScore("§e残り生存者: §f" + gameStatesManager.getAlivePlayers().size()).setScore(--i);
             }else if(goal instanceof MassTierKiller massTierKiller){
-                objective.getScore("§eターゲットのTier: §f" + massTierKiller.tier.name()).setScore(--i);
+                objective.getScore("§eターゲットのTier: §f" + massTierKiller.getTargetTier().name()).setScore(--i);
             }
 
             if(job instanceof Explorer explorer){

@@ -23,7 +23,7 @@ public class LastMan extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§2最後の一人になるまで生き残れ！");
+        this.player.sendMessage("§e最後の一人になるまで生き残れ！");
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e全てのプレイヤー"));
         return;

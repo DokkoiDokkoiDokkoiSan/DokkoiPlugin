@@ -69,7 +69,7 @@ public class MassTierKiller extends Goal {
             this.targetTier = Tier.TIER_3;
             this.tierString = "Tier 3";
         }
-        this.player.sendMessage("§2勝利条件が§a§l" + this.tierString + "§r§2のプレイヤーを全員殺害せよ！");
+        this.player.sendMessage("§e勝利条件が§a§l" + this.tierString + "§r§eのプレイヤーを全員殺害せよ！");
         CustomItem item = GameItem.getItem(TierPlayerList.id);
         if(item == null){
             this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：魔女図鑑取得失敗");
