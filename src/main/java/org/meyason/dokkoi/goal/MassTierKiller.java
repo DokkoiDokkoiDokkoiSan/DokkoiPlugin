@@ -20,7 +20,7 @@ public class MassTierKiller extends Goal {
     public TierPlayerList tierPlayerList;
 
     public MassTierKiller(){
-        super("Tier Killer", "一番選択された数が多いTierのプレイヤーを全員殺害せよ！");
+        super("§6Tier Killer", "一番選択された数が多いTierのプレイヤーを全員殺害せよ！");
     }
 
     @Override

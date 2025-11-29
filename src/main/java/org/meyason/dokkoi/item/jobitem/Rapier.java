@@ -1,9 +1,11 @@
 package org.meyason.dokkoi.item.jobitem;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
 import org.bukkit.inventory.ItemStack;
@@ -13,8 +15,11 @@ import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.job.IronMaiden;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Rapier extends CustomItem {
 
@@ -62,6 +67,8 @@ public class Rapier extends CustomItem {
         final World world = hitLocation.getWorld();
         final double radius = 10.0;
 
+        IronMaiden ironMaidenJob = (IronMaiden) game.getGameStatesManager().getPlayerJobs().get(player);
+
         // 半径10m以内のプレイヤーの視線を着弾地点に固定
         BukkitRunnable rapierTask = new BukkitRunnable() {
             @Override
@@ -71,24 +78,30 @@ public class Rapier extends CustomItem {
                     this.cancel();
                     return;
                 }
+                boolean isSuccess = false;
+                for(Entity entity : world.getNearbyEntities(hitLocation, radius, radius, radius)){
+                    if (entity instanceof Player target) {
+                        if (target.equals(player)) {
+                            continue;
+                        }
+                        if(target.getGameMode() == GameMode.SPECTATOR){
+                            continue;
+                        }
 
-                for (Player target : world.getPlayers()) {
-                    if (target.equals(player)) {
-                        continue;
+                        // 現在位置を基準に向きだけを着弾地点へ向ける
+                        Location targetLoc = target.getEyeLocation().clone();
+                        targetLoc.setDirection(
+                                hitLocation.toVector().subtract(targetLoc.toVector())
+                        );
+                        targetLoc.setY(target.getY());
+                        target.teleport(targetLoc);
+                        target.sendActionBar(Component.text("§c[鉄処女]あれ見てみろ！かす！"));
+                        isSuccess = true;
                     }
+                }
 
-                    if (target.getLocation().distanceSquared(hitLocation) > radius * radius) {
-                        continue;
-                    }
-
-                    // 現在位置を基準に向きだけを着弾地点へ向ける
-                    Location targetLoc = target.getEyeLocation().clone();
-                    targetLoc.setDirection(
-                            hitLocation.toVector().subtract(targetLoc.toVector())
-                    );
-                    targetLoc.setY(target.getY());
-                    target.teleport(targetLoc);
-                    target.sendActionBar(Component.text("§c[鉄処女]あれ見てみろ！かす！"));
+                if(isSuccess){
+                    ironMaidenJob.addCount();
                 }
             }
         };

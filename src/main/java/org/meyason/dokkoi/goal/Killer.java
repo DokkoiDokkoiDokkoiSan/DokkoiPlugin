@@ -14,7 +14,7 @@ public class Killer extends Goal {
     public int targetKillNumber;
 
     public Killer() {
-        super("Killer", "自らの手で全てのプレイヤーを殺害せよ！");
+        super("§6Killer", "自らの手で全てのプレイヤーを殺害せよ！");
     }
 
     @Override

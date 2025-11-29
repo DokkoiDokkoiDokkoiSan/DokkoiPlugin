@@ -46,7 +46,7 @@ public class SkillInteractEvent implements Listener {
 
         }else if(game.getGameStatesManager().getGameState() == GameState.IN_GAME) {
 
-            if(event.getClickedBlock().getState() instanceof InventoryHolder chest) {
+            if(event.getClickedBlock() != null && event.getClickedBlock().getState() instanceof InventoryHolder chest) {
                 if(game.getGameStatesManager().getPlayerJobs().get(player) instanceof Prayer prayer){
                     if(prayer.addLocationToAlreadyOpenedChests(chest.getInventory().getLocation())){
                         player.sendActionBar(Component.text("§b[ガチャポイント]§b このチェストは初めて開ける。"));
@@ -99,6 +99,10 @@ public class SkillInteractEvent implements Listener {
                     }else if(job instanceof IronMaiden ironMaiden) {
                         ironMaiden.skill();
                     } else if (job instanceof Explorer explorer) {
+                        if(explorer.getHaveKetsumouCount() <= 0){
+                            player.sendActionBar(Component.text("§c投擲できる§9§lけつ毛§r§cがない。"));
+                            return;
+                        }
                         Vector direction = player.getEyeLocation().getDirection().normalize();
                         Vector velocity = direction.multiply(2.0);
                         Snowball projectile = player.launchProjectile(Snowball.class, velocity);

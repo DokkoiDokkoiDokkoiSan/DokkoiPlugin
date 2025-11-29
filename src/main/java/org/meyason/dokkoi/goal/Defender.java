@@ -20,7 +20,7 @@ public class Defender extends Goal {
     private Player targetPlayer;
 
     public Defender(){
-        super("Defender", "あるプレイヤーを守り抜け！");
+        super("§6Defender", "あるプレイヤーを守り抜け！");
     }
 
     public Player getTargetPlayer(){

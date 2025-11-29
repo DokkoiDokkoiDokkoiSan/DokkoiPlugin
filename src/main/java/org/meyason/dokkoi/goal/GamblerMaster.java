@@ -11,7 +11,7 @@ import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestStrongestBall;
 public class GamblerMaster extends Goal {
 
     public GamblerMaster() {
-        super("GachaBeginner", "ガチで最強のたまたまを手に入れろ！");
+        super("§cGachaBeginner", "ガチで最強のたまたまを手に入れろ！");
     }
 
     @Override
@@ -19,7 +19,7 @@ public class GamblerMaster extends Goal {
         this.game = game;
         this.player = player;
 
-        this.tier = Tier.TIER_3;
+        this.tier = Tier.TIER_1;
         setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 

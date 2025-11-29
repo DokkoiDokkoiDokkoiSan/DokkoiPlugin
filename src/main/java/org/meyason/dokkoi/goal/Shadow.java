@@ -12,7 +12,7 @@ import java.util.List;
 public class Shadow extends Goal {
 
     public Shadow() {
-        super("Shadow", "ゲーム終了まで誰も攻撃せず、攻撃も受けずに生き残れ！");
+        super("§cShadow", "ゲーム終了まで誰も攻撃せず、攻撃も受けずに生き残れ！");
     }
 
     @Override

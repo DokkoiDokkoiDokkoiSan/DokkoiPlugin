@@ -13,7 +13,7 @@ public class KetsumouPirate extends Goal {
     private int targetKetsumouCount = 9;
 
     public KetsumouPirate() {
-        super("Ketsumou Hunter", "§9§lけつ毛§r§5を9個探せ！");
+        super("§bKetsumou Hunter", "§9§lけつ毛§r§5を9個探せ！");
     }
 
     @Override

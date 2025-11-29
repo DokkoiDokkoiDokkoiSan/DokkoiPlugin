@@ -17,7 +17,7 @@ public class Police extends Goal {
     public KillerList killerList;
 
     public Police() {
-        super("Police", "殺人を犯した他のプレイヤーを全員殺せ！");
+        super("§bPolice", "殺人を犯した他のプレイヤーを全員殺せ！");
     }
 
     @Override

@@ -11,7 +11,7 @@ import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestBall;
 public class Pachikasu extends Goal {
 
     public Pachikasu() {
-        super("Pachikasu", "もっと最強のたまたまを手に入れろ！");
+        super("§cPachikasu", "もっと最強のたまたまを手に入れろ！");
     }
 
     @Override
@@ -19,7 +19,7 @@ public class Pachikasu extends Goal {
         this.game = game;
         this.player = player;
 
-        this.tier = Tier.TIER_3;
+        this.tier = Tier.TIER_2;
         setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 

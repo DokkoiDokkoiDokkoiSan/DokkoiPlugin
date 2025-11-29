@@ -11,7 +11,7 @@ public class MaidenGazer extends Goal {
     private IronMaiden ironMaiden;
 
     public MaidenGazer() {
-        super("Maiden Gazer", "パッシブの視線誘導を60秒間発動させろ！");
+        super("§cMaiden Gazer", "パッシブの視線誘導を60秒間発動させろ！");
     }
 
     @Override
@@ -45,7 +45,7 @@ public class MaidenGazer extends Goal {
             return false;
         }
         if(getPoint() >= 60){
-            this.player.sendMessage("§6みんなが俺のことを見たのを見たぞ！");
+            this.player.sendMessage("§6俺はみんなが俺を見たのを見たぞ！");
             return true;
         }
         this.player.sendMessage("§c誰もお前のことなんか見ちゃいない");

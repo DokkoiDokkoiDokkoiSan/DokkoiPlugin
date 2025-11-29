@@ -60,6 +60,9 @@ public class IronMaiden extends Job {
         );
     }
 
+    public void addCount(){
+        count += 1;
+    }
     public int getCount(){
         return count / 2;
     }

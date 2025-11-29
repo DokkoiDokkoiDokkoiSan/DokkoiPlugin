@@ -260,7 +260,7 @@ public class Game {
         Goal goal = gameStatesManager.getPlayerGoals().get(player);
 
         player.sendMessage("§bお前の役職は「§6" + job.getName() + "§b」だ。");
-        player.sendMessage("§bお前の勝利条件は「§6" + goal.getName() + "§b」だ。");
+        player.sendMessage("§bお前の勝利条件は「" + goal.getName() + "§b」だ。");
 
         PlayerInventory inventory = player.getInventory();
         inventory.clear();

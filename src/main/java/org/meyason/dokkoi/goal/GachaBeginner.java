@@ -11,7 +11,7 @@ import org.meyason.dokkoi.item.jobitem.gacha.StrongestBall;
 public class GachaBeginner extends Goal {
 
     public GachaBeginner() {
-        super("GachaBeginner", "最強のたまたまを手に入れろ！");
+        super("§cGachaBeginner", "最強のたまたまを手に入れろ！");
     }
 
     @Override

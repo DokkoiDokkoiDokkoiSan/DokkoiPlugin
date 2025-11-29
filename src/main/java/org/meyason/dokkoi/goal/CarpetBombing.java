@@ -16,7 +16,7 @@ public class CarpetBombing extends Goal {
 
     private Bomber bomber;
 
-    public CarpetBombing() {super("CarpetBombing", "自爆攻撃で他人を巻き込んで殺せ！");}
+    public CarpetBombing() {super("§bCarpetBombing", "自爆攻撃で他人を巻き込んで殺せ！");}
 
     @Override
     public void setGoal(Game game, Player player) {

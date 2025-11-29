@@ -12,7 +12,7 @@ public class ComedianKiller extends Goal {
     private int killCount = 0;
 
     public ComedianKiller() {
-        super("ComedianKiller", "芸人を自爆で3人殺せ！");
+        super("§cComedianKiller", "芸人を自爆で3人殺せ！");
     }
 
     @Override
