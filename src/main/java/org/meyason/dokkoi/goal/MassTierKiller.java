@@ -23,16 +23,13 @@ public class MassTierKiller extends Goal {
     public TierPlayerList tierPlayerList;
 
     public MassTierKiller(){
-        super("§6Tier Killer", "一番選択された数が多いTierのプレイヤーを全員殺害せよ！");
+        super("§6Tier Killer", "§e一番選択された数が多いTierのプレイヤーを全員殺害せよ！", Tier.TIER_1);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_1;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
     @Override

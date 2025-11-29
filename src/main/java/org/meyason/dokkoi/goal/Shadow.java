@@ -9,16 +9,13 @@ import org.meyason.dokkoi.game.Game;
 public class Shadow extends Goal {
 
     public Shadow() {
-        super("§cShadow", "ゲーム終了まで誰も攻撃せず、攻撃も受けずに生き残れ！");
+        super("§cShadow", "§eゲーム終了まで誰も攻撃せず、攻撃も受けずに生き残れ！", Tier.TIER_3);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_3;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
     @Override

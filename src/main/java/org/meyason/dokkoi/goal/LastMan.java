@@ -9,16 +9,13 @@ import org.meyason.dokkoi.game.Game;
 public class LastMan extends Goal {
 
     public LastMan() {
-        super("§6Last Man", "最後の一人になるまで生き残れ！");
+        super("§6Last Man", "§e最後の一人になるまで生き残れ！", Tier.TIER_1);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_1;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
     @Override

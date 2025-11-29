@@ -11,16 +11,13 @@ import org.meyason.dokkoi.item.jobitem.gacha.StrongestBall;
 public class GachaBeginner extends Goal {
 
     public GachaBeginner() {
-        super("§cGachaBeginner", "最強のたまたまを手に入れろ！");
+        super("§cGachaBeginner", "§e最強のたまたまを手に入れろ！", Tier.TIER_3);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_3;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
 

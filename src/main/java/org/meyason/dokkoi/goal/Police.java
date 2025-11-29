@@ -18,16 +18,13 @@ public class Police extends Goal {
     public KillerList killerList;
 
     public Police() {
-        super("§bPolice", "殺人を犯した他のプレイヤーを全員殺せ！");
+        super("§bPolice", "§e殺人を犯した他のプレイヤーを全員殺せ！", Tier.TIER_2);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_2;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
 

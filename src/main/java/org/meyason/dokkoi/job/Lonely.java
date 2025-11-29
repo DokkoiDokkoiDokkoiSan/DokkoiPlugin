@@ -21,6 +21,7 @@ import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.GameItem;
+import org.meyason.dokkoi.item.jobitem.Ultimate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,7 +123,7 @@ public class Lonely extends Job {
                 PersistentDataContainer container = meta.getPersistentDataContainer();
                 NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
                 if(GameItem.isCustomItem(item)){
-                    if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.ULTIMATE_SKILL)){
+                    if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), Ultimate.id)){
                         item.setAmount(0);
                         break;
                     }

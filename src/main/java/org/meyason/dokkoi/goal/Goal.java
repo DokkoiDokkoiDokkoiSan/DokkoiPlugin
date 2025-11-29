@@ -24,13 +24,13 @@ public abstract class Goal implements Cloneable {
 
     public boolean isRevived = false;
 
-    public Goal(String name, String description) {
+    public Goal(String name, String description, Tier tier) {
         this.name = name;
         this.description = description;
+        this.tier = tier;
 
         this.player = null;
-        this.tier = null;
-        this.damageMultiplier = 1.0;
+        this.damageMultiplier = this.tier.getDamageMultiplier();
     }
 
     public double getDamageMultiplier() {return damageMultiplier;}

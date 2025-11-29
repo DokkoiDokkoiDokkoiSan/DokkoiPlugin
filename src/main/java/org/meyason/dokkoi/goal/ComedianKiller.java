@@ -12,16 +12,13 @@ public class ComedianKiller extends Goal {
     private int killCount = 0;
 
     public ComedianKiller() {
-        super("§cComedianKiller", "芸人を自爆で3人殺せ！");
+        super("§cComedianKiller", "§eマップ内に存在する§a小島よしお§e・§aハリウッドザコシショウ§e・§aオードリー若林§e・§aパンサー尾形§e・§aビビる大木§eのどれか§b3人以上§eをパッシブスキルで倒せ！", Tier.TIER_3);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_3;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
     @Override

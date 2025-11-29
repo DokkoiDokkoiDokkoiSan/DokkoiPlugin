@@ -70,7 +70,7 @@ public class KillerList extends CustomItem {
 
     public void updateKillerList(){
         ItemStack book = baseItem.clone();
-        GameItem.removeItem(player, GameItemKeyString.KILLERLIST, 1);
+        GameItem.removeItem(player, KillerList.id, 1);
         BookMeta bookMeta = (BookMeta) book.getItemMeta();
         List<UUID> killerPlayers = new ArrayList<>(game.getGameStatesManager().getKillerList().keySet());
         StringBuilder names = new StringBuilder();

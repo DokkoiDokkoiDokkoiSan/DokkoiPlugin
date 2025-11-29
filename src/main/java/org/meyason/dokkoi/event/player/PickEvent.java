@@ -19,11 +19,15 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
+import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.battleitem.ArcherArmor;
 import org.meyason.dokkoi.item.jobitem.Ketsumou;
+import org.meyason.dokkoi.item.jobitem.Passive;
+import org.meyason.dokkoi.item.jobitem.Skill;
+import org.meyason.dokkoi.item.jobitem.Ultimate;
 import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestBall;
 import org.meyason.dokkoi.job.Job;
 
@@ -55,6 +59,13 @@ public class PickEvent implements Listener {
                 }else if(customItem instanceof StrongestStrongestBall){
                     event.setCancelled(true);
                     player.sendActionBar(Component.text("§aもっと最強のたまたま§bが手から離れない！？"));
+
+                }else if(customItem instanceof Skill){
+                    event.setCancelled(true);
+                }else if(customItem instanceof Ultimate){
+                    event.setCancelled(true);
+                }else if(customItem instanceof Passive){
+                    event.setCancelled(true);
                 }
             }
         }
@@ -62,6 +73,9 @@ public class PickEvent implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
+        if(Game.getInstance().getGameStatesManager().getGameState() != GameState.IN_GAME){
+            return;
+        }
         if (!(event.getWhoClicked() instanceof Player player)) return;
 
         ItemStack slotItem   = event.getCurrentItem();
@@ -85,35 +99,55 @@ public class PickEvent implements Listener {
 
         Job job = Game.getInstance().getGameStatesManager().getPlayerJobs().get(player.getUniqueId());
 
-        // チェストのKetsumouをクリックし、シフトでインベントリに入れるとき
-        if (clickedIsTop && slotIsKetsumou) {
-            // シフトクリックで一気に移動
-            if (event.getClick().isShiftClick()) {
-                Ketsumou.activate(player);
+        if(event.getClick().isShiftClick()){
+            if(slotItem == null){return;}
+            CustomItem slotCustomItem = CustomItem.getItem(slotItem);
+
+            // チェスト内のアイテムをシフトクリックしてインベントリに移した時
+            if (clickedIsTop) {
+                if(slotCustomItem instanceof Ketsumou) {
+                    Ketsumou.activate(player);
+                }
+                return;
+
+            // インベントリ内のアイテムをシフトクリックしてチェストに移した時
+            }else if(clickedIsBottom){
+                if(slotCustomItem instanceof Ketsumou) {
+                    Ketsumou.deactivate(player);
+                }else if(slotCustomItem instanceof Skill || slotCustomItem instanceof Ultimate || slotCustomItem instanceof Passive){
+                    event.setCancelled(true);
+                }
                 return;
             }
         }
 
-        // インベントリのKetsumouをシフトでチェストに入れるとき
-        if (clickedIsBottom && slotIsKetsumou) {
-            if (event.getClick().isShiftClick()) {
+        if(clickedIsBottom) {
+
+            // インベントリのKetsumouとカーソルの別のアイテムを交代するとき
+            // スロット: Ketsumou, カーソル: Ketsumou以外（減る）
+            if (slotIsKetsumou && !cursorIsKetsumou) {
                 Ketsumou.deactivate(player);
                 return;
             }
-        }
 
-        // インベントリのKetsumouとカーソルの別のアイテムを交代するとき
-        // スロット: Ketsumou, カーソル: Ketsumou以外（減る）
-        if (clickedIsBottom && slotIsKetsumou && !cursorIsKetsumou) {
-            Ketsumou.deactivate(player);
-            return;
-        }
+            //  カーソルのKetsumouとインベントリの別のアイテムを交代するとき
+            // カーソル: Ketsumou, スロット: Ketsumou以外（増える）
+            if (cursorIsKetsumou && !slotIsKetsumou) {
+                Ketsumou.activate(player);
+                return;
+            }
 
-        //  カーソルのKetsumouとインベントリの別のアイテムを交代するとき
-        // カーソル: Ketsumou, スロット: Ketsumou以外（増える）
-        if (clickedIsBottom && cursorIsKetsumou && !slotIsKetsumou) {
-            Ketsumou.activate(player);
-            return;
+            // スロットが指定アイテムのときキャンセル(動かしたくないやつ)
+            if(slotItem != null){
+                ItemMeta meta = slotItem.getItemMeta();
+                if(meta == null){return;}
+                CustomItem slotCustomItem = CustomItem.getItem(slotItem);
+                if(slotCustomItem instanceof Skill || slotCustomItem instanceof Ultimate || slotCustomItem instanceof Passive){
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+
         }
     }
 
@@ -132,7 +166,7 @@ public class PickEvent implements Listener {
                 PersistentDataContainer container = meta.getPersistentDataContainer();
                 NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
                 if(container.has(itemKey, PersistentDataType.STRING)){
-                    if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.ARCHERARMOR)){
+                    if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), ArcherArmor.id)){
                         isArcherArmorEquipped = true;
 
                     }

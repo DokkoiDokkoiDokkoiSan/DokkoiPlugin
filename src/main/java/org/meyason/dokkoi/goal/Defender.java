@@ -2,8 +2,14 @@ package org.meyason.dokkoi.goal;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.exception.NoDefenderTargetPlayerException;
 import org.meyason.dokkoi.game.Game;
@@ -22,7 +28,7 @@ public class Defender extends Goal {
     private Player targetPlayer;
 
     public Defender(){
-        super("§6Defender", "あるプレイヤーを守り抜け！");
+        super("§6Defender", "§e指定されたプレイヤーを守り抜け！", Tier.TIER_1);
     }
 
     public Player getTargetPlayer(){
@@ -34,9 +40,6 @@ public class Defender extends Goal {
         this.game = game;
         this.player = player;
         this.targetPlayer = player;
-
-        this.tier = Tier.TIER_1;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
     @Override
@@ -50,6 +53,14 @@ public class Defender extends Goal {
             this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：ブリブリガード取得失敗");
             return;
         }
+
+        // シリアルUUIDをgameStateManagerに登録
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+        NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
+        String serialUUID = container.get(serialKey, PersistentDataType.STRING);
+        Game.getInstance().getGameStatesManager().addCustomItemToSerialMap(serialUUID, buriBuriGuard);
+
         player.getInventory().addItem(itemStack);
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e護衛対象と自分以外の生存者"));

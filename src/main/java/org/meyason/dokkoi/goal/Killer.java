@@ -15,16 +15,13 @@ public class Killer extends Goal {
     public int targetKillNumber;
 
     public Killer() {
-        super("§6Killer", "自らの手で全てのプレイヤーを殺害せよ！");
+        super("§6Killer", "§e自らの手で全てのプレイヤーを殺害せよ！", Tier.TIER_1);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_1;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
     @Override

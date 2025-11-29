@@ -11,6 +11,7 @@ import org.meyason.dokkoi.constants.GameItemKeyString;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 
 public abstract class CustomItem implements Cloneable {
@@ -22,6 +23,7 @@ public abstract class CustomItem implements Cloneable {
 
     public List<Component> description = new ArrayList<>();
     public boolean isUnique = false;
+    public boolean hasSerialNumber = false;
 
     protected Function<ItemStack, ItemStack> default_setting;
 
@@ -48,6 +50,9 @@ public abstract class CustomItem implements Cloneable {
         if(meta != null){
             PersistentDataContainer container = meta.getPersistentDataContainer();
             container.set(new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME), PersistentDataType.STRING, this.id);
+            if(hasSerialNumber){
+                container.set(new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM), PersistentDataType.STRING, UUID.randomUUID().toString());
+            }
             meta.setMaxStackSize(this.maxStackSize);
             meta.displayName(Component.text(this.name));
             meta.lore(this.description);

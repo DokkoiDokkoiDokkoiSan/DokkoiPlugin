@@ -16,15 +16,13 @@ public class CarpetBombing extends Goal {
 
     private Bomber bomber;
 
-    public CarpetBombing() {super("§bCarpetBombing", "自爆攻撃で他人を巻き込んで殺せ！");}
+    public CarpetBombing() {super("§bCarpetBombing", "§e自爆攻撃で他人を巻き込んで殺せ！", Tier.TIER_2);}
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
 
-        this.tier = Tier.TIER_2;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
         Random rand = new Random();
         this.goalNumber = rand.nextInt(1, min(3, game.getGameStatesManager().getAlivePlayers().size() - 1) + 1);
     }

@@ -14,13 +14,26 @@ import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.event.player.DamageEvent;
 import org.meyason.dokkoi.event.player.DeathEvent;
+import org.meyason.dokkoi.item.battleitem.ArcherArmor;
+import org.meyason.dokkoi.item.food.BakedPotato;
+import org.meyason.dokkoi.item.food.GoldenCarrot;
+import org.meyason.dokkoi.item.jobitem.gacha.StrongestBall;
+import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestBall;
+import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestStrongestBall;
+import org.meyason.dokkoi.item.weapon.LongSword;
+import org.meyason.dokkoi.item.weapon.ThunderJavelin;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.UUID;
 
 public class Prayer extends Job {
 
@@ -52,21 +65,21 @@ public class Prayer extends Job {
 
     public static final HashMap<String, List<String>> rarityEffectMap = new HashMap<>(){{
         put(R, List.of(
-                GameItemKeyString.BAKEDPOTATO
+                BakedPotato.id
         ));
         put(SR, List.of(
-                GameItemKeyString.ARCHERARMOR,
-                GameItemKeyString.GOLDENCARROT
+                ArcherArmor.id,
+                GoldenCarrot.id
         ));
         put(UR, List.of(
-                GameItemKeyString.LONGSWORD
+                LongSword.id
         ));
         put(LR, List.of(
-                GameItemKeyString.THUNDERJAVELIN
+                ThunderJavelin.id
         ));
-        put(KETSU, List.of(GameItemKeyString.STRONGESTBALL));
-        put(KETSUGE, List.of(GameItemKeyString.STRONGESTSTRONGESTBALL));
-        put(KETSUMOU, List.of(GameItemKeyString.STRONGESTSTRONGESTSTRONGESTBALL));
+        put(KETSU, List.of(StrongestBall.id));
+        put(KETSUGE, List.of(StrongestStrongestBall.id));
+        put(KETSUMOU, List.of(StrongestStrongestStrongestBall.id));
     }};
 
     private List<Location> alreadyOpenedChests = new ArrayList<>();
@@ -76,7 +89,7 @@ public class Prayer extends Job {
         return true;
     }
 
-    private int gachaPoint = 1000;
+    private int gachaPoint = 0;
     public int getGachaPoint(){
         return gachaPoint;
     }

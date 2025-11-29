@@ -38,6 +38,22 @@ public class Scheduler extends BukkitRunnable {
                 if(game.getNowTime() < 0){
                     game.startGame();
                 }
+                boolean goalFlag = false;
+                for(UUID uuid : game.getGameStatesManager().getAlivePlayers()){
+                    Player player = Bukkit.getPlayer(uuid);
+                    if(player == null){
+                        continue;
+                    }
+                    if(!game.getGameStatesManager().getPlayerGoals().containsKey(uuid)){
+                        goalFlag = true;
+                        continue;
+                    }
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 5 * 20, 1));
+                }
+                if(!goalFlag){
+                    Bukkit.getServer().broadcast(Component.text("§a全員が目標を設定しました。ゲームを開始します。"));
+                    game.startGame();
+                }
                 game.updateScoreboardDisplay();
                 break;
             case IN_GAME:

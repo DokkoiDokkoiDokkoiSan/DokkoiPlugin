@@ -13,16 +13,13 @@ public class KetsumouPirate extends Goal {
     private int targetKetsumouCount = 9;
 
     public KetsumouPirate() {
-        super("§bKetsumou Hunter", "§9§lけつ毛§r§5を9個探せ！");
+        super("§bKetsumou Hunter", "§9§lけつ毛§r§eを9個探せ！", Tier.TIER_2);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_2;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
     @Override

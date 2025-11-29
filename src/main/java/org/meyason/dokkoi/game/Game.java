@@ -17,9 +17,14 @@ import org.meyason.dokkoi.constants.*;
 import org.meyason.dokkoi.goal.*;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
+import org.meyason.dokkoi.item.jobitem.Passive;
+import org.meyason.dokkoi.item.jobitem.Skill;
+import org.meyason.dokkoi.item.jobitem.Ultimate;
 import org.meyason.dokkoi.job.Explorer;
 import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.job.Prayer;
+import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenu;
+import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
 import org.meyason.dokkoi.scheduler.Scheduler;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
 
@@ -39,7 +44,7 @@ public class Game {
 
     private int nowTime;
     public final int matchingPhaseTime = 5;
-    public final int prepPhaseTime = 5;
+    public final int prepPhaseTime = 60;
     public final int gamePhaseTime = 600;
     public final int resultPhaseTime = 10;
 
@@ -105,24 +110,6 @@ public class Game {
             player.setFoodLevel(20);
             player.setCustomNameVisible(false);
         }
-
-        List<Job> jobList = new ArrayList<>(JobList.getAllJobs());
-        for(UUID uuid : gameStatesManager.getJoinedPlayers()) {
-            Player player = Bukkit.getPlayer(uuid);
-            if(player == null || !player.isOnline()){
-                continue;
-            }
-            int randomIndex = (int) (Math.random() * jobList.size());
-            Job job = jobList.get(randomIndex).clone();
-            jobList.remove(randomIndex);
-            gameStatesManager.getPlayerJobs().put(uuid, job);
-            job.setPlayer(this, player);
-            int randomGoalIndex = (int) (Math.random() * job.getGoals().size());
-            Goal goal = job.getGoals().get(randomGoalIndex).clone();
-            goal.setGoal(this, player);
-            gameStatesManager.getPlayerGoals().put(uuid, goal);
-            job.attachGoal(goal);
-        }
         onGame = true;
         gameStatesManager.setGameState(GameState.PREP);
         setNowTime(prepPhaseTime);
@@ -137,17 +124,63 @@ public class Game {
             resetGame();
             return;
         }
+
+        List<Job> jobList = new ArrayList<>(JobList.getAllJobs());
+
+        // jobの割り当て
+        for(UUID uuid : gameStatesManager.getJoinedPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+            if(player == null || !player.isOnline()){
+                continue;
+            }
+            int randomIndex = (int) (Math.random() * jobList.size());
+            Job job = jobList.get(randomIndex).clone();
+            jobList.remove(randomIndex);
+            job.setPlayer(this, player);
+            gameStatesManager.getPlayerJobs().put(uuid, job);
+            player.sendMessage("§bお前の役職は「§6" + job.getName() + "§b」だ。");
+            player.sendMessage("§b勝利条件を選択せよ。");
+        }
+
+        for(UUID uuid : gameStatesManager.getJoinedPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+            if(player == null || !player.isOnline()){
+                continue;
+            }
+            GoalSelectMenu goalSelectMenu = new GoalSelectMenu();
+            goalSelectMenu.sendMenu(player);
+            CustomItem item = GameItem.getItem(GoalSelectMenuItem.id);
+            ItemStack itemStack = item.getItem();
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemStack.setItemMeta(itemMeta);
+            player.getInventory().setItem(1, itemStack);
+        }
+    }
+
+    public void startGame(){
         int tier1Count = 0;
         int tier2Count = 0;
         int tier3Count = 0;
         for (UUID uuid : gameStatesManager.getJoinedPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+            if(player == null || !player.isOnline()){
+                continue;
+            }
+            player.getInventory().clear();
             gameStatesManager.addKillCount(uuid);
             gameStatesManager.addAdditionalDamage(uuid, 0);
             gameStatesManager.addDamageCutPercent(uuid, 0);
             gameStatesManager.addIsDeactivateDamageOnce(uuid, false);
             gameStatesManager.addMoneyMap(uuid, 0L);
-            playerNoticer(uuid);
             Goal goal = gameStatesManager.getPlayerGoals().get(uuid);
+            if(goal == null){
+                Job job = gameStatesManager.getPlayerJobs().get(uuid);
+                int randomGoalIndex = (int) (Math.random() * job.getGoals().size());
+                goal = job.getGoals().get(randomGoalIndex).clone();
+                goal.setGoal(this, player);
+                gameStatesManager.getPlayerGoals().put(uuid, goal);
+                job.attachGoal(goal);
+            }
             if(goal.tier == Tier.TIER_1){
                 tier1Count++;
             }else if(goal.tier == Tier.TIER_2){
@@ -155,6 +188,7 @@ public class Game {
             }else if(goal.tier == Tier.TIER_3) {
                 tier3Count++;
             }
+            playerGoalNoticer(uuid);
         }
         List<Component> goalInstructions = List.of(
                 Component.text("§a---本ゲームの勝利条件内訳---"),
@@ -166,9 +200,6 @@ public class Game {
             Bukkit.getServer().broadcast(line);
         }
 
-    }
-
-    public void startGame(){
         gameStatesManager.setGameState(GameState.IN_GAME);
         setNowTime(gamePhaseTime);
         Bukkit.getServer().broadcast(Component.text("§aゲーム開始！各自勝利条件を達成せよ！"));
@@ -226,6 +257,7 @@ public class Game {
             }
             player.setCustomNameVisible(true);
         }
+
         if(clearPlayers.isEmpty()){
             Bukkit.getServer().broadcast(Component.text("§c誰も目標を達成できなかった..."));
         }else{
@@ -273,20 +305,17 @@ public class Game {
         new Game();
     }
 
-    public void playerNoticer(UUID uuid){
+    public void playerGoalNoticer(UUID uuid){
         Player player = Bukkit.getPlayer(uuid);
         if(player == null || !player.isOnline()){ return; }
 
         Job job = gameStatesManager.getPlayerJobs().get(uuid);
         Goal goal = gameStatesManager.getPlayerGoals().get(uuid);
 
-        player.sendMessage("§bお前の役職は「§6" + job.getName() + "§b」だ。");
-        player.sendMessage("§bお前の勝利条件は「" + goal.getName() + "§b」だ。");
-
         PlayerInventory inventory = player.getInventory();
         inventory.clear();
 
-        CustomItem passive = GameItem.getItem(GameItemKeyString.PASSIVE_SKILL);
+        CustomItem passive = GameItem.getItem(Passive.id);
         ItemStack passiveItem = passive.getItem();
         ItemMeta pskillMeta = passiveItem.getItemMeta();
         pskillMeta.setDisplayName(job.passive_skill_name);
@@ -295,7 +324,7 @@ public class Game {
         passiveItem.setItemMeta(pskillMeta);
         inventory.addItem(passiveItem);
 
-        CustomItem skill = GameItem.getItem(GameItemKeyString.SKILL);
+        CustomItem skill = GameItem.getItem(Skill.id);
         ItemStack skillItem = skill.getItem();
         ItemMeta skillMeta = skillItem.getItemMeta();
         skillMeta.setDisplayName(job.normal_skill_name);
@@ -305,7 +334,7 @@ public class Game {
         inventory.addItem(skillItem);
 
         if(goal.tier == Tier.TIER_3){
-            CustomItem ultimateSkill = GameItem.getItem(GameItemKeyString.ULTIMATE_SKILL);
+            CustomItem ultimateSkill = GameItem.getItem(Ultimate.id);
             ItemStack ultimateSkillItem = ultimateSkill.getItem();
             ItemMeta uskillMeta = ultimateSkillItem.getItemMeta();
             uskillMeta.setDisplayName(job.ultimate_skill_name);
@@ -339,7 +368,6 @@ public class Game {
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
             objective.getScore("§a参加人数: §f" + gameStatesManager.getJoinedPlayers().size() + "人").setScore(--i);
             objective.getScore("§e役職: §f" + gameStatesManager.getPlayerJobs().get(uuid).getName()).setScore(--i);
-            objective.getScore("§e目標: §f" + gameStatesManager.getPlayerGoals().get(uuid).getName()).setScore(--i);
         }else if(gameStatesManager.getGameState() == GameState.IN_GAME){
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
             objective.getScore("§a生存者数: §f" + gameStatesManager.getAlivePlayers().size() + "人").setScore(--i);

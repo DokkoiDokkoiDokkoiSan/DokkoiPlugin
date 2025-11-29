@@ -172,7 +172,7 @@ public class IronMaiden extends Job {
     }
 
     public void ultimate(){
-        CustomItem rapier = GameItem.getItem(GameItemKeyString.RAPIER);
+        CustomItem rapier = GameItem.getItem(Rapier.id);
         if(rapier == null){
             this.player.sendMessage("§6エラーが発生しました．管理者に連絡してください：レイピア取得失敗");
             return;

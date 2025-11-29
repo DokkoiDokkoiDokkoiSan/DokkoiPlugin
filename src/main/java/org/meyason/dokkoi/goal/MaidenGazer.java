@@ -11,16 +11,13 @@ public class MaidenGazer extends Goal {
     private IronMaiden ironMaiden;
 
     public MaidenGazer() {
-        super("§cMaiden Gazer", "パッシブの視線誘導を60秒間発動させろ！");
+        super("§cMaiden Gazer", "§eパッシブの視線誘導を60秒間発動させろ！", Tier.TIER_3);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_3;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
         if(game.getGameStatesManager().getPlayerJobs().get(player.getUniqueId()) instanceof IronMaiden maiden){
             this.ironMaiden = maiden;
         }

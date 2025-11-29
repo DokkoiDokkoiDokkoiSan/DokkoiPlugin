@@ -84,7 +84,7 @@ public class DeathEvent {
                 killer.sendMessage(Component.text(forwardPadding + line + backPadding));
             }
             killer.sendMessage(borderColor + "└" + horizontal + "┘");
-            RedHelmet item = (RedHelmet) GameItem.getItem(GameItemKeyString.REDHELMET);
+            RedHelmet item = (RedHelmet) GameItem.getItem(RedHelmet.id);
             if(item == null){
                 killer.sendMessage(Component.text("§4エラーが発生しました．管理者に連絡してください：赤い帽子取得失敗"));
                 return;

@@ -8,7 +8,7 @@ import org.meyason.dokkoi.item.CustomItem;
 
 public class Skill extends CustomItem {
 
-    public static final String id = GameItemKeyString.SKILL;
+    public static final String id = "skill";
 
     public Skill() {
         super(id, "", ItemStack.of(Material.BLACK_DYE), 1);

@@ -19,6 +19,10 @@ import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.JobList;
+import org.meyason.dokkoi.item.battleitem.ArcherArmor;
+import org.meyason.dokkoi.item.jobitem.Skill;
+import org.meyason.dokkoi.item.jobitem.Ultimate;
+import org.meyason.dokkoi.item.jobitem.gacha.StrongestBall;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
@@ -95,7 +99,7 @@ public class DamageEvent implements Listener {
                 NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
                 if(container.has(itemKey, PersistentDataType.STRING)){
                     String itemName = Objects.requireNonNull(container.get(itemKey, PersistentDataType.STRING));
-                    if(itemName.equals(GameItemKeyString.STRONGESTBALL)){
+                    if(itemName.equals(StrongestBall.id)){
                         count++;
                     }
                 }
@@ -166,17 +170,17 @@ public class DamageEvent implements Listener {
             // 当たったエンティティがプレイヤーじゃなくてもいい場合はこっち
             if (job instanceof Bomber bomber) {
                 String attackItem = projectileData.getCustomItemName();
-                if(attackItem.equals(GameItemKeyString.SKILL)) {
+                if(attackItem.equals(Skill.id)) {
                     List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attackedPlayer, snowball.getLocation(), 10);
                     bomber.skill(snowball.getLocation(), effectedPlayers);
-                }else if(attackItem.equals(GameItemKeyString.ULTIMATE_SKILL)){
+                }else if(attackItem.equals(Ultimate.id)){
                     bomber.ultimate(snowball.getLocation());
                 }
                 gameStatesManager.removeProjectileData(snowball);
                 return;
             }else if(job instanceof Explorer explorer) {
                 String attackItem = projectileData.getCustomItemName();
-                if(attackItem.equals(GameItemKeyString.SKILL)) {
+                if(attackItem.equals(Skill.id)) {
                     explorer.skill(snowball);
                 }
                 gameStatesManager.removeProjectileData(snowball);
@@ -360,7 +364,7 @@ public class DamageEvent implements Listener {
                     PersistentDataContainer container = meta.getPersistentDataContainer();
                     NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
                     if(container.has(itemKey, PersistentDataType.STRING)){
-                        if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.ARCHERARMOR)){
+                        if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), ArcherArmor.id)){
                             player.getInventory().setChestplate(null);
                             player.sendMessage(Component.text("§a弓使いの鎧§bでダメージを無効化した！"));
                             manager.addIsDeactivateDamageOnce(player.getUniqueId(), false);

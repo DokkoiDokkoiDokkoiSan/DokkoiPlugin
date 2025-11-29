@@ -14,7 +14,7 @@ public class KetsumouHunter extends Goal {
     private int targetKetsumouCount = 0;
 
     public KetsumouHunter() {
-        super("§cKetsumou Hunter", "§9§lけつ毛§r§5を1～5個探せ！");
+        super("§cKetsumou Hunter", "§9§lけつ毛§r§eを1～5個探せ！", Tier.TIER_3);
     }
 
     public int getTargetKetsumouCount() {
@@ -25,9 +25,6 @@ public class KetsumouHunter extends Goal {
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_3;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
     @Override

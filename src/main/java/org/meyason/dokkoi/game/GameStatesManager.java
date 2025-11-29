@@ -5,6 +5,7 @@ import org.bukkit.entity.Trident;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.job.Job;
 
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ public class GameStatesManager {
     private HashMap<UUID, Integer> additionalDamage;
     private HashMap<UUID, Integer> damageCutPercent;
     private HashMap<UUID, Boolean> isDeactivateDamageOnce;
+
+    private HashMap<String, CustomItem> serialCustomItemMap;
 
     private HashMap<UUID, Long> moneyMap;
 
@@ -65,6 +68,7 @@ public class GameStatesManager {
         additionalDamage = new HashMap<>();
         damageCutPercent = new HashMap<>();
         isDeactivateDamageOnce = new HashMap<>();
+        serialCustomItemMap = new HashMap<>();
         moneyMap = new HashMap<>();
         skillCoolDownTasks = new HashMap<>();
         ultimateSkillCoolDownTasks = new HashMap<>();
@@ -88,6 +92,7 @@ public class GameStatesManager {
         additionalDamage.clear();
         damageCutPercent.clear();
         isDeactivateDamageOnce.clear();
+        serialCustomItemMap.clear();
         moneyMap.clear();
         skillCoolDownTasks.clear();
         ultimateSkillCoolDownTasks.clear();
@@ -249,6 +254,14 @@ public class GameStatesManager {
     public void removeIsDeactivateDamageOnce(UUID player) {
         if(!this.isDeactivateDamageOnce.containsKey(player)) {return;}
         this.isDeactivateDamageOnce.remove(player);
+    }
+
+    public CustomItem getCustomItemFromSerial(String uuid) {return serialCustomItemMap.get(uuid);}
+    public boolean isExistsCustomItemFromSerial(String uuid) {return serialCustomItemMap.containsKey(uuid);}
+    public void addCustomItemToSerialMap(String uuid, CustomItem customItem) {this.serialCustomItemMap.put(uuid, customItem);}
+    public void removeCustomItemFromSerialMap(String uuid) {
+        if(!this.serialCustomItemMap.containsKey(uuid)) {return;}
+        this.serialCustomItemMap.remove(uuid);
     }
 
     public HashMap<UUID, Long> getMoneyMap() {return moneyMap;}
