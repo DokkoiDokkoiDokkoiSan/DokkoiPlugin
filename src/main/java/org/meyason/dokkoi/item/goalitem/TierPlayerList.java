@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.item.goalitem;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -14,6 +15,7 @@ import org.meyason.dokkoi.item.GameItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class TierPlayerList extends CustomItem {
 
@@ -65,10 +67,12 @@ public class TierPlayerList extends CustomItem {
         ItemStack book = this.baseItem.clone();
         GameItem.removeItem(player, GameItemKeyString.TIERPLAYERLIST, 1);
         BookMeta bookMeta = (BookMeta) book.getItemMeta();
-        List<Player> players = new ArrayList<>(game.getGameStatesManager().getAlivePlayers());
+        List<UUID> playerUUID = new ArrayList<>(game.getGameStatesManager().getAlivePlayers());
         StringBuilder names = new StringBuilder();
-        for(Player p : players){
-            if(game.getGameStatesManager().getPlayerGoals().get(p).tier == targetTier) {
+        for(UUID uuid : playerUUID){
+            Player p = Bukkit.getPlayer(uuid);
+            if(p == null) continue;
+            if(game.getGameStatesManager().getPlayerGoals().get(p.getUniqueId()).tier == targetTier) {
                 names.append("§2- ").append(p.getName()).append("\n");
                 targetPlayers.add(p);
             }

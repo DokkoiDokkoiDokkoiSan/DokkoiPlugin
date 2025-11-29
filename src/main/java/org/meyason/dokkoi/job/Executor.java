@@ -1,30 +1,29 @@
 package org.meyason.dokkoi.job;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
-import org.meyason.dokkoi.scheduler.SkillScheduler;
 
 import java.util.List;
+import java.util.UUID;
 
 public class Executor extends Job{
 
     public Executor() {
         super("執行者", "執行者", 30, 200);
-        passive_skill_name = "§7プロトペナルティ";
-        normal_skill_name = "§3ギルトペナルティ";
-        ultimate_skill_name = "§6ニクトペナルティ";
+        passive_skill_name += "§7プロトペナルティ";
+        normal_skill_name += "§3ギルトペナルティ";
+        ultimate_skill_name += "§6ニクトペナルティ";
         skillSound = Sound.ENTITY_PHANTOM_BITE;
         skillVolume = 1.0f;
         skillPitch = 0.8f;
@@ -70,8 +69,7 @@ public class Executor extends Job{
     public void ready(){}
 
     public void skill(Player target){
-        Integer value = game.getGameStatesManager().getKillCounts().get(player);
-        int killCount = value.intValue();
+        int killCount = game.getGameStatesManager().getKillCounts().get(player.getUniqueId());
         int damage;
         if(killCount == 0){
             damage = 5;
@@ -79,22 +77,22 @@ public class Executor extends Job{
         }else if(killCount == 1){
             damage = 20;
             target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 5 * 20, 2));
-            game.getGameStatesManager().addAdditionalDamage(target, -2);
+            game.getGameStatesManager().addAdditionalDamage(target.getUniqueId(), -2);
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    game.getGameStatesManager().addAdditionalDamage(target, 2);
+                    game.getGameStatesManager().addAdditionalDamage(target.getUniqueId(), 2);
                 }
             }.runTaskLater(Dokkoi.getInstance(), 5 * 20L);
         }else if(killCount == 2){
             damage = 40;
             target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 10 * 20, 1));
             target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 1));
-            game.getGameStatesManager().addAdditionalDamage(target, -5);
+            game.getGameStatesManager().addAdditionalDamage(target.getUniqueId(), -5);
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    game.getGameStatesManager().addAdditionalDamage(target, 5);
+                    game.getGameStatesManager().addAdditionalDamage(target.getUniqueId(), 5);
                 }
             }.runTaskLater(Dokkoi.getInstance(), 10 * 20L);
         }else{
@@ -109,7 +107,9 @@ public class Executor extends Job{
 
     public void ultimate(){
         if(!game.getGameStatesManager().getAttackedPlayers().isEmpty()){
-            for(Player target : game.getGameStatesManager().getAttackedPlayers()){
+            for(UUID uuid : game.getGameStatesManager().getAttackedPlayers()){
+                Player target = Bukkit.getPlayer(uuid);
+                if(target == null) continue;
                 target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 10 * 20, 3));
                 target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 3));
             }

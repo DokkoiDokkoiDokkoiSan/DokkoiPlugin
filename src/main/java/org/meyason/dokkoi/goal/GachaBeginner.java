@@ -11,7 +11,7 @@ import org.meyason.dokkoi.item.jobitem.gacha.StrongestBall;
 public class GachaBeginner extends Goal {
 
     public GachaBeginner() {
-        super("GachaBeginner", "最強のたまたまを手に入れろ！");
+        super("§cGachaBeginner", "最強のたまたまを手に入れろ！");
     }
 
     @Override
@@ -26,7 +26,7 @@ public class GachaBeginner extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage(Component.text("§2最強のたまたまを手に入れろ！"));
+        this.player.sendMessage(Component.text("§e最強のたまたまを手に入れろ！"));
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e0 人"));
         this.player.sendMessage(Component.text("§bこれ以上殺害するとペナルティが付与される"));
@@ -35,7 +35,7 @@ public class GachaBeginner extends Goal {
 
     @Override
     public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
             this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;
         }

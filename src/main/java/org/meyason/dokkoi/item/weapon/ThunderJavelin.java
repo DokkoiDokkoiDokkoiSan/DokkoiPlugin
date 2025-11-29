@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.event.player.DamageEvent;
-import org.meyason.dokkoi.game.CalculateAreaPlayers;
+import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 
@@ -24,7 +24,7 @@ public class ThunderJavelin extends CustomItem {
     public static final String id = "thunder_javelin";
 
     public ThunderJavelin() {
-        super(id, "雷槍", ItemStack.of(Material.TRIDENT), 1);
+        super(id, "§6雷槍", ItemStack.of(Material.TRIDENT), 1);
         List<Component> lore = List.of(
                 Component.text("§5ちょっと前に探検家のおじいちゃん達が別の島で見つけてきたらしい棒。"),
                 Component.text("§5大きな鎧さえも破壊できる威力を秘めている。"),
@@ -62,7 +62,7 @@ public class ThunderJavelin extends CustomItem {
                 effectedPlayers.add(shooter);
                 for (Player damaged : effectedPlayers) {
                     DamageEvent.calculateDamage(shooter, damaged, 20.0);
-                    Game.getInstance().getGameStatesManager().addDamagedPlayer(damaged);
+                    Game.getInstance().getGameStatesManager().addDamagedPlayer(damaged.getUniqueId());
                 }
             }
         }.runTaskLater(Dokkoi.getInstance(), 2*20L);

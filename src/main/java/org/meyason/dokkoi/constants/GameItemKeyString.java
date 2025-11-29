@@ -1,15 +1,12 @@
 package org.meyason.dokkoi.constants;
 
-import org.meyason.dokkoi.item.battleitem.ArcherArmor;
-
 import java.util.List;
 
 public class GameItemKeyString {
 
     public static final String ITEM_NAME = "item_name";
 
-    public static final String GACHA_MACHINE = "gacha_machine";
-    public static final String KILLER_LIST = "killer_list";
+    public static final String KILLERLIST = "killer_list";
     public static final String RAPIER = "rapier";
     public static final String TIERPLAYERLIST = "tier_player_list";
     public static final String BURIBURIGUARD = "buri_buri_guard";
@@ -36,11 +33,14 @@ public class GameItemKeyString {
     public static final String REDHELMET = "red_helmet";
 
     public static final String TSUYOKUNARU = "tsuyokunaru";
+    public static final String KATAKUNARU = "katakunaru";
+    public static final String KIZUKIERU = "kizukieru";
+    public static final String KOREHAMARU = "korehamaru";
+    public static final String HAYAKUNARU = "hayakunaru";
 
     private static final List<String> gameItemKeyStringHashMap = List.of(
         ITEM_NAME,
-        GACHA_MACHINE,
-        KILLER_LIST,
+        KILLERLIST,
         RAPIER,
         TIERPLAYERLIST,
         SKILL,
@@ -59,6 +59,10 @@ public class GameItemKeyString {
         THUNDERJAVELIN,
         REDHELMET,
         TSUYOKUNARU,
+        KATAKUNARU,
+        KIZUKIERU,
+        KOREHAMARU,
+        HAYAKUNARU,
         PUMPKINPIE,
         COOKEDCHICKEN
     );

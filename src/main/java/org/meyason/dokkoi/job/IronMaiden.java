@@ -37,9 +37,9 @@ public class IronMaiden extends Job {
 
     public IronMaiden() {
         super("鉄処女", "鉄処女", 30, 200);
-        passive_skill_name = "§7こっち見ろ！ばか！";
-        normal_skill_name = "§3あっち見ろ！あほ！";
-        ultimate_skill_name = "§6あれ見てみろ！かす！";
+        passive_skill_name += "§7こっち見ろ！ばか！";
+        normal_skill_name += "§3あっち見ろ！あほ！";
+        ultimate_skill_name += "§6あれ見てみろ！かす！";
 
         skillSound = Sound.ENTITY_ELDER_GUARDIAN_CURSE;
         skillVolume = 1.0f;
@@ -60,6 +60,9 @@ public class IronMaiden extends Job {
         );
     }
 
+    public void addCount(){
+        count += 1;
+    }
     public int getCount(){
         return count / 2;
     }
@@ -99,7 +102,7 @@ public class IronMaiden extends Job {
         BukkitRunnable passiveTask = new BukkitRunnable(){
             @Override
             public void run(){
-                if(!game.getGameStatesManager().getAlivePlayers().contains(player)){
+                if(!game.getGameStatesManager().getAlivePlayers().contains(player.getUniqueId())){
                     player.removePotionEffect(PotionEffectType.INVISIBILITY);
                     this.cancel();
                     return;

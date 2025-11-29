@@ -11,7 +11,7 @@ import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestStrongestBall;
 public class GamblerMaster extends Goal {
 
     public GamblerMaster() {
-        super("GachaBeginner", "ガチで最強のたまたまを手に入れろ！");
+        super("§cGachaBeginner", "ガチで最強のたまたまを手に入れろ！");
     }
 
     @Override
@@ -19,14 +19,14 @@ public class GamblerMaster extends Goal {
         this.game = game;
         this.player = player;
 
-        this.tier = Tier.TIER_3;
+        this.tier = Tier.TIER_1;
         setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
 
     @Override
     public void addItem() {
-        this.player.sendMessage(Component.text("§2ガチで最強のたまたまを手に入れろ！"));
+        this.player.sendMessage(Component.text("§eガチで最強のたまたまを手に入れろ！"));
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e0 人"));
         this.player.sendMessage(Component.text("§bこれ以上殺害するとペナルティが付与される"));
@@ -35,7 +35,7 @@ public class GamblerMaster extends Goal {
 
     @Override
     public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
             this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;
         }

@@ -16,7 +16,7 @@ public class CarpetBombing extends Goal {
 
     private Bomber bomber;
 
-    public CarpetBombing() {super("CarpetBombing", "自爆攻撃で他人を巻き込んで殺せ！");}
+    public CarpetBombing() {super("§bCarpetBombing", "自爆攻撃で他人を巻き込んで殺せ！");}
 
     @Override
     public void setGoal(Game game, Player player) {
@@ -31,9 +31,9 @@ public class CarpetBombing extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§2自爆攻撃で他人を巻き込んで殺せ！");
-        this.player.sendMessage("§2指定人数： §a§l" + goalNumber + "§2人");
-        this.bomber = (Bomber) game.getGameStatesManager().getPlayerJobs().get(this.player);
+        this.player.sendMessage("§e自爆攻撃で他人を巻き込んで殺せ！");
+        this.player.sendMessage("§e指定人数： §a§l" + goalNumber + "§2人");
+        this.bomber = (Bomber) game.getGameStatesManager().getPlayerJobs().get(this.player.getUniqueId());
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e" + goalNumber + " 人"));
         this.player.sendMessage(Component.text("§bこれ以上殺害するとペナルティが付与される"));
@@ -42,7 +42,7 @@ public class CarpetBombing extends Goal {
 
     @Override
     public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
             this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
@@ -60,9 +60,6 @@ public class CarpetBombing extends Goal {
 
     @Override
     public boolean isKillable(Player targetPlayer){
-        if(bomber.killCount + 1 > goalNumber){
-            return false;
-        }
-        return true;
+        return bomber.killCount + 1 <= goalNumber;
     }
 }
