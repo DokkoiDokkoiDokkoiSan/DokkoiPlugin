@@ -54,7 +54,7 @@ public class BuriBuriGuard extends CustomItem {
         this.game = game;
         this.player = player;
         player.sendMessage(Component.text("§aブリブリガード§bを手に入れた！"));
-        Goal goal = game.getGameStatesManager().getPlayerGoals().get(player);
+        Goal goal = game.getGameStatesManager().getPlayerGoals().get(player.getUniqueId());
         if(goal instanceof Defender defender){
             this.targetPlayer = defender.getTargetPlayer();
         }
@@ -62,11 +62,11 @@ public class BuriBuriGuard extends CustomItem {
 
     public void skill(Player player, Player targetPlayer){
         GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
-        if(gameStatesManager.getItemCoolDownScheduler().containsKey(player)){
+        if(gameStatesManager.getItemCoolDownScheduler().containsKey(player.getUniqueId())){
             player.sendMessage("§cクールタイム中です");
             return;
         }
-        gameStatesManager.addDamageCutPercent(targetPlayer, 100);
+        gameStatesManager.addDamageCutPercent(targetPlayer.getUniqueId(), 100);
         BukkitRunnable itemInitTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -74,16 +74,16 @@ public class BuriBuriGuard extends CustomItem {
                     cancel();
                     return;
                 }
-                if (!player.isOnline() || !targetPlayer.isOnline() || !gameStatesManager.getItemCoolDownScheduler().containsKey(player)) {
+                if (!player.isOnline() || !targetPlayer.isOnline() || !gameStatesManager.getItemCoolDownScheduler().containsKey(player.getUniqueId())) {
                     this.cancel();
                     return;
                 }
-                gameStatesManager.removeItemCoolDownScheduler(player);
-                gameStatesManager.calcDamageCutPercent(targetPlayer, -100);
+                gameStatesManager.removeItemCoolDownScheduler(player.getUniqueId());
+                gameStatesManager.calcDamageCutPercent(targetPlayer.getUniqueId(), -100);
             }
         };
         itemInitTask.runTaskLater(Dokkoi.getInstance(), 10 * 20L);
-        gameStatesManager.addItemCoolDownScheduler(player, itemInitTask);
+        gameStatesManager.addItemCoolDownScheduler(player.getUniqueId(), itemInitTask);
     }
 
 }

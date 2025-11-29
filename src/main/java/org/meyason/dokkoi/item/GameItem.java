@@ -10,6 +10,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.exception.NoGameItemException;
+import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.food.*;
 import org.meyason.dokkoi.item.jobitem.gacha.*;
 import org.meyason.dokkoi.item.goalitem.*;
@@ -32,7 +33,7 @@ public class GameItem {
         items.put(GameItemKeyString.SKILL, new Skill());
         items.put(GameItemKeyString.ULTIMATE_SKILL, new Ultimate());
         items.put(GameItemKeyString.PASSIVE_SKILL, new Passive());
-        items.put(GameItemKeyString.KILLER_LIST, new KillerList());
+        items.put(GameItemKeyString.KILLERLIST, new KillerList());
         items.put(GameItemKeyString.RAPIER, new Rapier());
         items.put(GameItemKeyString.TIERPLAYERLIST, new TierPlayerList());
         items.put(GameItemKeyString.KETSUMOU, new Ketsumou());
@@ -47,8 +48,19 @@ public class GameItem {
         items.put(GameItemKeyString.BAKEDPOTATO, new BakedPotato());
         items.put(GameItemKeyString.THUNDERJAVELIN, new ThunderJavelin());
         items.put(GameItemKeyString.REDHELMET, new RedHelmet());
+        items.put(GameItemKeyString.TSUYOKUNARU, new Tsuyokunaru());
+        items.put(GameItemKeyString.HAYAKUNARU, new Hayakunaru());
+        items.put(GameItemKeyString.KIZUKIERU, new Kizukieru());
+        items.put(GameItemKeyString.KATAKUNARU, new Katakunaru());
+        items.put(GameItemKeyString.KOREHAMARU, new Korehamaru());
         items.put(GameItemKeyString.PUMPKINPIE, new PumpkinPie());
         items.put(GameItemKeyString.COOKEDCHICKEN,new CookedChicken());
+        items.put(GameItemKeyString.GLISTERINGMELONSLICE, new GlisteringMelonSlice());
+        items.put(GameItemKeyString.COOCKEDPORKCHOP, new CookedPorkchop());
+        items.put(GameItemKeyString.COOKEDBEEF, new CookedBeef());
+        items.put(GameItemKeyString.COD, new Cod());
+        items.put(GameItemKeyString.SALMON, new Salmon());
+        items.put(GameItemKeyString.BREAD, new Bread());
     }
 
     public static CustomItem getItem(String id){

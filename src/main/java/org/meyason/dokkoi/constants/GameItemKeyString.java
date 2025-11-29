@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.constants;
 
 import org.meyason.dokkoi.item.battleitem.ArcherArmor;
+import org.meyason.dokkoi.item.food.CookedPorkchop;
 
 import java.util.List;
 
@@ -8,8 +9,7 @@ public class GameItemKeyString {
 
     public static final String ITEM_NAME = "item_name";
 
-    public static final String GACHA_MACHINE = "gacha_machine";
-    public static final String KILLER_LIST = "killer_list";
+    public static final String KILLERLIST = "killer_list";
     public static final String RAPIER = "rapier";
     public static final String TIERPLAYERLIST = "tier_player_list";
     public static final String BURIBURIGUARD = "buri_buri_guard";
@@ -28,6 +28,12 @@ public class GameItemKeyString {
     public static final String BAKEDPOTATO = "baked_potato";
     public static final String PUMPKINPIE = "pumpkin_pie";
     public static final String COOKEDCHICKEN = "cooked_chicken";
+    public static final String GLISTERINGMELONSLICE = "glistering_melon_slice";
+    public static final String COOCKEDPORKCHOP = "cooked_porkchop";
+    public static final String COOKEDBEEF = "cooked_beef";
+    public static final String COD = "cod";
+    public static final String SALMON = "salmon";
+    public static final String BREAD = "bread";
 
     public static final String LONGSWORD = "long_sword";
     public static final String THUNDERJAVELIN = "thunder_javelin";
@@ -36,11 +42,14 @@ public class GameItemKeyString {
     public static final String REDHELMET = "red_helmet";
 
     public static final String TSUYOKUNARU = "tsuyokunaru";
+    public static final String KATAKUNARU = "katakunaru";
+    public static final String KIZUKIERU = "kizukieru";
+    public static final String KOREHAMARU = "korehamaru";
+    public static final String HAYAKUNARU = "hayakunaru";
 
     private static final List<String> gameItemKeyStringHashMap = List.of(
         ITEM_NAME,
-        GACHA_MACHINE,
-        KILLER_LIST,
+        KILLERLIST,
         RAPIER,
         TIERPLAYERLIST,
         SKILL,
@@ -59,8 +68,18 @@ public class GameItemKeyString {
         THUNDERJAVELIN,
         REDHELMET,
         TSUYOKUNARU,
+        KATAKUNARU,
+        KIZUKIERU,
+        KOREHAMARU,
+        HAYAKUNARU,
         PUMPKINPIE,
-        COOKEDCHICKEN
+        COOKEDCHICKEN,
+        GLISTERINGMELONSLICE,
+        COOCKEDPORKCHOP,
+        COOKEDBEEF,
+        COD,
+        SALMON,
+        BREAD
     );
 
     public static List<String> getGameItemKeyStringHashMap() {return gameItemKeyStringHashMap;}

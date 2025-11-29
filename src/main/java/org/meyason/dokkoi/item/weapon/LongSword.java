@@ -13,7 +13,6 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 
 import java.util.List;
-import java.util.UUID;
 
 public class LongSword extends CustomItem {
 
