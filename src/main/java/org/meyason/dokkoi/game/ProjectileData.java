@@ -1,25 +1,26 @@
 package org.meyason.dokkoi.game;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.meyason.dokkoi.constants.GameItemKeyString;
-import org.meyason.dokkoi.goal.Goal;
-import org.meyason.dokkoi.item.CustomItem;
-import org.meyason.dokkoi.job.Job;
+import org.bukkit.entity.Projectile;
 
 public class ProjectileData {
 
     public Player attacker;
 
-    public String item;
+    public Projectile projectile;
 
-    public ProjectileData(Player attacker, String item) {
-        this.item = item;
+    public String customItemName;
+
+    public ProjectileData(Player attacker, Projectile projectile, String customItemName) {
+        this.projectile = projectile;
         this.attacker = attacker;
+        this.customItemName = customItemName;
     }
 
     public Player getAttacker() {return attacker;}
 
-    public String getItem() {return item;}
+    public Projectile getProjectile() {return projectile;}
+
+    public String getCustomItemName() {return customItemName;}
 
 }

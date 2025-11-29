@@ -37,6 +37,16 @@ public class GameEntity {
                 player.sendMessage(Component.text("§4コメディアンIDが不正です: " + id));
                 return false;
             }
+        }else if(type.equals("npc")){
+            NPC npc = NPC.getNPCById(id);
+            if(npc != null) {
+                if (npc == NPC.DEALER) {
+                    spawnDealer(location);
+                    player.sendMessage(Component.text("Dealer spawned"));
+                    return true;
+                }
+            }
+
         }
         return false;
     }
@@ -56,6 +66,7 @@ public class GameEntity {
         villager.getEquipment().setBoots(new ItemStack(Material.AIR));
         villager.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.0D);
         villager.getAttribute(Attribute.ATTACK_KNOCKBACK).setBaseValue(0.0D);
+        villager.setProfession(Villager.Profession.NONE);
         villager.setCollidable(false);
         villager.setSilent(true);
         villager.setInvulnerable(true);
@@ -71,6 +82,21 @@ public class GameEntity {
         villager.setCustomNameVisible(true);
         villager.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
         villager.getEquipment().setItemInOffHand(new ItemStack(Material.AIR));
+        villager.getEquipment().setHelmet(new ItemStack(Material.AIR));
+        villager.getEquipment().setChestplate(new ItemStack(Material.AIR));
+        villager.getEquipment().setLeggings(new ItemStack(Material.AIR));
+        villager.getEquipment().setBoots(new ItemStack(Material.AIR));
+        villager.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.0D);
+        villager.getAttribute(Attribute.ATTACK_KNOCKBACK).setBaseValue(0.0D);
+        villager.setProfession(Villager.Profession.WEAPONSMITH);
+        villager.setCollidable(false);
+        villager.setInvulnerable(true);
+        villager.getPersistentDataContainer().set(new NamespacedKey(Dokkoi.getInstance(), NPC.DEALER.getId()), PersistentDataType.STRING, NPC.DEALER.getName());
+    }
+
+    public static void killVillager(Villager villager){
+        villager.setHealth(0.0);
+        villager.remove();
     }
 
 }

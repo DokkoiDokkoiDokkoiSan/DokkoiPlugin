@@ -150,11 +150,15 @@ public class Game {
                 tier3Count++;
             }
         }
-        Component goalTierMessage = Component.text("§a本ゲームの勝利条件内訳: §f");
-        goalTierMessage.append(Component.text("§6TIER 1 : " + tier1Count + "人, "));
-        goalTierMessage.append(Component.text("§bTIER 2 : " + tier2Count + "人, "));
-        goalTierMessage.append(Component.text("§cTIER 3 : " + tier3Count + "人"));
-        Bukkit.getServer().broadcast(goalTierMessage);
+        List<Component> goalInstructions = List.of(
+                Component.text("§a---本ゲームの勝利条件内訳---"),
+                Component.text("§6TIER 1 : " + tier1Count + "人"),
+                Component.text("§bTIER 2 : " + tier2Count + "人"),
+                Component.text("§cTIER 3 : " + tier3Count + "人")
+        );
+        for(Component line : goalInstructions){
+            Bukkit.getServer().broadcast(line);
+        }
 
     }
 
@@ -333,7 +337,7 @@ public class Game {
                     color = achievedColor;
                 }
                 objective.getScore("§e目標人数: §f" + carpetBombing.goalNumber + "人").setScore(--i);
-                objective.getScore("§e自爆による殺害人数: " + color + carpetBombing.getKillCount() + "人").setScore(--i);
+                objective.getScore("§e自爆による殺害人数: §" + color + carpetBombing.getKillCount() + "人").setScore(--i);
             }else if(goal instanceof Defender defender){
                 objective.getScore("§e護衛対象: §f" + defender.getTargetPlayer().getName()).setScore(--i);
             }else if(goal instanceof Killer || goal instanceof LastMan){
@@ -355,7 +359,7 @@ public class Game {
                     if(targetNum <= explorer.getHaveKetsumouCount()) {
                         color = achievedColor;
                     }
-                    objective.getScore("§e目標の§9§lけつ毛§r§e: " + color + targetNum + "個").setScore(--i);
+                    objective.getScore("§e目標の§9§lけつ毛§r§e: §" + color + targetNum + "個").setScore(--i);
                 }
                 objective.getScore("§e発見した§9§lけつ毛§r§e: §f" + explorer.getHaveKetsumouCount() + "個").setScore(--i);
             }else if(job instanceof Prayer prayer){

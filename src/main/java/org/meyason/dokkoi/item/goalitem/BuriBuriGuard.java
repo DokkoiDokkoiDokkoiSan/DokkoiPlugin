@@ -24,7 +24,6 @@ public class BuriBuriGuard extends CustomItem {
     private Game game;
 
     private Player targetPlayer = player;
-    private GameStatesManager gameStatesManager;
 
     public BuriBuriGuard(){
         super(id, "§aブリブリガード", ItemStack.of(Material.WOODEN_SWORD), 1);
@@ -55,14 +54,14 @@ public class BuriBuriGuard extends CustomItem {
         this.game = game;
         this.player = player;
         player.sendMessage(Component.text("§aブリブリガード§bを手に入れた！"));
-        this.gameStatesManager = game.getGameStatesManager();
-        Goal goal = gameStatesManager.getPlayerGoals().get(player);
+        Goal goal = game.getGameStatesManager().getPlayerGoals().get(player);
         if(goal instanceof Defender defender){
             this.targetPlayer = defender.getTargetPlayer();
         }
     }
 
-    public void skill(){
+    public void skill(Player player, Player targetPlayer){
+        GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
         if(gameStatesManager.getItemCoolDownScheduler().containsKey(player)){
             player.sendMessage("§cクールタイム中です");
             return;

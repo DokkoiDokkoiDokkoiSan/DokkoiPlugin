@@ -1,7 +1,6 @@
 package org.meyason.dokkoi.game;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;

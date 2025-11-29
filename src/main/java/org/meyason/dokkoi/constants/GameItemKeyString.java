@@ -18,6 +18,7 @@ public class GameItemKeyString {
     public static final String STRONGESTSTRONGESTSTRONGESTBALL = "strongest_strongest_strongest_ball";
 
     public static final String KETSUMOU = "ketsumou";
+    public static final String HEALINGCRYSTAL = "healing_crystal";
 
     public static final String SKILL = "skill";
     public static final String ULTIMATE_SKILL = "ultimate_skill";
@@ -25,12 +26,16 @@ public class GameItemKeyString {
 
     public static final String GOLDENCARROT = "golden_carrot";
     public static final String BAKEDPOTATO = "baked_potato";
+    public static final String PUMPKINPIE = "pumpkin_pie";
+    public static final String COOKEDCHICKEN = "cooked_chicken";
 
     public static final String LONGSWORD = "long_sword";
     public static final String THUNDERJAVELIN = "thunder_javelin";
 
     public static final String ARCHERARMOR = "archer_armor";
     public static final String REDHELMET = "red_helmet";
+
+    public static final String TSUYOKUNARU = "tsuyokunaru";
 
     private static final List<String> gameItemKeyStringHashMap = List.of(
         ITEM_NAME,
@@ -42,6 +47,7 @@ public class GameItemKeyString {
         ULTIMATE_SKILL,
         PASSIVE_SKILL,
         KETSUMOU,
+        HEALINGCRYSTAL,
         BURIBURIGUARD,
         STRONGESTBALL,
         STRONGESTSTRONGESTBALL,
@@ -51,7 +57,10 @@ public class GameItemKeyString {
         ARCHERARMOR,
         BAKEDPOTATO,
         THUNDERJAVELIN,
-        REDHELMET
+        REDHELMET,
+        TSUYOKUNARU,
+        PUMPKINPIE,
+        COOKEDCHICKEN
     );
 
     public static List<String> getGameItemKeyStringHashMap() {return gameItemKeyStringHashMap;}

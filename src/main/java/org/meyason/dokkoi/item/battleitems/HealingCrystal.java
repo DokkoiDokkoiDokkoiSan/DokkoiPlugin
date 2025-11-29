@@ -1,29 +1,29 @@
-package org.meyason.dokkoi.item.battleitem;
+package org.meyason.dokkoi.item.battleitems;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
+import net.kyori.adventure.text.Component;
 
 import java.util.List;
 
-public class ArcherArmor extends CustomItem {
+public class HealingCrystal extends CustomItem {
 
-    public static final String id = "archer_armor";
-
-    public Game game;
+    private Game game;
     private Player player;
 
-    public ArcherArmor() {
-        super(id, "弓使いの鎧", ItemStack.of(Material.GOLDEN_CHESTPLATE), 1);
+    public static final String id = "healingcrystal";
+
+    public HealingCrystal() {
+        super(id,"§a回復結晶§r", ItemStack.of(Material.END_CRYSTAL),64);
         List<Component> lore = List.of(
-                Component.text("§5矢を一発だけ防いでくれそうなアーマー。めちゃくちゃ脆い。"),
+                Component.text("§5回復力が強そうな結晶。"),
                 Component.text(""),
                 Component.text("§b効果"),
-                Component.text("§5使用すると次に受けるダメージを一度だけ0にする。")
+                Component.text("§5使用すると体力を5回復する。")
         );
         setDescription(lore);
     }
@@ -34,7 +34,6 @@ public class ArcherArmor extends CustomItem {
             ItemMeta meta = item.getItemMeta();
             if(meta != null){
                 item.setItemMeta(meta);
-                this.baseItem = item;
             }
             return item;
         };
@@ -43,7 +42,5 @@ public class ArcherArmor extends CustomItem {
     public void setPlayer(Game game, Player player){
         this.game = game;
         this.player = player;
-        player.sendMessage(Component.text("§aロングソード§bを手に入れた！"));
     }
-
 }

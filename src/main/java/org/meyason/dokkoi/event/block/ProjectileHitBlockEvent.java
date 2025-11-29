@@ -13,6 +13,7 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.item.jobitem.Rapier;
+import org.meyason.dokkoi.item.weapon.ThunderJavelin;
 import org.meyason.dokkoi.job.*;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class ProjectileHitBlockEvent implements Listener {
             }
 
             Player attacker = projectileData.getAttacker();
-            String attackItem = projectileData.getItem();
+            String attackItem = projectileData.getCustomItemName();
 
             Job job = manager.getPlayerJobs().get(attacker);
             if (job instanceof Bomber bomber) {
@@ -59,7 +60,7 @@ public class ProjectileHitBlockEvent implements Listener {
                 return;
             }
             trident.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
-            if(projectileData.getItem().equals(Rapier.id)) {
+            if(projectileData.getCustomItemName().equals(Rapier.id)) {
                 Player attacker = projectileData.getAttacker();
 
                 Job job = manager.getPlayerJobs().get(attacker);
@@ -67,6 +68,8 @@ public class ProjectileHitBlockEvent implements Listener {
                     Rapier rapier = ironMaiden.getRapier();
                     rapier.activate(trident, trident.getLocation());
                 }
+            }else if(projectileData.getCustomItemName().equals(ThunderJavelin.id)){
+                ThunderJavelin.activate(trident);
             }
         }else if(entity instanceof Arrow arrow){
             ProjectileData projectileData = manager.getProjectileDataMap().get(arrow);

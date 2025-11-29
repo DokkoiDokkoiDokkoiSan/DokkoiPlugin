@@ -36,7 +36,7 @@ public class DeathEvent {
             dead.sendMessage("§aあなたはティア3勝利条件なので，§l§4復活§r§aしました");
             // いったん2mうしろにテレポート TODO: マップ内にランダムテレポート
             dead.teleport(dead.getLocation().subtract(dead.getLocation().getDirection().setY(0).normalize().multiply(1)));
-            dead.setHealth(40.0);
+            dead.setHealth(dead.getMaxHealth());
             return;
         }
 
@@ -84,8 +84,8 @@ public class DeathEvent {
                     for(String gameItemName : gameItemList){
                         CustomItem customItem = GameItem.getItem(gameItemName);
                         if(customItem != null && customItem.isUnique){
-                                item.setAmount(0);
-                                break;
+                            item.setAmount(0);
+                            break;
                         }
                     }
                 }
