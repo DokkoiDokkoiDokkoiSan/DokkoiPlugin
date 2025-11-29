@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.goal;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.meyason.dokkoi.constants.Tier;
@@ -12,6 +13,7 @@ import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class Defender extends Goal {
 
@@ -20,7 +22,7 @@ public class Defender extends Goal {
     private Player targetPlayer;
 
     public Defender(){
-        super("Defender", "あるプレイヤーを守り抜け！");
+        super("§6Defender", "あるプレイヤーを守り抜け！");
     }
 
     public Player getTargetPlayer(){
@@ -57,13 +59,14 @@ public class Defender extends Goal {
 
     public void setTargetPlayer(){
         //プレイヤー抽選
-        List<Player> players = game.getGameStatesManager().getAlivePlayers();
-        List<Player> copyPlayers = new java.util.ArrayList<>(List.copyOf(players));
-        copyPlayers.remove(this.player);
-        Player target = copyPlayers.get(new Random().nextInt(players.size()-1));
+        List<UUID> playerUUID = game.getGameStatesManager().getAlivePlayers();
+        List<UUID> copyPlayers = new java.util.ArrayList<>(List.copyOf(playerUUID));
+        copyPlayers.remove(this.player.getUniqueId());
+        UUID targetUUID = copyPlayers.get(new Random().nextInt(playerUUID.size()-1));
+        Player target = Bukkit.getPlayer(targetUUID);
         if(target != null){
             this.targetPlayer = target;
-            this.player.sendMessage("§2生存者を §6" + targetPlayer.getName() + " §2と自分の二人だけにせよ！");
+            this.player.sendMessage("§e生存者を §6" + targetPlayer.getName() + " §eと自分の二人だけにせよ！");
             return;
         }
         throw new NoDefenderTargetPlayerException("Defenderのターゲットプレイヤーの設定に失敗しました。");
@@ -71,18 +74,18 @@ public class Defender extends Goal {
 
     @Override
     public boolean isAchieved() {
-        List<Player> alivePlayers = this.game.getGameStatesManager().getAlivePlayers();
-        if(alivePlayers.size() > 2){
+        List<UUID> alivePlayerUUID = this.game.getGameStatesManager().getAlivePlayers();
+        if(alivePlayerUUID.size() > 2){
             this.player.sendMessage(Component.text("§c他にも生存者がいる。"));
             return false;
         }
-        if(!alivePlayers.contains(this.player)){
+        if(!alivePlayerUUID.contains(this.player.getUniqueId())){
             this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
         int count = 0;
-        for(Player p : alivePlayers) {
-            if(p.equals(this.player) || p.equals(this.targetPlayer)) {
+        for(UUID uuid : alivePlayerUUID) {
+            if(uuid.equals(this.player.getUniqueId()) || uuid.equals(this.targetPlayer.getUniqueId())) {
                 count++;
             }
         }
@@ -91,7 +94,7 @@ public class Defender extends Goal {
             this.targetPlayer.sendMessage("§6やっと...二人きりになれたね。");
             return true;
         }
-        if(!alivePlayers.contains(this.targetPlayer)){
+        if(!alivePlayerUUID.contains(this.targetPlayer.getUniqueId())){
             this.player.sendMessage(Component.text(this.targetPlayer.getName() + "を守り抜けなかった。"));
             return false;
         }

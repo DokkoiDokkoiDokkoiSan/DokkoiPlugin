@@ -9,7 +9,7 @@ import org.meyason.dokkoi.game.Game;
 public class LastMan extends Goal {
 
     public LastMan() {
-        super("LastMan", "最後の一人になるまで生き残れ！");
+        super("§6Last Man", "最後の一人になるまで生き残れ！");
     }
 
     @Override
@@ -23,7 +23,7 @@ public class LastMan extends Goal {
 
     @Override
     public void addItem() {
-        this.player.sendMessage("§2最後の一人になるまで生き残れ！");
+        this.player.sendMessage("§e最後の一人になるまで生き残れ！");
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e全てのプレイヤー"));
         return;
@@ -31,7 +31,7 @@ public class LastMan extends Goal {
 
     @Override
     public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
             this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }

@@ -12,6 +12,8 @@ import org.meyason.dokkoi.exception.GameStateException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.job.Lonely;
 
+import java.util.UUID;
+
 public class Scheduler extends BukkitRunnable {
 
     public void run() {
@@ -47,11 +49,12 @@ public class Scheduler extends BukkitRunnable {
                     game.endGame();
                 }
                 if(game.getNowTime() % 100 == 0){
-                    for(Player player : game.getGameStatesManager().getAlivePlayers()){
-                        if(!player.isOnline() || player.getGameMode().equals(GameMode.SPECTATOR)){
+                    for(UUID uuid : game.getGameStatesManager().getAlivePlayers()){
+                        Player player = Bukkit.getPlayer(uuid);
+                        if(player == null || player.getGameMode().equals(GameMode.SPECTATOR)){
                             continue;
                         }
-                        if(game.getGameStatesManager().getPlayerJobs().get(player) instanceof Lonely lonely){
+                        if(game.getGameStatesManager().getPlayerJobs().get(player.getUniqueId()) instanceof Lonely lonely){
                             if(lonely.isUltimateActive){
                                 lonely.setUltimateActive(false);
                                 continue;

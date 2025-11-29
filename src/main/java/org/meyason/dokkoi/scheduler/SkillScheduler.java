@@ -1,13 +1,13 @@
 package org.meyason.dokkoi.scheduler;
 
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.job.Job;
+
+import java.util.UUID;
 
 public class SkillScheduler extends BukkitRunnable {
 
@@ -22,13 +22,14 @@ public class SkillScheduler extends BukkitRunnable {
     public void run() {
         Game game = Game.getInstance();
         GameStatesManager gameStatesManager = game.getGameStatesManager();
-        if(!gameStatesManager.getAlivePlayers().contains(player)){
+        UUID playerUUID = player.getUniqueId();
+        if(!gameStatesManager.getAlivePlayers().contains(playerUUID)){
             cancel();
             return;
         }
 
-        Job job = gameStatesManager.getPlayerJobs().get(player);
-        if(gameStatesManager.getSkillCoolDownTasks().containsKey(player)){
+        Job job = gameStatesManager.getPlayerJobs().get(playerUUID);
+        if(gameStatesManager.getSkillCoolDownTasks().containsKey(playerUUID)){
             int remainCoolTime = job.getRemainCoolTimeSkill();
             job.setRemainCoolTimeSkill(remainCoolTime - 1);
             job.setCoolTimeSkillViewer("§eチャージ§c" + job.getRemainCoolTimeSkill() + "秒");
@@ -36,10 +37,10 @@ public class SkillScheduler extends BukkitRunnable {
             job.setCoolTimeSkillViewer("§g§lREADY!");
         }
 
-        if(gameStatesManager.getPlayerGoals().get(player).tier != Tier.TIER_3){
+        if(gameStatesManager.getPlayerGoals().get(playerUUID).tier != Tier.TIER_3){
             job.setCoolTimeSkillUltimateViewer("§4使用不可");
-            gameStatesManager.removeUltimateSkillCoolDownTask(player);
-        }else if(gameStatesManager.getUltimateSkillCoolDownTasks().containsKey(player)){
+            gameStatesManager.removeUltimateSkillCoolDownTask(playerUUID);
+        }else if(gameStatesManager.getUltimateSkillCoolDownTasks().containsKey(playerUUID)){
             int remainCoolTimeUltimate = job.getRemainCoolTimeSkillUltimate();
             job.setRemainCoolTimeSkillUltimate(remainCoolTimeUltimate - 1);
             job.setCoolTimeSkillUltimateViewer("§eチャージ§c" + job.getRemainCoolTimeSkillUltimate() + "秒");
