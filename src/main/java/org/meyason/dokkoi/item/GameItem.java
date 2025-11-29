@@ -53,6 +53,8 @@ public class GameItem {
         items.put(GameItemKeyString.KIZUKIERU, new Kizukieru());
         items.put(GameItemKeyString.KATAKUNARU, new Katakunaru());
         items.put(GameItemKeyString.KOREHAMARU, new Korehamaru());
+        items.put(GameItemKeyString.PUMPKINPIE, new PumpkinPie());
+        items.put(GameItemKeyString.COOKEDCHICKEN,new CookedChicken());
     }
 
     public static CustomItem getItem(String id){
