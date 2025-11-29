@@ -42,7 +42,7 @@ public class Tsuyokunaru extends CustomItem {
 
     public static void activate(Player player, ItemStack item) {
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
-        manager.addAdditionalDamage(player, 2);
+        manager.addAdditionalDamage(player.getUniqueId(), 2);
         item.setAmount(item.getAmount() - 1);
         player.getInventory().setItemInMainHand(item);
         player.sendMessage(Component.text("§aツヨクナール§bの効果で攻撃力が上がった！"));
@@ -51,7 +51,7 @@ public class Tsuyokunaru extends CustomItem {
             @Override
             public void run() {
                 player.sendMessage(Component.text("§aツヨクナール§bの効果が切れた。"));
-                manager.addAdditionalDamage(player, -2);
+                manager.addAdditionalDamage(player.getUniqueId(), -2);
 
             }
         }.runTaskLater(Dokkoi.getInstance(), 10 * 20L);

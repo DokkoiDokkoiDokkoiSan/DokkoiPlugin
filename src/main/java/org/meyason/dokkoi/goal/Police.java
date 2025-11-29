@@ -11,6 +11,7 @@ import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.goalitem.KillerList;
 
 import java.util.List;
+import java.util.UUID;
 
 public class Police extends Goal {
 
@@ -53,16 +54,16 @@ public class Police extends Goal {
 
     @Override
     public boolean isAchieved() {
-        List<Player> alivePlayers = this.game.getGameStatesManager().getAlivePlayers();
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+        List<UUID> alivePlayersUUID = this.game.getGameStatesManager().getAlivePlayers();
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
             this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
 
-        List<Player> killerlayers = this.game.getGameStatesManager().getKillerList().keySet().stream().toList();
-        for(Player p : alivePlayers) {
-            if (killerlayers.stream().anyMatch(ap -> ap.getUniqueId().equals(p.getUniqueId()))) {
-                if(p.equals(this.player)){continue;}
+        List<UUID> killerlayers = this.game.getGameStatesManager().getKillerList().keySet().stream().toList();
+        for(UUID uuid : alivePlayersUUID) {
+            if (killerlayers.stream().anyMatch(ap -> ap.equals(uuid))) {
+                if(uuid.equals(this.player.getUniqueId())){continue;}
                 this.player.sendMessage("§c失敗だ。街に暴力が蔓延している。");
                 return false;
             }
@@ -74,8 +75,8 @@ public class Police extends Goal {
 
     @Override
     public boolean isKillable(Player targetPlayer){
-        List<Player> targetPlayers = this.game.getGameStatesManager().getKillerList().keySet().stream().toList();
-        if(targetPlayers.contains(targetPlayer)){
+        List<UUID> targetPlayers = this.game.getGameStatesManager().getKillerList().keySet().stream().toList();
+        if(targetPlayers.contains(targetPlayer.getUniqueId())){
             return true;
         }
         return false;

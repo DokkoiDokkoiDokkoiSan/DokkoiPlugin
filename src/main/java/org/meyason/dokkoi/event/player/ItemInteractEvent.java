@@ -2,8 +2,6 @@ package org.meyason.dokkoi.event.player;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
-import org.bukkit.block.Block;
-import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -70,7 +68,7 @@ public class ItemInteractEvent implements Listener {
                     }
                     event.setCancelled(true);
                     if(customItem instanceof BuriBuriGuard buriburiguard){
-                        Defender defender = (Defender) game.getGameStatesManager().getPlayerGoals().get(player);
+                        Defender defender = (Defender) game.getGameStatesManager().getPlayerGoals().get(player.getUniqueId());
                         buriburiguard.skill(player, defender.getTargetPlayer());
                     }
 
@@ -80,7 +78,7 @@ public class ItemInteractEvent implements Listener {
                         return;
                     }
                     event.setCancelled(true);
-                    game.getGameStatesManager().addIsDeactivateDamageOnce(player, true);
+                    game.getGameStatesManager().addIsDeactivateDamageOnce(player.getUniqueId(), true);
                     Tsuyokunaru.activate(player, item);
 
 

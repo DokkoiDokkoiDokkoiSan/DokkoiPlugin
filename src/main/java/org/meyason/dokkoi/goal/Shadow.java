@@ -2,12 +2,9 @@ package org.meyason.dokkoi.goal;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 
-import java.util.List;
 
 public class Shadow extends Goal {
 
@@ -35,15 +32,15 @@ public class Shadow extends Goal {
 
     @Override
     public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
             this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
-        if(this.game.getGameStatesManager().getAttackedPlayers().contains(this.player)){
+        if(this.game.getGameStatesManager().getAttackedPlayers().contains(this.player.getUniqueId())){
             this.player.sendMessage("§cお前は攻撃してしまった。");
             return false;
         }
-        if(this.game.getGameStatesManager().getDamagedPlayers().contains(this.player)){
+        if(this.game.getGameStatesManager().getDamagedPlayers().contains(this.player.getUniqueId())){
             this.player.sendMessage("§cお前は攻撃を受けてしまった。");
             return false;
         }

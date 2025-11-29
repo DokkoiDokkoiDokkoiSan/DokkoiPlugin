@@ -29,6 +29,7 @@ import org.meyason.dokkoi.job.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 public class DamageEvent implements Listener {
 
@@ -38,6 +39,9 @@ public class DamageEvent implements Listener {
         Entity attacker = event.getDamager();
         Entity damaged = event.getEntity();
         if(!(attacker instanceof Player attackedPlayer) || !(damaged instanceof Player damagedPlayer)) return;
+
+        UUID attackedUUID = attackedPlayer.getUniqueId();
+        UUID damagedUUID = damagedPlayer.getUniqueId();
 
         if(damagedPlayer.getNoDamageTicks() >= 10){
             event.setCancelled(true);
@@ -50,13 +54,13 @@ public class DamageEvent implements Listener {
             return;
         }
 
-        if(gameStatesManager.getPlayerJobs().get(attackedPlayer) instanceof Prayer prayer){
+        if(gameStatesManager.getPlayerJobs().get(attackedUUID) instanceof Prayer prayer){
             if(prayer.getHasStrongestStrongestBall()){
                 event.setCancelled(true);
                 attackedPlayer.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
                 return;
             }
-        }else if(gameStatesManager.getPlayerJobs().get(damagedPlayer) instanceof Prayer prayer){
+        }else if(gameStatesManager.getPlayerJobs().get(damagedUUID) instanceof Prayer prayer){
             if(prayer.getHasStrongestStrongestBall()){
                 event.setCancelled(true);
                 damagedPlayer.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
@@ -64,12 +68,12 @@ public class DamageEvent implements Listener {
             }
         }
 
-        gameStatesManager.addAttackedPlayer(attackedPlayer);
-        gameStatesManager.addDamagedPlayer(damagedPlayer);
+        gameStatesManager.addAttackedPlayer(attackedPlayer.getUniqueId());
+        gameStatesManager.addDamagedPlayer(damagedPlayer.getUniqueId());
 
-        if(gameStatesManager.getPlayerJobs().get(attackedPlayer) instanceof Lonely lonely){
+        if(gameStatesManager.getPlayerJobs().get(attackedUUID) instanceof Lonely lonely){
             lonely.lastAttackedTime = System.currentTimeMillis();
-        }else if(gameStatesManager.getPlayerJobs().get(damagedPlayer) instanceof Lonely lonely){
+        }else if(gameStatesManager.getPlayerJobs().get(damagedUUID) instanceof Lonely lonely){
             lonely.lastDamagedTime = System.currentTimeMillis();
         }
 
@@ -78,7 +82,7 @@ public class DamageEvent implements Listener {
             return;
         }
 
-        if(gameStatesManager.getPlayerJobs().get(damagedPlayer) instanceof Prayer){
+        if(gameStatesManager.getPlayerJobs().get(damagedUUID) instanceof Prayer){
             PlayerInventory inventory = damagedPlayer.getInventory();
             double cutDamagePercent = 1.0;
             // 一個70%の確率でダメージ無効化、2個で(1-0.7*0.7)=91%、3個で(1-0.7*0.7*0.7)=97.3%
@@ -136,10 +140,10 @@ public class DamageEvent implements Listener {
                 event.setCancelled(true);
                 return;
             }
-            if(gameStatesManager.getPlayerJobs().get(damagedPlayer) instanceof Prayer prayer){
+            if(gameStatesManager.getPlayerJobs().get(dp.getUniqueId()) instanceof Prayer prayer){
                 if(prayer.getHasStrongestStrongestBall()){
                     event.setCancelled(true);
-                    damagedPlayer.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
+                    dp.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
                     return;
                 }
             }
@@ -153,11 +157,11 @@ public class DamageEvent implements Listener {
             }
 
             attackedPlayer = projectileData.getAttacker();
-            if(gameStatesManager.getPlayerJobs().get(attackedPlayer) instanceof Lonely lonely){
+            if(gameStatesManager.getPlayerJobs().get(attackedPlayer.getUniqueId()) instanceof Lonely lonely){
                 lonely.lastAttackedTime = System.currentTimeMillis();
             }
 
-            Job job = gameStatesManager.getPlayerJobs().get(attackedPlayer);
+            Job job = gameStatesManager.getPlayerJobs().get(attackedPlayer.getUniqueId());
 
             // 当たったエンティティがプレイヤーじゃなくてもいい場合はこっち
             if (job instanceof Bomber bomber) {
@@ -184,10 +188,10 @@ public class DamageEvent implements Listener {
 
                 damagedPlayer = damaged;
 
-                gameStatesManager.addAttackedPlayer(attackedPlayer);
-                gameStatesManager.addDamagedPlayer(damagedPlayer);
+                gameStatesManager.addAttackedPlayer(attackedPlayer.getUniqueId());
+                gameStatesManager.addDamagedPlayer(damagedPlayer.getUniqueId());
 
-                if(gameStatesManager.getPlayerJobs().get(damagedPlayer) instanceof Lonely lonely){
+                if(gameStatesManager.getPlayerJobs().get(damagedPlayer.getUniqueId()) instanceof Lonely lonely){
                     lonely.lastDamagedTime = System.currentTimeMillis();
                 }
 
@@ -207,11 +211,11 @@ public class DamageEvent implements Listener {
             trident.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
             if(projectileData.getCustomItemName().equals(Rapier.id)) {
                 attackedPlayer = projectileData.getAttacker();
-                if(gameStatesManager.getPlayerJobs().get(attackedPlayer) instanceof Lonely lonely){
+                if(gameStatesManager.getPlayerJobs().get(attackedPlayer.getUniqueId()) instanceof Lonely lonely){
                     lonely.lastAttackedTime = System.currentTimeMillis();
                 }
 
-                Job job = gameStatesManager.getPlayerJobs().get(attackedPlayer);
+                Job job = gameStatesManager.getPlayerJobs().get(attackedPlayer.getUniqueId());
                 if(job instanceof IronMaiden ironMaiden){
                     event.setCancelled(true);
 
@@ -229,12 +233,12 @@ public class DamageEvent implements Listener {
                 ProjectileSource source = arrow.getShooter();
                 if(source instanceof Entity shooterEntity){
                     if(shooterEntity instanceof Player attackerPlayer){
-                        if(gameStatesManager.getPlayerJobs().get(attackerPlayer) instanceof Lonely lonely){
+                        if(gameStatesManager.getPlayerJobs().get(attackerPlayer.getUniqueId()) instanceof Lonely lonely){
                             lonely.lastAttackedTime = System.currentTimeMillis();
                         }
                     }
                     if(damagedEntity instanceof Player damagedP){
-                        if(gameStatesManager.getPlayerJobs().get(damagedP) instanceof Lonely lonely){
+                        if(gameStatesManager.getPlayerJobs().get(damagedP.getUniqueId()) instanceof Lonely lonely){
                             lonely.lastDamagedTime = System.currentTimeMillis();
                         }
                     }
@@ -244,15 +248,16 @@ public class DamageEvent implements Listener {
             }
 
             attackedPlayer = projectileData.getAttacker();
-            if(gameStatesManager.getPlayerJobs().get(attackedPlayer) instanceof Explorer) {
+            UUID attackedUUID = attackedPlayer.getUniqueId();
+            if(gameStatesManager.getPlayerJobs().get(attackedUUID) instanceof Explorer) {
                 //自分が放つ矢が着弾した位置に爆発を起こす。爆発は当たった対象に固定10ダメージを与える。
                 arrow.getWorld().spawnParticle(Particle.EXPLOSION, arrow.getLocation(), 1);
                 arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10.0F, 1.0F);
                 List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attackedPlayer, arrow.getLocation(), 3);
                 effectedPlayers.add(attackedPlayer);
-                gameStatesManager.addAttackedPlayer(attackedPlayer);
+                gameStatesManager.addAttackedPlayer(attackedUUID);
                 for (Player damaged : effectedPlayers) {
-                    gameStatesManager.addDamagedPlayer(damaged);
+                    gameStatesManager.addDamagedPlayer(damaged.getUniqueId());
                 }
                 gameStatesManager.removeProjectileData(arrow);
                 return;
@@ -260,7 +265,7 @@ public class DamageEvent implements Listener {
             gameStatesManager.removeProjectileData(arrow);
         }
 
-        calculateDamage(attackedPlayer, damagedPlayer, damage);
+        calculateDamage(attackedPlayer, event.getEntity(), damage);
 
     }
 
@@ -280,7 +285,7 @@ public class DamageEvent implements Listener {
             return;
         }
 
-        if(gameStatesManager.getPlayerJobs().get(attacker) instanceof Lonely lonely){
+        if(gameStatesManager.getPlayerJobs().get(attacker.getUniqueId()) instanceof Lonely lonely){
             lonely.lastAttackedTime = System.currentTimeMillis();
         }
     }
@@ -310,25 +315,25 @@ public class DamageEvent implements Listener {
         }
         GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
         if(damaged instanceof Player damagedPlayer && attacker instanceof Player attackerPlayer) {
-            if(gameStatesManager.getPlayerJobs().get(damagedPlayer) instanceof Prayer prayer){
+            if(gameStatesManager.getPlayerJobs().get(damagedPlayer.getUniqueId()) instanceof Prayer prayer){
                 if(prayer.getHasStrongestStrongestBall()){
                     damagedPlayer.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
                     return;
                 }
             }
-            double additionalDamage = gameStatesManager.getAdditionalDamage().get(attackerPlayer);
+            double additionalDamage = gameStatesManager.getAdditionalDamage().get(attackerPlayer.getUniqueId());
             if (additionalDamage <= -300) {
                 damage = 1.0;
             } else {
                 damage += additionalDamage;
             }
 
-            damage *= gameStatesManager.getPlayerGoals().get(damaged).getDamageMultiplier();
-            if (gameStatesManager.getKillerList().containsKey(attackerPlayer) && gameStatesManager.getPlayerJobs().get(damaged).equals(JobList.EXECUTOR)) {
+            damage *= gameStatesManager.getPlayerGoals().get(damaged.getUniqueId()).getDamageMultiplier();
+            if (gameStatesManager.getKillerList().containsKey(attackerPlayer.getUniqueId()) && gameStatesManager.getPlayerJobs().get(damaged.getUniqueId()).equals(JobList.EXECUTOR)) {
                 damage /= 2.0;
             }
 
-            int damageCutPercent = gameStatesManager.getDamageCutPercent().get(damaged);
+            int damageCutPercent = gameStatesManager.getDamageCutPercent().get(damaged.getUniqueId());
             damage = damage * (100 - damageCutPercent) / 100.0;
 
             if (damage < 0) {
@@ -347,7 +352,7 @@ public class DamageEvent implements Listener {
     }
 
     public static boolean disableDamageOnce(GameStatesManager manager, Player player){
-        if(manager.getIsDeactivateDamageOnce().get(player)){
+        if(manager.getIsDeactivateDamageOnce().get(player.getUniqueId())){
             player.sendMessage("aaa");
             ItemStack item = player.getInventory().getChestplate();
             if(item != null){
@@ -359,14 +364,14 @@ public class DamageEvent implements Listener {
                         if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.ARCHERARMOR)){
                             player.getInventory().setChestplate(null);
                             player.sendMessage(Component.text("§a弓使いの鎧§bでダメージを無効化した！"));
-                            manager.addIsDeactivateDamageOnce(player, false);
+                            manager.addIsDeactivateDamageOnce(player.getUniqueId(), false);
                             return true;
                         }
                     }
                 }
             }
             player.sendMessage(Component.text("§aカタクナール§bでダメージを無効化した！"));
-            manager.addIsDeactivateDamageOnce(player, false);
+            manager.addIsDeactivateDamageOnce(player.getUniqueId(), false);
             return true;
         }
         return false;

@@ -21,6 +21,7 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
 
 import java.util.List;
+import java.util.UUID;
 
 public class Bomber extends Job {
 
@@ -176,8 +177,12 @@ public class Bomber extends Job {
                         return;
                     }
 
-                    List<Player> targets = game.getGameStatesManager().getAlivePlayers();
-                    for (Player p : targets) {
+                    List<UUID> targets = game.getGameStatesManager().getAlivePlayers();
+                    for (UUID uuid : targets) {
+                        Player p = Bukkit.getPlayer(uuid);
+                        if (p == null) {
+                            continue;
+                        }
                         if (!p.getWorld().equals(impactLocation.getWorld())) {
                             continue;
                         }

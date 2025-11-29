@@ -29,70 +29,76 @@ public class ProjectileHitBlockEvent implements Listener {
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
         Entity entity = event.getEntity();
 
-        if(entity instanceof Snowball snowball) {
-            ProjectileData projectileData = manager.getProjectileDataMap().get(snowball);
-            if (projectileData == null) {
-                return;
-            }
-
-            Player attacker = projectileData.getAttacker();
-            String attackItem = projectileData.getCustomItemName();
-
-            Job job = manager.getPlayerJobs().get(attacker);
-            if (job instanceof Bomber bomber) {
-                if(attackItem.equals(GameItemKeyString.SKILL)) {
-                    List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attacker, event.getHitBlock().getLocation(), 1);
-                    effectedPlayers.add(attacker);
-                    bomber.skill(event.getHitBlock().getLocation(), effectedPlayers);
-                }else if(attackItem.equals(GameItemKeyString.ULTIMATE_SKILL)){
-                    bomber.ultimate(event.getHitBlock().getLocation());
+        switch (entity) {
+            case Snowball snowball -> {
+                ProjectileData projectileData = manager.getProjectileDataMap().get(snowball);
+                if (projectileData == null) {
+                    return;
                 }
-            }else if(job instanceof Explorer explorer) {
-                if(attackItem.equals(GameItemKeyString.SKILL)) {
-                    explorer.skill(snowball);
-                }
-            }
-            manager.removeProjectileData(snowball);
 
-        }else if(entity instanceof Trident trident){
-            ProjectileData projectileData = manager.getProjectileDataMap().get(trident);
-            if (projectileData == null) {
-                return;
-            }
-            trident.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
-            if(projectileData.getCustomItemName().equals(Rapier.id)) {
                 Player attacker = projectileData.getAttacker();
+                String attackItem = projectileData.getCustomItemName();
 
-                Job job = manager.getPlayerJobs().get(attacker);
-                if(job instanceof IronMaiden ironMaiden){
-                    Rapier rapier = ironMaiden.getRapier();
-                    rapier.activate(trident, trident.getLocation());
+                Job job = manager.getPlayerJobs().get(attacker.getUniqueId());
+                if (job instanceof Bomber bomber) {
+                    if (attackItem.equals(GameItemKeyString.SKILL)) {
+                        List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attacker, event.getHitBlock().getLocation(), 1);
+                        effectedPlayers.add(attacker);
+                        bomber.skill(event.getHitBlock().getLocation(), effectedPlayers);
+                    } else if (attackItem.equals(GameItemKeyString.ULTIMATE_SKILL)) {
+                        bomber.ultimate(event.getHitBlock().getLocation());
+                    }
+                } else if (job instanceof Explorer explorer) {
+                    if (attackItem.equals(GameItemKeyString.SKILL)) {
+                        explorer.skill(snowball);
+                    }
                 }
-            }else if(projectileData.getCustomItemName().equals(ThunderJavelin.id)){
-                ThunderJavelin.activate(trident);
-            }
-        }else if(entity instanceof Arrow arrow){
-            ProjectileData projectileData = manager.getProjectileDataMap().get(arrow);
-            if (projectileData == null) {
-                return;
-            }
+                manager.removeProjectileData(snowball);
 
-            Player attacker = projectileData.getAttacker();
-            if(manager.getPlayerJobs().get(attacker) instanceof Explorer) {
-                //自分が放つ矢が着弾した位置に爆発を起こす。爆発は当たった対象に固定10ダメージを与える。
-                arrow.getWorld().spawnParticle(Particle.EXPLOSION, arrow.getLocation(), 1);
-                arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10.0F, 1.0F);
-                List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attacker, arrow.getLocation(), 3);
-                effectedPlayers.add(attacker);
-                manager.addAttackedPlayer(attacker);
-                for (Player damaged : effectedPlayers) {
-                    DamageEvent.calculateDamage(attacker, damaged, 10.0);
-                    manager.addDamagedPlayer(damaged);
+            }
+            case Trident trident -> {
+                ProjectileData projectileData = manager.getProjectileDataMap().get(trident);
+                if (projectileData == null) {
+                    return;
+                }
+                trident.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
+                if (projectileData.getCustomItemName().equals(Rapier.id)) {
+                    Player attacker = projectileData.getAttacker();
+
+                    Job job = manager.getPlayerJobs().get(attacker.getUniqueId());
+                    if (job instanceof IronMaiden ironMaiden) {
+                        Rapier rapier = ironMaiden.getRapier();
+                        rapier.activate(trident, trident.getLocation());
+                    }
+                } else if (projectileData.getCustomItemName().equals(ThunderJavelin.id)) {
+                    ThunderJavelin.activate(trident);
+                }
+            }
+            case Arrow arrow -> {
+                ProjectileData projectileData = manager.getProjectileDataMap().get(arrow);
+                if (projectileData == null) {
+                    return;
+                }
+
+                Player attacker = projectileData.getAttacker();
+                if (manager.getPlayerJobs().get(attacker.getUniqueId()) instanceof Explorer) {
+                    //自分が放つ矢が着弾した位置に爆発を起こす。爆発は当たった対象に固定10ダメージを与える。
+                    arrow.getWorld().spawnParticle(Particle.EXPLOSION, arrow.getLocation(), 1);
+                    arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10.0F, 1.0F);
+                    List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attacker, arrow.getLocation(), 3);
+                    effectedPlayers.add(attacker);
+                    manager.addAttackedPlayer(attacker.getUniqueId());
+                    for (Player damaged : effectedPlayers) {
+                        DamageEvent.calculateDamage(attacker, damaged, 10.0);
+                        manager.addDamagedPlayer(damaged.getUniqueId());
+                    }
+                    manager.removeProjectileData(arrow);
+                    return;
                 }
                 manager.removeProjectileData(arrow);
-                return;
             }
-            manager.removeProjectileData(arrow);
+            default -> {
+            }
         }
     }
 }

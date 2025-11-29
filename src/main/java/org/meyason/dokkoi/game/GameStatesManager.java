@@ -1,7 +1,6 @@
 package org.meyason.dokkoi.game;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.constants.GameState;
@@ -11,6 +10,7 @@ import org.meyason.dokkoi.job.Job;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class GameStatesManager {
 
@@ -18,26 +18,26 @@ public class GameStatesManager {
 
     private GameState gameState;
 
-    private List<Player> alivePlayers;
-    private List<Player> joinedPlayers;
-    private HashMap<Player, Goal> playerGoals;
-    private HashMap<Player, Job> playerJobs;
-    private HashMap<Player, Player> killerList;
-    private HashMap<Player, String> goalFixedPlayers;
-    private HashMap<Player, Integer> killCounts;
-    private List<Player> attackedPlayers;
-    private List<Player> damagedPlayers;
+    private List<UUID> alivePlayers;
+    private List<UUID> joinedPlayers;
+    private HashMap<UUID, Goal> playerGoals;
+    private HashMap<UUID, Job> playerJobs;
+    private HashMap<UUID, UUID> killerList;
+    private HashMap<UUID, String> goalFixedPlayers;
+    private HashMap<UUID, Integer> killCounts;
+    private List<UUID> attackedPlayers;
+    private List<UUID> damagedPlayers;
     private HashMap<Entity, ProjectileData> projectileDataMap;
-    private HashMap<Player, Integer> additionalDamage;
-    private HashMap<Player, Integer> damageCutPercent;
-    private HashMap<Player, Boolean> isDeactivateDamageOnce;
+    private HashMap<UUID, Integer> additionalDamage;
+    private HashMap<UUID, Integer> damageCutPercent;
+    private HashMap<UUID, Boolean> isDeactivateDamageOnce;
 
-    private HashMap<Player, Long> moneyMap;
+    private HashMap<UUID, Long> moneyMap;
 
-    private HashMap<Player, BukkitRunnable> skillCoolDownTasks;
-    private HashMap<Player, BukkitRunnable> ultimateSkillCoolDownTasks;
-    private HashMap<Player, BukkitRunnable> coolDownScheduler;
-    private HashMap<Player, BukkitRunnable> itemCoolDownScheduler;
+    private HashMap<UUID, BukkitRunnable> skillCoolDownTasks;
+    private HashMap<UUID, BukkitRunnable> ultimateSkillCoolDownTasks;
+    private HashMap<UUID, BukkitRunnable> coolDownScheduler;
+    private HashMap<UUID, BukkitRunnable> itemCoolDownScheduler;
     private HashMap<Trident, BukkitRunnable> tridentDespawnWatchDogs;
 
     private List<Entity> spawnedEntities;
@@ -97,24 +97,24 @@ public class GameStatesManager {
         spawnedEntities.clear();
     }
 
-    public void removePlayerData(Player player){
-        removeAlivePlayer(player);
-        removeJoinedPlayer(player);
-        removePlayerGoal(player);
-        removePlayerJob(player);
-        removeKiller(player);
-        removeGoalFixedPlayer(player);
-        removeKillCount(player);
-        removeAttackedPlayer(player);
-        removeDamagedPlayer(player);
-        removeAdditionalDamage(player);
-        removeDamageCutPercent(player);
-        removeIsDeactivateDamageOnce(player);
-        removeMoneyMap(player);
-        removeSkillCoolDownTask(player);
-        removeUltimateSkillCoolDownTask(player);
-        removeCoolDownScheduler(player);
-        removeItemCoolDownScheduler(player);
+    public void removePlayerData(UUID uuid){
+        removeAlivePlayer(uuid);
+        removeJoinedPlayer(uuid);
+        removePlayerGoal(uuid);
+        removePlayerJob(uuid);
+        removeKiller(uuid);
+        removeGoalFixedPlayer(uuid);
+        removeKillCount(uuid);
+        removeAttackedPlayer(uuid);
+        removeDamagedPlayer(uuid);
+        removeAdditionalDamage(uuid);
+        removeDamageCutPercent(uuid);
+        removeIsDeactivateDamageOnce(uuid);
+        removeMoneyMap(uuid);
+        removeSkillCoolDownTask(uuid);
+        removeUltimateSkillCoolDownTask(uuid);
+        removeCoolDownScheduler(uuid);
+        removeItemCoolDownScheduler(uuid);
     }
 
     public GameState getGameState() {
@@ -125,82 +125,82 @@ public class GameStatesManager {
     public boolean isEnableKillerList() {return isEnableKillerList;}
     public void setEnableKillerList(boolean enableKillerList) {isEnableKillerList = enableKillerList;}
 
-    public List<Player> getAlivePlayers() {return alivePlayers;}
-    public void setAlivePlayers(List<Player> alivePlayers) {this.alivePlayers = alivePlayers;}
-    public void addAlivePlayer(Player player) {this.alivePlayers.add(player);}
-    public void removeAlivePlayer(Player player) {
-        if (!this.alivePlayers.contains(player)) {return;}
-        this.alivePlayers.remove(player);
+    public List<UUID> getAlivePlayers() {return alivePlayers;}
+    public void setAlivePlayers(List<UUID> alivePlayers) {this.alivePlayers = alivePlayers;}
+    public void addAlivePlayer(UUID playerUUID) {this.alivePlayers.add(playerUUID);}
+    public void removeAlivePlayer(UUID playerUUID) {
+        if (!this.alivePlayers.contains(playerUUID)) {return;}
+        this.alivePlayers.remove(playerUUID);
     }
 
-    public List<Player> getJoinedPlayers() {return joinedPlayers;}
-    public void setJoinedPlayers(List<Player> joinedPlayers) {this.joinedPlayers = joinedPlayers;}
-    public void addJoinedPlayer(Player player) {this.joinedPlayers.add(player);}
-    public void removeJoinedPlayer(Player player) {
-        if(!this.joinedPlayers.contains(player)) {return;}
-        this.joinedPlayers.remove(player);
+    public List<UUID> getJoinedPlayers() {return joinedPlayers;}
+    public void setJoinedPlayers(List<UUID> joinedPlayers) {this.joinedPlayers = joinedPlayers;}
+    public void addJoinedPlayer(UUID uuid) {this.joinedPlayers.add(uuid);}
+    public void removeJoinedPlayer(UUID uuid) {
+        if(!this.joinedPlayers.contains(uuid)) {return;}
+        this.joinedPlayers.remove(uuid);
     }
 
-    public HashMap<Player, Goal> getPlayerGoals() {return playerGoals;}
-    public void setPlayerGoals(HashMap<Player, Goal> playerGoals) {this.playerGoals = playerGoals;}
-    public void addPlayerGoal(Player player, Goal goal) {this.playerGoals.put(player, goal);}
-    public void removePlayerGoal(Player player) {
-        if (!this.playerGoals.containsKey(player)) {return;}
-        this.playerGoals.remove(player);
+    public HashMap<UUID, Goal> getPlayerGoals() {return playerGoals;}
+    public void setPlayerGoals(HashMap<UUID, Goal> playerGoals) {this.playerGoals = playerGoals;}
+    public void addPlayerGoal(UUID uuid, Goal goal) {this.playerGoals.put(uuid, goal);}
+    public void removePlayerGoal(UUID uuid) {
+        if (!this.playerGoals.containsKey(uuid)) {return;}
+        this.playerGoals.remove(uuid);
     }
 
-    public HashMap<Player, Job> getPlayerJobs() {return playerJobs;}
-    public void setPlayerJobs(HashMap<Player, Job> playerJobs) {this.playerJobs = playerJobs;}
-    public void addPlayerJob(Player player, Job job) {this.playerJobs.put(player, job);}
-    public void removePlayerJob(Player player) {
-        if (!this.playerJobs.containsKey(player)) {return;}
-        this.playerJobs.remove(player);
+    public HashMap<UUID, Job> getPlayerJobs() {return playerJobs;}
+    public void setPlayerJobs(HashMap<UUID, Job> playerJobs) {this.playerJobs = playerJobs;}
+    public void addPlayerJob(UUID uuid, Job job) {this.playerJobs.put(uuid, job);}
+    public void removePlayerJob(UUID uuid) {
+        if (!this.playerJobs.containsKey(uuid)) {return;}
+        this.playerJobs.remove(uuid);
     }
 
-    public HashMap<Player, Player> getKillerList() {return killerList;}
-    public void setKillerList(HashMap<Player, Player> killerList) {this.killerList = killerList;}
-    public void addKiller(Player killer, Player victim) {this.killerList.put(killer, victim);}
-    public void removeKiller(Player killer) {
+    public HashMap<UUID, UUID> getKillerList() {return killerList;}
+    public void setKillerList(HashMap<UUID, UUID> killerList) {this.killerList = killerList;}
+    public void addKiller(UUID killer, UUID victim) {this.killerList.put(killer, victim);}
+    public void removeKiller(UUID killer) {
         if (!this.killerList.containsKey(killer)) {return;}
         this.killerList.remove(killer);
     }
 
-    public HashMap<Player, String> getGoalFixedPlayers() {return goalFixedPlayers;}
-    public void setGoalFixedPlayers(HashMap<Player, String> goalFixedPlayers) {this.goalFixedPlayers = goalFixedPlayers;}
-    public void addGoalFixedPlayer(Player player, String goal) {this.goalFixedPlayers.put(player, goal);}
-    public void removeGoalFixedPlayer(Player player) {
+    public HashMap<UUID, String> getGoalFixedPlayers() {return goalFixedPlayers;}
+    public void setGoalFixedPlayers(HashMap<UUID, String> goalFixedPlayers) {this.goalFixedPlayers = goalFixedPlayers;}
+    public void addGoalFixedPlayer(UUID player, String goal) {this.goalFixedPlayers.put(player, goal);}
+    public void removeGoalFixedPlayer(UUID player) {
         if (!this.goalFixedPlayers.containsKey(player)) {return;}
         this.goalFixedPlayers.remove(player);
     }
 
-    public HashMap<Player, Integer> getKillCounts() {return killCounts;}
-    public void setKillCounts(HashMap<Player, Integer> killCounts) {this.killCounts = killCounts;}
-    public void addKillCount(Player player) {
+    public HashMap<UUID, Integer> getKillCounts() {return killCounts;}
+    public void setKillCounts(HashMap<UUID, Integer> killCounts) {this.killCounts = killCounts;}
+    public void addKillCount(UUID player) {
         this.killCounts.put(player, this.killCounts.getOrDefault(player, 0) + 1);
     }
-    public void removeKillCount(Player player) {
+    public void removeKillCount(UUID player) {
         if(!this.killCounts.containsKey(player)) return;
         this.killCounts.remove(player);
     }
 
-    public List<Player> getAttackedPlayers() {return attackedPlayers;}
-    public void setAttackedPlayers(List<Player> attackedPlayers) {this.attackedPlayers = attackedPlayers;}
-    public void addAttackedPlayer(Player player) {
+    public List<UUID> getAttackedPlayers() {return attackedPlayers;}
+    public void setAttackedPlayers(List<UUID> attackedPlayers) {this.attackedPlayers = attackedPlayers;}
+    public void addAttackedPlayer(UUID player) {
         if(this.attackedPlayers.contains(player)) return;
         this.attackedPlayers.add(player);
     }
-    public void removeAttackedPlayer(Player player) {
+    public void removeAttackedPlayer(UUID player) {
         if(!this.attackedPlayers.contains(player)) return;
         this.attackedPlayers.remove(player);
     }
 
-    public List<Player> getDamagedPlayers() {return damagedPlayers;}
-    public void setDamagedPlayers(List<Player> damagedPlayers) {this.damagedPlayers = damagedPlayers;}
-    public void addDamagedPlayer(Player player) {
+    public List<UUID> getDamagedPlayers() {return damagedPlayers;}
+    public void setDamagedPlayers(List<UUID> damagedPlayers) {this.damagedPlayers = damagedPlayers;}
+    public void addDamagedPlayer(UUID player) {
         if(this.damagedPlayers.contains(player)) return;
         this.damagedPlayers.add(player);
     }
-    public void removeDamagedPlayer(Player player) {
+    public void removeDamagedPlayer(UUID player) {
         if(this.damagedPlayers.contains(player)) return;
         this.damagedPlayers.remove(player);
     }
@@ -210,53 +210,53 @@ public class GameStatesManager {
     public void addProjectileData(Entity entity, ProjectileData data) {this.projectileDataMap.put(entity, data);}
     public void removeProjectileData(Entity entity) {this.projectileDataMap.remove(entity);}
 
-    public HashMap<Player, BukkitRunnable> getSkillCoolDownTasks() {return skillCoolDownTasks;}
-    public void setSkillCoolDownTasks(HashMap<Player, BukkitRunnable> skillCoolDownTasks) {this.skillCoolDownTasks = skillCoolDownTasks;}
-    public void addSkillCoolDownTask(Player player, BukkitRunnable task) {this.skillCoolDownTasks.put(player, task);}
-    public void removeSkillCoolDownTask(Player player) {
+    public HashMap<UUID, BukkitRunnable> getSkillCoolDownTasks() {return skillCoolDownTasks;}
+    public void setSkillCoolDownTasks(HashMap<UUID, BukkitRunnable> skillCoolDownTasks) {this.skillCoolDownTasks = skillCoolDownTasks;}
+    public void addSkillCoolDownTask(UUID player, BukkitRunnable task) {this.skillCoolDownTasks.put(player, task);}
+    public void removeSkillCoolDownTask(UUID player) {
         if(!this.skillCoolDownTasks.containsKey(player)) {return;}
         this.skillCoolDownTasks.remove(player);
     }
 
-    public HashMap<Player, Integer> getAdditionalDamage() {return additionalDamage;}
-    public void setAdditionalDamage(HashMap<Player, Integer> additionalDamage) {this.additionalDamage = additionalDamage;}
-    public void addAdditionalDamage(Player player, int damage) {
+    public HashMap<UUID, Integer> getAdditionalDamage() {return additionalDamage;}
+    public void setAdditionalDamage(HashMap<UUID, Integer> additionalDamage) {this.additionalDamage = additionalDamage;}
+    public void addAdditionalDamage(UUID player, int damage) {
         this.additionalDamage.put(player, this.additionalDamage.getOrDefault(player, 0) + damage);
     }
-    public void removeAdditionalDamage(Player player) {
+    public void removeAdditionalDamage(UUID player) {
         if(!this.additionalDamage.containsKey(player)) {return;}
         this.additionalDamage.remove(player);
     }
 
-    public HashMap<Player, Integer> getDamageCutPercent() {return damageCutPercent;}
-    public void setDamageCutPercent(HashMap<Player, Integer> damageCutPercent) {this.damageCutPercent = damageCutPercent;}
-    public void addDamageCutPercent(Player player, int percent) {
+    public HashMap<UUID, Integer> getDamageCutPercent() {return damageCutPercent;}
+    public void setDamageCutPercent(HashMap<UUID, Integer> damageCutPercent) {this.damageCutPercent = damageCutPercent;}
+    public void addDamageCutPercent(UUID player, int percent) {
         this.damageCutPercent.put(player, percent);
     }
-    public void calcDamageCutPercent(Player player, int percent) {
+    public void calcDamageCutPercent(UUID player, int percent) {
         this.damageCutPercent.put(player, this.damageCutPercent.getOrDefault(player, 0) + percent);
     }
-    public void removeDamageCutPercent(Player player) {
+    public void removeDamageCutPercent(UUID player) {
         if(!this.damageCutPercent.containsKey(player)) {return;}
         this.damageCutPercent.remove(player);
     }
 
-    public HashMap<Player, Boolean> getIsDeactivateDamageOnce() {return isDeactivateDamageOnce;}
-    public void setIsDeactivateDamageOnce(HashMap<Player, Boolean> isDeactivateDamageOnce) {this.isDeactivateDamageOnce = isDeactivateDamageOnce;}
-    public void addIsDeactivateDamageOnce(Player player, boolean value) {
+    public HashMap<UUID, Boolean> getIsDeactivateDamageOnce() {return isDeactivateDamageOnce;}
+    public void setIsDeactivateDamageOnce(HashMap<UUID, Boolean> isDeactivateDamageOnce) {this.isDeactivateDamageOnce = isDeactivateDamageOnce;}
+    public void addIsDeactivateDamageOnce(UUID player, boolean value) {
         this.isDeactivateDamageOnce.put(player, value);
     }
-    public void removeIsDeactivateDamageOnce(Player player) {
+    public void removeIsDeactivateDamageOnce(UUID player) {
         if(!this.isDeactivateDamageOnce.containsKey(player)) {return;}
         this.isDeactivateDamageOnce.remove(player);
     }
 
-    public HashMap<Player, Long> getMoneyMap() {return moneyMap;}
-    public void setMoneyMap(HashMap<Player, Long> moneyMap) {this.moneyMap = moneyMap;}
-    public void addMoneyMap(Player player, long amount) {
+    public HashMap<UUID, Long> getMoneyMap() {return moneyMap;}
+    public void setMoneyMap(HashMap<UUID, Long> moneyMap) {this.moneyMap = moneyMap;}
+    public void addMoneyMap(UUID player, long amount) {
         this.moneyMap.put(player, this.moneyMap.getOrDefault(player, 0L) + amount);
     }
-    public boolean reduceMoneyMap(Player player, long amount) {
+    public boolean reduceMoneyMap(UUID player, long amount) {
         if(!this.moneyMap.containsKey(player)) {return false;}
         long currentMoney = this.moneyMap.get(player);
         long newMoney = currentMoney - amount;
@@ -264,31 +264,31 @@ public class GameStatesManager {
         this.moneyMap.put(player, newMoney);
         return true;
     }
-    public void removeMoneyMap(Player player) {
+    public void removeMoneyMap(UUID player) {
         if(!this.moneyMap.containsKey(player)) {return;}
         this.moneyMap.remove(player);
     }
 
-    public HashMap<Player, BukkitRunnable> getUltimateSkillCoolDownTasks() {return ultimateSkillCoolDownTasks;}
-    public void setUltimateSkillCoolDownTasks(HashMap<Player, BukkitRunnable> ultimateSkillCoolDownTasks) {this.ultimateSkillCoolDownTasks = ultimateSkillCoolDownTasks;}
-    public void addUltimateSkillCoolDownTask(Player player, BukkitRunnable task) {this.ultimateSkillCoolDownTasks.put(player, task);}
-    public void removeUltimateSkillCoolDownTask(Player player) {
+    public HashMap<UUID, BukkitRunnable> getUltimateSkillCoolDownTasks() {return ultimateSkillCoolDownTasks;}
+    public void setUltimateSkillCoolDownTasks(HashMap<UUID, BukkitRunnable> ultimateSkillCoolDownTasks) {this.ultimateSkillCoolDownTasks = ultimateSkillCoolDownTasks;}
+    public void addUltimateSkillCoolDownTask(UUID player, BukkitRunnable task) {this.ultimateSkillCoolDownTasks.put(player, task);}
+    public void removeUltimateSkillCoolDownTask(UUID player) {
         if(!this.ultimateSkillCoolDownTasks.containsKey(player)) {return;}
         this.ultimateSkillCoolDownTasks.remove(player);
     }
 
-    public HashMap<Player, BukkitRunnable> getCoolDownScheduler() {return coolDownScheduler;}
-    public void setCoolDownScheduler(HashMap<Player, BukkitRunnable> coolDownScheduler) {this.coolDownScheduler = coolDownScheduler;}
-    public void addCoolDownScheduler(Player player, BukkitRunnable task) {this.coolDownScheduler.put(player, task);}
-    public void removeCoolDownScheduler(Player player) {
+    public HashMap<UUID, BukkitRunnable> getCoolDownScheduler() {return coolDownScheduler;}
+    public void setCoolDownScheduler(HashMap<UUID, BukkitRunnable> coolDownScheduler) {this.coolDownScheduler = coolDownScheduler;}
+    public void addCoolDownScheduler(UUID player, BukkitRunnable task) {this.coolDownScheduler.put(player, task);}
+    public void removeCoolDownScheduler(UUID player) {
         if(!this.coolDownScheduler.containsKey(player)) {return;}
         this.coolDownScheduler.remove(player);
     }
 
-    public HashMap<Player, BukkitRunnable> getItemCoolDownScheduler() {return itemCoolDownScheduler;}
-    public void setItemCoolDownScheduler(HashMap<Player, BukkitRunnable> itemCoolDownScheduler) {this.itemCoolDownScheduler = itemCoolDownScheduler;}
-    public void addItemCoolDownScheduler(Player player, BukkitRunnable task) {this.itemCoolDownScheduler.put(player, task);}
-    public void removeItemCoolDownScheduler(Player player) {
+    public HashMap<UUID, BukkitRunnable> getItemCoolDownScheduler() {return itemCoolDownScheduler;}
+    public void setItemCoolDownScheduler(HashMap<UUID, BukkitRunnable> itemCoolDownScheduler) {this.itemCoolDownScheduler = itemCoolDownScheduler;}
+    public void addItemCoolDownScheduler(UUID player, BukkitRunnable task) {this.itemCoolDownScheduler.put(player, task);}
+    public void removeItemCoolDownScheduler(UUID player) {
         if(!this.itemCoolDownScheduler.containsKey(player)) {return;}
         this.itemCoolDownScheduler.remove(player);
     }

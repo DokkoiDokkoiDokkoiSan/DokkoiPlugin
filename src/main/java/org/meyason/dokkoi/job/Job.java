@@ -5,12 +5,12 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.Goal;
 
 import java.util.List;
+import java.util.UUID;
 
 public abstract class Job implements Cloneable {
 
@@ -101,46 +101,48 @@ public abstract class Job implements Cloneable {
 
 
     public void chargeUltimateSkill(Player player, GameStatesManager gameStatesManager){
+        UUID uuid = player.getUniqueId();
         BukkitRunnable ultimateInitTask = new BukkitRunnable() {
             @Override
             public void run() {
-                if (!player.isOnline() || !gameStatesManager.getUltimateSkillCoolDownTasks().containsKey(player)) {
+                if (!player.isOnline() || !gameStatesManager.getUltimateSkillCoolDownTasks().containsKey(uuid)) {
                     cancel();
                     return;
                 }
-                gameStatesManager.removeUltimateSkillCoolDownTask(player);
+                gameStatesManager.removeUltimateSkillCoolDownTask(uuid);
                 player.playSound(player, chargeUltimateSkillSound, chargeUltimateSkillVolume, chargeUltimateSkillPitch);
             }
         };
-        ultimateInitTask.runTaskLater(Dokkoi.getInstance(), gameStatesManager.getPlayerJobs().get(player).getCoolTimeSkillUltimate() * 20L);
-        gameStatesManager.addUltimateSkillCoolDownTask(player, ultimateInitTask);
+        ultimateInitTask.runTaskLater(Dokkoi.getInstance(), gameStatesManager.getPlayerJobs().get(uuid).getCoolTimeSkillUltimate() * 20L);
+        gameStatesManager.addUltimateSkillCoolDownTask(uuid, ultimateInitTask);
 
     }
 
     public void chargeSkill(Player player, GameStatesManager gameStatesManager){
+        UUID uuid = player.getUniqueId();
         BukkitRunnable skillInitTask = new BukkitRunnable() {
             @Override
             public void run() {
-                if (!player.isOnline() || !gameStatesManager.getSkillCoolDownTasks().containsKey(player)) {
+                if (!player.isOnline() || !gameStatesManager.getSkillCoolDownTasks().containsKey(uuid)) {
                     cancel();
                     return;
                 }
-                gameStatesManager.removeSkillCoolDownTask(player);
+                gameStatesManager.removeSkillCoolDownTask(uuid);
                 player.playSound(player, chargeSkillSound, chargeSkillVolume, chargeSkillPitch);
             }
         };
-        skillInitTask.runTaskLater(Dokkoi.getInstance(), gameStatesManager.getPlayerJobs().get(player).getCoolTimeSkill() * 20L);
-        gameStatesManager.addSkillCoolDownTask(player, skillInitTask);
+        skillInitTask.runTaskLater(Dokkoi.getInstance(), gameStatesManager.getPlayerJobs().get(uuid).getCoolTimeSkill() * 20L);
+        gameStatesManager.addSkillCoolDownTask(uuid, skillInitTask);
     }
 
     public boolean isSkillCoolDown(Player player){
         GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
-        return gameStatesManager.getSkillCoolDownTasks().containsKey(player);
+        return gameStatesManager.getSkillCoolDownTasks().containsKey(player.getUniqueId());
     }
 
     public boolean isUltimateSkillCoolDown(Player player){
         GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
-        return gameStatesManager.getUltimateSkillCoolDownTasks().containsKey(player);
+        return gameStatesManager.getUltimateSkillCoolDownTasks().containsKey(player.getUniqueId());
     }
 
 }

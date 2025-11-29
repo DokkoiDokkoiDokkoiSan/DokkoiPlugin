@@ -62,7 +62,7 @@ public class ThunderJavelin extends CustomItem {
                 effectedPlayers.add(shooter);
                 for (Player damaged : effectedPlayers) {
                     DamageEvent.calculateDamage(shooter, damaged, 20.0);
-                    Game.getInstance().getGameStatesManager().addDamagedPlayer(damaged);
+                    Game.getInstance().getGameStatesManager().addDamagedPlayer(damaged.getUniqueId());
                 }
             }
         }.runTaskLater(Dokkoi.getInstance(), 2*20L);

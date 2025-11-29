@@ -17,9 +17,7 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.job.IronMaiden;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Rapier extends CustomItem {
 
@@ -67,7 +65,7 @@ public class Rapier extends CustomItem {
         final World world = hitLocation.getWorld();
         final double radius = 10.0;
 
-        IronMaiden ironMaidenJob = (IronMaiden) game.getGameStatesManager().getPlayerJobs().get(player);
+        IronMaiden ironMaidenJob = (IronMaiden) game.getGameStatesManager().getPlayerJobs().get(player.getUniqueId());
 
         // 半径10m以内のプレイヤーの視線を着弾地点に固定
         BukkitRunnable rapierTask = new BukkitRunnable() {

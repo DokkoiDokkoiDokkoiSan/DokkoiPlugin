@@ -21,7 +21,7 @@ public class MaidenGazer extends Goal {
 
         this.tier = Tier.TIER_3;
         setDamageMultiplier(this.tier.getDamageMultiplier());
-        if(game.getGameStatesManager().getPlayerJobs().get(player) instanceof IronMaiden maiden){
+        if(game.getGameStatesManager().getPlayerJobs().get(player.getUniqueId()) instanceof IronMaiden maiden){
             this.ironMaiden = maiden;
         }
     }

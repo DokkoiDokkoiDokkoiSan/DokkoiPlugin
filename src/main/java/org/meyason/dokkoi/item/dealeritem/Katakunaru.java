@@ -41,11 +41,11 @@ public class Katakunaru extends CustomItem {
 
     public static void activate(Player player, ItemStack item){
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
-        if(manager.getIsDeactivateDamageOnce().get(player)){
+        if(manager.getIsDeactivateDamageOnce().get(player.getUniqueId())){
             player.sendMessage(Component.text("§cすでにダメージ無効化のバフを所持しています。"));
             return;
         }
-        manager.addIsDeactivateDamageOnce(player, true);
+        manager.addIsDeactivateDamageOnce(player.getUniqueId(), true);
         item.setAmount(item.getAmount() - 1);
     }
 }

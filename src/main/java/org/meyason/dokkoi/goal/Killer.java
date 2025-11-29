@@ -8,6 +8,7 @@ import org.meyason.dokkoi.game.Game;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class Killer extends Goal {
 
@@ -35,13 +36,13 @@ public class Killer extends Goal {
 
     @Override
     public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
             this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
         //killerListの中のkeyにPlayerが指定分含まれているかどうかを確認
-        HashMap<Player, Player> killerList = game.getGameStatesManager().getKillerList();
-        if(!killerList.containsKey(player)){
+        HashMap<UUID, UUID> killerList = game.getGameStatesManager().getKillerList();
+        if(!killerList.containsKey(player.getUniqueId())){
             player.sendMessage(Component.text("§c誰も殺せなかった。"));
             return false;
         }
@@ -49,9 +50,9 @@ public class Killer extends Goal {
             player.sendMessage("§c全てのプレイヤーを殺害できなかった。");
             return false;
         }
-        List<Player> killers = killerList.keySet().stream().distinct().toList();
-        for(Player p : killers){
-            if(!player.equals(p)){
+        List<UUID> killers = killerList.keySet().stream().distinct().toList();
+        for(UUID p : killers){
+            if(!player.getUniqueId().equals(p)){
                 player.sendMessage("§c全てのプレイヤーを自らの手で殺害できなかった。");
                 return false;
             }

@@ -6,7 +6,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.meyason.dokkoi.entity.GameEntity;
-import org.meyason.dokkoi.game.Game;
 
 public class SpawnEntityCommand implements CommandExecutor {
 

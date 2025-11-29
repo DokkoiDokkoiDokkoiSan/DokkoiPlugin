@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.item.goalitem;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -19,6 +20,7 @@ import org.meyason.dokkoi.item.GameItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class KillerList extends CustomItem {
 
@@ -27,7 +29,7 @@ public class KillerList extends CustomItem {
     private Player player;
     private Game game;
 
-    private List<Player> targetPlayerList = new ArrayList<>();
+    private List<UUID> targetPlayerList = new ArrayList<>();
 
     public KillerList() {
         super(id, "§a殺すノート", ItemStack.of(Material.WRITTEN_BOOK), 1);
@@ -70,10 +72,12 @@ public class KillerList extends CustomItem {
         ItemStack book = baseItem.clone();
         GameItem.removeItem(player, GameItemKeyString.KILLERLIST, 1);
         BookMeta bookMeta = (BookMeta) book.getItemMeta();
-        List<Player> killerPlayers = new ArrayList<>(game.getGameStatesManager().getKillerList().keySet());
+        List<UUID> killerPlayers = new ArrayList<>(game.getGameStatesManager().getKillerList().keySet());
         StringBuilder names = new StringBuilder();
-        for(Player p : killerPlayers){
-            if(!game.getGameStatesManager().getAlivePlayers().contains(p)){
+        for(UUID id : killerPlayers){
+            Player p = Bukkit.getPlayer(id);
+            if(p == null) continue;
+            if(!game.getGameStatesManager().getAlivePlayers().contains(id)){
                 names.append("§4§m- ").append(p.getName()).append("\n");
             }
             names.append("§2- ").append(p.getName()).append("\n");
@@ -87,12 +91,15 @@ public class KillerList extends CustomItem {
     }
 
     public void skill(GameStatesManager gameStatesManager, Player owner){
-        if(gameStatesManager.getItemCoolDownScheduler().containsKey(owner)){
+        UUID uuid = owner.getUniqueId();
+        if(gameStatesManager.getItemCoolDownScheduler().containsKey(uuid)){
             owner.sendMessage("§cクールタイム中です");
             return;
         }
-        List<Player> killerList = new ArrayList<>(gameStatesManager.getKillerList().keySet());
-        for(Player p : killerList){
+        List<UUID> killerList = new ArrayList<>(gameStatesManager.getKillerList().keySet());
+        for(UUID id : killerList){
+            Player p = Bukkit.getPlayer(id);
+            if(p == null) continue;
             p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 10 * 20, 1));
         }
         BukkitRunnable itemInitTask = new BukkitRunnable() {
@@ -102,18 +109,18 @@ public class KillerList extends CustomItem {
                     cancel();
                     return;
                 }
-                if (!owner.isOnline() || !gameStatesManager.getItemCoolDownScheduler().containsKey(owner)) {
+                if (!owner.isOnline() || !gameStatesManager.getItemCoolDownScheduler().containsKey(uuid)) {
                     cancel();
                     return;
                 }
-                gameStatesManager.removeItemCoolDownScheduler(owner);
+                gameStatesManager.removeItemCoolDownScheduler(uuid);
             }
         };
         itemInitTask.runTaskLater(Dokkoi.getInstance(), 30 * 20L);
-        gameStatesManager.addItemCoolDownScheduler(owner, itemInitTask);
+        gameStatesManager.addItemCoolDownScheduler(uuid, itemInitTask);
     }
 
-    public List<Player> getTargetPlayerList() {
+    public List<UUID> getTargetPlayerList() {
         return targetPlayerList;
     }
 }

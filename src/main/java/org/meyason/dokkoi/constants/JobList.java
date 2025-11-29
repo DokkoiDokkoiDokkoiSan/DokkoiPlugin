@@ -1,6 +1,5 @@
 package org.meyason.dokkoi.constants;
 
-import org.bukkit.entity.Player;
 import org.meyason.dokkoi.job.*;
 
 import java.util.ArrayList;

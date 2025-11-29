@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.goal;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -9,6 +10,8 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.goalitem.TierPlayerList;
+
+import java.util.UUID;
 
 
 public class MassTierKiller extends Goal {
@@ -38,11 +41,15 @@ public class MassTierKiller extends Goal {
         int tier1Count = 0;
         int tier2Count = 0;
         int tier3Count = 0;
-        for(Player targetPlayer : game.getGameStatesManager().getAlivePlayers()){
+        for(UUID uuid : game.getGameStatesManager().getAlivePlayers()){
+            Player targetPlayer = Bukkit.getPlayer(uuid);
+            if(targetPlayer == null){
+                continue;
+            }
             if(targetPlayer.equals(this.player)){
                 continue;
             }
-            Goal goal = game.getGameStatesManager().getPlayerGoals().get(targetPlayer);
+            Goal goal = game.getGameStatesManager().getPlayerGoals().get(targetPlayer.getUniqueId());
             if(goal.tier == Tier.TIER_1){
                 tier1Count++;
             } else if(goal.tier == Tier.TIER_2){
@@ -89,12 +96,16 @@ public class MassTierKiller extends Goal {
 
     @Override
     public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
             this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
-        for(Player targetPlayer : game.getGameStatesManager().getAlivePlayers()){
-            if(targetPlayer.equals(this.player)){
+        for(UUID uuid : game.getGameStatesManager().getAlivePlayers()){
+            if(uuid.equals(this.player.getUniqueId())){
+                continue;
+            }
+            Player targetPlayer = Bukkit.getPlayer(uuid);
+            if(targetPlayer == null){
                 continue;
             }
             if(tierPlayerList.getTargetPlayers().contains(targetPlayer)){

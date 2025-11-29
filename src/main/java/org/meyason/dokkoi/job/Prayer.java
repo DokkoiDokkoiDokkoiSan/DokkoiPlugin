@@ -20,11 +20,7 @@ import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 public class Prayer extends Job {
 
@@ -164,7 +160,7 @@ public class Prayer extends Job {
     public void addGachaCount(Game game, Player player){
         gachaCount++;
         if(gachaCount % 20 == 0){
-            game.getGameStatesManager().addAdditionalDamage(player, 1);
+            game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), 1);
             player.sendMessage("§bガチャ回転数が20回溜まったので、与ダメージが1増加しました。");
         }
     }
@@ -223,7 +219,7 @@ public class Prayer extends Job {
         }else if(Objects.equals(selectedRarity, UR)) {
             List<Player> targets = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 20);
             for(Player target : targets){
-                game.getGameStatesManager().addAdditionalDamage(target, -500);
+                game.getGameStatesManager().addAdditionalDamage(target.getUniqueId(), -500);
             }
             new BukkitRunnable() {
                 @Override
@@ -232,12 +228,12 @@ public class Prayer extends Job {
                         if(!target.isOnline()){
                             continue;
                         }
-                        game.getGameStatesManager().addAdditionalDamage(target, 500);
+                        game.getGameStatesManager().addAdditionalDamage(target.getUniqueId(), 500);
                     }
                 }
             }.runTaskLater(Dokkoi.getInstance(), 20 * 10);
         }else if(Objects.equals(selectedRarity, LR)) {
-            game.getGameStatesManager().addDamageCutPercent(player, 100);
+            game.getGameStatesManager().addDamageCutPercent(player.getUniqueId(), 100);
             onLREffect = true;
             new BukkitRunnable() {
                 @Override
@@ -247,7 +243,7 @@ public class Prayer extends Job {
                         return;
                     }
                     onLREffect = false;
-                    game.getGameStatesManager().addDamageCutPercent(player, -100);
+                    game.getGameStatesManager().addDamageCutPercent(player.getUniqueId(), -100);
                 }
             }.runTaskTimer(Dokkoi.getInstance(), 0, 10 * 20);
         }else if(Objects.equals(selectedRarity, KETSU)) {
@@ -269,23 +265,28 @@ public class Prayer extends Job {
             player.spawnParticle(Particle.EXPLOSION_EMITTER, player.getLocation(), 5, 1, 1, 1);
             player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0F, 1.0F);
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
-            List<Player> targets = new ArrayList<>(game.getGameStatesManager().getAlivePlayers());
-            for(Player target : targets){
-                if(target.equals(player)) continue;
-                if(!target.isOnline()) continue;
+            List<UUID> targets = new ArrayList<>(game.getGameStatesManager().getAlivePlayers());
+            for(UUID uuid : targets){
+                if(uuid.equals(player.getUniqueId())) continue;
+                Player target = Bukkit.getPlayer(uuid);
+                if(target == null) continue;
                 DeathEvent.kill(player, target);
             }
         }
     }
 
     public void ultimate(){
-        List<Player> alivePlayers = new ArrayList<>(game.getGameStatesManager().getAlivePlayers());
-        alivePlayers.remove(player);
-        if(alivePlayers.isEmpty()){
+        List<UUID> alivePlayerUUID = new ArrayList<>(game.getGameStatesManager().getAlivePlayers());
+        alivePlayerUUID.remove(player.getUniqueId());
+        if(alivePlayerUUID.isEmpty()){
             player.sendMessage("§c他に生存者がいないため、異空間に転移できませんでした。");
             return;
         }
-        Player target = alivePlayers.get(new Random().nextInt(alivePlayers.size()));
+        UUID uuid = alivePlayerUUID.get(new Random().nextInt(alivePlayerUUID.size()));
+        Player target = Bukkit.getPlayer(uuid);
+        if(target == null){
+            return;
+        }
         // TODO: 異空間
         player.sendMessage("§a" + target.getName() + "§aと異空間に転移しました。どちらかが死ぬまで戻れません。");
         target.sendMessage("§a" + player.getName() + "§aと異空間に転移しました。どちらかが死ぬまで戻れません。");

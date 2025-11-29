@@ -102,7 +102,7 @@ public class IronMaiden extends Job {
         BukkitRunnable passiveTask = new BukkitRunnable(){
             @Override
             public void run(){
-                if(!game.getGameStatesManager().getAlivePlayers().contains(player)){
+                if(!game.getGameStatesManager().getAlivePlayers().contains(player.getUniqueId())){
                     player.removePotionEffect(PotionEffectType.INVISIBILITY);
                     this.cancel();
                     return;

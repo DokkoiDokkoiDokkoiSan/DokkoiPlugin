@@ -1,19 +1,12 @@
 package org.meyason.dokkoi.event.entity;
 
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.projectiles.ProjectileSource;
-import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
@@ -33,7 +26,7 @@ public class LaunchEvent implements Listener {
         if(projectile.getType() == EntityType.TRIDENT){
             ProjectileSource projectileSource = projectile.getShooter();
             if(projectileSource instanceof Player player){
-                if(manager.getPlayerJobs().get(player) instanceof IronMaiden ironMaiden){
+                if(manager.getPlayerJobs().get(player.getUniqueId()) instanceof IronMaiden ironMaiden){
                     Rapier rapier = ironMaiden.getRapier();
                     player.playSound(player, Sound.ITEM_TRIDENT_RIPTIDE_1, 1.0f, 1.0f);
                     ProjectileData projectileData = new ProjectileData(player, projectile, Rapier.id);
@@ -50,7 +43,7 @@ public class LaunchEvent implements Listener {
         }else if(projectile.getType() == EntityType.ARROW){
             ProjectileSource projectileSource = projectile.getShooter();
             if(projectileSource instanceof Player player){
-                if(manager.getPlayerJobs().get(player) instanceof Explorer explorer){
+                if(manager.getPlayerJobs().get(player.getUniqueId()) instanceof Explorer explorer){
                     if(explorer.isKetsumouMode()){
                         ProjectileData projectileData = new ProjectileData(player, projectile, Material.ARROW.name());
                         manager.addProjectileData(projectile, projectileData);

@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.event.player;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -19,20 +20,23 @@ import org.meyason.dokkoi.job.Prayer;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 
 public class DeathEvent {
 
     public static void kill(Player killer, Player dead){
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
+        UUID killerUUID = killer.getUniqueId();
+        UUID deadUUID = dead.getUniqueId();
 
-        if(manager.getPlayerJobs().get(dead) instanceof Bomber bomber){
+        if(manager.getPlayerJobs().get(deadUUID) instanceof Bomber bomber){
             if(bomber.passive()){
                 return;
             }
         }
 
-        if(manager.getPlayerJobs().get(dead) instanceof Prayer prayer){
+        if(manager.getPlayerJobs().get(deadUUID) instanceof Prayer prayer){
             if(prayer.getHasStrongestStrongestBall()){
                 dead.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
                 dead.setHealth(dead.getMaxHealth());
@@ -40,9 +44,9 @@ public class DeathEvent {
             }
         }
 
-        if(manager.getPlayerGoals().get(dead).tier == Tier.TIER_3 &&
-                !manager.getPlayerGoals().get(dead).isRevived){
-            manager.getPlayerGoals().get(dead).isRevived = true;
+        if(manager.getPlayerGoals().get(deadUUID).tier == Tier.TIER_3 &&
+                !manager.getPlayerGoals().get(deadUUID).isRevived){
+            manager.getPlayerGoals().get(deadUUID).isRevived = true;
             dead.sendMessage("§aあなたはティア3勝利条件なので，§l§4復活§r§aしました");
             // いったん2mうしろにテレポート TODO: マップ内にランダムテレポート
             dead.teleport(dead.getLocation().subtract(dead.getLocation().getDirection().setY(0).normalize().multiply(1)));
@@ -50,16 +54,16 @@ public class DeathEvent {
             return;
         }
 
-        manager.removeAlivePlayer(dead);
-        manager.getKillerList().put(killer, dead);
-        manager.removeAttackedPlayer(dead);
-        manager.removeDamagedPlayer(dead);
+        manager.removeAlivePlayer(dead.getUniqueId());
+        manager.getKillerList().put(killerUUID, deadUUID);
+        manager.removeAttackedPlayer(deadUUID);
+        manager.removeDamagedPlayer(deadUUID);
 
         dead.sendMessage("§cあなたは§4§l死亡§r§cしました");
         dead.sendMessage("§eキルしたプレイヤー: §l§c" + killer.getName() + "§r§e");
         killer.sendMessage("§aあなたは§l§6" + dead.getName() + "§r§aを倒しました");
 
-        if(!manager.getPlayerGoals().get(killer).isKillable(dead)){
+        if(!manager.getPlayerGoals().get(killerUUID).isKillable(dead)){
             String borderColor = "§6";
             String horizontal = "─".repeat(32);
             List<String> boxMessage = List.of(
@@ -80,9 +84,6 @@ public class DeathEvent {
                 killer.sendMessage(Component.text(forwardPadding + line + backPadding));
             }
             killer.sendMessage(borderColor + "└" + horizontal + "┘");
-//            killer.sendMessage(Component.text(borderColor + "│ " +  "§r" + "§cペナルティ: 殺害したプレイヤー"));
-//            killer.sendMessage(Component.text("§6" + dead.getName()));
-//            killer.sendMessage(Component.text("§cは、勝利条件には含まれていない。赤い帽子を被せられた。"));
             RedHelmet item = (RedHelmet) GameItem.getItem(GameItemKeyString.REDHELMET);
             if(item == null){
                 killer.sendMessage(Component.text("§4エラーが発生しました．管理者に連絡してください：赤い帽子取得失敗"));
@@ -92,12 +93,14 @@ public class DeathEvent {
         }
 
         if(manager.isEnableKillerList()){
-            HashMap<Player, Goal> playerGoals = manager.getPlayerGoals();
-            for(Player p : manager.getAlivePlayers()){
-                Goal goal = playerGoals.get(p);
+            HashMap<UUID, Goal> playerGoals = manager.getPlayerGoals();
+            for(UUID uuid : manager.getAlivePlayers()){
+                Player player = Bukkit.getPlayer(uuid);
+                if(player == null){continue;}
+                Goal goal = playerGoals.get(uuid);
                 if(goal instanceof Police police){
-                    if(p.equals(killer)){continue;}
-                    p.sendMessage("§a[殺すノート] §c" + killer.getName() + "§a が " + dead.getName() + " §aを倒しました");
+                    if(player.equals(killer)){continue;}
+                    player.sendMessage("§a[殺すノート] §c" + killer.getName() + "§a が " + dead.getName() + " §aを倒しました");
                     police.killerList.updateKillerList();
                 }
             }

@@ -51,7 +51,7 @@ public class PickEvent implements Listener {
                 if(customItem instanceof Ketsumou){
                     Ketsumou.deactivate(player);
                 }else if(customItem instanceof ArcherArmor){
-                    manager.addIsDeactivateDamageOnce(player, false);
+                    manager.addIsDeactivateDamageOnce(player.getUniqueId(), false);
                 }else if(customItem instanceof StrongestStrongestBall){
                     event.setCancelled(true);
                     player.sendActionBar(Component.text("§aもっと最強のたまたま§bが手から離れない！？"));
@@ -83,7 +83,7 @@ public class PickEvent implements Listener {
                 && event.getClickedInventory().equals(player.getOpenInventory().getBottomInventory());
 
 
-        Job job = Game.getInstance().getGameStatesManager().getPlayerJobs().get(player);
+        Job job = Game.getInstance().getGameStatesManager().getPlayerJobs().get(player.getUniqueId());
 
         // チェストのKetsumouをクリックし、シフトでインベントリに入れるとき
         if (clickedIsTop && slotIsKetsumou) {
@@ -140,7 +140,7 @@ public class PickEvent implements Listener {
             }
         }
 
-        Game.getInstance().getGameStatesManager().addIsDeactivateDamageOnce(player, isArcherArmorEquipped);
+        Game.getInstance().getGameStatesManager().addIsDeactivateDamageOnce(player.getUniqueId(), isArcherArmorEquipped);
 
     }
 
@@ -150,7 +150,7 @@ public class PickEvent implements Listener {
 
         ItemStack item = event.getItem().getItemStack();
         if(!item.hasItemMeta()){return;}
-        Job job = Game.getInstance().getGameStatesManager().getPlayerJobs().get(player);
+        Job job = Game.getInstance().getGameStatesManager().getPlayerJobs().get(player.getUniqueId());
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer container = meta.getPersistentDataContainer();
         NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);

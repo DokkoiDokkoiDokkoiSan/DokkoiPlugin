@@ -34,11 +34,11 @@ public class ComedianKiller extends Goal {
 
     @Override
     public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
+        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
             this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;
         }
-        Job job = game.getGameStatesManager().getPlayerJobs().get(player);
+        Job job = game.getGameStatesManager().getPlayerJobs().get(player.getUniqueId());
         if(job instanceof Bomber bomber){
             this.killCount = bomber.getKillComedian();
         }

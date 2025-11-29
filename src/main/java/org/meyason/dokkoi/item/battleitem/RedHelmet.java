@@ -9,7 +9,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 
 import java.util.List;

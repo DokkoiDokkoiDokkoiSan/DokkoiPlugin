@@ -95,7 +95,7 @@ public class Explorer extends Job {
     public void ready(){
         passive(0);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 1));
-        game.getGameStatesManager().addAdditionalDamage(player, -500);
+        game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), -500);
     }
 
     public void passive(int nowCount){
@@ -150,17 +150,17 @@ public class Explorer extends Job {
         // 1から0に、4から3に、7から6に、9から8に減ったとき効果を変化
         if(haveKetsumouCount == 0){
             player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 1));
-            game.getGameStatesManager().addAdditionalDamage(player, -500);
+            game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), -500);
         }else if(haveKetsumouCount == 3){
             player.removePotionEffect(PotionEffectType.SLOWNESS);
-            game.getGameStatesManager().addAdditionalDamage(player, -2);
+            game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), -2);
         }else if(haveKetsumouCount == 6){
             player.removePotionEffect(PotionEffectType.SPEED);
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-            game.getGameStatesManager().addAdditionalDamage(player, -2);
+            game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), -2);
         }else if(haveKetsumouCount == 8) {
             player.removePotionEffect(PotionEffectType.SPEED);
-            game.getGameStatesManager().addAdditionalDamage(player, -1);
+            game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), -1);
             ketsumouMode = false;
         }
     }
@@ -171,16 +171,16 @@ public class Explorer extends Job {
         // 0から1に、3から4に、6から7に、8から9に増えたとき効果を変化
         if(haveKetsumouCount == 1){
             player.removePotionEffect(PotionEffectType.SLOWNESS);
-            game.getGameStatesManager().addAdditionalDamage(player, 500);
+            game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), 500);
         }else if(haveKetsumouCount == 4){
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-            game.getGameStatesManager().addAdditionalDamage(player, 2);
+            game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), 2);
         }else if(haveKetsumouCount == 7){
-            game.getGameStatesManager().addAdditionalDamage(player, 2);
+            game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), 2);
         }else if(haveKetsumouCount == 9) {
             player.removePotionEffect(PotionEffectType.SPEED);
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
-            game.getGameStatesManager().addAdditionalDamage(player, 1);
+            game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), 1);
             ketsumouMode = true;
         }
     }
@@ -189,9 +189,6 @@ public class Explorer extends Job {
         long durationTick = 20L * 3; // 5秒
         long intervalTick = 20L;
         Location location = impactLocation.clone();
-        double x = location.getX();
-        double y = location.getY();
-        double z = location.getZ();// 0.5秒ごとに発生（重かったら20L=1秒に）
 
         Float dragonBreath = 1.0f;
 

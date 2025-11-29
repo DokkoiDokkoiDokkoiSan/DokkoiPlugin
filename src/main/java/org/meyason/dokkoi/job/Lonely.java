@@ -1,11 +1,11 @@
 package org.meyason.dokkoi.job;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -18,15 +18,14 @@ import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
-import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
-import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Lonely extends Job {
 
@@ -93,8 +92,12 @@ public class Lonely extends Job {
     public void skill(){
         List<Player> targetPlayers = new ArrayList<>();
         Vector center = player.getLocation().toVector();
-        for(Player p : game.getGameStatesManager().getAlivePlayers()){
-            if(p.getUniqueId().equals(player.getUniqueId())){
+        for(UUID uuid : game.getGameStatesManager().getAlivePlayers()){
+            if(uuid.equals(player.getUniqueId())){
+                continue;
+            }
+            Player p = Bukkit.getServer().getPlayer(uuid);
+            if(p == null){
                 continue;
             }
             Vector target = p.getLocation().toVector();
@@ -133,7 +136,7 @@ public class Lonely extends Job {
             boolean isHide = false;
             @Override
             public void run() {
-                if(!game.getGameStatesManager().getAlivePlayers().contains(player)){
+                if(!game.getGameStatesManager().getAlivePlayers().contains(player.getUniqueId())){
                     player.removePotionEffect(PotionEffectType.INVISIBILITY);
                     this.cancel();
                     return;
