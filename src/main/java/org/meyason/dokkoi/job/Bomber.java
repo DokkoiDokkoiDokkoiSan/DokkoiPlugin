@@ -16,11 +16,10 @@ import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.entity.Comedian;
 import org.meyason.dokkoi.event.player.DeathEvent;
-import org.meyason.dokkoi.game.CalculateAreaPlayers;
+import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Bomber extends Job {
@@ -33,9 +32,9 @@ public class Bomber extends Job {
 
     public Bomber() {
         super("爆弾魔", "爆弾のプロ", 20, 100);
-        passive_skill_name = "§7無敵の人";
-        normal_skill_name = "§3ブラストパック";
-        ultimate_skill_name = "§56割と臭いガス爆弾";
+        passive_skill_name += "§7無敵の人";
+        normal_skill_name += "§3ブラストパック";
+        ultimate_skill_name += "§56割と臭いガス爆弾";
         skillSound = Sound.ENTITY_TNT_PRIMED;
         skillVolume = 1.0f;
         skillPitch = 0.8f;
@@ -115,7 +114,7 @@ public class Bomber extends Job {
             killCount++;
         }
 
-        this.player.setHealth(20.0);
+        this.player.setHealth(this.player.getMaxHealth());
         if(!isKilledComedian){
             this.player.sendMessage("§bあなたは§l§4自爆§r§bしましたが、プレイヤーを巻き込んだため復活しました");
         }

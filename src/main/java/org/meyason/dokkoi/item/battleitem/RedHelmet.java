@@ -43,7 +43,6 @@ public class RedHelmet extends CustomItem {
                 leatherMeta.setColor(org.bukkit.Color.RED);
                 leatherMeta.addEnchant(Enchantment.BINDING_CURSE, 1, true); // ついでに呪い
                 item.setItemMeta(leatherMeta);
-                this.baseItem = item;
             }
             return item;
         };
@@ -55,7 +54,14 @@ public class RedHelmet extends CustomItem {
         if (currentHelmet != null && currentHelmet.getType() != Material.AIR) {
             player.getWorld().dropItemNaturally(player.getLocation(), currentHelmet);
         }
-        player.getInventory().setHelmet(this.baseItem);
+        ItemStack newHelmet = this.baseItem.clone();
+        ItemMeta meta = newHelmet.getItemMeta();
+        if(meta instanceof LeatherArmorMeta leatherMeta){
+            leatherMeta.setColor(org.bukkit.Color.RED);
+            leatherMeta.addEnchant(Enchantment.BINDING_CURSE, 1, true); // ついでに呪い
+            newHelmet.setItemMeta(leatherMeta);
+        }
+        player.getInventory().setHelmet(newHelmet);
         player.setHealth(1);
         //毒
         player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, Integer.MAX_VALUE, 255, false, false));

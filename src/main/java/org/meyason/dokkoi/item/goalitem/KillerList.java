@@ -68,7 +68,7 @@ public class KillerList extends CustomItem {
 
     public void updateKillerList(){
         ItemStack book = baseItem.clone();
-        GameItem.removeItem(player, GameItemKeyString.KILLER_LIST, 1);
+        GameItem.removeItem(player, GameItemKeyString.KILLERLIST, 1);
         BookMeta bookMeta = (BookMeta) book.getItemMeta();
         List<Player> killerPlayers = new ArrayList<>(game.getGameStatesManager().getKillerList().keySet());
         StringBuilder names = new StringBuilder();
@@ -86,12 +86,12 @@ public class KillerList extends CustomItem {
         this.targetPlayerList = killerPlayers;
     }
 
-    public void skill(GameStatesManager gameStatesManager, Player player){
-        if(gameStatesManager.getItemCoolDownScheduler().containsKey(player)){
-            player.sendMessage("§cクールタイム中です");
+    public void skill(GameStatesManager gameStatesManager, Player owner){
+        if(gameStatesManager.getItemCoolDownScheduler().containsKey(owner)){
+            owner.sendMessage("§cクールタイム中です");
             return;
         }
-        List<Player> killerList = new ArrayList<>(game.getGameStatesManager().getKillerList().keySet());
+        List<Player> killerList = new ArrayList<>(gameStatesManager.getKillerList().keySet());
         for(Player p : killerList){
             p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 10 * 20, 1));
         }
@@ -102,15 +102,15 @@ public class KillerList extends CustomItem {
                     cancel();
                     return;
                 }
-                if (!player.isOnline() || !gameStatesManager.getItemCoolDownScheduler().containsKey(player)) {
+                if (!owner.isOnline() || !gameStatesManager.getItemCoolDownScheduler().containsKey(owner)) {
                     cancel();
                     return;
                 }
-                gameStatesManager.removeItemCoolDownScheduler(player);
+                gameStatesManager.removeItemCoolDownScheduler(owner);
             }
         };
         itemInitTask.runTaskLater(Dokkoi.getInstance(), 30 * 20L);
-        gameStatesManager.addItemCoolDownScheduler(player, itemInitTask);
+        gameStatesManager.addItemCoolDownScheduler(owner, itemInitTask);
     }
 
     public List<Player> getTargetPlayerList() {

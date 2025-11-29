@@ -8,7 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.event.player.DamageEvent;
-import org.meyason.dokkoi.game.CalculateAreaPlayers;
+import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;

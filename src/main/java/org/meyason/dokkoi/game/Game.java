@@ -320,7 +320,7 @@ public class Game {
         }else if(gameStatesManager.getGameState() == GameState.IN_GAME){
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
             objective.getScore("§a生存者数: §f" + gameStatesManager.getAlivePlayers().size() + "人").setScore(--i);
-            objective.getScore("§d所持モネイ: §f" + gameStatesManager.getMoneyMap().get(player) + "モネイ").setScore(--i);
+            objective.getScore("§d所持モネイ: §f" + gameStatesManager.getMoneyMap().get(player)).setScore(--i);
             objective.getScore("§e役職: §f" + gameStatesManager.getPlayerJobs().get(player).getName()).setScore(--i);
             objective.getScore("§e目標: §f" + gameStatesManager.getPlayerGoals().get(player).getName()).setScore(--i);
             objective.getScore("§aスキル: " + gameStatesManager.getPlayerJobs().get(player).getCoolTimeSkillViewer()).setScore(--i);
@@ -352,7 +352,7 @@ public class Game {
                     if(ketsumouHunter.getTargetKetsumouCount() <= explorer.getHaveKetsumouCount()) {
                         color = achievedColor;
                     }
-                    objective.getScore("§e目標の§9§lけつ毛§r§e: " + color + ketsumouHunter.getTargetKetsumouCount() + "個").setScore(--i);
+                    objective.getScore("§e目標の§9§lけつ毛§r§e: §" + color + ketsumouHunter.getTargetKetsumouCount() + "個").setScore(--i);
                 }else if(goal instanceof KetsumouPirate){
                     int targetNum = 9;
                     String color = "c";

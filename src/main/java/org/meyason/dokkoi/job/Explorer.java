@@ -13,7 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
-import org.meyason.dokkoi.game.CalculateAreaPlayers;
+import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
@@ -30,9 +30,9 @@ public class Explorer extends Job {
 
     public Explorer() {
         super("冒険者", "冒険者", 5, 200);
-        passive_skill_name = "§9§lけつ毛(けつもう)§r§7の力";
-        normal_skill_name = "§9§lけつ毛§r§3、投げつけてみた！【けつ】【KETSU】【おしり】【山吹権蔵】";
-        ultimate_skill_name = "§6爆発するタイプの§9§lけつ毛(けつもう)";
+        passive_skill_name += "§9§lけつ毛(けつもう)§r§7の力";
+        normal_skill_name += "§9§lけつ毛§r§3、投げつけてみた！§d【けつ】§b【KETSU】§a【おしり】§e【山吹権蔵】";
+        ultimate_skill_name += "§6爆発するタイプの§9§lけつ毛(けつもう)";
 
         skillSound = Sound.ENTITY_WARDEN_SONIC_CHARGE;
         skillVolume = 1.0f;

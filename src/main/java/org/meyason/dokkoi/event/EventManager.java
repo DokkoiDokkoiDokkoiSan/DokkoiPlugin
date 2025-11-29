@@ -13,7 +13,8 @@ public class EventManager {
 
     private void init(Dokkoi core) {
         core.getServer().getPluginManager().registerEvents(new DamageEvent(), core);
-        core.getServer().getPluginManager().registerEvents(new InteractEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new SkillInteractEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new ItemInteractEvent(), core);
         core.getServer().getPluginManager().registerEvents(new ProjectileHitBlockEvent(), core);
         core.getServer().getPluginManager().registerEvents(new LaunchEvent(), core);
         core.getServer().getPluginManager().registerEvents(new DespawnEvent(), core);

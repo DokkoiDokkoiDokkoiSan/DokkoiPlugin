@@ -17,9 +17,9 @@ public abstract class Job implements Cloneable {
     private final String name;
     private final String description;
 
-    public String passive_skill_name = "";
-    public String normal_skill_name = "";
-    public String ultimate_skill_name = "";
+    public String passive_skill_name = "§aパッシブ：";
+    public String normal_skill_name = "§aスキル：";
+    public String ultimate_skill_name = "§aアルティメット：";
 
     public List<Component> passive_skill_description;
     public List<Component> normal_skill_description;

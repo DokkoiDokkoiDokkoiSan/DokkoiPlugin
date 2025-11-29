@@ -1,5 +1,6 @@
 package org.meyason.dokkoi.event.player;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,11 +9,14 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.game.Game;
@@ -20,6 +24,7 @@ import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.battleitem.ArcherArmor;
 import org.meyason.dokkoi.item.jobitem.Ketsumou;
+import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestBall;
 import org.meyason.dokkoi.job.Job;
 
 import java.util.Objects;
@@ -47,6 +52,9 @@ public class PickEvent implements Listener {
                     Ketsumou.deactivate(player);
                 }else if(customItem instanceof ArcherArmor){
                     manager.addIsDeactivateDamageOnce(player, false);
+                }else if(customItem instanceof StrongestStrongestBall){
+                    event.setCancelled(true);
+                    player.sendActionBar(Component.text("§aもっと最強のたまたま§bが手から離れない！？"));
                 }
             }
         }
@@ -152,6 +160,43 @@ public class PickEvent implements Listener {
                 CustomItem customItem = CustomItem.getItem(item);
                 if(customItem instanceof Ketsumou){
                     Ketsumou.activate(player);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerItemHeld(PlayerItemHeldEvent event){
+        Player player = event.getPlayer();
+        ItemStack newItem = player.getInventory().getItem(event.getNewSlot());
+        if(newItem != null && newItem.hasItemMeta()){
+            ItemMeta meta = newItem.getItemMeta();
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+            if(container.has(itemKey)){
+                String itemName = container.get(itemKey, org.bukkit.persistence.PersistentDataType.STRING);
+                if(itemName != null){
+                    CustomItem customItem = CustomItem.getItem(newItem);
+                    if(customItem instanceof StrongestStrongestBall){
+                        player.sendActionBar(Component.text("§aもっと最強のたまたま§bのさわやかな風に乗った。"));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 10, false, false, true));
+                    }
+                }
+            }
+        }
+
+        ItemStack oldItem = player.getInventory().getItem(event.getPreviousSlot());
+        if(oldItem != null && oldItem.hasItemMeta()){
+            ItemMeta meta = oldItem.getItemMeta();
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+            if(container.has(itemKey)){
+                String itemName = container.get(itemKey, org.bukkit.persistence.PersistentDataType.STRING);
+                if(itemName != null){
+                    CustomItem customItem = CustomItem.getItem(oldItem);
+                    if(customItem instanceof StrongestStrongestBall){
+                        player.removePotionEffect(PotionEffectType.SPEED);
+                    }
                 }
             }
         }

@@ -39,9 +39,9 @@ public class Lonely extends Job {
     public Lonely() {
         super("孤独者", "ぼっち", 50, 5);
 
-        passive_skill_name = "§730歳独身";
-        normal_skill_name = "§3人、発見！退却～！ｗ";
-        ultimate_skill_name = "§6誰にも会いたくね～ｗ";
+        passive_skill_name += "§730歳独身";
+        normal_skill_name += "§3人、発見！退却～！ｗ";
+        ultimate_skill_name += "§6誰にも会いたくね～ｗ";
 
         skillSound = Sound.BLOCK_ENDER_CHEST_OPEN;
         skillVolume = 1.0f;

@@ -22,9 +22,9 @@ public class Executor extends Job{
 
     public Executor() {
         super("執行者", "執行者", 30, 200);
-        passive_skill_name = "§7プロトペナルティ";
-        normal_skill_name = "§3ギルトペナルティ";
-        ultimate_skill_name = "§6ニクトペナルティ";
+        passive_skill_name += "§7プロトペナルティ";
+        normal_skill_name += "§3ギルトペナルティ";
+        ultimate_skill_name += "§6ニクトペナルティ";
         skillSound = Sound.ENTITY_PHANTOM_BITE;
         skillVolume = 1.0f;
         skillPitch = 0.8f;

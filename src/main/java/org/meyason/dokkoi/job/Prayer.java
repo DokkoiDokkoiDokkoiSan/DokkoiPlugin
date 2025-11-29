@@ -14,7 +14,7 @@ import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.event.player.DamageEvent;
 import org.meyason.dokkoi.event.player.DeathEvent;
-import org.meyason.dokkoi.game.CalculateAreaPlayers;
+import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
@@ -84,6 +84,9 @@ public class Prayer extends Job {
     public int getGachaPoint(){
         return gachaPoint;
     }
+    public void addGachaPoint(int amount){
+        gachaPoint += amount;
+    }
 
     private int gachaCount = 0;
     public int getGachaCount(){
@@ -95,20 +98,17 @@ public class Prayer extends Job {
         return onLREffect;
     }
 
-    public void addGachaCount(Game game, Player player){
-        gachaCount++;
-        if(gachaCount % 20 == 0){
-            game.getGameStatesManager().addAdditionalDamage(player, 1);
-            player.sendMessage("§bガチャ回転数が20回溜まったので、与ダメージが1と最大体力が10増加しました。");
-        }
+    private boolean hasStrongestStrongestBall = false;
+    public boolean getHasStrongestStrongestBall(){
+        return hasStrongestStrongestBall;
     }
 
     public Prayer() {
         super("§9信仰者", "パチカス", 5, 300);
 
-        passive_skill_name = "§7パチンカス";
-        normal_skill_name = "§3全回転";
-        ultimate_skill_name = "§650:50";
+        passive_skill_name += "§7パチンカス";
+        normal_skill_name += "§3全回転";
+        ultimate_skill_name += "§650:50";
 
         skillSound = Sound.BLOCK_END_PORTAL_FRAME_FILL;
         skillVolume = 1.0f;
@@ -159,6 +159,14 @@ public class Prayer extends Job {
                 Component.text("§5自分とランダムなプレイヤーを異空間に転移させ、どちらかが死ぬ。"),
                 Component.text("§5ここでの死亡は殺害判定に含まれない。")
         );
+    }
+
+    public void addGachaCount(Game game, Player player){
+        gachaCount++;
+        if(gachaCount % 20 == 0){
+            game.getGameStatesManager().addAdditionalDamage(player, 1);
+            player.sendMessage("§bガチャ回転数が20回溜まったので、与ダメージが1増加しました。");
+        }
     }
 
     public void ready(){
@@ -256,6 +264,7 @@ public class Prayer extends Job {
             for(Player target : targets){
                 DeathEvent.kill(player, target);
             }
+            hasStrongestStrongestBall = true;
         }else if(Objects.equals(selectedRarity, KETSUMOU)) {
             player.spawnParticle(Particle.EXPLOSION_EMITTER, player.getLocation(), 5, 1, 1, 1);
             player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0F, 1.0F);
