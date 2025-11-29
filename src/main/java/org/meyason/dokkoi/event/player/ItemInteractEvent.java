@@ -111,22 +111,9 @@ public class ItemInteractEvent implements Listener {
                         return;
                     }
                     event.setCancelled(true);
-                    if (customItem instanceof HealingCrystal) {
-                        if (player.getHealth() == player.getMaxHealth()) {
-                            player.sendActionBar("§c既に最大体力です。");
-                            return;
-                        }
-                        double newHealth = player.getHealth() + 5;
-                        if (newHealth > player.getMaxHealth()) {
-                            newHealth = player.getMaxHealth();
-                        }
-                        player.setHealth(newHealth);
-                        player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 10, 1);
-                        player.sendMessage("§a回復結晶を使用した！");
+                    HealingCrystal.activate(player, item);
 
-                        item.setAmount(item.getAmount() - 1);
-                        player.getInventory().setItemInMainHand(item);
-                    }
+
                 }
             }
         }

@@ -1,6 +1,8 @@
 package org.meyason.dokkoi.item.battleitems;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -15,7 +17,7 @@ public class HealingCrystal extends CustomItem {
     private Game game;
     private Player player;
 
-    public static final String id = "healingcrystal";
+    public static final String id = "healing_crystal";
 
     public HealingCrystal() {
         super(id,"§a回復結晶§r", ItemStack.of(Material.END_CRYSTAL),64);
@@ -39,8 +41,21 @@ public class HealingCrystal extends CustomItem {
         };
     }
 
-    public void setPlayer(Game game, Player player){
-        this.game = game;
-        this.player = player;
+    public static void activate(Player player, ItemStack item) {
+
+            if (player.getHealth() == player.getMaxHealth()) {
+                player.sendActionBar(Component.text("§c既に最大体力です。"));
+                return;
+            }
+            double newHealth = player.getHealth() + 5.0;
+            if (newHealth > player.getMaxHealth()) {
+                newHealth = player.getMaxHealth();
+            }
+            player.setHealth(newHealth);
+            player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 10, 1);
+            player.sendMessage("§a回復結晶§でHPを回復した。");
+
+            item.setAmount(item.getAmount() - 1);
+            player.getInventory().setItemInMainHand(item);
     }
 }
