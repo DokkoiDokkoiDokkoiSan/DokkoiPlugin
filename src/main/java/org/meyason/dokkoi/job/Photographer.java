@@ -3,6 +3,7 @@ package org.meyason.dokkoi.job;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
 
@@ -12,7 +13,7 @@ public class Photographer extends Job {
 
     public Photographer() {
         super("写真家", "写真家", 3, 200);
-        passive_skill_name = "§9§l戦場§r§9カメラマン";
+        passive_skill_name = "§9§l戦場§r§7カメラマン";
         normal_skill_name = "§9§l渡部陽一 §r§cf§6e§ea§at§r.§l§b西§d野§9カ§1ナ";
         ultimate_skill_name = "§6一旦全員晒してみた";
 
@@ -21,8 +22,8 @@ public class Photographer extends Job {
         skillPitch = 0.8f;
 
         ultimateSkillSound = Sound.ENTITY_ELDER_GUARDIAN_CURSE;
-        ultimateSkillVolume = 10.0f;
-        ultimateSkillPitch = 1.0f;
+        ultimateSkillVolume = 1.0f;
+        ultimateSkillPitch = 0.8f;
 
         setRemainCoolTimeSkillUltimate(200);
     }
@@ -31,6 +32,10 @@ public class Photographer extends Job {
     public void setPlayer(Game game, Player player) {
         this.game = game;
         this.player = player;
+        this.goals = List.of(
+                GoalList.DEFENDER,
+                GoalList.PHOTOALLPLAYER
+        );
     }
 
     @Override
