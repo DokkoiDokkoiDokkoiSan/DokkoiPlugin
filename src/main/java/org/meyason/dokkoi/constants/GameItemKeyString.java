@@ -62,8 +62,7 @@ public class GameItemKeyString {
         KATAKUNARU,
         KIZUKIERU,
         KOREHAMARU,
-        HAYAKUNARU
-        TSUYOKUNARU,
+        HAYAKUNARU,
         PUMPKINPIE,
         COOKEDCHICKEN
     );
