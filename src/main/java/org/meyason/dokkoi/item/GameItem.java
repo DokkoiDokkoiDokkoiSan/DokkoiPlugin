@@ -17,7 +17,7 @@ import org.meyason.dokkoi.item.goalitem.*;
 import org.meyason.dokkoi.item.jobitem.*;
 import org.meyason.dokkoi.item.weapon.*;
 import org.meyason.dokkoi.item.battleitem.*;
-import org.meyason.dokkoi.item.battleitems.HealingCrystal;
+import org.meyason.dokkoi.item.battleitem.HealingCrystal;
 
 import java.util.HashMap;
 

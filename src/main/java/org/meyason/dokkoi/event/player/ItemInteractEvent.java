@@ -1,7 +1,6 @@
 package org.meyason.dokkoi.event.player;
 
 import org.bukkit.NamespacedKey;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,7 +17,7 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.Defender;
 import org.meyason.dokkoi.item.CustomItem;
-import org.meyason.dokkoi.item.battleitems.HealingCrystal;
+import org.meyason.dokkoi.item.battleitem.HealingCrystal;
 import org.meyason.dokkoi.item.dealeritem.Hayakunaru;
 import org.meyason.dokkoi.item.dealeritem.Katakunaru;
 import org.meyason.dokkoi.item.dealeritem.Kizukieru;

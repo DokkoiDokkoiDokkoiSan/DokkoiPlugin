@@ -1,6 +1,5 @@
-package org.meyason.dokkoi.item.battleitems;
+package org.meyason.dokkoi.item.battleitem;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
