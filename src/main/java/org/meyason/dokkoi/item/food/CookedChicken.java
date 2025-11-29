@@ -10,7 +10,7 @@ import java.util.List;
 
 public class CookedChicken extends CustomItem {
 
-    public static final String id  = "Cooked_Chicken";
+    public static final String id  = "cooked_chicken";
 
     public CookedChicken() {
         super(id, "§a焼き鳥", ItemStack.of(Material.COOKED_CHICKEN), 64);
