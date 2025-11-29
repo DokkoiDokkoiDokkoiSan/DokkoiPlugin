@@ -1,5 +1,8 @@
 package org.meyason.dokkoi.constants;
 
+import org.meyason.dokkoi.item.battleitem.ArcherArmor;
+import org.meyason.dokkoi.item.food.CookedPorkchop;
+
 import java.util.List;
 
 public class GameItemKeyString {
@@ -25,6 +28,12 @@ public class GameItemKeyString {
     public static final String BAKEDPOTATO = "baked_potato";
     public static final String PUMPKINPIE = "pumpkin_pie";
     public static final String COOKEDCHICKEN = "cooked_chicken";
+    public static final String GLISTERINGMELONSLICE = "glistering_melon_slice";
+    public static final String COOCKEDPORKCHOP = "cooked_porkchop";
+    public static final String COOKEDBEEF = "cooked_beef";
+    public static final String COD = "cod";
+    public static final String SALMON = "salmon";
+    public static final String BREAD = "bread";
 
     public static final String LONGSWORD = "long_sword";
     public static final String THUNDERJAVELIN = "thunder_javelin";
@@ -64,7 +73,13 @@ public class GameItemKeyString {
         KOREHAMARU,
         HAYAKUNARU,
         PUMPKINPIE,
-        COOKEDCHICKEN
+        COOKEDCHICKEN,
+        GLISTERINGMELONSLICE,
+        COOCKEDPORKCHOP,
+        COOKEDBEEF,
+        COD,
+        SALMON,
+        BREAD
     );
 
     public static List<String> getGameItemKeyStringHashMap() {return gameItemKeyStringHashMap;}

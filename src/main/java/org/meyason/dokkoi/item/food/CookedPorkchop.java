@@ -8,14 +8,14 @@ import org.meyason.dokkoi.item.CustomItem;
 
 import java.util.List;
 
-public class PumpkinPie extends CustomItem {
+public class CookedPorkchop extends CustomItem {
 
-    public static final String id  = "pumpkin_pie";
+    public static final String id  = "cooked_porkchop";
 
-    public PumpkinPie() {
-        super(id, "§aパンプキンパイ", ItemStack.of(Material.PUMPKIN_PIE), 64);
+    public CookedPorkchop() {
+        super(id, "§a焼き豚", ItemStack.of(Material.COOKED_PORKCHOP), 64);
         List<Component> lore = List.of(
-                Component.text("§5秋田の大潟村のパンプキンパイです。本当です。")
+                Component.text("§5結構おいしい肉。")
         );
         setDescription(lore);
     }
