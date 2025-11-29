@@ -15,7 +15,7 @@ public class PumpkinPie extends CustomItem {
     public PumpkinPie() {
         super(id, "§aパンプキンパイ", ItemStack.of(Material.PUMPKIN_PIE), 64);
         List<Component> lore = List.of(
-                Component.text("§5秋田の大潟村のパンプキンパイです。本当です。 ")
+                Component.text("§5秋田の大潟村のパンプキンパイです。本当です。")
         );
         setDescription(lore);
     }

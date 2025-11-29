@@ -49,6 +49,12 @@ public class GameItem {
         items.put(GameItemKeyString.REDHELMET, new RedHelmet());
         items.put(GameItemKeyString.PUMPKINPIE, new PumpkinPie());
         items.put(GameItemKeyString.COOKEDCHICKEN,new CookedChicken());
+        items.put(GameItemKeyString.GLISTERINGMELONSLICE, new GlisteringMelonSlice());
+        items.put(GameItemKeyString.COOCKEDPORKCHOP, new CookedPorkchop());
+        items.put(GameItemKeyString.COOKEDBEEF, new CookedBeef());
+        items.put(GameItemKeyString.COD, new Cod());
+        items.put(GameItemKeyString.SALMON, new Salmon());
+        items.put(GameItemKeyString.BREAD, new Bread());
     }
 
     public static CustomItem getItem(String id){

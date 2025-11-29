@@ -8,14 +8,14 @@ import org.meyason.dokkoi.item.CustomItem;
 
 import java.util.List;
 
-public class CookedChicken extends CustomItem {
+public class Cod extends CustomItem {
 
-    public static final String id  = "cooked_chicken";
+    public static final String id  = "cod";
 
-    public CookedChicken() {
-        super(id, "§a焼き鳥", ItemStack.of(Material.COOKED_CHICKEN), 64);
+    public Cod() {
+        super(id, "§a生鱈", ItemStack.of(Material.COD), 64);
         List<Component> lore = List.of(
-                Component.text("§5まあまあおいしい肉 。")
+                Component.text("§5生鮭よりはおいしい魚。")
         );
         setDescription(lore);
     }
