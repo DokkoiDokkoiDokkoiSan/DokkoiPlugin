@@ -27,7 +27,6 @@ public class PhotoAllPlayer extends Goal{
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
         this.tier = Tier.TIER_2;
         setDamageMultiplier(this.tier.getDamageMultiplier());
     }
