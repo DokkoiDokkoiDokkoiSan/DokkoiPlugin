@@ -10,16 +10,16 @@ import java.util.UUID;
 
 public class PhotoAllPlayer extends Goal{
 
-    public ArrayList<UUID> takenPhotoPlayers;
+    public ArrayList<UUID> takenPhotoPlayersUUID;
 
     public PhotoAllPlayer() {
         super("PhotoAllPlayer", "生存プレイヤーを全員カメラで撮影しよう！");
-        this.takenPhotoPlayers = new ArrayList<>();
+        this.takenPhotoPlayersUUID = new ArrayList<>();
     }
 
     public void addTakenPhotoPlayer(Player targetPlayer){
-        if(!this.takenPhotoPlayers.contains(targetPlayer.getUniqueId())){
-            this.takenPhotoPlayers.add(targetPlayer.getUniqueId());
+        if(!this.takenPhotoPlayersUUID.contains(targetPlayer.getUniqueId())){
+            this.takenPhotoPlayersUUID.add(targetPlayer.getUniqueId());
         }
     }
 
@@ -46,6 +46,13 @@ public class PhotoAllPlayer extends Goal{
             this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;
         }
+        for (UUID alivePlayer : this.game.getGameStatesManager().getAlivePlayers()){
+            if(!this.takenPhotoPlayersUUID.contains(alivePlayer)) {
+                this.player.sendMessage(Component.text("§c全員を撮影することができなかった。"));
+                return false;
+            }
+        }
+        this.player.sendMessage(Component.text("§6よくやった。全員を撮影したな！目標達成！"));
         return true;
     }
 
