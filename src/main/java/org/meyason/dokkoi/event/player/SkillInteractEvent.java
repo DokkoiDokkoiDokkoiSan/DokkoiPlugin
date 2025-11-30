@@ -132,6 +132,9 @@ public class SkillInteractEvent implements Listener {
                             }
                             prayer.skill();
                         }
+                        case Photographer photographer -> {
+                            
+                        }
                         default -> {
                         }
                     }

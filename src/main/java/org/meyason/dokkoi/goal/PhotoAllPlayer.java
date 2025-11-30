@@ -2,25 +2,20 @@ package org.meyason.dokkoi.goal;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.meyason.dokkoi.constants.JobList;
 import org.meyason.dokkoi.constants.Tier;
+import org.meyason.dokkoi.exception.JobDataMismatchException;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.job.Job;
+import org.meyason.dokkoi.job.Photographer;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
 public class PhotoAllPlayer extends Goal{
 
-    public ArrayList<UUID> takenPhotoPlayersUUID;
-
     public PhotoAllPlayer() {
         super("PhotoAllPlayer", "生存プレイヤーを全員カメラで撮影しよう！");
-        this.takenPhotoPlayersUUID = new ArrayList<>();
-    }
-
-    public void addTakenPhotoPlayer(Player targetPlayer){
-        if(!this.takenPhotoPlayersUUID.contains(targetPlayer.getUniqueId())){
-            this.takenPhotoPlayersUUID.add(targetPlayer.getUniqueId());
-        }
     }
 
     @Override
@@ -45,8 +40,12 @@ public class PhotoAllPlayer extends Goal{
             this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;
         }
+        Job job = this.game.getGameStatesManager().getPlayerJobs().get(this.player.getUniqueId());
+        if(!(job instanceof Photographer photographer)){
+            throw new JobDataMismatchException(JobList.PHOTOGRAPHER, job);
+        }
         for (UUID alivePlayer : this.game.getGameStatesManager().getAlivePlayers()){
-            if(!this.takenPhotoPlayersUUID.contains(alivePlayer)) {
+            if(!photographer.isTakenPhotoPlayer(alivePlayer)) {
                 this.player.sendMessage(Component.text("§c全員を撮影することができなかった。"));
                 return false;
             }

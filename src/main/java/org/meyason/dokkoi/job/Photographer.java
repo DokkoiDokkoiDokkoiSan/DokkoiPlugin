@@ -7,9 +7,14 @@ import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Photographer extends Job {
+
+    private final ArrayList<UUID> takenPhotoPlayersUUID;
+    private boolean isTwoShotPhotoTaken;
 
     public Photographer() {
         super("写真家", "写真家", 3, 200);
@@ -26,6 +31,27 @@ public class Photographer extends Job {
         ultimateSkillPitch = 0.8f;
 
         setRemainCoolTimeSkillUltimate(200);
+
+        this.takenPhotoPlayersUUID = new ArrayList<>();
+        this.isTwoShotPhotoTaken = false;
+    }
+
+    public void addTakenPhotoPlayer(UUID targetPlayer){
+        if(!this.takenPhotoPlayersUUID.contains(targetPlayer)){
+            this.takenPhotoPlayersUUID.add(targetPlayer);
+        }
+    }
+
+    public void removeTakenPhotoPlayer(UUID targetPlayer){
+        this.takenPhotoPlayersUUID.remove(targetPlayer);
+    }
+
+    public void setTwoShotPhotoTaken(boolean isTwoShotPhotoTaken){
+        this.isTwoShotPhotoTaken = isTwoShotPhotoTaken;
+    }
+
+    public boolean isTakenPhotoPlayer(UUID targetPlayer){
+        return this.takenPhotoPlayersUUID.contains(targetPlayer);
     }
 
     @Override
