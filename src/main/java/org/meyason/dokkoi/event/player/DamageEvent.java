@@ -185,6 +185,10 @@ public class DamageEvent implements Listener {
                 }
                 gameStatesManager.removeProjectileData(snowball);
                 return;
+            }else if(job instanceof Executor executor){
+                executor.skill(damagedEntity);
+                gameStatesManager.removeProjectileData(snowball);
+                return;
             }
 
             // 当たったエンティティがプレイヤーに限定する効果はこっち
@@ -199,9 +203,6 @@ public class DamageEvent implements Listener {
                     lonely.lastDamagedTime = System.currentTimeMillis();
                 }
 
-                if (job instanceof Executor executor) {
-                    executor.skill(damagedPlayer);
-                }
                 gameStatesManager.removeProjectileData(snowball);
                 return;
             }
@@ -304,12 +305,8 @@ public class DamageEvent implements Listener {
                 return;
             }
 
-            EntityDamageEvent.DamageCause cause = Optional.ofNullable(event.getEntity().getLastDamageCause())
-                    .map(EntityDamageEvent::getCause)
-                    .orElse(null);
-            if(cause == EntityDamageEvent.DamageCause.FALL){
-                event.setCancelled(true);
-            }
+            if(event.getCause() == EntityDamageEvent.DamageCause.FALL) event.setCancelled(true);
+            if(event.getCause() == EntityDamageEvent.DamageCause.VOID) event.setCancelled(true);
         }
     }
 

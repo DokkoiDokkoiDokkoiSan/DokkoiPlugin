@@ -5,16 +5,19 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.constants.GameEntityKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.entity.Comedian;
+import org.meyason.dokkoi.entity.GameEntity;
 import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
@@ -35,7 +38,7 @@ public class Bomber extends Job {
         super("爆弾魔", "爆弾のプロ", 20, 100);
         passive_skill_name += "§7無敵の人";
         normal_skill_name += "§3ブラストパック";
-        ultimate_skill_name += "§56割と臭いガス爆弾";
+        ultimate_skill_name += "§6割と臭いガス爆弾";
         skillSound = Sound.ENTITY_TNT_PRIMED;
         skillVolume = 1.0f;
         skillPitch = 0.8f;
@@ -93,8 +96,11 @@ public class Bomber extends Job {
 
         for(Entity entity : player.getNearbyEntities(5, 5, 5)){
             if(entity instanceof Villager villager){
-                Comedian comedian = Comedian.getComedianByVillager(villager);
-                if(comedian != null){
+                if(villager.getPersistentDataContainer().isEmpty()) continue;
+                String villagerUUID = villager.getPersistentDataContainer().get(new NamespacedKey(Dokkoi.getInstance(), GameEntityKeyString.COMEDIAN), PersistentDataType.STRING);
+                if(villagerUUID != null){
+                    Comedian comedian = (Comedian) game.getGameStatesManager().getSpawnedEntitiesFromUUID(villagerUUID);
+                    game.getGameStatesManager().removeSpawnedEntity(villagerUUID);
                     villager.setHealth(0.0);
                     villager.remove();
                     this.player.sendMessage("§bあなたは芸人 §a" + comedian.getName() + " §bを巻き込んで§l§4自爆§r§aしました");

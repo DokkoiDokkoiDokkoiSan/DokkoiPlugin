@@ -4,6 +4,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Trident;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.constants.GameState;
+import org.meyason.dokkoi.entity.GameEntity;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.job.Job;
@@ -43,7 +44,7 @@ public class GameStatesManager {
     private HashMap<UUID, BukkitRunnable> itemCoolDownScheduler;
     private HashMap<Trident, BukkitRunnable> tridentDespawnWatchDogs;
 
-    private List<Entity> spawnedEntities;
+    private HashMap<String, GameEntity> spawnedEntities;
 
     private boolean isEnableKillerList = false;
 
@@ -75,7 +76,7 @@ public class GameStatesManager {
         coolDownScheduler = new HashMap<>();
         itemCoolDownScheduler = new HashMap<>();
         tridentDespawnWatchDogs = new HashMap<>();
-        spawnedEntities = new ArrayList<>();
+        spawnedEntities = new HashMap<>();
     }
 
     public void clearAll(){
@@ -314,13 +315,13 @@ public class GameStatesManager {
         this.tridentDespawnWatchDogs.remove(trident);
     }
 
-    public List<Entity> getSpawnedEntities() {return spawnedEntities;}
-    public void setSpawnedEntities(List<Entity> spawnedEntities) {this.spawnedEntities = spawnedEntities;}
-    public void addSpawnedEntity(Entity entity) {this.spawnedEntities.add(entity);}
-    public void removeSpawnedEntity(Entity entity) {
-        if (!this.spawnedEntities.contains(entity)) {
+    public GameEntity getSpawnedEntitiesFromUUID(String uuid) {return spawnedEntities.get(uuid);}
+    public boolean isExistsSpawnedEntityFromUUID(String uuid) {return spawnedEntities.containsKey(uuid);}
+    public void addSpawnedEntity(String uuid, GameEntity entity) {this.spawnedEntities.put(uuid, entity);}
+    public void removeSpawnedEntity(String uuid) {
+        if (!isExistsSpawnedEntityFromUUID(uuid)) {
             return;
         }
-        this.spawnedEntities.remove(entity);
+        this.spawnedEntities.remove(uuid);
     }
 }
