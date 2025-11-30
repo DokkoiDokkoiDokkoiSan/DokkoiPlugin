@@ -65,7 +65,7 @@ public class TierPlayerList extends CustomItem {
 
     public void updateList(Tier targetTier){
         ItemStack book = this.baseItem.clone();
-        GameItem.removeItem(player, GameItemKeyString.TIERPLAYERLIST, 1);
+        GameItem.removeItem(player, TierPlayerList.id, 1);
         BookMeta bookMeta = (BookMeta) book.getItemMeta();
         List<UUID> playerUUID = new ArrayList<>(game.getGameStatesManager().getAlivePlayers());
         StringBuilder names = new StringBuilder();

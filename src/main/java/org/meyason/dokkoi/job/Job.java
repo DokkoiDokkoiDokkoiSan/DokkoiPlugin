@@ -71,6 +71,7 @@ public abstract class Job implements Cloneable {
     public String getName() {return this.name;}
     public String getDescription() {return this.description;}
     public List<Goal> getGoals() {return this.goals;}
+    public void setCoolTimeSkill(int coolTimeSkill) {this.coolTimeSkill = coolTimeSkill;}
     public int getCoolTimeSkill() {return this.coolTimeSkill;}
     public void twiceCoolTimeSkill() {this.coolTimeSkill *= 2;}
     public int getCoolTimeSkillUltimate() {return this.coolTimeSkillUltimate;}

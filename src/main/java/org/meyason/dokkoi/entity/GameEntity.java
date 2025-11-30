@@ -1,101 +1,74 @@
 package org.meyason.dokkoi.entity;
 
-import net.kyori.adventure.text.Component;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
-import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.constants.EntityID;
+import org.meyason.dokkoi.constants.GameEntityKeyString;
+import org.meyason.dokkoi.constants.GameEntityList;
+import org.meyason.dokkoi.exception.GameEntityIDNotFoundException;
 
-public class GameEntity {
+import java.util.HashMap;
 
-    public static boolean spawnEntityByID(Player player, String entityIDString){
-        Location location = player.getLocation();
-        World world = location.getWorld();
-        EntityID entityID = EntityID.getEntityID(entityIDString);
-        if(entityID == null){
-            player.sendMessage(Component.text("§4エンティティIDが不正です: " + entityIDString));
-            return false;
-        }
-        String id = entityID.getId();
-        String type = entityID.getType();
-        if(type.equals("comedian")){
-            Comedian comedian = Comedian.getComedianById(id);
-            if(comedian != null){
-                spawnComedian(location, comedian);
-                player.sendMessage(Component.text("Comedian spawned"));
-                return true;
-            }else{
-                player.sendMessage(Component.text("§4コメディアンIDが不正です: " + id));
-                return false;
-            }
-        }else if(type.equals("npc")){
-            NPC npc = NPC.getNPCById(id);
-            if(npc != null) {
-                if (npc == NPC.DEALER) {
-                    spawnDealer(location);
-                    player.sendMessage(Component.text("Dealer spawned"));
-                    return true;
+public abstract class GameEntity {
+
+    public static final String YOSHIO = "yoshio";
+    public static final String ZAKOSHI = "zakoshi";
+    public static final String WAKABAYASHI = "wakabayashi";
+    public static final String OGATA = "ogata";
+    public static final String OOKI = "ooki";
+    public static final String DEALER = "dealer";
+    public static final String CLERK = "clerk";
+
+    public static HashMap<String, String> nameMap = new HashMap<>(){{
+        put(YOSHIO, "小島よしお");
+        put(ZAKOSHI, "ハリウッドザコシショウ");
+        put(WAKABAYASHI, "オードリー若林");
+        put(OGATA, "パンサー尾形");
+        put(OOKI, "ビビる大木");
+
+        put(DEALER, "§5密売人");
+        put(CLERK, "§3ショップおじいちゃん");
+    }};
+
+    public static HashMap<String, String> deathMessageMap = new HashMap<>(){{
+        put(YOSHIO, "小島よしお「ピーーーーヤ！！！！！！！！ｗｗｗ」");
+        put(ZAKOSHI, "ハリウッドザコシショウ「でさーねーｗｗｗゴース！！！！ｗｗｗｗｗｗ」");
+        put(WAKABAYASHI, "若林「なんでだよ！！！！ｗｗｗ言うとりますけどもｗｗｗｗ！！ｗ」");
+        put(OGATA, "パンサー尾形「俺悲しいっすよ！！！！！！ｗｗｗｗはい！！！ｗｗ」");
+        put(OOKI, "ビビる大木「ぎゃあああああああああああああああああああ！！！！！！！！！！！！！！！！！！！！！！！！！！！」");
+    }};
+
+
+    protected String id;
+    protected String name;
+
+    public GameEntity(String id){
+        this.id = id;
+        this.name = nameMap.get(id);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public static GameEntity getGameEntityFromId(String id){
+        if(id==null){ throw new GameEntityIDNotFoundException("Game entity id is null"); }
+        GameEntityList list = GameEntityList.getGameEntityList(id);
+        if(list==null){ throw new GameEntityIDNotFoundException("wrong id"); }
+        String type = list.getType();
+        return switch (type) {
+            case GameEntityKeyString.COMEDIAN -> new Comedian(id);
+            case GameEntityKeyString.NPC -> (
+                switch (id) {
+                    case DEALER -> new Dealer();
+                    case CLERK -> new Clerk();
+                    default -> throw new GameEntityIDNotFoundException("wrong id");
                 }
-            }
+            );
+            default -> throw new GameEntityIDNotFoundException("wrong id");
+        };
 
-        }
-        return false;
-    }
-
-    public static void spawnComedian(Location location, Comedian comedian){
-        String name = comedian.getName();
-        String deathMessage = comedian.getDeathMessage();
-        World world = location.getWorld();
-        Villager villager = (Villager) world.spawnEntity(location, EntityType.VILLAGER);
-        villager.setCustomName(name);
-        villager.setCustomNameVisible(true);
-        villager.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
-        villager.getEquipment().setItemInOffHand(new ItemStack(Material.AIR));
-        villager.getEquipment().setHelmet(new ItemStack(Material.AIR));
-        villager.getEquipment().setChestplate(new ItemStack(Material.AIR));
-        villager.getEquipment().setLeggings(new ItemStack(Material.AIR));
-        villager.getEquipment().setBoots(new ItemStack(Material.AIR));
-        villager.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.0D);
-        villager.getAttribute(Attribute.ATTACK_KNOCKBACK).setBaseValue(0.0D);
-        villager.setProfession(Villager.Profession.NONE);
-        villager.setCollidable(false);
-        villager.setSilent(true);
-        villager.setInvulnerable(true);
-        deathMessage = deathMessage == null ? "" : deathMessage;
-        villager.getPersistentDataContainer().set(new NamespacedKey(Dokkoi.getInstance(), comedian.getId()), PersistentDataType.STRING, deathMessage);
-    }
-
-    public static void spawnDealer(Location location){
-        String name = NPC.DEALER.getName();
-        World world = location.getWorld();
-        Villager villager = (Villager) world.spawnEntity(location, EntityType.VILLAGER);
-        villager.setCustomName(name);
-        villager.setCustomNameVisible(true);
-        villager.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
-        villager.getEquipment().setItemInOffHand(new ItemStack(Material.AIR));
-        villager.getEquipment().setHelmet(new ItemStack(Material.AIR));
-        villager.getEquipment().setChestplate(new ItemStack(Material.AIR));
-        villager.getEquipment().setLeggings(new ItemStack(Material.AIR));
-        villager.getEquipment().setBoots(new ItemStack(Material.AIR));
-        villager.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.0D);
-        villager.getAttribute(Attribute.ATTACK_KNOCKBACK).setBaseValue(0.0D);
-        villager.setProfession(Villager.Profession.WEAPONSMITH);
-        villager.setCollidable(false);
-        villager.setInvulnerable(true);
-        villager.getPersistentDataContainer().set(new NamespacedKey(Dokkoi.getInstance(), NPC.DEALER.getId()), PersistentDataType.STRING, NPC.DEALER.getName());
-    }
-
-    public static void killVillager(Villager villager){
-        villager.setHealth(0.0);
-        villager.remove();
     }
 
 }

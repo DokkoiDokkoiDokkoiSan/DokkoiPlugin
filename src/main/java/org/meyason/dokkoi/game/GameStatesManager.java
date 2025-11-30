@@ -4,7 +4,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Trident;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.constants.GameState;
+import org.meyason.dokkoi.entity.GameEntity;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.job.Job;
 
 import java.util.ArrayList;
@@ -32,6 +34,8 @@ public class GameStatesManager {
     private HashMap<UUID, Integer> damageCutPercent;
     private HashMap<UUID, Boolean> isDeactivateDamageOnce;
 
+    private HashMap<String, CustomItem> serialCustomItemMap;
+
     private HashMap<UUID, Long> moneyMap;
 
     private HashMap<UUID, BukkitRunnable> skillCoolDownTasks;
@@ -40,7 +44,7 @@ public class GameStatesManager {
     private HashMap<UUID, BukkitRunnable> itemCoolDownScheduler;
     private HashMap<Trident, BukkitRunnable> tridentDespawnWatchDogs;
 
-    private List<Entity> spawnedEntities;
+    private HashMap<String, GameEntity> spawnedEntities;
 
     private boolean isEnableKillerList = false;
 
@@ -65,13 +69,14 @@ public class GameStatesManager {
         additionalDamage = new HashMap<>();
         damageCutPercent = new HashMap<>();
         isDeactivateDamageOnce = new HashMap<>();
+        serialCustomItemMap = new HashMap<>();
         moneyMap = new HashMap<>();
         skillCoolDownTasks = new HashMap<>();
         ultimateSkillCoolDownTasks = new HashMap<>();
         coolDownScheduler = new HashMap<>();
         itemCoolDownScheduler = new HashMap<>();
         tridentDespawnWatchDogs = new HashMap<>();
-        spawnedEntities = new ArrayList<>();
+        spawnedEntities = new HashMap<>();
     }
 
     public void clearAll(){
@@ -88,6 +93,7 @@ public class GameStatesManager {
         additionalDamage.clear();
         damageCutPercent.clear();
         isDeactivateDamageOnce.clear();
+        serialCustomItemMap.clear();
         moneyMap.clear();
         skillCoolDownTasks.clear();
         ultimateSkillCoolDownTasks.clear();
@@ -251,6 +257,14 @@ public class GameStatesManager {
         this.isDeactivateDamageOnce.remove(player);
     }
 
+    public CustomItem getCustomItemFromSerial(String uuid) {return serialCustomItemMap.get(uuid);}
+    public boolean isExistsCustomItemFromSerial(String uuid) {return serialCustomItemMap.containsKey(uuid);}
+    public void addCustomItemToSerialMap(String uuid, CustomItem customItem) {this.serialCustomItemMap.put(uuid, customItem);}
+    public void removeCustomItemFromSerialMap(String uuid) {
+        if(!this.serialCustomItemMap.containsKey(uuid)) {return;}
+        this.serialCustomItemMap.remove(uuid);
+    }
+
     public HashMap<UUID, Long> getMoneyMap() {return moneyMap;}
     public void setMoneyMap(HashMap<UUID, Long> moneyMap) {this.moneyMap = moneyMap;}
     public void addMoneyMap(UUID player, long amount) {
@@ -301,13 +315,13 @@ public class GameStatesManager {
         this.tridentDespawnWatchDogs.remove(trident);
     }
 
-    public List<Entity> getSpawnedEntities() {return spawnedEntities;}
-    public void setSpawnedEntities(List<Entity> spawnedEntities) {this.spawnedEntities = spawnedEntities;}
-    public void addSpawnedEntity(Entity entity) {this.spawnedEntities.add(entity);}
-    public void removeSpawnedEntity(Entity entity) {
-        if (!this.spawnedEntities.contains(entity)) {
+    public GameEntity getSpawnedEntitiesFromUUID(String uuid) {return spawnedEntities.get(uuid);}
+    public boolean isExistsSpawnedEntityFromUUID(String uuid) {return spawnedEntities.containsKey(uuid);}
+    public void addSpawnedEntity(String uuid, GameEntity entity) {this.spawnedEntities.put(uuid, entity);}
+    public void removeSpawnedEntity(String uuid) {
+        if (!isExistsSpawnedEntityFromUUID(uuid)) {
             return;
         }
-        this.spawnedEntities.remove(entity);
+        this.spawnedEntities.remove(uuid);
     }
 }

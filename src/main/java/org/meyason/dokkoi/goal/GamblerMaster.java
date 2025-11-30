@@ -11,16 +11,13 @@ import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestStrongestBall;
 public class GamblerMaster extends Goal {
 
     public GamblerMaster() {
-        super("§cGachaBeginner", "ガチで最強のたまたまを手に入れろ！");
+        super("§cGachaBeginner", "§eガチで最強のたまたまを手に入れろ！", Tier.TIER_1);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_1;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
 
@@ -34,21 +31,21 @@ public class GamblerMaster extends Goal {
     }
 
     @Override
-    public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
-            this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
+    public boolean isAchieved(boolean notify) {
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())){
+            if(notify)this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;
         }
         for(ItemStack itemStack : player.getInventory()){
             if(itemStack != null && itemStack.getItemMeta() != null){
                 CustomItem customItem = CustomItem.getItem(itemStack);
                 if(customItem instanceof StrongestStrongestStrongestBall){
-                    this.player.sendMessage(Component.text("§6今すぐパチスロに行け！"));
+                    if(notify)this.player.sendMessage(Component.text("§6今すぐパチスロに行け！"));
                     return true;
                 }
             }
         }
-        this.player.sendMessage(Component.text("§cギャンブラーとしてはまだまだだな。"));
+        if(notify)this.player.sendMessage(Component.text("§cギャンブラーとしてはまだまだだな。"));
         return false;
     }
 

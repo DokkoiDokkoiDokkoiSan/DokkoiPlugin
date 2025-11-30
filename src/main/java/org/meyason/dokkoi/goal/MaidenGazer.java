@@ -11,16 +11,13 @@ public class MaidenGazer extends Goal {
     private IronMaiden ironMaiden;
 
     public MaidenGazer() {
-        super("§cMaiden Gazer", "パッシブの視線誘導を60秒間発動させろ！");
+        super("§cMaiden Gazer", "§eパッシブの視線誘導を60秒間発動させろ！", Tier.TIER_3);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_3;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
         if(game.getGameStatesManager().getPlayerJobs().get(player.getUniqueId()) instanceof IronMaiden maiden){
             this.ironMaiden = maiden;
         }
@@ -39,16 +36,16 @@ public class MaidenGazer extends Goal {
     }
 
     @Override
-    public boolean isAchieved(){
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
-            this.player.sendMessage("§cお前はもう死んでいる。");
+    public boolean isAchieved(boolean notify) {
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())){
+            if(notify)this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
         if(getPoint() >= 60){
-            this.player.sendMessage("§6俺はみんなが俺を見たのを見たぞ！");
+            if(notify)this.player.sendMessage("§6俺はみんなが俺を見たのを見たぞ！");
             return true;
         }
-        this.player.sendMessage("§c誰もお前のことなんか見ちゃいない");
+        if(notify)this.player.sendMessage("§c誰もお前のことなんか見ちゃいない");
         return false;
     }
 

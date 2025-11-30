@@ -8,7 +8,7 @@ import org.meyason.dokkoi.item.CustomItem;
 
 public class Ultimate extends CustomItem {
 
-    public static final String id = GameItemKeyString.ULTIMATE_SKILL;
+    public static final String id = "ultimate";
 
     public Ultimate() {
         super(id, "", ItemStack.of(Material.YELLOW_DYE), 1);

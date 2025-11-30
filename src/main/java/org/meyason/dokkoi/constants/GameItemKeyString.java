@@ -1,85 +1,17 @@
 package org.meyason.dokkoi.constants;
 
-import org.meyason.dokkoi.item.battleitem.ArcherArmor;
-import org.meyason.dokkoi.item.food.CookedPorkchop;
-
 import java.util.List;
 
 public class GameItemKeyString {
 
     public static final String ITEM_NAME = "item_name";
 
-    public static final String KILLERLIST = "killer_list";
-    public static final String RAPIER = "rapier";
-    public static final String TIERPLAYERLIST = "tier_player_list";
-    public static final String BURIBURIGUARD = "buri_buri_guard";
-    public static final String STRONGESTBALL = "strongest_ball";
-    public static final String STRONGESTSTRONGESTBALL = "strongest_strongest_ball";
-    public static final String STRONGESTSTRONGESTSTRONGESTBALL = "strongest_strongest_strongest_ball";
-
-    public static final String KETSUMOU = "ketsumou";
-    public static final String HEALINGCRYSTAL = "healing_crystal";
-
-    public static final String SKILL = "skill";
-    public static final String ULTIMATE_SKILL = "ultimate_skill";
-    public static final String PASSIVE_SKILL = "passive_skill";
-
-    public static final String GOLDENCARROT = "golden_carrot";
-    public static final String BAKEDPOTATO = "baked_potato";
-    public static final String PUMPKINPIE = "pumpkin_pie";
-    public static final String COOKEDCHICKEN = "cooked_chicken";
-    public static final String GLISTERINGMELONSLICE = "glistering_melon_slice";
-    public static final String COOCKEDPORKCHOP = "cooked_porkchop";
-    public static final String COOKEDBEEF = "cooked_beef";
-    public static final String COD = "cod";
-    public static final String SALMON = "salmon";
-    public static final String BREAD = "bread";
-
-    public static final String LONGSWORD = "long_sword";
-    public static final String THUNDERJAVELIN = "thunder_javelin";
-
-    public static final String ARCHERARMOR = "archer_armor";
-    public static final String REDHELMET = "red_helmet";
-
-    public static final String TSUYOKUNARU = "tsuyokunaru";
-    public static final String KATAKUNARU = "katakunaru";
-    public static final String KIZUKIERU = "kizukieru";
-    public static final String KOREHAMARU = "korehamaru";
-    public static final String HAYAKUNARU = "hayakunaru";
+    // スキルやクールダウンなど、複数の人が持つ可能性のあるアイテムにシリアルナンバーを持たせるためのキー
+    public static final String UNIQUE_ITEM = "unique_item";
 
     private static final List<String> gameItemKeyStringHashMap = List.of(
         ITEM_NAME,
-        KILLERLIST,
-        RAPIER,
-        TIERPLAYERLIST,
-        SKILL,
-        ULTIMATE_SKILL,
-        PASSIVE_SKILL,
-        KETSUMOU,
-        HEALINGCRYSTAL,
-        BURIBURIGUARD,
-        STRONGESTBALL,
-        STRONGESTSTRONGESTBALL,
-        STRONGESTSTRONGESTSTRONGESTBALL,
-        GOLDENCARROT,
-        LONGSWORD,
-        ARCHERARMOR,
-        BAKEDPOTATO,
-        THUNDERJAVELIN,
-        REDHELMET,
-        TSUYOKUNARU,
-        KATAKUNARU,
-        KIZUKIERU,
-        KOREHAMARU,
-        HAYAKUNARU,
-        PUMPKINPIE,
-        COOKEDCHICKEN,
-        GLISTERINGMELONSLICE,
-        COOCKEDPORKCHOP,
-        COOKEDBEEF,
-        COD,
-        SALMON,
-        BREAD
+        UNIQUE_ITEM
     );
 
     public static List<String> getGameItemKeyStringHashMap() {return gameItemKeyStringHashMap;}

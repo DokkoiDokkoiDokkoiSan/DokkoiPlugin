@@ -11,16 +11,13 @@ import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestBall;
 public class Pachikasu extends Goal {
 
     public Pachikasu() {
-        super("§cPachikasu", "もっと最強のたまたまを手に入れろ！");
+        super("§cPachikasu", "§eもっと最強のたまたまを手に入れろ！", Tier.TIER_2);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_2;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
 
@@ -34,21 +31,21 @@ public class Pachikasu extends Goal {
     }
 
     @Override
-    public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
-            this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
+    public boolean isAchieved(boolean notify) {
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())) {
+            if(notify)this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;
         }
         for(ItemStack itemStack : player.getInventory()){
             if(itemStack != null && itemStack.getItemMeta() != null){
                 CustomItem customItem = CustomItem.getItem(itemStack);
                 if(customItem instanceof StrongestStrongestBall){
-                    this.player.sendMessage(Component.text("§6もっと最強のたまたまだ！目標達成！"));
+                    if(notify)this.player.sendMessage(Component.text("§6もっと最強のたまたまだ！目標達成！"));
                     return true;
                 }
             }
         }
-        this.player.sendMessage(Component.text("§cお前は運の女神に見放された。"));
+        if(notify)this.player.sendMessage(Component.text("§cお前は運の女神に見放された。"));
         return false;
     }
 

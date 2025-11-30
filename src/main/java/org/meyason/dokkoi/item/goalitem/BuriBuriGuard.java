@@ -2,6 +2,7 @@ package org.meyason.dokkoi.item.goalitem;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -28,6 +29,7 @@ public class BuriBuriGuard extends CustomItem {
     public BuriBuriGuard(){
         super(id, "§aブリブリガード", ItemStack.of(Material.WOODEN_SWORD), 1);
         isUnique = true;
+        hasSerialNumber = true;
         List<Component> lore = List.of(
                 Component.text("§5ぶりぶりしている侍が使っている剣を模して作られた剣。めっちゃ人守れる。"),
                 Component.text(""),
@@ -60,12 +62,13 @@ public class BuriBuriGuard extends CustomItem {
         }
     }
 
-    public void skill(Player player, Player targetPlayer){
+    public void skill(){
         GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
         if(gameStatesManager.getItemCoolDownScheduler().containsKey(player.getUniqueId())){
             player.sendMessage("§cクールタイム中です");
             return;
         }
+        targetPlayer.getWorld().spawnParticle(Particle.CLOUD, targetPlayer.getLocation().add(0,0,0), 100);
         gameStatesManager.addDamageCutPercent(targetPlayer.getUniqueId(), 100);
         BukkitRunnable itemInitTask = new BukkitRunnable() {
             @Override

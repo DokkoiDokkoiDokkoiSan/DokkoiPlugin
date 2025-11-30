@@ -8,7 +8,7 @@ import org.meyason.dokkoi.item.CustomItem;
 
 public class Passive extends CustomItem {
 
-    public static final String id = GameItemKeyString.PASSIVE_SKILL;
+    public static final String id = "passive";
 
     public Passive(){
         super(id, "", ItemStack.of(Material.BLUE_DYE), 1);

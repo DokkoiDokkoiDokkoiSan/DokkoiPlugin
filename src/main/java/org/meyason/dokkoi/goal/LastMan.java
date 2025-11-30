@@ -9,16 +9,13 @@ import org.meyason.dokkoi.game.Game;
 public class LastMan extends Goal {
 
     public LastMan() {
-        super("§6Last Man", "最後の一人になるまで生き残れ！");
+        super("§6Last Man", "§e最後の一人になるまで生き残れ！", Tier.TIER_1);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_1;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
     @Override
@@ -30,16 +27,16 @@ public class LastMan extends Goal {
     }
 
     @Override
-    public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
-            this.player.sendMessage("§cお前はもう死んでいる。");
+    public boolean isAchieved(boolean notify) {
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())){
+            if(notify)this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
         if(this.game.getGameStatesManager().getAlivePlayers().size() == 1){
-            this.player.sendMessage("§6よくやった。お前は最後の生き残りだ！");
+            if(notify)this.player.sendMessage("§6よくやった。お前は最後の生き残りだ！");
             return true;
         }
-        this.player.sendMessage("§c失敗だ。まだほかに生きているやつがいる。");
+        if(notify)this.player.sendMessage("§c失敗だ。まだほかに生きているやつがいる。");
         return false;
     }
 

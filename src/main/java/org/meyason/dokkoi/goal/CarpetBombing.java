@@ -16,15 +16,13 @@ public class CarpetBombing extends Goal {
 
     private Bomber bomber;
 
-    public CarpetBombing() {super("§bCarpetBombing", "自爆攻撃で他人を巻き込んで殺せ！");}
+    public CarpetBombing() {super("§bCarpetBombing", "§e自爆攻撃で他人を巻き込んで殺せ！", Tier.TIER_2);}
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
 
-        this.tier = Tier.TIER_2;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
         Random rand = new Random();
         this.goalNumber = rand.nextInt(1, min(3, game.getGameStatesManager().getAlivePlayers().size() - 1) + 1);
     }
@@ -41,16 +39,16 @@ public class CarpetBombing extends Goal {
     }
 
     @Override
-    public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
-            this.player.sendMessage("§cお前はもう死んでいる。");
+    public boolean isAchieved(boolean notify) {
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())){
+            if(notify)this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
         if (bomber.killCount >= goalNumber){
-            this.player.sendMessage("§6よくやった。お前は立派な爆弾魔だ！");
+            if(notify)this.player.sendMessage("§6よくやった。お前は立派な爆弾魔だ！");
             return true;
         }
-        this.player.sendMessage("§c失敗だ。まだ目標人数に達していない。");
+        if(notify)this.player.sendMessage("§c失敗だ。まだ目標人数に達していない。");
         return false;
     }
 

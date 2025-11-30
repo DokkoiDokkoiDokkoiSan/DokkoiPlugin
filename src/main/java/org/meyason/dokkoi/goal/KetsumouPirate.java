@@ -13,16 +13,13 @@ public class KetsumouPirate extends Goal {
     private int targetKetsumouCount = 9;
 
     public KetsumouPirate() {
-        super("§bKetsumou Hunter", "§9§lけつ毛§r§5を9個探せ！");
+        super("§bKetsumou Hunter", "§9§lけつ毛§r§eを9個探せ！", Tier.TIER_2);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_2;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
     @Override
@@ -34,19 +31,19 @@ public class KetsumouPirate extends Goal {
     }
 
     @Override
-    public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
-            this.player.sendMessage("§cお前はもう死んでいる。");
+    public boolean isAchieved(boolean notify) {
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())){
+            if(notify)this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
         Job job = this.game.getGameStatesManager().getPlayerJobs().get(this.player.getUniqueId());
         if(job instanceof Explorer explorer) {
             if (explorer.getHaveKetsumouCount() >= this.targetKetsumouCount) {
-                this.player.sendMessage("§6よくやった！お前は立派な§9§lけつ毛§r§6王だ！");
+                if(notify)this.player.sendMessage("§6よくやった！お前は立派な§9§lけつ毛§r§6王だ！");
                 return true;
             }
         }
-        this.player.sendMessage(Component.text("§c目標数の§9§lけつ毛§r§cを集められなかった。"));
+        if(notify)this.player.sendMessage(Component.text("§c目標数の§9§lけつ毛§r§cを集められなかった。"));
         return false;
     }
 

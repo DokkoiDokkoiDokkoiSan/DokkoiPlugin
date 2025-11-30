@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.event.player;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -19,6 +20,10 @@ import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.JobList;
+import org.meyason.dokkoi.item.battleitem.ArcherArmor;
+import org.meyason.dokkoi.item.jobitem.Skill;
+import org.meyason.dokkoi.item.jobitem.Ultimate;
+import org.meyason.dokkoi.item.jobitem.gacha.StrongestBall;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
@@ -95,7 +100,7 @@ public class DamageEvent implements Listener {
                 NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
                 if(container.has(itemKey, PersistentDataType.STRING)){
                     String itemName = Objects.requireNonNull(container.get(itemKey, PersistentDataType.STRING));
-                    if(itemName.equals(GameItemKeyString.STRONGESTBALL)){
+                    if(itemName.equals(StrongestBall.id)){
                         count++;
                     }
                 }
@@ -166,19 +171,23 @@ public class DamageEvent implements Listener {
             // 当たったエンティティがプレイヤーじゃなくてもいい場合はこっち
             if (job instanceof Bomber bomber) {
                 String attackItem = projectileData.getCustomItemName();
-                if(attackItem.equals(GameItemKeyString.SKILL)) {
+                if(attackItem.equals(Skill.id)) {
                     List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attackedPlayer, snowball.getLocation(), 10);
                     bomber.skill(snowball.getLocation(), effectedPlayers);
-                }else if(attackItem.equals(GameItemKeyString.ULTIMATE_SKILL)){
+                }else if(attackItem.equals(Ultimate.id)){
                     bomber.ultimate(snowball.getLocation());
                 }
                 gameStatesManager.removeProjectileData(snowball);
                 return;
             }else if(job instanceof Explorer explorer) {
                 String attackItem = projectileData.getCustomItemName();
-                if(attackItem.equals(GameItemKeyString.SKILL)) {
+                if(attackItem.equals(Skill.id)) {
                     explorer.skill(snowball);
                 }
+                gameStatesManager.removeProjectileData(snowball);
+                return;
+            }else if(job instanceof Executor executor){
+                executor.skill(damagedEntity);
                 gameStatesManager.removeProjectileData(snowball);
                 return;
             }
@@ -195,9 +204,6 @@ public class DamageEvent implements Listener {
                     lonely.lastDamagedTime = System.currentTimeMillis();
                 }
 
-                if (job instanceof Executor executor) {
-                    executor.skill(damagedPlayer);
-                }
                 gameStatesManager.removeProjectileData(snowball);
                 return;
             }
@@ -242,6 +248,7 @@ public class DamageEvent implements Listener {
                             lonely.lastDamagedTime = System.currentTimeMillis();
                         }
                     }
+                    event.setCancelled(true);
                     calculateDamage(shooterEntity, damagedEntity, damage);
                 }
                 return;
@@ -300,12 +307,8 @@ public class DamageEvent implements Listener {
                 return;
             }
 
-            EntityDamageEvent.DamageCause cause = Optional.ofNullable(event.getEntity().getLastDamageCause())
-                    .map(EntityDamageEvent::getCause)
-                    .orElse(null);
-            if(cause == EntityDamageEvent.DamageCause.FALL){
-                event.setCancelled(true);
-            }
+            if(event.getCause() == EntityDamageEvent.DamageCause.FALL) event.setCancelled(true);
+            if(event.getCause() == EntityDamageEvent.DamageCause.VOID) event.setCancelled(true);
         }
     }
 
@@ -313,8 +316,15 @@ public class DamageEvent implements Listener {
         if(attacker == null || damaged == null) {
             return;
         }
+
         GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
+
+
         if(damaged instanceof Player damagedPlayer && attacker instanceof Player attackerPlayer) {
+            if(Game.getInstance().getNowTime() > 500){
+                attackerPlayer.sendActionBar(Component.text("§c保護システムに攻撃が無力化された。"));
+                return;
+            }
             if(gameStatesManager.getPlayerJobs().get(damagedPlayer.getUniqueId()) instanceof Prayer prayer){
                 if(prayer.getHasStrongestStrongestBall()){
                     damagedPlayer.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
@@ -346,7 +356,6 @@ public class DamageEvent implements Listener {
                 DeathEvent.kill(attackerPlayer, damagedPlayer);
             }else{
                 damagedPlayer.damage(damage);
-//                damagedPlayer.setHealth(afterHealth);
             }
         }
     }
@@ -360,7 +369,7 @@ public class DamageEvent implements Listener {
                     PersistentDataContainer container = meta.getPersistentDataContainer();
                     NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
                     if(container.has(itemKey, PersistentDataType.STRING)){
-                        if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.ARCHERARMOR)){
+                        if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), ArcherArmor.id)){
                             player.getInventory().setChestplate(null);
                             player.sendMessage(Component.text("§a弓使いの鎧§bでダメージを無効化した！"));
                             manager.addIsDeactivateDamageOnce(player.getUniqueId(), false);

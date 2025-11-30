@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
+import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
@@ -129,7 +130,14 @@ public class Explorer extends Job {
                 location.setY(location.getY() + 0.1f);
                 snowball.remove();
 
-                CustomItem item = GameItem.getItem(Ketsumou.id);
+                CustomItem item;
+                try{
+                    item = GameItem.getItem(Ketsumou.id);
+                }catch (NoGameItemException e){
+                    e.printStackTrace();
+                    cancel();
+                    return;
+                }
                 if(item != null){
                     ItemStack itemStack = item.getItem();
                     location.getWorld().dropItemNaturally(location, itemStack);
