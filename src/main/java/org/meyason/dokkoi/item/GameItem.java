@@ -20,6 +20,7 @@ import org.meyason.dokkoi.item.weapon.*;
 import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.item.battleitems.HealingCrystal;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
+import org.meyason.dokkoi.item.battleitem.HealingCrystal;
 
 import java.util.HashMap;
 
@@ -32,6 +33,37 @@ public class GameItem {
     }
 
     public void registerItem(){
+        items.put(GameItemKeyString.SKILL, new Skill());
+        items.put(GameItemKeyString.ULTIMATE_SKILL, new Ultimate());
+        items.put(GameItemKeyString.PASSIVE_SKILL, new Passive());
+        items.put(GameItemKeyString.KILLERLIST, new KillerList());
+        items.put(GameItemKeyString.RAPIER, new Rapier());
+        items.put(GameItemKeyString.TIERPLAYERLIST, new TierPlayerList());
+        items.put(GameItemKeyString.KETSUMOU, new Ketsumou());
+        items.put(GameItemKeyString.HEALINGCRYSTAL, new HealingCrystal());
+        items.put(GameItemKeyString.BURIBURIGUARD, new BuriBuriGuard());
+        items.put(GameItemKeyString.STRONGESTBALL, new StrongestBall());
+        items.put(GameItemKeyString.STRONGESTSTRONGESTBALL, new StrongestStrongestBall());
+        items.put(GameItemKeyString.STRONGESTSTRONGESTSTRONGESTBALL, new StrongestStrongestStrongestBall());
+        items.put(GameItemKeyString.GOLDENCARROT, new GoldenCarrot());
+        items.put(GameItemKeyString.LONGSWORD, new LongSword());
+        items.put(GameItemKeyString.ARCHERARMOR, new ArcherArmor());
+        items.put(GameItemKeyString.BAKEDPOTATO, new BakedPotato());
+        items.put(GameItemKeyString.THUNDERJAVELIN, new ThunderJavelin());
+        items.put(GameItemKeyString.REDHELMET, new RedHelmet());
+        items.put(GameItemKeyString.TSUYOKUNARU, new Tsuyokunaru());
+        items.put(GameItemKeyString.HAYAKUNARU, new Hayakunaru());
+        items.put(GameItemKeyString.KIZUKIERU, new Kizukieru());
+        items.put(GameItemKeyString.KATAKUNARU, new Katakunaru());
+        items.put(GameItemKeyString.KOREHAMARU, new Korehamaru());
+        items.put(GameItemKeyString.PUMPKINPIE, new PumpkinPie());
+        items.put(GameItemKeyString.COOKEDCHICKEN,new CookedChicken());
+        items.put(GameItemKeyString.GLISTERINGMELONSLICE, new GlisteringMelonSlice());
+        items.put(GameItemKeyString.COOCKEDPORKCHOP, new CookedPorkchop());
+        items.put(GameItemKeyString.COOKEDBEEF, new CookedBeef());
+        items.put(GameItemKeyString.COD, new Cod());
+        items.put(GameItemKeyString.SALMON, new Salmon());
+        items.put(GameItemKeyString.BREAD, new Bread());
         items.put(Skill.id, new Skill());
         items.put(Ultimate.id, new Ultimate());
         items.put(Passive.id, new Passive());
