@@ -34,17 +34,17 @@ public class DrugEnforcementAdministration extends  Goal {
     }
 
     @Override
-    public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())){
-            this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
+    public boolean isAchieved(boolean notify) {
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())){
+            if(notify)this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;
         }
         Executor executor = (Executor) this.game.getGameStatesManager().getPlayerJobs().get(this.player.getUniqueId());
         if(executor.getArrestCount() >= 3){
-            this.player.sendMessage(Component.text("§6おめでとう！街から麻薬密売人を一掃した！"));
+            if(notify)this.player.sendMessage(Component.text("§6おめでとう！街から麻薬密売人を一掃した！"));
             return true;
         }
-        this.player.sendMessage(Component.text("§c街に麻薬が蔓延っている..."));
+        if(notify)this.player.sendMessage(Component.text("§c街に麻薬が蔓延っている..."));
         return false;
     }
 

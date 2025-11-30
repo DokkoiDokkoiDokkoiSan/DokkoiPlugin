@@ -24,7 +24,7 @@ public abstract class GameEntity {
         put(OOKI, "ビビる大木");
 
         put(DEALER, "§5密売人");
-        put(CLERK, "§3店員");
+        put(CLERK, "§3ショップおじいちゃん");
     }};
 
     public static HashMap<String, String> deathMessageMap = new HashMap<>(){{

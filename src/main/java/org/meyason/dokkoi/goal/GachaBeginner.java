@@ -31,21 +31,21 @@ public class GachaBeginner extends Goal {
     }
 
     @Override
-    public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
-            this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
+    public boolean isAchieved(boolean notify) {
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(player.getUniqueId())) {
+            if(notify)this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;
         }
         for(ItemStack itemStack : player.getInventory()){
             if(itemStack != null && itemStack.getItemMeta() != null){
                 CustomItem customItem = CustomItem.getItem(itemStack);
                 if(customItem instanceof StrongestBall){
-                    this.player.sendMessage(Component.text("§6最強のたまたまだ！目標達成！"));
+                    if(notify)this.player.sendMessage(Component.text("§6最強のたまたまだ！目標達成！"));
                     return true;
                 }
             }
         }
-        this.player.sendMessage(Component.text("§cお前は最強のたまたまを手に出来なかった。"));
+        if(notify)this.player.sendMessage(Component.text("§cお前は最強のたまたまを手に出来なかった。"));
         return false;
     }
 

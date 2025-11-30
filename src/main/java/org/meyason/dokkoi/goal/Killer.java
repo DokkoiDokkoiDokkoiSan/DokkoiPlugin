@@ -32,29 +32,29 @@ public class Killer extends Goal {
     }
 
     @Override
-    public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
-            this.player.sendMessage("§cお前はもう死んでいる。");
+    public boolean isAchieved(boolean notify) {
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())){
+            if(notify)this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
         //killerListの中のkeyにPlayerが指定分含まれているかどうかを確認
         HashMap<UUID, UUID> killerList = game.getGameStatesManager().getKillerList();
         if(!killerList.containsKey(player.getUniqueId())){
-            player.sendMessage(Component.text("§c誰も殺せなかった。"));
+            if(notify)player.sendMessage(Component.text("§c誰も殺せなかった。"));
             return false;
         }
         if(game.getGameStatesManager().getAlivePlayers().size() > 1){
-            player.sendMessage("§c全てのプレイヤーを殺害できなかった。");
+            if(notify)player.sendMessage("§c全てのプレイヤーを殺害できなかった。");
             return false;
         }
         List<UUID> killers = killerList.keySet().stream().distinct().toList();
         for(UUID p : killers){
             if(!player.getUniqueId().equals(p)){
-                player.sendMessage("§c全てのプレイヤーを自らの手で殺害できなかった。");
+                if(notify)player.sendMessage("§c全てのプレイヤーを自らの手で殺害できなかった。");
                 return false;
             }
         }
-        player.sendMessage("§6よくやった！お前は全てのプレイヤーを殺害した！");
+        if(notify)player.sendMessage("§6よくやった！お前は全てのプレイヤーを殺害した！");
         return true;
     }
 

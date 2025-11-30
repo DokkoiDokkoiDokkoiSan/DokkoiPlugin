@@ -12,11 +12,15 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
+import org.meyason.dokkoi.exception.NoGameItemException;
+import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
+import org.meyason.dokkoi.job.DrugStore;
 import xyz.xenondevs.invui.item.ItemProvider;
 import xyz.xenondevs.invui.item.builder.ItemBuilder;
 import xyz.xenondevs.invui.item.impl.AbstractItem;
@@ -40,7 +44,13 @@ public class DrugRecipeItem extends AbstractItem {
 
     @Override
     public ItemProvider getItemProvider() {
-        CustomItem customItem = GameItem.getItem(itemID);
+        CustomItem customItem = null;
+        try {
+            customItem = GameItem.getItem(itemID);
+        } catch (NoGameItemException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
         ItemStack itemStack = new ItemStack(Material.MELON_SEEDS);
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (customItem != null && itemMeta != null) {
@@ -91,6 +101,15 @@ public class DrugRecipeItem extends AbstractItem {
                 ItemStack craftedItemStack = craftedItem.getItem();
                 inventory.addItem(craftedItemStack);
                 player.sendMessage(craftedItem.getName() + "§aの調合に成功しました");
+                DrugStore drugStore = (DrugStore) Game.getInstance().getGameStatesManager().getPlayerJobs().get(player.getUniqueId());
+                drugStore.setCoolTimeSkill(5);
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        drugStore.setCoolTimeSkill(1);
+                    }
+                }.runTaskLater(Dokkoi.getInstance(), 5 * 21);
+                player.closeInventory();
             }
         }else{
             player.sendMessage("§c材料が足りません");

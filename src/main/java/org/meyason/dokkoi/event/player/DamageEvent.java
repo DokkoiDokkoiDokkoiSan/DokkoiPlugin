@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.event.player;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -247,6 +248,7 @@ public class DamageEvent implements Listener {
                             lonely.lastDamagedTime = System.currentTimeMillis();
                         }
                     }
+                    event.setCancelled(true);
                     calculateDamage(shooterEntity, damagedEntity, damage);
                 }
                 return;
@@ -314,8 +316,15 @@ public class DamageEvent implements Listener {
         if(attacker == null || damaged == null) {
             return;
         }
+
         GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
+
+
         if(damaged instanceof Player damagedPlayer && attacker instanceof Player attackerPlayer) {
+            if(Game.getInstance().getNowTime() > 500){
+                attackerPlayer.sendActionBar(Component.text("§c保護システムに攻撃が無力化された。"));
+                return;
+            }
             if(gameStatesManager.getPlayerJobs().get(damagedPlayer.getUniqueId()) instanceof Prayer prayer){
                 if(prayer.getHasStrongestStrongestBall()){
                     damagedPlayer.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
@@ -347,7 +356,6 @@ public class DamageEvent implements Listener {
                 DeathEvent.kill(attackerPlayer, damagedPlayer);
             }else{
                 damagedPlayer.damage(damage);
-//                damagedPlayer.setHealth(afterHealth);
             }
         }
     }

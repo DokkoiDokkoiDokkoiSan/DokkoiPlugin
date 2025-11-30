@@ -3,6 +3,8 @@ package org.meyason.dokkoi.entity;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.meyason.dokkoi.exception.JobPlayerNotFoundException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
@@ -58,7 +60,17 @@ public class Dealer extends GameEntity {
         int currentIndex = dragList.indexOf(nowNeedDragID);
         if(Game.getInstance().getGameStatesManager().getPlayerJobs().get(player.getUniqueId()) instanceof DrugStore drugStore){
             drugStore.incrementSellCount();
+
+        }else{
+            if(nowNeedDragID.equals(Korehamaru.id)){
+                player.sendMessage(Component.text("§cこの薬だけは渡したくない……。"));
+                return false;
+            }
         }
+        // アイテムを1つ減らす
+        ItemStack itemStack = item.getItem();
+        itemStack.setAmount(1);
+        player.getInventory().removeItem(itemStack);
         if (currentIndex + 1 < dragList.size()) {
             nowNeedDragID = dragList.get(currentIndex + 1);
         } else {
@@ -82,7 +94,7 @@ public class Dealer extends GameEntity {
             if(job instanceof DrugStore) {
                 if(manager.getAlivePlayers().contains(uuid)) {
                     Player jobPlayer = Bukkit.getPlayer(uuid);
-                    if(jobPlayer == null) return;
+                    if(jobPlayer == null) throw new JobPlayerNotFoundException(uuid.toString());
                     jobPlayer.sendMessage(Component.text("§c密売人が逮捕された。与ダメージが1増加した。"));
                     manager.addAdditionalDamage(uuid, 1);
                     return;

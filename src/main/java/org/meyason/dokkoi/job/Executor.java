@@ -82,7 +82,6 @@ public class Executor extends Job{
     public void ready(){}
 
     public void skill(Entity target){
-
         if(target instanceof Player targetPlayer) {
             int killCount = game.getGameStatesManager().getKillCounts().get(player.getUniqueId());
             int damage;
@@ -114,7 +113,7 @@ public class Executor extends Job{
                 damage = 500;
             }
             if (damage < targetPlayer.getHealth()) {
-                targetPlayer.setHealth(targetPlayer.getHealth() - damage);
+                targetPlayer.damage(damage);
             } else {
                 DeathEvent.kill(player, targetPlayer);
             }

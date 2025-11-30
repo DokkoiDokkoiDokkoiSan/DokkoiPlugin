@@ -101,6 +101,7 @@ public class PickEvent implements Listener {
 
         if(event.getClick().isShiftClick()){
             if(slotItem == null){return;}
+            if(!slotItem.hasItemMeta()){return;}
             CustomItem slotCustomItem = CustomItem.getItem(slotItem);
 
             // チェスト内のアイテムをシフトクリックしてインベントリに移した時

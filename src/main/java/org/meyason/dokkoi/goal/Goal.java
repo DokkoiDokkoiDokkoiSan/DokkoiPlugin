@@ -44,7 +44,7 @@ public abstract class Goal implements Cloneable {
 
     public abstract void addItem();
 
-    public abstract boolean isAchieved();
+    public abstract boolean isAchieved(boolean notify);
 
     public abstract boolean isKillable(Player targetPlayer);
 

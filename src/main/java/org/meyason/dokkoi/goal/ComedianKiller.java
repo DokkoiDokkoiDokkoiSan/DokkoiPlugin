@@ -30,9 +30,9 @@ public class ComedianKiller extends Goal {
     }
 
     @Override
-    public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
-            this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
+    public boolean isAchieved(boolean notify) {
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())){
+            if(notify)this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;
         }
         Job job = game.getGameStatesManager().getPlayerJobs().get(player.getUniqueId());
@@ -40,10 +40,10 @@ public class ComedianKiller extends Goal {
             this.killCount = bomber.getKillComedian();
         }
         if(this.killCount >= 3){
-            this.player.sendMessage("§6よくやった！芸人を3人自爆で殺した！");
+            if(notify)this.player.sendMessage("§6よくやった！芸人を3人自爆で殺した！");
             return true;
         }
-        this.player.sendMessage("§c失敗だ。芸人を3人自爆で殺せなかった。");
+        if(notify)this.player.sendMessage("§c失敗だ。芸人を3人自爆で殺せなかった。");
         return false;
     }
 

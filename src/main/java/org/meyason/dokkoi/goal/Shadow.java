@@ -28,20 +28,20 @@ public class Shadow extends Goal {
     }
 
     @Override
-    public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
-            this.player.sendMessage("§cお前はもう死んでいる。");
+    public boolean isAchieved(boolean notify) {
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())) {
+            if(notify)this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
         if(this.game.getGameStatesManager().getAttackedPlayers().contains(this.player.getUniqueId())){
-            this.player.sendMessage("§cお前は攻撃してしまった。");
+            if(notify)this.player.sendMessage("§cお前は攻撃してしまった。");
             return false;
         }
         if(this.game.getGameStatesManager().getDamagedPlayers().contains(this.player.getUniqueId())){
-            this.player.sendMessage("§cお前は攻撃を受けてしまった。");
+            if(notify)this.player.sendMessage("§cお前は攻撃を受けてしまった。");
             return false;
         }
-        this.player.sendMessage("§6よくやった。お前は真のぼっちだ！");
+        if(notify)this.player.sendMessage("§6よくやった。お前は真のぼっちだ！");
         return true;
     }
 

@@ -27,7 +27,7 @@ public class DrugStore extends Job {
     }
 
     public DrugStore() {
-        super("薬売師", "drag_store", 5, 100);
+        super("薬売師", "drag_store", 1, 100);
         passive_skill_name += "§7レイノブーツ";
         normal_skill_name += "§3ヤクツクール";
         ultimate_skill_name += "§6キョウカスール";
@@ -85,14 +85,6 @@ public class DrugStore extends Job {
     }
 
     public void ready(){
-        CustomItem item = GameItem.getItem(DrugRecipe.id);
-        if(item == null) {
-            this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：おくすり手帳取得失敗");
-            return;
-        }
-        ItemStack itemStack = item.getItem();
-        PlayerInventory inventory = player.getInventory();
-        inventory.addItem(itemStack);
     }
 
     public void skill(){

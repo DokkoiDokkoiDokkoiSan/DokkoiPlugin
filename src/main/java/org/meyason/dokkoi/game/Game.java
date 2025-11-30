@@ -14,12 +14,15 @@ import org.bukkit.scoreboard.*;
 
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.*;
+import org.meyason.dokkoi.entity.GameEntityManager;
+import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.goal.*;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.jobitem.Passive;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
+import org.meyason.dokkoi.job.Executor;
 import org.meyason.dokkoi.job.Explorer;
 import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.job.Prayer;
@@ -62,9 +65,12 @@ public class Game {
     public void setNowTime(int nowTime) {this.nowTime = nowTime;}
     public GameStatesManager getGameStatesManager() {return gameStatesManager;}
 
+    private GameEntityManager gameEntityManager;
+
     public Game(){
         instance = this;
         this.gameStatesManager = new GameStatesManager(this);
+        this.gameEntityManager = new GameEntityManager();
         init();
     }
 
@@ -149,7 +155,14 @@ public class Game {
             }
             GoalSelectMenu goalSelectMenu = new GoalSelectMenu();
             goalSelectMenu.sendMenu(player);
-            CustomItem item = GameItem.getItem(GoalSelectMenuItem.id);
+            CustomItem item = null;
+            try {
+                item = GameItem.getItem(GoalSelectMenuItem.id);
+            } catch (NoGameItemException e) {
+                player.sendMessage("§4エラーが発生しました．管理者に連絡してください：目標選択メニューアイテム取得失敗");
+                e.printStackTrace();
+                return;
+            }
             ItemStack itemStack = item.getItem();
             ItemMeta itemMeta = itemStack.getItemMeta();
             itemStack.setItemMeta(itemMeta);
@@ -166,12 +179,13 @@ public class Game {
             if(player == null || !player.isOnline()){
                 continue;
             }
+            player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
             player.getInventory().clear();
             gameStatesManager.addKillCount(uuid);
             gameStatesManager.addAdditionalDamage(uuid, 0);
             gameStatesManager.addDamageCutPercent(uuid, 0);
             gameStatesManager.addIsDeactivateDamageOnce(uuid, false);
-            gameStatesManager.addMoneyMap(uuid, 0L);
+            gameStatesManager.addMoneyMap(uuid, 5L);
             Goal goal = gameStatesManager.getPlayerGoals().get(uuid);
             if(goal == null){
                 Job job = gameStatesManager.getPlayerJobs().get(uuid);
@@ -200,15 +214,18 @@ public class Game {
             Bukkit.getServer().broadcast(line);
         }
 
+        gameEntityManager.registerEntity();
         gameStatesManager.setGameState(GameState.IN_GAME);
         setNowTime(gamePhaseTime);
         Bukkit.getServer().broadcast(Component.text("§aゲーム開始！各自勝利条件を達成せよ！"));
+        Bukkit.getServer().broadcast(Component.text("§e試合開始から100秒経過するまで、攻撃は無効化される。"));
 
         for(UUID uuid : gameStatesManager.getAlivePlayers()){
             Player player = Bukkit.getPlayer(uuid);
             if(player == null || !player.isOnline()){
                 continue;
             }
+            player.closeInventory();
             player.setGameMode(GameMode.SURVIVAL);
             gameStatesManager.getPlayerJobs().get(uuid).chargeUltimateSkill(player, gameStatesManager);
             updateScoreboardDisplay(player);
@@ -226,6 +243,7 @@ public class Game {
 
     public void endGame(){
         gameStatesManager.setGameState(GameState.END);
+        gameEntityManager.unregisterEntity();
         setNowTime(resultPhaseTime);
         Component message = Component.text("§aゲーム終了");
         Bukkit.getServer().broadcast(message);
@@ -249,7 +267,7 @@ public class Game {
             if(player == null || !player.isOnline()){ continue; }
             //全部のポーション効果消す
             player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-            if(gameStatesManager.getPlayerGoals().get(uuid).isAchieved()){
+            if(gameStatesManager.getPlayerGoals().get(uuid).isAchieved(true)){
                 player.sendMessage("§6お前は目標を達成した！");
                 clearPlayers.add(player);
             }else{
@@ -315,33 +333,45 @@ public class Game {
         PlayerInventory inventory = player.getInventory();
         inventory.clear();
 
-        CustomItem passive = GameItem.getItem(Passive.id);
-        ItemStack passiveItem = passive.getItem();
-        ItemMeta pskillMeta = passiveItem.getItemMeta();
-        pskillMeta.setDisplayName(job.passive_skill_name);
-        List<Component> lore2 = job.passive_skill_description;
-        pskillMeta.lore(lore2);
-        passiveItem.setItemMeta(pskillMeta);
-        inventory.addItem(passiveItem);
+        try {
+            CustomItem passive = GameItem.getItem(Passive.id);
+            ItemStack passiveItem = passive.getItem();
+            ItemMeta pskillMeta = passiveItem.getItemMeta();
+            pskillMeta.setDisplayName(job.passive_skill_name);
+            List<Component> lore2 = job.passive_skill_description;
+            pskillMeta.lore(lore2);
+            passiveItem.setItemMeta(pskillMeta);
+            inventory.addItem(passiveItem);
 
-        CustomItem skill = GameItem.getItem(Skill.id);
-        ItemStack skillItem = skill.getItem();
-        ItemMeta skillMeta = skillItem.getItemMeta();
-        skillMeta.setDisplayName(job.normal_skill_name);
-        List<Component> lore = job.normal_skill_description;
-        skillMeta.lore(lore);
-        skillItem.setItemMeta(skillMeta);
-        inventory.addItem(skillItem);
+            CustomItem skill = GameItem.getItem(Skill.id);
+            ItemStack skillItem = skill.getItem();
+            ItemMeta skillMeta = skillItem.getItemMeta();
+            skillMeta.setDisplayName(job.normal_skill_name);
+            List<Component> lore = job.normal_skill_description;
+            skillMeta.lore(lore);
+            skillItem.setItemMeta(skillMeta);
+            inventory.addItem(skillItem);
+        } catch (NoGameItemException e) {
+            player.sendMessage("§4エラーが発生しました．管理者に連絡してください：スキルアイテム取得失敗");
+            e.printStackTrace();
+            return;
+        }
 
         if(goal.tier == Tier.TIER_3){
-            CustomItem ultimateSkill = GameItem.getItem(Ultimate.id);
-            ItemStack ultimateSkillItem = ultimateSkill.getItem();
-            ItemMeta uskillMeta = ultimateSkillItem.getItemMeta();
-            uskillMeta.setDisplayName(job.ultimate_skill_name);
-            List<Component> lore3 = job.ultimate_skill_description;
-            uskillMeta.lore(lore3);
-            ultimateSkillItem.setItemMeta(uskillMeta);
-            inventory.addItem(ultimateSkillItem);
+            try {
+                CustomItem ultimateSkill = GameItem.getItem(Ultimate.id);
+                ItemStack ultimateSkillItem = ultimateSkill.getItem();
+                ItemMeta uskillMeta = ultimateSkillItem.getItemMeta();
+                uskillMeta.setDisplayName(job.ultimate_skill_name);
+                List<Component> lore3 = job.ultimate_skill_description;
+                uskillMeta.lore(lore3);
+                ultimateSkillItem.setItemMeta(uskillMeta);
+                inventory.addItem(ultimateSkillItem);
+            } catch (NoGameItemException e) {
+                player.sendMessage("§4エラーが発生しました．管理者に連絡してください：ULTスキルアイテム取得失敗");
+                e.printStackTrace();
+                return;
+            }
         }
 
         goal.addItem();
@@ -395,6 +425,14 @@ public class Game {
                 objective.getScore("§e残り生存者: §f" + gameStatesManager.getAlivePlayers().size()).setScore(--i);
             }else if(goal instanceof MassTierKiller massTierKiller){
                 objective.getScore("§eターゲットのTier: §f" + massTierKiller.getTargetTier().name()).setScore(--i);
+            }else if(goal instanceof DrugEnforcementAdministration dea){
+                Executor executor = (Executor) job;
+                String color = "c";
+                if(executor.getArrestCount() >= 3){
+                    color = achievedColor;
+                }
+                objective.getScore("§e目標逮捕数: §f" +  3 + "人").setScore(--i);
+                objective.getScore("§e現在の逮捕数: §" + color + executor.getArrestCount() + "人").setScore(--i);
             }
 
             if(job instanceof Explorer explorer){
@@ -429,6 +467,16 @@ public class Game {
         ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
         Scoreboard scoreboard = scoreboardManager.getNewScoreboard();
         player.setScoreboard(scoreboard);
+    }
+
+    public boolean checkAllPlayerGoalAchieved(){
+        for(UUID uuid : gameStatesManager.getAlivePlayers()){
+            Goal goal = gameStatesManager.getPlayerGoals().get(uuid);
+            if(!goal.isAchieved(false)){
+                return false;
+            }
+        }
+        return true;
     }
 
 }

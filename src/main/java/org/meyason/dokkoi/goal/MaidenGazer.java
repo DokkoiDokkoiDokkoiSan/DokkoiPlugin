@@ -36,16 +36,16 @@ public class MaidenGazer extends Goal {
     }
 
     @Override
-    public boolean isAchieved(){
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
-            this.player.sendMessage("§cお前はもう死んでいる。");
+    public boolean isAchieved(boolean notify) {
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())){
+            if(notify)this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
         if(getPoint() >= 60){
-            this.player.sendMessage("§6俺はみんなが俺を見たのを見たぞ！");
+            if(notify)this.player.sendMessage("§6俺はみんなが俺を見たのを見たぞ！");
             return true;
         }
-        this.player.sendMessage("§c誰もお前のことなんか見ちゃいない");
+        if(notify)this.player.sendMessage("§c誰もお前のことなんか見ちゃいない");
         return false;
     }
 

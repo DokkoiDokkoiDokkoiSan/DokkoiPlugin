@@ -3,11 +3,16 @@ package org.meyason.dokkoi.event.player;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.Tier;
+import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.Goal;
@@ -84,12 +89,13 @@ public class DeathEvent {
                 killer.sendMessage(Component.text(forwardPadding + line + backPadding));
             }
             killer.sendMessage(borderColor + "└" + horizontal + "┘");
-            RedHelmet item = (RedHelmet) GameItem.getItem(RedHelmet.id);
-            if(item == null){
-                killer.sendMessage(Component.text("§4エラーが発生しました．管理者に連絡してください：赤い帽子取得失敗"));
+            try {
+                RedHelmet item = (RedHelmet) GameItem.getItem(RedHelmet.id);
+                item.setPlayerHead(killer);
+            } catch (NoGameItemException e) {
+                e.printStackTrace();
                 return;
             }
-            item.setPlayerHead(killer);
         }
 
         if(manager.isEnableKillerList()){
@@ -110,18 +116,25 @@ public class DeathEvent {
         dead.setHealth(dead.getMaxHealth());
 
         World world = dead.getWorld();
-        List<String> gameItemList = new java.util.ArrayList<>(List.copyOf(GameItemKeyString.getGameItemKeyStringHashMap()));
-        gameItemList.remove(GameItemKeyString.ITEM_NAME);
+        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
         for(ItemStack item : dead.getInventory().getContents()){
             if(item == null) continue;
-            if(item.getItemMeta() != null){
+            ItemMeta meta = item.getItemMeta();
+            if(meta != null){
+                PersistentDataContainer container = meta.getPersistentDataContainer();
+                if(!container.has(itemKey)) {
+                    continue;
+                }
+                String gameItemName = container.get(itemKey, org.bukkit.persistence.PersistentDataType.STRING);
                 if(GameItem.isCustomItem(item)){
-                    for(String gameItemName : gameItemList){
+                    try {
                         CustomItem customItem = GameItem.getItem(gameItemName);
-                        if(customItem != null && customItem.isUnique){
+                        if (customItem.isUnique) {
                             item.setAmount(0);
                             break;
                         }
+                    } catch (NoGameItemException e) {
+                        continue;
                     }
                 }
             }

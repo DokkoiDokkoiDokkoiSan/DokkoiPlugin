@@ -14,6 +14,7 @@ import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.event.player.DamageEvent;
 import org.meyason.dokkoi.event.player.DeathEvent;
+import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.item.battleitem.ArcherArmor;
 import org.meyason.dokkoi.item.food.BakedPotato;
 import org.meyason.dokkoi.item.food.GoldenCarrot;
@@ -203,9 +204,12 @@ public class Prayer extends Job {
             return;
         }
         String itemName = itemList.get(new Random().nextInt(itemList.size()));
-        CustomItem item = GameItem.getItem(itemName);
-        if(item == null){
+        CustomItem item = null;
+        try{
+            item = GameItem.getItem(itemName);
+        } catch (NoGameItemException e){
             player.sendMessage("§6エラーが発生しました．管理者に連絡してください：ガチャアイテム取得失敗");
+            e.printStackTrace();
             return;
         }
         gachaPoint -= 1;

@@ -8,6 +8,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.exception.GameStateException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.job.Lonely;
@@ -15,6 +16,8 @@ import org.meyason.dokkoi.job.Lonely;
 import java.util.UUID;
 
 public class Scheduler extends BukkitRunnable {
+
+    private boolean onCountdown = false;
 
     public void run() {
         Game game = Game.getInstance();
@@ -64,7 +67,16 @@ public class Scheduler extends BukkitRunnable {
                 if(game.getGameStatesManager().getAlivePlayers().size() <= 1){
                     game.endGame();
                 }
+
+                if(!onCountdown && Game.getInstance().checkAllPlayerGoalAchieved()){
+                    Bukkit.getServer().broadcast(Component.text("§6生存している全てのプレイヤーが目標を達成しました。30秒間この状態が維持されればゲームを終了します。"));
+                    GoalAchieveWatchDog();
+                }
+
                 if(game.getNowTime() % 100 == 0){
+                    if(game.getNowTime() == 500){
+                        Bukkit.getServer().broadcast(Component.text("§e試合開始から100秒経過しました。保護システムが無効化されました。"));
+                    }
                     for(UUID uuid : game.getGameStatesManager().getAlivePlayers()){
                         Player player = Bukkit.getPlayer(uuid);
                         if(player == null || player.getGameMode().equals(GameMode.SPECTATOR)){
@@ -77,6 +89,7 @@ public class Scheduler extends BukkitRunnable {
                             }
                         }
                         player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 5 * 20, 1));
+                        game.getGameStatesManager().addMoneyMap(uuid, 5L);
                     }
                 }
                 game.updateScoreboardDisplay();
@@ -93,5 +106,29 @@ public class Scheduler extends BukkitRunnable {
                 break;
         }
         return;
+    }
+
+    private void GoalAchieveWatchDog(){
+        onCountdown = true;
+        new BukkitRunnable() {
+            int counter = 0;
+            @Override
+            public void run() {
+                Game game = Game.getInstance();
+                if(!game.checkAllPlayerGoalAchieved()){
+                    Bukkit.getServer().broadcast(Component.text("§c全員が目標を達成した状態ではなくなったので、カウントダウンがキャンセルされました。"));
+                    this.cancel();
+                    onCountdown = false;
+                    return;
+                }
+                if(counter >= 30){
+                    Bukkit.getServer().broadcast(Component.text("§6全員が目標を達成した状態が30秒間維持されたため、ゲームを終了します。"));
+                    this.cancel();
+                    game.endGame();
+                    return;
+                }
+                counter++;
+            }
+        }.runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
     }
 }

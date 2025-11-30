@@ -43,31 +43,32 @@ public class EntityInteractEvent implements Listener {
             NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
 
             String npcID = villager.getPersistentDataContainer().get(npcKey, PersistentDataType.STRING);
-            if(npcID != null){
-                GameEntity gameEntity = manager.getSpawnedEntitiesFromUUID(npcID);
+            if(npcID == null){return;}
 
-                if(gameEntity instanceof Dealer dealer){
-                    if(!item.hasItemMeta()){
-                        dealer.talk(player);
-                        return;
-                    }
-                    boolean result = false;
-                    ItemMeta meta = item.getItemMeta();
-                    PersistentDataContainer container = meta.getPersistentDataContainer();
-                    if(container.has(itemKey, PersistentDataType.STRING)){
-                        CustomItem customItem = CustomItem.getItem(item);
-                        if(customItem != null){
-                            result = dealer.giveDrag(player, customItem);
-                        }
-                    }
-                    if(result){
-                        manager.removeSpawnedEntity(npcID);
-                        villager.remove();
-                    }
 
-                }else if(gameEntity instanceof Clerk clerk){
-                    // 未実装
+            GameEntity gameEntity = manager.getSpawnedEntitiesFromUUID(npcID);
+
+            if(gameEntity instanceof Dealer dealer){
+                if(!item.hasItemMeta()){
+                    dealer.talk(player);
+                    return;
                 }
+                boolean result = false;
+                ItemMeta meta = item.getItemMeta();
+                PersistentDataContainer container = meta.getPersistentDataContainer();
+                if(container.has(itemKey, PersistentDataType.STRING)){
+                    CustomItem customItem = CustomItem.getItem(item);
+                    if(customItem != null){
+                        result = dealer.giveDrag(player, customItem);
+                    }
+                }
+                if(result){
+                    manager.removeSpawnedEntity(npcID);
+                    villager.remove();
+                }
+
+            }else if(gameEntity instanceof Clerk clerk){
+                // 未実装
             }
 
         }

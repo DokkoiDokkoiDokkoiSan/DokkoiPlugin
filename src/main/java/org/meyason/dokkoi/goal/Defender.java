@@ -12,6 +12,7 @@ import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.exception.NoDefenderTargetPlayerException;
+import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
@@ -45,23 +46,25 @@ public class Defender extends Goal {
     @Override
     public void addItem() {
         setTargetPlayer();
-        CustomItem item = GameItem.getItem(BuriBuriGuard.id);
-        this.buriBuriGuard = (BuriBuriGuard) item;
-        this.buriBuriGuard.setPlayer(game, player);
-        ItemStack itemStack = buriBuriGuard.getItem();
-        if(itemStack == null){
-            this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：ブリブリガード取得失敗");
+        try {
+            CustomItem item = GameItem.getItem(BuriBuriGuard.id);
+            this.buriBuriGuard = (BuriBuriGuard) item;
+            this.buriBuriGuard.setPlayer(game, player);
+            ItemStack itemStack = buriBuriGuard.getItem();
+
+            // シリアルUUIDをgameStateManagerに登録
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+            NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
+            String serialUUID = container.get(serialKey, PersistentDataType.STRING);
+            Game.getInstance().getGameStatesManager().addCustomItemToSerialMap(serialUUID, buriBuriGuard);
+
+            player.getInventory().addItem(itemStack);
+        } catch (NoGameItemException e){
+            player.sendMessage(Component.text("§c目標アイテムの付与に失敗しました。運営に報告してください。"));
+            e.printStackTrace();
             return;
         }
-
-        // シリアルUUIDをgameStateManagerに登録
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-        NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
-        String serialUUID = container.get(serialKey, PersistentDataType.STRING);
-        Game.getInstance().getGameStatesManager().addCustomItemToSerialMap(serialUUID, buriBuriGuard);
-
-        player.getInventory().addItem(itemStack);
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e護衛対象と自分以外の生存者"));
         this.player.sendMessage(Component.text("§bこれ以外を殺害するとペナルティが付与される"));
@@ -84,14 +87,14 @@ public class Defender extends Goal {
     }
 
     @Override
-    public boolean isAchieved() {
+    public boolean isAchieved(boolean notify) {
         List<UUID> alivePlayerUUID = this.game.getGameStatesManager().getAlivePlayers();
         if(alivePlayerUUID.size() > 2){
-            this.player.sendMessage(Component.text("§c他にも生存者がいる。"));
+            if(notify)this.player.sendMessage(Component.text("§c他にも生存者がいる。"));
             return false;
         }
         if(!alivePlayerUUID.contains(this.player.getUniqueId())){
-            this.player.sendMessage("§cお前はもう死んでいる。");
+            if(notify)this.player.sendMessage("§cお前はもう死んでいる。");
             return false;
         }
         int count = 0;
@@ -101,16 +104,16 @@ public class Defender extends Goal {
             }
         }
         if(count == 2){
-            this.player.sendMessage("§6やっと...二人きりになれたね。");
-            this.targetPlayer.sendMessage("§6やっと...二人きりになれたね。");
+            if(notify)this.player.sendMessage("§6やっと...二人きりになれたね。");
+            if(notify)this.targetPlayer.sendMessage("§6やっと...二人きりになれたね。");
             return true;
         }
         if(!alivePlayerUUID.contains(this.targetPlayer.getUniqueId())){
-            this.player.sendMessage(Component.text(this.targetPlayer.getName() + "を守り抜けなかった。"));
+            if(notify)this.player.sendMessage(Component.text(this.targetPlayer.getName() + "を守り抜けなかった。"));
             return false;
         }
 
-        this.player.sendMessage("多分つぶしたと思うけどもしこのメッセージが出てきたら状況を運営に報告してください．");
+        if(notify)this.player.sendMessage("多分つぶしたと思うけどもしこのメッセージが出てきたら状況を運営に報告してください．");
         return false;
     }
 
