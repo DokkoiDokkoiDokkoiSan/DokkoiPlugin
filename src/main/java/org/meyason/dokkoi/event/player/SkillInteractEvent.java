@@ -133,6 +133,7 @@ public class SkillInteractEvent implements Listener {
                             }
                             prayer.skill();
                         }
+                        case DrugStore drugStore -> drugStore.skill();
                         default -> {
                         }
                     }

@@ -54,6 +54,7 @@ public class GameItem {
         items.put(Kizukieru.id, new Kizukieru());
         items.put(Katakunaru.id, new Katakunaru());
         items.put(Korehamaru.id, new Korehamaru());
+        items.put(DrugRecipe.id, new DrugRecipe());
         items.put(PumpkinPie.id, new PumpkinPie());
         items.put(CookedChicken.id, new CookedChicken());
         items.put(GoalSelectMenuItem.id, new GoalSelectMenuItem());

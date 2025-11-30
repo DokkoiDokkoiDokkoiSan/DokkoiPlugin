@@ -3,10 +3,16 @@ package org.meyason.dokkoi.job;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.GameItem;
+import org.meyason.dokkoi.item.jobitem.DrugRecipe;
+import org.meyason.dokkoi.menu.drugrecipemenu.DrugRecipeMenu;
 
 import java.util.List;
 
@@ -78,7 +84,20 @@ public class DrugStore extends Job {
         );
     }
 
-    public void ready(){}
+    public void ready(){
+        CustomItem item = GameItem.getItem(DrugRecipe.id);
+        if(item == null) {
+            this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：おくすり手帳取得失敗");
+            return;
+        }
+        ItemStack itemStack = item.getItem();
+        PlayerInventory inventory = player.getInventory();
+        inventory.addItem(itemStack);
+    }
 
+    public void skill(){
+        DrugRecipeMenu drugRecipeMenu = new DrugRecipeMenu();
+        drugRecipeMenu.sendMenu(player);
+    }
 
 }
