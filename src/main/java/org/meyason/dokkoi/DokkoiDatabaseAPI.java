@@ -29,4 +29,8 @@ public class DokkoiDatabaseAPI {
     public SessionFactory getSessionFactory() {
         return sessionFactory;
     }
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
+    }
 }

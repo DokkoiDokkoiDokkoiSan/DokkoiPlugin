@@ -91,6 +91,12 @@ public class MoneyRepository {
         return money.getId();
     }
 
+    public void updateMoneyFromLP(User user, Long money) throws MoneyNotFoundException {
+        Money moneyData = this.getMoneyFromUserId(user.getId());
+        moneyData.setMoney(money);
+        updateMoney(moneyData);
+    }
+
     public void updateMoney(Money money) {
         Session session = this.sessionFactory.getCurrentSession();
         try {

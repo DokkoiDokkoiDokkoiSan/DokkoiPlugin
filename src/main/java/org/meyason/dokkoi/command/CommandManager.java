@@ -14,7 +14,6 @@ public class CommandManager {
     private void init(Dokkoi core){
         core.getCommand("matching").setExecutor(new MatchingStartCommand());
         core.getCommand("end").setExecutor(new GameEndCommand());
-        core.getCommand("goalfix").setExecutor(new GoalFixCommand());
         core.getCommand("spawnentity").setExecutor(new SpawnEntityCommand());
         core.getCommand("getitem").setExecutor(new GetItemCommand());
     }
