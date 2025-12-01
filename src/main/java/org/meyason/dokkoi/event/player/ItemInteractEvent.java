@@ -25,7 +25,9 @@ import org.meyason.dokkoi.item.dealeritem.Kizukieru;
 import org.meyason.dokkoi.item.dealeritem.Tsuyokunaru;
 import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
+import org.meyason.dokkoi.util.CalculateAreaPlayers;
 
+import java.util.List;
 import java.util.Objects;
 
 public class ItemInteractEvent implements Listener {
@@ -34,6 +36,10 @@ public class ItemInteractEvent implements Listener {
     public void onItemInteract(PlayerInteractEvent event){
         Game game = Game.getInstance();
         Player player = event.getPlayer();
+        if(event.getAction() == Action.RIGHT_CLICK_BLOCK){
+            List<Player> players = CalculateAreaPlayers.getPlayersInSight(player, 180f);
+            player.sendMessage("§e視界内のプレイヤー数: " + players.size());
+        }
         if(game.getGameStatesManager().getGameState() == GameState.IN_GAME) {
             ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
             if (!item.hasItemMeta()) {
