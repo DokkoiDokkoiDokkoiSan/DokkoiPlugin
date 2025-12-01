@@ -2,3 +2,8 @@
 .idea
 .gradle
 .DS_Store
+/bin/
+
+/docker/db/
+/docker/paper/
+/docker/phpmyadmin/

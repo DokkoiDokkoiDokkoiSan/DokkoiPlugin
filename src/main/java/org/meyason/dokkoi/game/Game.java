@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.game;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Particle;
@@ -13,9 +14,16 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.*;
 
 import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.DokkoiDatabaseAPI;
 import org.meyason.dokkoi.constants.*;
+import org.meyason.dokkoi.database.DatabaseManager;
+import org.meyason.dokkoi.database.models.User;
+import org.meyason.dokkoi.database.repositories.MoneyRepository;
+import org.meyason.dokkoi.database.repositories.UserRepository;
 import org.meyason.dokkoi.entity.GameEntityManager;
+import org.meyason.dokkoi.exception.MoneyNotFoundException;
 import org.meyason.dokkoi.exception.NoGameItemException;
+import org.meyason.dokkoi.exception.UserNotFoundException;
 import org.meyason.dokkoi.goal.*;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
@@ -75,8 +83,35 @@ public class Game {
     }
 
     public void init(){
+        clearScoreboardDisplay();
         gameStatesManager.init();
         setNowTime(matchingPhaseTime);
+        DatabaseManager databaseManager = DokkoiDatabaseAPI.getInstance().getDatabaseManager();
+        UserRepository userRepository = databaseManager.getUserRepository();
+        MoneyRepository moneyRepository = databaseManager.getMoneyRepository();
+        for(Player player : Bukkit.getOnlinePlayers()){
+            UUID uuid = player.getUniqueId();
+            if(!userRepository.existsUserFromUUID(uuid)){
+                userRepository.createUser(player);
+            }
+
+            User user;
+            Long LP = 0L;
+            try{
+                user = userRepository.getUserFromUUID(uuid);
+                if(!moneyRepository.existsMoneyFromUserId(user.getId())){
+                    moneyRepository.createMoney(user);
+                }
+                LP = moneyRepository.getMoneyFromUserId(user.getId()).getMoney();
+            } catch (UserNotFoundException e) {
+                player.sendMessage("§4エラーが発生しました．管理者に連絡してください：ユーザー情報取得失敗");
+                continue;
+            } catch (MoneyNotFoundException e) {
+                player.sendMessage("§4エラーが発生しました．管理者に連絡してください：所持金情報取得失敗");
+                continue;
+            }
+            gameStatesManager.setLPFromUUID(uuid,LP);
+        }
     }
 
     public void matching(){
@@ -332,46 +367,51 @@ public class Game {
 
         PlayerInventory inventory = player.getInventory();
         inventory.clear();
-
-        try {
-            CustomItem passive = GameItem.getItem(Passive.id);
-            ItemStack passiveItem = passive.getItem();
-            ItemMeta pskillMeta = passiveItem.getItemMeta();
-            pskillMeta.setDisplayName(job.passive_skill_name);
-            List<Component> lore2 = job.passive_skill_description;
-            pskillMeta.lore(lore2);
-            passiveItem.setItemMeta(pskillMeta);
-            inventory.addItem(passiveItem);
-
-            CustomItem skill = GameItem.getItem(Skill.id);
-            ItemStack skillItem = skill.getItem();
-            ItemMeta skillMeta = skillItem.getItemMeta();
-            skillMeta.setDisplayName(job.normal_skill_name);
-            List<Component> lore = job.normal_skill_description;
-            skillMeta.lore(lore);
-            skillItem.setItemMeta(skillMeta);
-            inventory.addItem(skillItem);
-        } catch (NoGameItemException e) {
-            player.sendMessage("§4エラーが発生しました．管理者に連絡してください：スキルアイテム取得失敗");
-            e.printStackTrace();
+        CustomItem passive;
+        try{
+            passive = GameItem.getItem(Passive.id);
+        } catch (NoGameItemException e){
+            player.sendMessage("§4エラーが発生しました．管理者に連絡してください：パッシブアイテム取得失敗");
             return;
         }
+        ItemStack passiveItem = passive.getItem();
+        ItemMeta pskillMeta = passiveItem.getItemMeta();
+        pskillMeta.setDisplayName(job.passive_skill_name);
+        List<Component> lore2 = job.passive_skill_description;
+        pskillMeta.lore(lore2);
+        passiveItem.setItemMeta(pskillMeta);
+        inventory.addItem(passiveItem);
+
+        CustomItem skill;
+        try{
+            skill = GameItem.getItem(Skill.id);
+        } catch (NoGameItemException e){
+            player.sendMessage("§4エラーが発生しました．管理者に連絡してください：スキルアイテム取得失敗");
+            return;
+        }
+        ItemStack skillItem = skill.getItem();
+        ItemMeta skillMeta = skillItem.getItemMeta();
+        skillMeta.setDisplayName(job.normal_skill_name);
+        List<Component> lore = job.normal_skill_description;
+        skillMeta.lore(lore);
+        skillItem.setItemMeta(skillMeta);
+        inventory.addItem(skillItem);
 
         if(goal.tier == Tier.TIER_3){
-            try {
-                CustomItem ultimateSkill = GameItem.getItem(Ultimate.id);
-                ItemStack ultimateSkillItem = ultimateSkill.getItem();
-                ItemMeta uskillMeta = ultimateSkillItem.getItemMeta();
-                uskillMeta.setDisplayName(job.ultimate_skill_name);
-                List<Component> lore3 = job.ultimate_skill_description;
-                uskillMeta.lore(lore3);
-                ultimateSkillItem.setItemMeta(uskillMeta);
-                inventory.addItem(ultimateSkillItem);
-            } catch (NoGameItemException e) {
-                player.sendMessage("§4エラーが発生しました．管理者に連絡してください：ULTスキルアイテム取得失敗");
-                e.printStackTrace();
+            CustomItem ultimateSkill;
+            try{
+                ultimateSkill = GameItem.getItem(Ultimate.id);
+            } catch (NoGameItemException e){
+                player.sendMessage("§4エラーが発生しました．管理者に連絡してください：ULTアイテム取得失敗");
                 return;
             }
+            ItemStack ultimateSkillItem = ultimateSkill.getItem();
+            ItemMeta uskillMeta = ultimateSkillItem.getItemMeta();
+            uskillMeta.setDisplayName(job.ultimate_skill_name);
+            List<Component> lore3 = job.ultimate_skill_description;
+            uskillMeta.lore(lore3);
+            ultimateSkillItem.setItemMeta(uskillMeta);
+            inventory.addItem(ultimateSkillItem);
         }
 
         goal.addItem();
@@ -381,9 +421,12 @@ public class Game {
         Bukkit.getOnlinePlayers().forEach(this::updateScoreboardDisplay);
     }
 
-    public void updateScoreboardDisplay(Player player){
+    public void updateScoreboardDisplay(Player player) {
         ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
         Scoreboard scoreboard = scoreboardManager.getNewScoreboard();
+        Team team = scoreboard.registerNewTeam("nametag");
+        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        team.addEntry(player.getName());
         Objective objective = scoreboard.registerNewObjective(player.getName(), Criteria.DUMMY, "§aステータス： " + gameStatesManager.getGameState().getDisplayName());
         objective.setDisplaySlot(org.bukkit.scoreboard.DisplaySlot.SIDEBAR);
 
@@ -391,17 +434,21 @@ public class Game {
 
         int i = 0;
 
-        if(gameStatesManager.getGameState() == GameState.MATCHING){
+        if(gameStatesManager.getGameState() == GameState.WAITING){
+            objective.getScore("§b所持金: §f" + getNowTime() + "LP").setScore(--i);
+            objective.getScore("§a参加人数: §f" + Bukkit.getOnlinePlayers().size() + "人").setScore(--i);
+        }else if(gameStatesManager.getGameState() == GameState.MATCHING){
+            objective.getScore("§b所持金: §f" + gameStatesManager.getLPFromUUID(uuid) + "LP").setScore(--i);
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
             objective.getScore("§a参加人数: §f" + Bukkit.getOnlinePlayers().size() + "人").setScore(--i);
         }else if(gameStatesManager.getGameState() == GameState.PREP) {
+            objective.getScore("§b所持金: §f" + getNowTime() + "LP").setScore(--i);
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
             objective.getScore("§a参加人数: §f" + gameStatesManager.getJoinedPlayers().size() + "人").setScore(--i);
             objective.getScore("§e役職: §f" + gameStatesManager.getPlayerJobs().get(uuid).getName()).setScore(--i);
         }else if(gameStatesManager.getGameState() == GameState.IN_GAME){
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
             objective.getScore("§a生存者数: §f" + gameStatesManager.getAlivePlayers().size() + "人").setScore(--i);
-            objective.getScore("§d所持モネイ: §f" + gameStatesManager.getMoneyMap().get(uuid)).setScore(--i);
             objective.getScore("§e役職: §f" + gameStatesManager.getPlayerJobs().get(uuid).getName()).setScore(--i);
             objective.getScore("§e目標: §f" + gameStatesManager.getPlayerGoals().get(uuid).getName()).setScore(--i);
             objective.getScore("§aスキル: " + gameStatesManager.getPlayerJobs().get(uuid).getCoolTimeSkillViewer()).setScore(--i);
