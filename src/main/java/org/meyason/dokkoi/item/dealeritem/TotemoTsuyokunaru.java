@@ -13,20 +13,21 @@ import org.meyason.dokkoi.item.CustomItem;
 
 import java.util.List;
 
-public class Tsuyokunaru extends CustomItem {
+public class TotemoTsuyokunaru extends CustomItem {
 
-    public static final String id = "tsuyokunaru";
+    public static final String id = "totemo_tsuyokunaru";
 
-    public Tsuyokunaru() {
-        super(id, "§9ツヨクナール", ItemStack.of(Material.MELON_SEEDS), 64);
+    public TotemoTsuyokunaru() {
+        super(id, "§6トテモツヨクナール", ItemStack.of(Material.FROGSPAWN), 16);
         List<Component> lore = List.of(
-                Component.text("§5力が強くなる気がする薬。"),
+                Component.text("§5かなり力が強くなる気がする薬。"),
                 Component.text(""),
                 Component.text("§b効果"),
-                Component.text("§51秒間攻撃の与ダメージが2増える。")
+                Component.text("§5与ダメージ固定3増加を常時受け取る。")
         );
         setDescription(lore);
     }
+
 
     @Override
     protected void registerItemFunction() {
@@ -44,15 +45,6 @@ public class Tsuyokunaru extends CustomItem {
         manager.addAdditionalDamage(player.getUniqueId(), 2);
         item.setAmount(item.getAmount() - 1);
         player.getInventory().setItemInMainHand(item);
-        player.sendMessage(Component.text("§aツヨクナール§bの効果で攻撃力が上がった！"));
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                player.sendMessage(Component.text("§aツヨクナール§bの効果が切れた。"));
-                manager.addAdditionalDamage(player.getUniqueId(), -2);
-
-            }
-        }.runTaskLater(Dokkoi.getInstance(), 25L);
+        player.sendMessage(Component.text("§aトテモツヨクナール§bの効果で攻撃力が上がった！"));
     }
 }

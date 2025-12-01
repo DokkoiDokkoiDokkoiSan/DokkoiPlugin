@@ -4,13 +4,18 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.exception.GameStateException;
+import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.GameItem;
+import org.meyason.dokkoi.item.utilitem.Monei;
 import org.meyason.dokkoi.job.Lonely;
 
 import java.util.UUID;
@@ -89,7 +94,23 @@ public class Scheduler extends BukkitRunnable {
                             }
                         }
                         player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 5 * 20, 1));
-                        game.getGameStatesManager().addMoneyMap(uuid, 5L);
+
+                        CustomItem moneiItem;
+                        try{
+                            moneiItem = GameItem.getItem(Monei.id);
+                        } catch (NoGameItemException e){
+                            player.sendMessage(Component.text("§4エラーが発生しました。運営に報告してください。：Monei取得失敗"));
+                            continue;
+                        }
+                        ItemStack item = moneiItem.getItem();
+                        item.setAmount(5);
+                        if(player.getInventory().firstEmpty() == -1) {
+                            player.sendMessage("§e空から§6モネイ×5§eが落ちてきた！");
+                            player.getWorld().dropItemNaturally(player.getLocation(), item);
+                        }else{
+                            player.getInventory().addItem(item);
+                            player.sendMessage("§6生存ボーナスとして、モネイ×5§eを受け取りました。");
+                        }
                     }
                 }
                 game.updateScoreboardDisplay();

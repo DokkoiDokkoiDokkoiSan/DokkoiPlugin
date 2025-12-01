@@ -24,14 +24,18 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.battleitem.ArcherArmor;
+import org.meyason.dokkoi.item.dealeritem.Korehamaru;
+import org.meyason.dokkoi.item.dealeritem.TotemoKorehamaru;
 import org.meyason.dokkoi.item.jobitem.Ketsumou;
 import org.meyason.dokkoi.item.jobitem.Passive;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
 import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestBall;
+import org.meyason.dokkoi.job.DrugStore;
 import org.meyason.dokkoi.job.Job;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class PickEvent implements Listener {
 
@@ -42,6 +46,7 @@ public class PickEvent implements Listener {
 
         Player player = event.getPlayer();
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
+        Job job = manager.getPlayerJobs().get(player.getUniqueId());
         ItemMeta meta = item.getItemMeta();
 
         PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -66,6 +71,11 @@ public class PickEvent implements Listener {
                     event.setCancelled(true);
                 }else if(customItem instanceof Passive){
                     event.setCancelled(true);
+                }else if(customItem instanceof Korehamaru){
+                    if(!(job instanceof DrugStore)){
+                        player.sendActionBar(Component.text("§cこれはすてたくない"));
+                        event.setCancelled(true);
+                    }
                 }
             }
         }
@@ -81,24 +91,14 @@ public class PickEvent implements Listener {
         ItemStack slotItem   = event.getCurrentItem();
         ItemStack cursorItem = event.getCursor();
 
-        // Ketsumou判定
-        java.util.function.Predicate<ItemStack> isKetsumou = stack -> {
-            if (stack == null || !stack.hasItemMeta()) return false;
-            CustomItem ci = CustomItem.getItem(stack);
-            return ci instanceof Ketsumou;
-        };
-
-        boolean slotIsKetsumou   = isKetsumou.test(slotItem);
-        boolean cursorIsKetsumou = isKetsumou.test(cursorItem);
-
         boolean clickedIsTop    = event.getClickedInventory() != null
                 && event.getClickedInventory().equals(player.getOpenInventory().getTopInventory());
         boolean clickedIsBottom = event.getClickedInventory() != null
                 && event.getClickedInventory().equals(player.getOpenInventory().getBottomInventory());
 
-
         Job job = Game.getInstance().getGameStatesManager().getPlayerJobs().get(player.getUniqueId());
 
+        // シフトクリックのとき
         if(event.getClick().isShiftClick()){
             if(slotItem == null){return;}
             if(!slotItem.hasItemMeta()){return;}
@@ -108,6 +108,17 @@ public class PickEvent implements Listener {
             if (clickedIsTop) {
                 if(slotCustomItem instanceof Ketsumou) {
                     Ketsumou.activate(player);
+                }else if(slotCustomItem instanceof Korehamaru){
+                    if(!(job instanceof DrugStore)){
+                        for(UUID uuid : Game.getInstance().getGameStatesManager().getAlivePlayers()){
+                            Job targetJob = Game.getInstance().getGameStatesManager().getPlayerJobs().get(uuid);
+                            if(targetJob instanceof DrugStore drugStore){
+                                drugStore.incrementPickCount();
+                                break;
+                            }
+                        }
+                        player.sendMessage(Component.text("§cあたまがふらふらしてきた..."));
+                    }
                 }
                 return;
 
@@ -117,38 +128,94 @@ public class PickEvent implements Listener {
                     Ketsumou.deactivate(player);
                 }else if(slotCustomItem instanceof Skill || slotCustomItem instanceof Ultimate || slotCustomItem instanceof Passive){
                     event.setCancelled(true);
+                }else if(slotCustomItem instanceof Korehamaru){
+                    if(!(job instanceof DrugStore)){
+                        player.sendMessage(Component.text("§cこれはすてたくない"));
+                        event.setCancelled(true);
+                    }
                 }
                 return;
             }
         }
 
+        // 通常クリックのとき
+        // インベントリをクリックしたとき
         if(clickedIsBottom) {
 
-            // インベントリのKetsumouとカーソルの別のアイテムを交代するとき
-            // スロット: Ketsumou, カーソル: Ketsumou以外（減る）
-            if (slotIsKetsumou && !cursorIsKetsumou) {
-                Ketsumou.deactivate(player);
-                return;
-            }
-
-            //  カーソルのKetsumouとインベントリの別のアイテムを交代するとき
-            // カーソル: Ketsumou, スロット: Ketsumou以外（増える）
-            if (cursorIsKetsumou && !slotIsKetsumou) {
-                Ketsumou.activate(player);
-                return;
-            }
-
-            // スロットが指定アイテムのときキャンセル(動かしたくないやつ)
-            if(slotItem != null){
+            // スロットが指定アイテムのとき(クリックで持ち上げたとき)
+            if(slotItem != null && !slotItem.getType().isAir()){
                 ItemMeta meta = slotItem.getItemMeta();
                 if(meta == null){return;}
                 CustomItem slotCustomItem = CustomItem.getItem(slotItem);
                 if(slotCustomItem instanceof Skill || slotCustomItem instanceof Ultimate || slotCustomItem instanceof Passive){
                     event.setCancelled(true);
-                    return;
+                }else if(slotCustomItem instanceof Korehamaru){
+                    if(!(job instanceof DrugStore)){
+                        player.sendMessage(Component.text("§cこれはすてたくない"));
+                        event.setCancelled(true);
+                    }
+                }else if(slotCustomItem instanceof Ketsumou){
+                    Ketsumou.deactivate(player);
                 }
             }
 
+            // カーソルで指定アイテムを持っているとき(クリックでおこうとしたとき)
+            if(cursorItem != null && !cursorItem.getType().isAir()) {
+                ItemMeta meta = cursorItem.getItemMeta();
+                if (meta != null) {
+                    CustomItem cursorCustomItem = CustomItem.getItem(cursorItem);
+                    if (cursorCustomItem instanceof Korehamaru) {
+                        if (!(job instanceof DrugStore)) {
+                            for (UUID uuid : Game.getInstance().getGameStatesManager().getAlivePlayers()) {
+                                Job targetJob = Game.getInstance().getGameStatesManager().getPlayerJobs().get(uuid);
+                                if (targetJob instanceof DrugStore drugStore) {
+                                    drugStore.incrementPickCount();
+                                    break;
+                                }
+                            }
+                            player.sendMessage(Component.text("§cあたまがふらふらしてきた..."));
+                        }
+                    } else if (cursorCustomItem instanceof Ketsumou) {
+                        Ketsumou.activate(player);
+                    } else if(cursorCustomItem instanceof TotemoKorehamaru){
+                        if(!(job instanceof DrugStore)){
+                            Player killer = Game.getInstance().getGameStatesManager().getPlayerJobs().entrySet().stream()
+                                    .filter(entry -> entry.getValue() instanceof DrugStore)
+                                    .map(entry -> Game.getInstance().getGameStatesManager().getAlivePlayers().contains(entry.getKey()) ? entry.getKey() : null)
+                                    .filter(Objects::nonNull)
+                                    .map(uuid -> player.getServer().getPlayer(uuid))
+                                    .findFirst()
+                                    .orElse(null);
+                            if(killer != null) {
+                                cursorItem.setAmount(0);
+                                player.sendActionBar(Component.text("§cOD発動！"));
+                                DeathEvent.kill(killer, player);
+                            }
+                        }
+                    }
+                }
+            }
+
+        }else{
+            // チェストをクリックしたとき
+
+            // カーソルに指定アイテムがあって置いたとき
+//            if(cursorItem != null && !cursorItem.getType().isAir()) {
+//                ItemMeta meta = cursorItem.getItemMeta();
+//                if (meta != null) {
+//                    CustomItem cursorCustomItem = CustomItem.getItem(cursorItem);
+//                    if (cursorCustomItem instanceof Ketsumou) {
+//                        Ketsumou.deactivate(player);
+//                    }
+//                }
+//            }
+
+            // スロットが指定アイテムのとき
+//            if(slotItem != null){
+//                ItemMeta meta = slotItem.getItemMeta();
+//                if(meta == null){return;}
+//
+//            }
         }
     }
 
@@ -195,6 +262,33 @@ public class PickEvent implements Listener {
                 CustomItem customItem = CustomItem.getItem(item);
                 if(customItem instanceof Ketsumou){
                     Ketsumou.activate(player);
+                }else if(customItem instanceof Korehamaru){
+                    if(!(job instanceof DrugStore)){
+                        player.sendActionBar(Component.text("§cあたまがふらふらしてきた..."));
+                        for(UUID uuid : Game.getInstance().getGameStatesManager().getAlivePlayers()){
+                            Job targetJob = Game.getInstance().getGameStatesManager().getPlayerJobs().get(uuid);
+                            if(targetJob instanceof DrugStore drugStore){
+                                drugStore.incrementPickCount();
+                                break;
+                            }
+                        }
+                    }
+                }else if(customItem instanceof TotemoKorehamaru){
+                    if(!(job instanceof DrugStore)){
+                        Player killer = Game.getInstance().getGameStatesManager().getPlayerJobs().entrySet().stream()
+                                .filter(entry -> entry.getValue() instanceof DrugStore)
+                                .map(entry -> Game.getInstance().getGameStatesManager().getAlivePlayers().contains(entry.getKey()) ? entry.getKey() : null)
+                                .filter(Objects::nonNull)
+                                .map(uuid -> player.getServer().getPlayer(uuid))
+                                .filter(Objects::nonNull)
+                                .findFirst()
+                                .orElse(null);
+                        if(killer != null) {
+                            item.setAmount(0);
+                            player.sendActionBar(Component.text("§cOD発動！"));
+                            DeathEvent.kill(killer, player);
+                        }
+                    }
                 }
             }
         }

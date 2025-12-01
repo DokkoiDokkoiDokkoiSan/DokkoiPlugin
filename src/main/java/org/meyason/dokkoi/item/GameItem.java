@@ -16,6 +16,7 @@ import org.meyason.dokkoi.item.food.*;
 import org.meyason.dokkoi.item.jobitem.gacha.*;
 import org.meyason.dokkoi.item.goalitem.*;
 import org.meyason.dokkoi.item.jobitem.*;
+import org.meyason.dokkoi.item.utilitem.*;
 import org.meyason.dokkoi.item.weapon.*;
 import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
@@ -54,6 +55,11 @@ public class GameItem {
         items.put(Kizukieru.id, new Kizukieru());
         items.put(Katakunaru.id, new Katakunaru());
         items.put(Korehamaru.id, new Korehamaru());
+        items.put(TotemoTsuyokunaru.id, new TotemoTsuyokunaru());
+        items.put(TotemoKorehamaru.id, new TotemoKorehamaru());
+        items.put(TotemoHayakunaru.id, new TotemoHayakunaru());
+        items.put(TotemoKatakunaru.id, new TotemoKatakunaru());
+        items.put(TotemoKizukieru.id, new TotemoKizukieru());
         items.put(DrugRecipe.id, new DrugRecipe());
         items.put(PumpkinPie.id, new PumpkinPie());
         items.put(CookedChicken.id, new CookedChicken());
@@ -64,6 +70,7 @@ public class GameItem {
         items.put(Cod.id, new Cod());
         items.put(Salmon.id, new Salmon());
         items.put(Bread.id, new Bread());
+        items.put(Monei.id, new Monei());
     }
 
     public static CustomItem getItem(String id){

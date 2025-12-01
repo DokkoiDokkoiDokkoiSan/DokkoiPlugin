@@ -14,6 +14,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -25,9 +26,12 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.jobitem.*;
 import org.meyason.dokkoi.job.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class SkillInteractEvent implements Listener {
@@ -131,6 +135,10 @@ public class SkillInteractEvent implements Listener {
                                 player.sendActionBar(Component.text("§cガチャポイントが足りません。"));
                                 return;
                             }
+                            if(player.getInventory().firstEmpty() == -1) {
+                                player.sendActionBar(Component.text("§cインベントリに空きがありません。"));
+                                return;
+                            }
                             prayer.skill();
                         }
                         case DrugStore drugStore -> drugStore.skill();
@@ -162,14 +170,43 @@ public class SkillInteractEvent implements Listener {
                         case Executor executor -> executor.ultimate();
                         case Lonely lonely -> lonely.ultimate();
                         case Bomber bomber -> {
-                            Vector direction = player.getEyeLocation().getDirection().normalize();
-                            Vector velocity = direction.multiply(2.0);
-                            Snowball projectile = player.launchProjectile(Snowball.class, velocity);
-                            manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
+                                Vector direction = player.getEyeLocation().getDirection().normalize();
+                                Vector velocity = direction.multiply(2.0);
+                                Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+                                manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
                         }
                         case IronMaiden ironMaiden -> ironMaiden.ultimate();
                         case Explorer explorer -> explorer.ultimate();
                         case Prayer prayer -> prayer.ultimate();
+                        case DrugStore drugStore ->{
+                                List<String> drugList = new ArrayList<>();
+                                PlayerInventory inventory = player.getInventory();
+                                for(ItemStack i : inventory.getContents()){
+                                    if(i == null) continue;
+                                    ItemMeta m = i.getItemMeta();
+                                    if(m == null) continue;
+                                    if(m.getPersistentDataContainer().has(itemKey)){
+                                        CustomItem c = CustomItem.getItem(i);
+                                        if(c instanceof Katakunaru){
+                                            drugList.add(Katakunaru.id);
+                                        }else if(c instanceof Kizukieru){
+                                            drugList.add(Kizukieru.id);
+                                        }else if(c instanceof Hayakunaru){
+                                            drugList.add(Hayakunaru.id);
+                                        }else if(c instanceof Tsuyokunaru){
+                                            drugList.add(Tsuyokunaru.id);
+                                        }else if(c instanceof Korehamaru){
+                                            drugList.add(Korehamaru.id);
+                                        }
+                                    }
+                                }
+
+                                if(drugList.isEmpty()){
+                                    player.sendActionBar(Component.text("§c強化できる薬を所持していない。"));
+                                    return;
+                                }
+                                drugStore.ultimate(drugList);
+                        }
                         default -> {
                         }
                     }

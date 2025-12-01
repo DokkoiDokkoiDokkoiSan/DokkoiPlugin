@@ -7,6 +7,7 @@ import org.meyason.dokkoi.event.EventManager;
 import org.meyason.dokkoi.command.CommandManager;
 import org.meyason.dokkoi.file.Config;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.game.LPManager;
 import org.meyason.dokkoi.item.GameItem;
 
 public final class Dokkoi extends JavaPlugin {
@@ -19,6 +20,10 @@ public final class Dokkoi extends JavaPlugin {
 
     private Config config;
 
+    private LPManager lpManager;
+
+    public LPManager getLPManager() {return lpManager;}
+
     @Override
     public void onEnable() {
         instance = this;
@@ -30,6 +35,7 @@ public final class Dokkoi extends JavaPlugin {
                 config.getDBUserPassword()
         );
         new DokkoiDatabaseAPI(databaseConnector);
+        this.lpManager = new LPManager();
         new EventManager(this);
         new CommandManager(this);
         new GameItem();

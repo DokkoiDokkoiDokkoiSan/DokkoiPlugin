@@ -11,21 +11,21 @@ import org.meyason.dokkoi.item.CustomItem;
 
 import java.util.List;
 
-public class Katakunaru extends CustomItem {
+public class TotemoKatakunaru extends CustomItem {
 
-    public static final String id = "katakunaru";
+    public static final String id = "totemo_katakunaru";
 
-    public Katakunaru() {
-        super(id, "§9カタクナール", ItemStack.of(Material.MELON_SEEDS), 64);
+    public TotemoKatakunaru() {
+        super(id, "§6トテモカタクナール", ItemStack.of(Material.FROGSPAWN), 16);
         List<Component> lore = List.of(
-                Component.text("§5体が丈夫になる気がする薬。"),
+                Component.text("§5かなり体が丈夫になる気がする薬。"),
                 Component.text(""),
                 Component.text("§b効果"),
-                Component.text("§5次に受けるダメージを無効化する。"),
-                Component.text("§5効果は累積しない。")
+                Component.text("§5状態異常効果を常時受けなくなる。")
         );
         setDescription(lore);
     }
+
 
     @Override
     protected void registerItemFunction() {
@@ -38,13 +38,11 @@ public class Katakunaru extends CustomItem {
         };
     }
 
-    public static void activate(Player player, ItemStack item){
-        GameStatesManager manager = Game.getInstance().getGameStatesManager();
-        if(manager.getIsDeactivateDamageOnce().get(player.getUniqueId())){
-            player.sendMessage(Component.text("§cすでにダメージ無効化のバフを所持しています。"));
-            return;
-        }
-        manager.addIsDeactivateDamageOnce(player.getUniqueId(), true);
+    public static void activate(Player player, ItemStack item) {
+        Game.getInstance().getGameStatesManager().addOnDisablePotionEffectPlayer(player.getUniqueId());
+
         item.setAmount(item.getAmount() - 1);
+        player.getInventory().setItemInMainHand(item);
+        player.sendMessage(Component.text("§aめっちゃ固くなった気がする！"));
     }
 }

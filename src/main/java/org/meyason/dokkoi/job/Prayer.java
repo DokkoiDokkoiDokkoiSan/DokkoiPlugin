@@ -103,11 +103,6 @@ public class Prayer extends Job {
         return gachaCount;
     }
 
-    private boolean onLREffect = false;
-    public boolean isOnLREffect(){
-        return onLREffect;
-    }
-
     private boolean hasStrongestStrongestBall = false;
     public boolean getHasStrongestStrongestBall(){
         return hasStrongestStrongestBall;
@@ -226,7 +221,7 @@ public class Prayer extends Job {
         if(Objects.equals(selectedRarity, R)) {
             List<Player> targets = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 20);
             for(Player target : targets){
-                DamageEvent.calculateDamage(player, target, 1);
+                DamageEvent.calculateDamageBySkill(player, target, 1);
             }
         }else if(Objects.equals(selectedRarity, SR)) {
             List<Player> targets = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 20);
@@ -251,7 +246,7 @@ public class Prayer extends Job {
             }.runTaskLater(Dokkoi.getInstance(), 20 * 10);
         }else if(Objects.equals(selectedRarity, LR)) {
             game.getGameStatesManager().addDamageCutPercent(player.getUniqueId(), 100);
-            onLREffect = true;
+            game.getGameStatesManager().addOnDisablePotionEffectPlayer(player.getUniqueId());
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -259,7 +254,7 @@ public class Prayer extends Job {
                         cancel();
                         return;
                     }
-                    onLREffect = false;
+                    game.getGameStatesManager().removeAdditionalDamage(player.getUniqueId());
                     game.getGameStatesManager().addDamageCutPercent(player.getUniqueId(), -100);
                 }
             }.runTaskTimer(Dokkoi.getInstance(), 0, 10 * 20);
