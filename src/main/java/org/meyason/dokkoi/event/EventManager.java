@@ -22,5 +22,6 @@ public class EventManager {
         core.getServer().getPluginManager().registerEvents(new PickEvent(), core);
         core.getServer().getPluginManager().registerEvents(new PotionEffectEvent(), core);
         core.getServer().getPluginManager().registerEvents(new EntityInteractEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new LoginEvent(), core);
     }
 }

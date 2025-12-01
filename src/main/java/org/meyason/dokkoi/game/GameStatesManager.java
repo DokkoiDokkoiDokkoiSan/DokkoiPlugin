@@ -25,7 +25,6 @@ public class GameStatesManager {
     private HashMap<UUID, Goal> playerGoals;
     private HashMap<UUID, Job> playerJobs;
     private HashMap<UUID, UUID> killerList;
-    private HashMap<UUID, String> goalFixedPlayers;
     private HashMap<UUID, Integer> killCounts;
     private List<UUID> attackedPlayers;
     private List<UUID> damagedPlayers;
@@ -36,6 +35,7 @@ public class GameStatesManager {
 
     private HashMap<String, CustomItem> serialCustomItemMap;
 
+    private HashMap<UUID, Long> LPMap;
     private HashMap<UUID, Long> moneyMap;
 
     private HashMap<UUID, BukkitRunnable> skillCoolDownTasks;
@@ -61,7 +61,6 @@ public class GameStatesManager {
         playerGoals = new HashMap<>();
         playerJobs = new HashMap<>();
         killerList = new HashMap<>();
-        goalFixedPlayers = new HashMap<>();
         killCounts = new HashMap<>();
         attackedPlayers = new ArrayList<>();
         damagedPlayers = new ArrayList<>();
@@ -70,6 +69,7 @@ public class GameStatesManager {
         damageCutPercent = new HashMap<>();
         isDeactivateDamageOnce = new HashMap<>();
         serialCustomItemMap = new HashMap<>();
+        LPMap = new HashMap<>();
         moneyMap = new HashMap<>();
         skillCoolDownTasks = new HashMap<>();
         ultimateSkillCoolDownTasks = new HashMap<>();
@@ -85,7 +85,6 @@ public class GameStatesManager {
         playerGoals.clear();
         playerJobs.clear();
         killerList.clear();
-        goalFixedPlayers.clear();
         killCounts.clear();
         attackedPlayers.clear();
         damagedPlayers.clear();
@@ -109,13 +108,13 @@ public class GameStatesManager {
         removePlayerGoal(uuid);
         removePlayerJob(uuid);
         removeKiller(uuid);
-        removeGoalFixedPlayer(uuid);
         removeKillCount(uuid);
         removeAttackedPlayer(uuid);
         removeDamagedPlayer(uuid);
         removeAdditionalDamage(uuid);
         removeDamageCutPercent(uuid);
         removeIsDeactivateDamageOnce(uuid);
+        removeMoneyMap(uuid);
         removeMoneyMap(uuid);
         removeSkillCoolDownTask(uuid);
         removeUltimateSkillCoolDownTask(uuid);
@@ -169,14 +168,6 @@ public class GameStatesManager {
     public void removeKiller(UUID killer) {
         if (!this.killerList.containsKey(killer)) {return;}
         this.killerList.remove(killer);
-    }
-
-    public HashMap<UUID, String> getGoalFixedPlayers() {return goalFixedPlayers;}
-    public void setGoalFixedPlayers(HashMap<UUID, String> goalFixedPlayers) {this.goalFixedPlayers = goalFixedPlayers;}
-    public void addGoalFixedPlayer(UUID player, String goal) {this.goalFixedPlayers.put(player, goal);}
-    public void removeGoalFixedPlayer(UUID player) {
-        if (!this.goalFixedPlayers.containsKey(player)) {return;}
-        this.goalFixedPlayers.remove(player);
     }
 
     public HashMap<UUID, Integer> getKillCounts() {return killCounts;}
@@ -263,6 +254,25 @@ public class GameStatesManager {
     public void removeCustomItemFromSerialMap(String uuid) {
         if(!this.serialCustomItemMap.containsKey(uuid)) {return;}
         this.serialCustomItemMap.remove(uuid);
+    }
+
+    public Long getLPFromUUID(UUID player) {return LPMap.get(player);}
+    public boolean isExistsLPFromUUID(UUID player) {return LPMap.containsKey(player);}
+    public void setLPFromUUID(UUID player, Long value) {this.LPMap.put(player, value);}
+    public void addLPFromUUID(UUID player, Long value){
+        this.LPMap.put(player, this.LPMap.getOrDefault(player, 0L) + value);
+    }
+    public boolean reduceLPFromUUID(UUID player, Long value){
+        if(!this.LPMap.containsKey(player)) {return false;}
+        Long currentLP = this.LPMap.get(player);
+        Long newLP = currentLP - value;
+        if(newLP < 0) {return false;}
+        this.LPMap.put(player, newLP);
+        return true;
+    }
+    public void removeLPFromUUID(UUID player) {
+        if(!this.LPMap.containsKey(player)) {return;}
+        this.LPMap.remove(player);
     }
 
     public HashMap<UUID, Long> getMoneyMap() {return moneyMap;}
