@@ -37,10 +37,9 @@ public class PotionEffectEvent implements Listener {
         if (!(event.getEntity() instanceof Player player)) return;
         if (event.getNewEffect() == null) return;
 
-        Job job = Game.getInstance().getGameStatesManager().getPlayerJobs().get(player.getUniqueId());
-
-        if (!(job instanceof Prayer prayer)) return;
-        if(!prayer.isOnLREffect()) return;
+        if(!Game.getInstance().getGameStatesManager().isInOnDisablePotionEffectPlayers(player.getUniqueId())){
+            return;
+        }
 
         PotionEffectType type = event.getNewEffect().getType();
         if(type.equals(PotionEffectType.POISON)){

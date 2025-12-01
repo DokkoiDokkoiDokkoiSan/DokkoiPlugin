@@ -2,14 +2,13 @@ package org.meyason.dokkoi.game;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.*;
 
@@ -30,6 +29,7 @@ import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.jobitem.Passive;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
+import org.meyason.dokkoi.item.utilitem.Monei;
 import org.meyason.dokkoi.job.Executor;
 import org.meyason.dokkoi.job.Explorer;
 import org.meyason.dokkoi.job.Job;
@@ -75,10 +75,13 @@ public class Game {
 
     private GameEntityManager gameEntityManager;
 
+    private LPManager lpManager;
+
     public Game(){
         instance = this;
         this.gameStatesManager = new GameStatesManager(this);
         this.gameEntityManager = new GameEntityManager();
+        this.lpManager = Dokkoi.getInstance().getLPManager();
         init();
     }
 
@@ -86,32 +89,6 @@ public class Game {
         clearScoreboardDisplay();
         gameStatesManager.init();
         setNowTime(matchingPhaseTime);
-        DatabaseManager databaseManager = DokkoiDatabaseAPI.getInstance().getDatabaseManager();
-        UserRepository userRepository = databaseManager.getUserRepository();
-        MoneyRepository moneyRepository = databaseManager.getMoneyRepository();
-        for(Player player : Bukkit.getOnlinePlayers()){
-            UUID uuid = player.getUniqueId();
-            if(!userRepository.existsUserFromUUID(uuid)){
-                userRepository.createUser(player);
-            }
-
-            User user;
-            Long LP = 0L;
-            try{
-                user = userRepository.getUserFromUUID(uuid);
-                if(!moneyRepository.existsMoneyFromUserId(user.getId())){
-                    moneyRepository.createMoney(user);
-                }
-                LP = moneyRepository.getMoneyFromUserId(user.getId()).getMoney();
-            } catch (UserNotFoundException e) {
-                player.sendMessage("§4エラーが発生しました．管理者に連絡してください：ユーザー情報取得失敗");
-                continue;
-            } catch (MoneyNotFoundException e) {
-                player.sendMessage("§4エラーが発生しました．管理者に連絡してください：所持金情報取得失敗");
-                continue;
-            }
-            gameStatesManager.setLPFromUUID(uuid,LP);
-        }
     }
 
     public void matching(){
@@ -190,7 +167,9 @@ public class Game {
             }
             GoalSelectMenu goalSelectMenu = new GoalSelectMenu();
             goalSelectMenu.sendMenu(player);
-            CustomItem item = null;
+
+
+            CustomItem item;
             try {
                 item = GameItem.getItem(GoalSelectMenuItem.id);
             } catch (NoGameItemException e) {
@@ -220,7 +199,6 @@ public class Game {
             gameStatesManager.addAdditionalDamage(uuid, 0);
             gameStatesManager.addDamageCutPercent(uuid, 0);
             gameStatesManager.addIsDeactivateDamageOnce(uuid, false);
-            gameStatesManager.addMoneyMap(uuid, 5L);
             Goal goal = gameStatesManager.getPlayerGoals().get(uuid);
             if(goal == null){
                 Job job = gameStatesManager.getPlayerJobs().get(uuid);
@@ -329,6 +307,41 @@ public class Game {
         for(Player player : clearPlayers){
             player.getWorld().spawnParticle(Particle.FIREWORK, player.getLocation().add(0,1,0), 100, 1,1,1, 0.1);
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
+
+            UUID uuid = player.getUniqueId();
+            long reward = 20L;
+            if(gameStatesManager.getPlayerGoals().get(uuid).tier == Tier.TIER_2){
+                reward = 75L;
+            }else if(gameStatesManager.getPlayerGoals().get(uuid).tier == Tier.TIER_1){
+                reward = 150L;
+            }
+
+            player.sendMessage("§eあなたは勝利報酬として§6" + reward + "LP§eを獲得しました！");
+
+            NamespacedKey key = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+            int moneyCount = 0;
+
+            for(ItemStack stack : player.getInventory().getContents()){
+                if(stack == null) continue;
+                ItemMeta meta = stack.getItemMeta();
+                if(meta == null) continue;
+                PersistentDataContainer container = meta.getPersistentDataContainer();
+                if(!container.has(key)) {
+                    continue;
+                }
+                String itemName = container.get(key, PersistentDataType.STRING);
+                if(itemName != null && itemName.equals(Monei.id)){
+                    moneyCount += stack.getAmount();
+                    stack.setAmount(0);
+                }
+            }
+            if(moneyCount > 0){
+                long moneyReward = moneyCount * 5L;
+                player.sendMessage("§e所持していた§6モネイ×" + moneyCount + "§eを換金し、追加で§6" + moneyReward + "LP§eを獲得しました！");
+                reward += moneyReward;
+            }
+
+            lpManager.addLP(uuid, reward);
         }
         clearScoreboardDisplay();
     }
@@ -435,14 +448,14 @@ public class Game {
         int i = 0;
 
         if(gameStatesManager.getGameState() == GameState.WAITING){
-            objective.getScore("§b所持金: §f" + getNowTime() + "LP").setScore(--i);
+            objective.getScore("§b所持金: §f" + lpManager.getLP(uuid) + "LP").setScore(--i);
             objective.getScore("§a参加人数: §f" + Bukkit.getOnlinePlayers().size() + "人").setScore(--i);
         }else if(gameStatesManager.getGameState() == GameState.MATCHING){
-            objective.getScore("§b所持金: §f" + gameStatesManager.getLPFromUUID(uuid) + "LP").setScore(--i);
+            objective.getScore("§b所持金: §f" + lpManager.getLP(uuid) + "LP").setScore(--i);
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
             objective.getScore("§a参加人数: §f" + Bukkit.getOnlinePlayers().size() + "人").setScore(--i);
         }else if(gameStatesManager.getGameState() == GameState.PREP) {
-            objective.getScore("§b所持金: §f" + getNowTime() + "LP").setScore(--i);
+            objective.getScore("§b所持金: §f" + lpManager.getLP(uuid) + "LP").setScore(--i);
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
             objective.getScore("§a参加人数: §f" + gameStatesManager.getJoinedPlayers().size() + "人").setScore(--i);
             objective.getScore("§e役職: §f" + gameStatesManager.getPlayerJobs().get(uuid).getName()).setScore(--i);

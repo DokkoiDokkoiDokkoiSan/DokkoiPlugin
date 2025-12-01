@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.DokkoiDatabaseAPI;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.GoalList;
@@ -17,6 +18,7 @@ import org.meyason.dokkoi.exception.MoneyNotFoundException;
 import org.meyason.dokkoi.exception.UserNotFoundException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
+import org.meyason.dokkoi.game.LPManager;
 import org.meyason.dokkoi.goal.Defender;
 import org.meyason.dokkoi.goal.Goal;
 
@@ -29,23 +31,14 @@ public class LogoutEvent implements Listener {
     public void onLogout(PlayerQuitEvent event){
         Game game = Game.getInstance();
         GameStatesManager gameStatesManager = game.getGameStatesManager();
+        LPManager lpManager = Dokkoi.getInstance().getLPManager();
         Player player = event.getPlayer();
-        UUID playerUniqueId = player.getUniqueId();
+        UUID playerUniqueId = event.getPlayer().getUniqueId();
 
-        DatabaseManager databaseManager = DokkoiDatabaseAPI.getInstance().getDatabaseManager();
-        UserRepository userRepository = databaseManager.getUserRepository();
-        MoneyRepository moneyRepository = databaseManager.getMoneyRepository();
+        Long inGameLP = lpManager.getLP(playerUniqueId);
+        lpManager.updateLP(playerUniqueId, inGameLP);
+        lpManager.removeLPData(playerUniqueId);
 
-        Long inGameLP = gameStatesManager.getLPFromUUID(playerUniqueId);
-        User user;
-        try {
-            user = userRepository.getUserFromUUID(playerUniqueId);
-            moneyRepository.updateMoneyFromLP(user, inGameLP);
-        } catch (UserNotFoundException e) {
-            player.sendMessage(Component.text("§cユーザーデータの取得に失敗しました。ログアウト時のLP反映に失敗しました。"));
-        } catch (MoneyNotFoundException e) {
-            player.sendMessage(Component.text("§c所持金データの取得に失敗しました。ログアウト時のLP反映に失敗しました。"));
-        }
         gameStatesManager.removePlayerData(event.getPlayer().getUniqueId());
 
         if(gameStatesManager.getGameState() == GameState.WAITING || gameStatesManager.getGameState() == GameState.MATCHING || gameStatesManager.getGameState() == GameState.END) {

@@ -8,8 +8,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.game.LPManager;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.job.Job;
 import xyz.xenondevs.invui.item.ItemProvider;
@@ -23,6 +25,8 @@ public class Tier2GoalItem extends AbstractItem {
     private Job job;
 
     private Goal goal;
+
+    private long cost = 15L;
 
     public Tier2GoalItem(Job job) {
         this.job = job;
@@ -53,6 +57,11 @@ public class Tier2GoalItem extends AbstractItem {
 
     @Override
     public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull InventoryClickEvent event) {
+        LPManager lpManager = Dokkoi.getInstance().getLPManager();
+        if(!lpManager.reduceLP(player.getUniqueId(), cost)) {
+            player.sendMessage("§cLPが足りないため，勝利条件を選択できません。");
+            return;
+        }
         Game game = Game.getInstance();
         goal.setGoal(game, player);
         game.getGameStatesManager().getPlayerGoals().put(player.getUniqueId(), goal);

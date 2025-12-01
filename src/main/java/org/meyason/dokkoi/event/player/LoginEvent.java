@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.DokkoiDatabaseAPI;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.database.DatabaseManager;
@@ -15,6 +16,7 @@ import org.meyason.dokkoi.database.repositories.UserRepository;
 import org.meyason.dokkoi.exception.MoneyNotFoundException;
 import org.meyason.dokkoi.exception.UserNotFoundException;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.game.LPManager;
 
 import java.util.Date;
 import java.util.Objects;
@@ -31,6 +33,8 @@ public class LoginEvent implements Listener {
             player.kick(Component.text("§c[エラー] ゲーム進行中のため、参加できません。"));
             return;
         }
+
+        LPManager lpManager = Dokkoi.getInstance().getLPManager();
 
         DatabaseManager databaseManager = DokkoiDatabaseAPI.getInstance().getDatabaseManager();
         UserRepository userRepository = databaseManager.getUserRepository();
@@ -57,6 +61,8 @@ public class LoginEvent implements Listener {
         if(!Objects.equals(user.getName(), name)){
             user.setName(name);
         }
+
+        lpManager.putLP(uuid, lpManager.getLPFromDB(player));
 
         user.setUpdated_at(new Date());
         userRepository.updateUser(user);

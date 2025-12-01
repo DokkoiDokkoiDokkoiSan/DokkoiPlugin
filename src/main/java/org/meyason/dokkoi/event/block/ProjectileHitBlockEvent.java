@@ -44,8 +44,7 @@ public class ProjectileHitBlockEvent implements Listener {
                 Job job = manager.getPlayerJobs().get(attacker.getUniqueId());
                 if (job instanceof Bomber bomber) {
                     if (attackItem.equals(Skill.id)) {
-                        List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attacker, event.getHitBlock().getLocation(), 1);
-                        effectedPlayers.add(attacker);
+                        List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, event.getHitBlock().getLocation(), 1);
                         bomber.skill(event.getHitBlock().getLocation(), effectedPlayers);
                     } else if (attackItem.equals(Ultimate.id)) {
                         bomber.ultimate(event.getHitBlock().getLocation());
@@ -87,11 +86,10 @@ public class ProjectileHitBlockEvent implements Listener {
                     //自分が放つ矢が着弾した位置に爆発を起こす。爆発は当たった対象に固定10ダメージを与える。
                     arrow.getWorld().spawnParticle(Particle.EXPLOSION, arrow.getLocation(), 1);
                     arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10.0F, 1.0F);
-                    List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attacker, arrow.getLocation(), 3);
-                    effectedPlayers.add(attacker);
+                    List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, arrow.getLocation(), 3);
                     manager.addAttackedPlayer(attacker.getUniqueId());
                     for (Player damaged : effectedPlayers) {
-                        DamageEvent.calculateDamage(attacker, damaged, 10.0);
+                        DamageEvent.calculateDamageBySkill(attacker, damaged, 10.0);
                         manager.addDamagedPlayer(damaged.getUniqueId());
                     }
                     manager.removeProjectileData(arrow);

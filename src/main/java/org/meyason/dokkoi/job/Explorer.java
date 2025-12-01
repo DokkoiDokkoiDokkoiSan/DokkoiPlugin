@@ -101,7 +101,6 @@ public class Explorer extends Job {
 
     public void passive(int nowCount){
         if(haveKetsumouCount == nowCount){return;}
-        player.sendMessage("before" + haveKetsumouCount + " now " + nowCount);
         if(haveKetsumouCount < nowCount){
             this.haveKetsumouCount = nowCount;
             incrementKetsumouEffect();
@@ -154,7 +153,6 @@ public class Explorer extends Job {
 
     public void decrementKetsumouEffect(){
         player.sendMessage(Component.text("§9§lけつ毛§r§cの力が弱まった..."));
-        player.sendMessage(this.haveKetsumouCount + "");
         // 1から0に、4から3に、7から6に、9から8に減ったとき効果を変化
         if(haveKetsumouCount == 0){
             player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 1));
@@ -175,7 +173,6 @@ public class Explorer extends Job {
 
     public void incrementKetsumouEffect(){
         player.sendMessage(Component.text("§9§lけつ毛§r§aの力が強まった！"));
-        player.sendMessage(this.haveKetsumouCount + "");
         // 0から1に、3から4に、6から7に、8から9に増えたとき効果を変化
         if(haveKetsumouCount == 1){
             player.removePotionEffect(PotionEffectType.SLOWNESS);

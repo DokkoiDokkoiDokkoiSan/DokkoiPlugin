@@ -11,21 +11,23 @@ import org.meyason.dokkoi.item.CustomItem;
 
 import java.util.List;
 
-public class Korehamaru extends CustomItem {
+public class TotemoKorehamaru extends CustomItem {
 
-    public static final String id = "korehamaru";
 
-    public Korehamaru() {
-        super(id, "§9コレハマール", ItemStack.of(Material.MELON_SEEDS), 64);
+    public static final String id = "totemo_korehamaru";
+
+    public TotemoKorehamaru() {
+        super(id, "§6トテモツヨクナール", ItemStack.of(Material.COCOA_BEANS), 16);
         List<Component> lore = List.of(
-                Component.text("§5中毒性が高い気がする薬。"),
+                Component.text("§5かなり中毒性が高い気がする薬。"),
                 Component.text(""),
                 Component.text("§b効果"),
-                Component.text("§5薬売師以外が所持すると、移動速度低下Lv1を付与され、最大体力が20固定になる。"),
-                Component.text("§5捨てることが出来ない。")
+                Component.text("§5薬売師以外のプレイヤーが拾うと死亡する。"),
+                Component.text("§5このアイテムでの死亡は、薬売師の殺害判定となる。")
         );
         setDescription(lore);
     }
+
 
     @Override
     protected void registerItemFunction() {
@@ -38,9 +40,4 @@ public class Korehamaru extends CustomItem {
         };
     }
 
-    public static void activate(Player player) {
-        player.sendMessage(Component.text("§aコレハマール§cの中毒になってしまった……"));
-        player.setMaxHealth(20.0);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 1));
-    }
 }

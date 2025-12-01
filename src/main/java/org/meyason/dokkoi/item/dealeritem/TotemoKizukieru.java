@@ -5,24 +5,28 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 
 import java.util.List;
 
-public class Kizukieru extends CustomItem {
+public class TotemoKizukieru extends CustomItem {
 
-    public static final String id = "kizukieru";
+    public static final String id = "totemo_kizukieru";
 
-    public Kizukieru(){
-        super(id, "§9キズキエール", ItemStack.of(Material.MELON_SEEDS), 64);
+    public TotemoKizukieru() {
+        super(id, "§6トテモツヨクナール", ItemStack.of(Material.FROGSPAWN), 16);
         List<Component> lore = List.of(
-                Component.text("§5傷が治る気がする薬。"),
+                Component.text("§5かなり傷が治る気がする薬。"),
                 Component.text(""),
                 Component.text("§b効果"),
-                Component.text("§5HPが5回復する。")
+                Component.text("§5再生Lv3を常時受け取る。")
         );
         setDescription(lore);
     }
+
 
     @Override
     protected void registerItemFunction() {
@@ -36,17 +40,11 @@ public class Kizukieru extends CustomItem {
     }
 
     public static void activate(Player player, ItemStack item) {
+        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 3, false, false, true));
 
-        double nowHealth = player.getHealth();
-        if(nowHealth == player.getMaxHealth()){
-            player.sendActionBar(Component.text("§c既に最大体力です。"));
-            return;
-        }else if(nowHealth + 5.0 > player.getMaxHealth()){
-            player.setHealth(player.getMaxHealth());
-        }else{
-            player.setHealth(nowHealth + 5.0);
-        }
         item.setAmount(item.getAmount() - 1);
-        player.sendMessage(Component.text("§aキズキエール§bでHPを回復した。"));
+        player.getInventory().setItemInMainHand(item);
+        player.sendMessage(Component.text("§aめっちゃ傷が治る気がする！"));
     }
+
 }
