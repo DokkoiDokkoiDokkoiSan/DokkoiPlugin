@@ -23,9 +23,9 @@ public class JobList {
 //        jobMap.put(LONELY.getName(), LONELY);
 //        jobMap.put(BOMBER.getName(), BOMBER);
 //        jobMap.put(IRONMAIDEN.getName(), IRONMAIDEN);
-        jobMap.put(EXPLORER.getName(), EXPLORER);
+//        jobMap.put(EXPLORER.getName(), EXPLORER);
         jobMap.put(PRAYER.getName(), PRAYER);
-//        jobMap.put(DRUGSTORE.getName(), DRUGSTORE);
+        jobMap.put(DRUGSTORE.getName(), DRUGSTORE);
     }
 
     public static List<Job> getAllJobs(){

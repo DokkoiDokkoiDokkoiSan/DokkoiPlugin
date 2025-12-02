@@ -54,7 +54,8 @@ public class UnkillerList extends CustomItem {
                         Component.text("§cCT 30秒"),
                         Component.text("§bこれらのプレイヤーをすべて殺害せよ。")
                 );
-                List<UUID> alivePlayers = new ArrayList<>(game.getGameStatesManager().getAlivePlayers().stream().toList());
+                List<UUID> alivePlayers = new ArrayList<>(Game.getInstance().getGameStatesManager().getAlivePlayers().stream().toList());
+                this.targetPlayerList = alivePlayers;
                 StringBuilder names = new StringBuilder();
                 for(UUID id : alivePlayers){
                     Player p = Bukkit.getPlayer(id);

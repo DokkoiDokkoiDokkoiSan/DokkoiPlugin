@@ -16,11 +16,13 @@ import org.meyason.dokkoi.event.player.DamageEvent;
 import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.item.battleitem.ArcherArmor;
-import org.meyason.dokkoi.item.food.BakedPotato;
-import org.meyason.dokkoi.item.food.GoldenCarrot;
+import org.meyason.dokkoi.item.battleitem.HealingCrystal;
+import org.meyason.dokkoi.item.food.*;
 import org.meyason.dokkoi.item.jobitem.gacha.StrongestBall;
 import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestBall;
 import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestStrongestBall;
+import org.meyason.dokkoi.item.utilitem.Monei;
+import org.meyason.dokkoi.item.weapon.Arrow;
 import org.meyason.dokkoi.item.weapon.LongSword;
 import org.meyason.dokkoi.item.weapon.ThunderJavelin;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
@@ -29,12 +31,7 @@ import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class Prayer extends Job {
 
@@ -66,14 +63,25 @@ public class Prayer extends Job {
 
     public static final HashMap<String, List<String>> rarityEffectMap = new HashMap<>(){{
         put(R, List.of(
-                BakedPotato.id
+                BakedPotato.id,
+                Arrow.id,
+                Cod.id,
+                Bread.id,
+                HealingCrystal.id,
+                Salmon.id,
+                CookedChicken.id
         ));
         put(SR, List.of(
                 ArcherArmor.id,
-                GoldenCarrot.id
+                GoldenCarrot.id,
+                CookedPorkchop.id,
+                CookedBeef.id,
+                GlisteringMelonSlice.id,
+                LongSword.id,
+                PumpkinPie.id
         ));
         put(UR, List.of(
-                LongSword.id
+                Monei.id
         ));
         put(LR, List.of(
                 ThunderJavelin.id

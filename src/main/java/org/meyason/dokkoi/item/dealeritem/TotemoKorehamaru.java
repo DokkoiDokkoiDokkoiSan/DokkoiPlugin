@@ -17,7 +17,7 @@ public class TotemoKorehamaru extends CustomItem {
     public static final String id = "totemo_korehamaru";
 
     public TotemoKorehamaru() {
-        super(id, "§6トテモツヨクナール", ItemStack.of(Material.COCOA_BEANS), 16);
+        super(id, "§6トテモコレハマール", ItemStack.of(Material.COCOA_BEANS), 16);
         List<Component> lore = List.of(
                 Component.text("§5かなり中毒性が高い気がする薬。"),
                 Component.text(""),

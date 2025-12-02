@@ -13,16 +13,9 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.*;
 
 import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.DokkoiDatabaseAPI;
 import org.meyason.dokkoi.constants.*;
-import org.meyason.dokkoi.database.DatabaseManager;
-import org.meyason.dokkoi.database.models.User;
-import org.meyason.dokkoi.database.repositories.MoneyRepository;
-import org.meyason.dokkoi.database.repositories.UserRepository;
 import org.meyason.dokkoi.entity.GameEntityManager;
-import org.meyason.dokkoi.exception.MoneyNotFoundException;
 import org.meyason.dokkoi.exception.NoGameItemException;
-import org.meyason.dokkoi.exception.UserNotFoundException;
 import org.meyason.dokkoi.goal.*;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
@@ -30,10 +23,7 @@ import org.meyason.dokkoi.item.jobitem.Passive;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
 import org.meyason.dokkoi.item.utilitem.Monei;
-import org.meyason.dokkoi.job.Executor;
-import org.meyason.dokkoi.job.Explorer;
-import org.meyason.dokkoi.job.Job;
-import org.meyason.dokkoi.job.Prayer;
+import org.meyason.dokkoi.job.*;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenu;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
 import org.meyason.dokkoi.scheduler.Scheduler;
@@ -230,6 +220,7 @@ public class Game {
         gameEntityManager.registerEntity();
         gameStatesManager.setGameState(GameState.IN_GAME);
         setNowTime(gamePhaseTime);
+
         Bukkit.getServer().broadcast(Component.text("§aゲーム開始！各自勝利条件を達成せよ！"));
         Bukkit.getServer().broadcast(Component.text("§e試合開始から100秒経過するまで、攻撃は無効化される。"));
 
@@ -252,6 +243,8 @@ public class Game {
 
             player.setCustomNameVisible(false);
         }
+
+        ChestProvider.getInstance().startTask();
     }
 
     public void endGame(){
@@ -260,6 +253,8 @@ public class Game {
         setNowTime(resultPhaseTime);
         Component message = Component.text("§aゲーム終了");
         Bukkit.getServer().broadcast(message);
+
+        ChestProvider.getInstance().cancelTask();
 
         for (UUID uuid : gameStatesManager.getJoinedPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
@@ -349,6 +344,7 @@ public class Game {
     public void resetGame(){
         if(!onGame) return;
         scheduler.cancel();
+        ChestProvider.getInstance().cancelTask();
         for(UUID uuid : gameStatesManager.getJoinedPlayers()){
             if(gameStatesManager.getCoolDownScheduler().containsKey(uuid)){
                 gameStatesManager.getCoolDownScheduler().get(uuid).cancel();
@@ -470,6 +466,7 @@ public class Game {
             Job job = gameStatesManager.getPlayerJobs().get(uuid);
             Goal goal = gameStatesManager.getPlayerGoals().get(uuid);
             String achievedColor = "6";
+
             if(goal instanceof MaidenGazer maidenGazer){
                 objective.getScore("§e視線誘導した時間: §f" + maidenGazer.getPoint() + "秒").setScore(--i);
             }else if(goal instanceof CarpetBombing carpetBombing){
@@ -493,6 +490,22 @@ public class Game {
                 }
                 objective.getScore("§e目標逮捕数: §f" +  3 + "人").setScore(--i);
                 objective.getScore("§e現在の逮捕数: §" + color + executor.getArrestCount() + "人").setScore(--i);
+            }else if(goal instanceof SugiYakkyoku){
+                String color = "c";
+                DrugStore drugStore = (DrugStore) job;
+                if(drugStore.getSellCount() >= 10){
+                    color = achievedColor;
+                }
+                objective.getScore("§e目標販売数: §f" + 10 + "個").setScore(--i);
+                objective.getScore("§e現在の販売数: §" + color + drugStore.getSellCount() + "個").setScore(--i);
+            }else if(goal instanceof MatsumotoKiyoshi){
+                String color = "c";
+                DrugStore drugStore = (DrugStore) job;
+                if(drugStore.getPickCount() >= 3){
+                    color = achievedColor;
+                }
+                objective.getScore("§e目標回数: §f" + 3 + "回").setScore(--i);
+                objective.getScore("§e現在の回数: §" + color + drugStore.getPickCount() + "回").setScore(--i);
             }
 
             if(job instanceof Explorer explorer){

@@ -6,6 +6,8 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GoalList;
@@ -116,14 +118,16 @@ public class DrugStore extends Job {
 
     public void ultimate(List<String> drugList){
         // ランダムに選出
-        String drugName = drugList.get((int)(Math.random() * drugList.size()));;
+        String drugName = drugList.get((int)(Math.random() * drugList.size()));
         PlayerInventory inventory = player.getInventory();
         NamespacedKey key = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
         for (ItemStack iS : player.getInventory().getContents()) {
             if (iS == null) continue;
-            if (iS.getItemMeta() != null) {
-                CustomItem cI = CustomItem.getItem(iS);
-                if (cI instanceof Ketsumou) {
+            ItemMeta itemMeta = iS.getItemMeta();
+            if (itemMeta == null) continue;
+            if (itemMeta.getPersistentDataContainer().has(key)) {
+                String itemName = itemMeta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+                if (itemName != null && itemName.equals(drugName)) {
                     player.getInventory().removeItem(iS);
                     String ultimateDrugName = ultimateMap.get(drugName);
                     CustomItem ultimateItem;
@@ -139,7 +143,7 @@ public class DrugStore extends Job {
                         player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
                     }
                     inventory.addItem(itemStack);
-                    player.sendMessage(Component.text("§a調合完了！§e" + ultimateDrugName + "§aを手に入れた！"));
+                    player.sendMessage(Component.text("§a調合完了！§e" + ultimateItem.getName() + "§aを手に入れた！"));
                     return;
                 }
             }

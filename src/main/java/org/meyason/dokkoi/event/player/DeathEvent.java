@@ -103,7 +103,6 @@ public class DeathEvent {
                 String forwardPadding = " ".repeat(paddingLength / 2);
                 String backPadding = " ".repeat(paddingLength - paddingLength / 2);
                 dead.sendMessage(forwardPadding.length() + " " + backPadding.length());
-                killer.sendMessage(Component.text(forwardPadding + line + backPadding));
             }
             killer.sendMessage(borderColor + "└" + horizontal + "┘");
             try {

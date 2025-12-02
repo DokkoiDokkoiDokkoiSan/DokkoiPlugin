@@ -1,5 +1,6 @@
 package org.meyason.dokkoi.menu.shopmenu.item;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -11,6 +12,8 @@ import org.meyason.dokkoi.entity.Clerk;
 import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
+import org.meyason.dokkoi.item.weapon.Arrow;
+import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper;
 import xyz.xenondevs.invui.item.ItemProvider;
 import xyz.xenondevs.invui.item.builder.ItemBuilder;
 import xyz.xenondevs.invui.item.impl.AbstractItem;
@@ -40,7 +43,7 @@ public class ShopMenuItem extends AbstractItem {
             return;
         }
         this.customItem = item;
-        this.itemStack = item.getBaseItem();
+        this.itemStack = item.getItem();
         this.price = clerk.getItemPrice(id);
     }
 
@@ -48,15 +51,16 @@ public class ShopMenuItem extends AbstractItem {
     @Override
     public ItemProvider getItemProvider() {
         int amount = 1;
-        if(itemStack.getType() == Material.ARROW){
-            amount = 32;
+        if(customItem instanceof Arrow){
+            itemStack.setAmount(32);
         }
-        return new ItemBuilder(itemStack.getType()).setAmount(amount).setDisplayName(this.customItem.getName()).addLoreLines(
-                    this.customItem.getDescription().toString(),
-                "",
-                "§6価格: §a" + this.price + "モネイ"
-
-        );
+        List<Component> description = this.customItem.getDescription();
+        ItemBuilder builder =  new ItemBuilder(itemStack.getType()).setAmount(amount).setDisplayName(this.customItem.getName());
+        for(Component line : description){
+            builder.addLoreLines( new AdventureComponentWrapper(line));
+        }
+        builder.addLoreLines( new AdventureComponentWrapper(Component.text("§e価格: " + price + "モネイ")));
+        return builder;
     }
 
     @Override

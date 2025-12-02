@@ -1,5 +1,7 @@
 package org.meyason.dokkoi.event.player;
 
+import net.kyori.adventure.text.Component;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -24,6 +26,7 @@ import org.meyason.dokkoi.item.dealeritem.Hayakunaru;
 import org.meyason.dokkoi.item.dealeritem.Katakunaru;
 import org.meyason.dokkoi.item.dealeritem.Kizukieru;
 import org.meyason.dokkoi.item.dealeritem.Tsuyokunaru;
+import org.meyason.dokkoi.item.debug.Debug;
 import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
 import org.meyason.dokkoi.item.goalitem.UnkillerList;
@@ -161,6 +164,16 @@ public class ItemInteractEvent implements Listener {
                     HealingCrystal.activate(player, item);
 
 
+                }else if(isItem(container, itemKey, Debug.id)){
+                    if(event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK){
+                        return;
+                    }
+                    event.setCancelled(true);
+                    if(event.getAction() == Action.LEFT_CLICK_BLOCK){
+                        Location location = event.getClickedBlock().getLocation();
+                        player.sendMessage(Component.text("§aクリックしたブロックの座標"));
+                        player.sendMessage(Component.text(location.getX() + ", " + location.getY() + ", " + location.getZ()));
+                    }
                 }
             }
         }

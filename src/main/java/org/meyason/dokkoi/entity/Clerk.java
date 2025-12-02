@@ -16,6 +16,7 @@ import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.battleitem.ArcherArmor;
 import org.meyason.dokkoi.item.battleitem.HealingCrystal;
 import org.meyason.dokkoi.item.utilitem.Monei;
+import org.meyason.dokkoi.item.weapon.Arrow;
 import org.meyason.dokkoi.item.weapon.LongSword;
 
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public class Clerk extends GameEntity {
         put(HealingCrystal.id, 1);
         put(ArcherArmor.id, 2);
         put(LongSword.id, 5);
-        put(Material.ARROW.name(), 1);
+        put(Arrow.id, 1);
     }};
 
     public Clerk() {
@@ -59,28 +60,28 @@ public class Clerk extends GameEntity {
             }
         }
         if(moneyCount < price){
-            player.sendMessage("§bショップおじいちゃん「そちら、14万3000円になっております。」");
+            player.sendMessage("§cショップおじいちゃん「そちら、14万3000円になっております。」");
             return false;
         }else{
             CustomItem customItem;
             try{
                 customItem = GameItem.getItem(itemId);
             }catch(NoGameItemException e){
-                player.sendMessage("§bショップおじいちゃん「(商品が)ないです。」");
+                player.sendMessage("§cショップおじいちゃん「(商品が)ないです。」");
                 return false;
             }
             ItemStack itemStack = customItem.getItem();
-            if(itemStack.getType() == Material.ARROW){
+            if(customItem instanceof Arrow){
                 itemStack.setAmount(32);
             }
             // インベントリに空きがあるか判定
             int emptySlot = player.getInventory().firstEmpty();
             if(emptySlot == -1) {
-                player.sendMessage("§bショップおじいちゃん「あっおい待てい、インベントリに空きがないゾ」");
+                player.sendMessage("§cショップおじいちゃん「あっおい待てい、インベントリに空きがないゾ」");
                 return false;
             }
             // モネイを減らす
-            int remainingMoney = moneyCount - price;
+            int remainingMoney = price;
             for(ItemStack stack : player.getInventory().getContents()){
                 if(stack == null) continue;
                 ItemMeta meta = stack.getItemMeta();

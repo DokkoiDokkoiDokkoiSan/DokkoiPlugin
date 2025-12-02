@@ -46,11 +46,9 @@ public class GameEntityManager {
             }
         }
 
-        for (int i = 0; i < 3; i++){
-            GameEntity gameEntity = GameEntity.getGameEntityFromId(GameEntity.CLERK);
-            if(gameEntity instanceof Clerk clerk){
-                spawnClerk(location, clerk);
-            }
+        GameEntity gameEntity = GameEntity.getGameEntityFromId(GameEntity.CLERK);
+        if(gameEntity instanceof Clerk clerk){
+            spawnClerk(location, clerk);
         }
 
     }

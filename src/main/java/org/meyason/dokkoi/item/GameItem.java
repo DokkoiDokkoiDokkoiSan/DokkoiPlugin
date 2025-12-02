@@ -10,8 +10,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.exception.NoGameItemException;
-import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.dealeritem.*;
+import org.meyason.dokkoi.item.debug.Debug;
 import org.meyason.dokkoi.item.food.*;
 import org.meyason.dokkoi.item.jobitem.gacha.*;
 import org.meyason.dokkoi.item.goalitem.*;
@@ -47,6 +47,7 @@ public class GameItem {
         items.put(StrongestStrongestStrongestBall.id, new StrongestStrongestStrongestBall());
         items.put(GoldenCarrot.id, new GoldenCarrot());
         items.put(LongSword.id, new LongSword());
+        items.put(Arrow.id, new Arrow());
         items.put(ArcherArmor.id, new ArcherArmor());
         items.put(BakedPotato.id, new BakedPotato());
         items.put(ThunderJavelin.id, new ThunderJavelin());
@@ -72,6 +73,9 @@ public class GameItem {
         items.put(Salmon.id, new Salmon());
         items.put(Bread.id, new Bread());
         items.put(Monei.id, new Monei());
+        items.put(Debug.id, new Debug());
+        items.put(TakashimaPhone.id, new TakashimaPhone());
+        items.put(MamiyaPhone.id, new MamiyaPhone());
     }
 
     public static CustomItem getItem(String id){

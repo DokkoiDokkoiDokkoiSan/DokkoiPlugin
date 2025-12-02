@@ -73,7 +73,7 @@ public class PickEvent implements Listener {
                     event.setCancelled(true);
                 }else if(customItem instanceof Korehamaru){
                     if(!(job instanceof DrugStore)){
-                        player.sendActionBar(Component.text("§cこれはすてたくない"));
+                        player.sendMessage(Component.text("§cこれはすてたくない"));
                         event.setCancelled(true);
                     }
                 }
@@ -114,10 +114,26 @@ public class PickEvent implements Listener {
                             Job targetJob = Game.getInstance().getGameStatesManager().getPlayerJobs().get(uuid);
                             if(targetJob instanceof DrugStore drugStore){
                                 drugStore.incrementPickCount();
+                                Korehamaru.activate(player);
                                 break;
                             }
                         }
                         player.sendMessage(Component.text("§cあたまがふらふらしてきた..."));
+                    }
+                } else if(slotCustomItem instanceof TotemoKorehamaru){
+                    if(!(job instanceof DrugStore)){
+                        Player killer = Game.getInstance().getGameStatesManager().getPlayerJobs().entrySet().stream()
+                                .filter(entry -> entry.getValue() instanceof DrugStore)
+                                .map(entry -> Game.getInstance().getGameStatesManager().getAlivePlayers().contains(entry.getKey()) ? entry.getKey() : null)
+                                .filter(Objects::nonNull)
+                                .map(uuid -> player.getServer().getPlayer(uuid))
+                                .findFirst()
+                                .orElse(null);
+                        if(killer != null) {
+                            cursorItem.setAmount(0);
+                            player.sendMessage(Component.text("§cOD発動！"));
+                            DeathEvent.kill(killer, player);
+                        }
                     }
                 }
                 return;
@@ -170,6 +186,7 @@ public class PickEvent implements Listener {
                                 Job targetJob = Game.getInstance().getGameStatesManager().getPlayerJobs().get(uuid);
                                 if (targetJob instanceof DrugStore drugStore) {
                                     drugStore.incrementPickCount();
+                                    Korehamaru.activate(player);
                                     break;
                                 }
                             }
@@ -188,7 +205,7 @@ public class PickEvent implements Listener {
                                     .orElse(null);
                             if(killer != null) {
                                 cursorItem.setAmount(0);
-                                player.sendActionBar(Component.text("§cOD発動！"));
+                                player.sendMessage(Component.text("§cOD発動！"));
                                 DeathEvent.kill(killer, player);
                             }
                         }
@@ -269,6 +286,7 @@ public class PickEvent implements Listener {
                             Job targetJob = Game.getInstance().getGameStatesManager().getPlayerJobs().get(uuid);
                             if(targetJob instanceof DrugStore drugStore){
                                 drugStore.incrementPickCount();
+                                Korehamaru.activate(player);
                                 break;
                             }
                         }
@@ -284,7 +302,8 @@ public class PickEvent implements Listener {
                                 .findFirst()
                                 .orElse(null);
                         if(killer != null) {
-                            item.setAmount(0);
+                            event.setCancelled(true);
+                            event.getItem().remove();
                             player.sendActionBar(Component.text("§cOD発動！"));
                             DeathEvent.kill(killer, player);
                         }

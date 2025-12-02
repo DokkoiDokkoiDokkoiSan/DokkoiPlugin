@@ -40,10 +40,10 @@ public class ShopMenu {
 
         Gui gui = PagedGui.items()
                 .setStructure(
-                        "x x x x x x x",
-                        "x x x x x x x",
-                        "x x x x x x x",
-                        "# # < # > # #")
+                        "x x x x x x x x x",
+                        "x x x x x x x x x",
+                        "x x x x x x x x x",
+                        "# # # < # > # # #")
                 .addIngredient('#', border)
                 .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
                 .addIngredient('<', new BackItem())
