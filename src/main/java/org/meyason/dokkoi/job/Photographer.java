@@ -1,14 +1,17 @@
 package org.meyason.dokkoi.job;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.util.CalculateAreaPlayers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Photographer extends Job {
@@ -89,5 +92,35 @@ public class Photographer extends Job {
     @Override
     public void ready() {
 
+    }
+
+    public void skill(){
+        if(this.player.isSneaking()){
+            ArrayList<UUID> targets = new ArrayList<>();
+            this.player.sendMessage(Component.text("§a=====写真を撮影していないプレイヤー一覧====="));
+            for(UUID uuid : this.game.getGameStatesManager().getJoinedPlayers()){
+                if(this.isTakenPhotoPlayer(uuid)) continue;
+                targets.add(uuid);
+            }
+            if(targets.size() == this.game.getGameStatesManager().getJoinedPlayers().size()){
+                this.player.sendActionBar(Component.text("§a全員の写真を撮影済みだ！"));
+                return;
+            }
+            for(UUID uuid : targets){
+                this.player.sendMessage(Component.text("§d" + Objects.requireNonNull(Bukkit.getPlayer(uuid)).getName()));
+            }
+        }else{
+            ArrayList<Player> playerInSight = CalculateAreaPlayers.getPlayersInSight(this.game, this.player, 180);
+            int quantityPlayers = playerInSight.size();
+            if(quantityPlayers == 0){
+                this.player.sendActionBar(Component.text("§c写真に誰も写っていない..."));
+                return;
+            }
+            for(Player p : playerInSight){
+                this.addTakenPhotoPlayer(p.getUniqueId());
+                this.player.sendMessage(Component.text("§a=====撮影結果====="));
+                this.player.sendMessage(Component.text("§a" + p.getName() + "§r§aの写真を撮影した！"));
+            }
+        }
     }
 }

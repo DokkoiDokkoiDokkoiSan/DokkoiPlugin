@@ -1,8 +1,9 @@
 package org.meyason.dokkoi.event.player;
 
+import com.comphenix.protocol.events.PacketContainer;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -17,7 +18,6 @@ import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
-import org.meyason.dokkoi.goal.Defender;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.battleitem.HealingCrystal;
 import org.meyason.dokkoi.item.dealeritem.Hayakunaru;
@@ -28,9 +28,10 @@ import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenu;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
-import org.meyason.dokkoi.util.CalculateAreaPlayers;
+import org.meyason.dokkoi.network.PacketSender;
+import org.meyason.dokkoi.network.PacketData;
+import org.meyason.dokkoi.network.PacketProcess;
 
-import java.util.List;
 import java.util.Objects;
 
 public class ItemInteractEvent implements Listener {
@@ -39,11 +40,11 @@ public class ItemInteractEvent implements Listener {
     public void onItemInteract(PlayerInteractEvent event){
         Game game = Game.getInstance();
         Player player = event.getPlayer();
-        if(event.getAction() == Action.RIGHT_CLICK_BLOCK){
-            List<Player> players = CalculateAreaPlayers.getPlayersInSight(player, 180f);
-            player.sendMessage("§e視界内のプレイヤー数: " + players.size());
+        for(Player p : Bukkit.getOnlinePlayers()){
+            player.sendMessage("FUCK");
+            PacketContainer pk = PacketData.create(p);
+            PacketSender.sendPacket(p, PacketProcess.hideNameTag(player, pk));
         }
-        if(game.getGameStatesManager().getGameState() == GameState.IN_GAME) {
         if(game.getGameStatesManager().getGameState() == GameState.PREP){
             ItemStack item = event.getItem();
             if (item == null) {

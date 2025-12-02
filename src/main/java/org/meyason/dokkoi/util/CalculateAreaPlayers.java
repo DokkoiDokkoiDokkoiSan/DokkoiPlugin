@@ -35,8 +35,8 @@ public class CalculateAreaPlayers {
         return playersInArea;
     }
 
-    public static List<Player> getPlayersInSight(Game game, Player basePlayer, float sightDegree) {
-        List<Player> players = new ArrayList<>();
+    public static ArrayList<Player> getPlayersInSight(Game game, Player basePlayer, float sightDegree) {
+        ArrayList<Player> players = new ArrayList<>();
         Location basePlayerLocation = basePlayer.getLocation();
         Location eyeLoc = basePlayer.getEyeLocation();
         Vector basePlayerEyeVector = eyeLoc.toVector();

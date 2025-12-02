@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.goal;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.meyason.dokkoi.constants.JobList;
 import org.meyason.dokkoi.constants.Tier;
@@ -8,21 +9,22 @@ import org.meyason.dokkoi.exception.JobDataMismatchException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.job.Photographer;
+import org.meyason.dokkoi.util.CalculateAreaPlayers;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 public class PhotoAllPlayer extends Goal{
 
     public PhotoAllPlayer() {
-        super("PhotoAllPlayer", "生存プレイヤーを全員カメラで撮影しよう！");
+        super("§cPhotoAllPlayer", "§e生存プレイヤーを全員カメラで撮影しよう！", Tier.TIER_2);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-        this.tier = Tier.TIER_2;
         setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
@@ -35,7 +37,7 @@ public class PhotoAllPlayer extends Goal{
     }
 
     @Override
-    public boolean isAchieved() {
+    public boolean isAchieved(boolean notify) {
         if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
             this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;

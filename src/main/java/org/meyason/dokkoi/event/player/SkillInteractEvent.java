@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.event.player;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -27,8 +28,12 @@ import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.jobitem.*;
 import org.meyason.dokkoi.job.*;
+import org.meyason.dokkoi.util.CalculateAreaPlayers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class SkillInteractEvent implements Listener {
 
@@ -133,9 +138,7 @@ public class SkillInteractEvent implements Listener {
                             }
                             prayer.skill();
                         }
-                        case Photographer photographer -> {
-
-                        }
+                        case Photographer photographer -> photographer.skill();
                         case DrugStore drugStore -> drugStore.skill();
                         default -> {
                         }
