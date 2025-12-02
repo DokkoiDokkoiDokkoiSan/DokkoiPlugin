@@ -53,7 +53,8 @@ public class Ketsumou extends CustomItem {
         GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
         Job job = gameStatesManager.getPlayerJobs().get(picker.getUniqueId());
         if(!(job instanceof Explorer explorer)){
-            picker.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 3));
+            picker.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, Integer.MAX_VALUE));
+            picker.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, Integer.MAX_VALUE));
             picker.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));
             gameStatesManager.addAdditionalDamage(picker.getUniqueId(), -500);
             picker.sendActionBar(Component.text("§cこれはお前の§9§lけつ毛§r§cではない。"));
@@ -68,6 +69,7 @@ public class Ketsumou extends CustomItem {
         Job job = gameStatesManager.getPlayerJobs().get(picker.getUniqueId());
         if(!(job instanceof Explorer explorer)){
             if(ketsumouCount(picker) - 1 > 0) return;
+            picker.removePotionEffect(PotionEffectType.BLINDNESS);
             picker.removePotionEffect(PotionEffectType.SLOWNESS);
             picker.removePotionEffect(PotionEffectType.GLOWING);
             gameStatesManager.addAdditionalDamage(picker.getUniqueId(), 500);

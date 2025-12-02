@@ -20,10 +20,10 @@ public class JobList {
 
     static{
         jobMap.put(EXECUTOR.getName(), EXECUTOR);
-        jobMap.put(LONELY.getName(), LONELY);
-        jobMap.put(BOMBER.getName(), BOMBER);
+//        jobMap.put(LONELY.getName(), LONELY);
+//        jobMap.put(BOMBER.getName(), BOMBER);
         jobMap.put(IRONMAIDEN.getName(), IRONMAIDEN);
-        jobMap.put(EXPLORER.getName(), EXPLORER);
+//        jobMap.put(EXPLORER.getName(), EXPLORER);
         jobMap.put(PRAYER.getName(), PRAYER);
         jobMap.put(PHOTOGRAPHER.getName(), PHOTOGRAPHER);
     }

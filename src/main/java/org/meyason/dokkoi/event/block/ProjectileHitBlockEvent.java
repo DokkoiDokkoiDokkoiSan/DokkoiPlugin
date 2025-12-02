@@ -8,6 +8,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.event.player.DamageEvent;
+import org.meyason.dokkoi.item.jobitem.Skill;
+import org.meyason.dokkoi.item.jobitem.Ultimate;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
@@ -41,15 +43,15 @@ public class ProjectileHitBlockEvent implements Listener {
 
                 Job job = manager.getPlayerJobs().get(attacker.getUniqueId());
                 if (job instanceof Bomber bomber) {
-                    if (attackItem.equals(GameItemKeyString.SKILL)) {
+                    if (attackItem.equals(Skill.id)) {
                         List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attacker, event.getHitBlock().getLocation(), 1);
                         effectedPlayers.add(attacker);
                         bomber.skill(event.getHitBlock().getLocation(), effectedPlayers);
-                    } else if (attackItem.equals(GameItemKeyString.ULTIMATE_SKILL)) {
+                    } else if (attackItem.equals(Ultimate.id)) {
                         bomber.ultimate(event.getHitBlock().getLocation());
                     }
                 } else if (job instanceof Explorer explorer) {
-                    if (attackItem.equals(GameItemKeyString.SKILL)) {
+                    if (attackItem.equals(Skill.id)) {
                         explorer.skill(snowball);
                     }
                 }

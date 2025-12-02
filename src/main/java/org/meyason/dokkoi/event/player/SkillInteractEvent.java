@@ -3,6 +3,7 @@ package org.meyason.dokkoi.event.player;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
@@ -49,6 +50,7 @@ public class SkillInteractEvent implements Listener {
                 if(game.getGameStatesManager().getPlayerJobs().get(player.getUniqueId()) instanceof Prayer prayer){
                     if(prayer.addLocationToAlreadyOpenedChests(chest.getInventory().getLocation())){
                         player.sendActionBar(Component.text("§b[ガチャポイント]§b このチェストは初めて開ける。"));
+                        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_CHIME, 1.0F, 1.0F);
                         prayer.addGachaPoint(1);
                     }
                 }
@@ -65,7 +67,7 @@ public class SkillInteractEvent implements Listener {
             if (container.has(itemKey, PersistentDataType.STRING)) {
 
                 // スキル発動
-                if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.SKILL)) {
+                if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), Skill.id)) {
                     CustomItem customItem = CustomItem.getItem(item);
                     if (customItem == null) {
                         return;
@@ -81,7 +83,6 @@ public class SkillInteractEvent implements Listener {
                         return;
                     }
 
-                    job.playSoundEffectSkill(player);
                     // 執行者
                     switch (job) {
                         case Executor executor -> {
@@ -133,16 +134,18 @@ public class SkillInteractEvent implements Listener {
                             prayer.skill();
                         }
                         case Photographer photographer -> {
-                            
+
                         }
+                        case DrugStore drugStore -> drugStore.skill();
                         default -> {
                         }
                     }
+                    job.playSoundEffectSkill(player);
 
                     job.setRemainCoolTimeSkill(job.getCoolTimeSkill());
                     job.chargeSkill(player, manager);
 
-                } else if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), GameItemKeyString.ULTIMATE_SKILL)) {
+                } else if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), Ultimate.id)) {
                     CustomItem customItem = CustomItem.getItem(item);
                     if (customItem == null) {
                         return;

@@ -1,11 +1,13 @@
 package org.meyason.dokkoi.command;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.meyason.dokkoi.entity.GameEntity;
+import org.meyason.dokkoi.entity.GameEntityManager;
 
 public class SpawnEntityCommand implements CommandExecutor {
 
@@ -25,6 +27,11 @@ public class SpawnEntityCommand implements CommandExecutor {
         }
 
         String entityId = args[0];
-        return GameEntity.spawnEntityByID(player, entityId);
+        boolean result =  GameEntityManager.spawnEntityByID(player, entityId);
+        if(!result){
+            player.sendMessage(Component.text("§4エンティティIDが不正です: " + entityId));
+            return false;
+        }
+        return true;
     }
 }

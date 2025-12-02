@@ -18,6 +18,7 @@ import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
+import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.goal.MassTierKiller;
@@ -172,25 +173,27 @@ public class IronMaiden extends Job {
     }
 
     public void ultimate(){
-        CustomItem rapier = GameItem.getItem(GameItemKeyString.RAPIER);
-        if(rapier == null){
-            this.player.sendMessage("§6エラーが発生しました．管理者に連絡してください：レイピア取得失敗");
-            return;
-        }
-        ItemStack itemStack = rapier.getItem();
-        PlayerInventory inv = player.getInventory();
+        try {
+            CustomItem rapier = GameItem.getItem(Rapier.id);
+            ItemStack itemStack = rapier.getItem();
+            PlayerInventory inv = player.getInventory();
 
-        if(hadRapier != null) {
-            if (inv.contains(hadRapier.getItem())) {
-                this.player.sendMessage("§6レイピアを先に投擲してください。");
-                return;
+            if (hadRapier != null) {
+                if (inv.contains(hadRapier.getItem())) {
+                    this.player.sendMessage("§6レイピアを先に投擲してください。");
+                    return;
+                }
             }
-        }
 
-        if(rapier instanceof Rapier rapierItem){
-            rapierItem.setPlayer(game, player);
-            this.hadRapier = rapierItem;
+            if (rapier instanceof Rapier rapierItem) {
+                rapierItem.setPlayer(game, player);
+                this.hadRapier = rapierItem;
+            }
+            inv.addItem(itemStack);
+
+        } catch (NoGameItemException e) {
+            player.sendMessage(Component.text("§cレイピアの取得に失敗しました。運営に報告してください。"));
+            e.printStackTrace();
         }
-        inv.addItem(itemStack);
     }
 }

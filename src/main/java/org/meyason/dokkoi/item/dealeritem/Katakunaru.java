@@ -16,7 +16,7 @@ public class Katakunaru extends CustomItem {
     public static final String id = "katakunaru";
 
     public Katakunaru() {
-        super(id, "§dカタクナール", ItemStack.of(Material.MELON_SEEDS), 64);
+        super(id, "§9カタクナール", ItemStack.of(Material.MELON_SEEDS), 64);
         isUnique = true;
         List<Component> lore = List.of(
                 Component.text("§5体が丈夫になる気がする薬。"),

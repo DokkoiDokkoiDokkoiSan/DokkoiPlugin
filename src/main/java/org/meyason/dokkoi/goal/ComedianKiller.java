@@ -12,16 +12,13 @@ public class ComedianKiller extends Goal {
     private int killCount = 0;
 
     public ComedianKiller() {
-        super("§cComedianKiller", "芸人を自爆で3人殺せ！");
+        super("§cComedianKiller", "§eマップ内に存在する§a小島よしお§e・§aハリウッドザコシショウ§e・§aオードリー若林§e・§aパンサー尾形§e・§aビビる大木§eのどれか§b3人以上§eをパッシブスキルで倒せ！", Tier.TIER_3);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-
-        this.tier = Tier.TIER_3;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
     @Override
@@ -33,9 +30,9 @@ public class ComedianKiller extends Goal {
     }
 
     @Override
-    public boolean isAchieved() {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player.getUniqueId()))){
-            this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
+    public boolean isAchieved(boolean notify) {
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())){
+            if(notify)this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;
         }
         Job job = game.getGameStatesManager().getPlayerJobs().get(player.getUniqueId());
@@ -43,10 +40,10 @@ public class ComedianKiller extends Goal {
             this.killCount = bomber.getKillComedian();
         }
         if(this.killCount >= 3){
-            this.player.sendMessage("§6よくやった！芸人を3人自爆で殺した！");
+            if(notify)this.player.sendMessage("§6よくやった！芸人を3人自爆で殺した！");
             return true;
         }
-        this.player.sendMessage("§c失敗だ。芸人を3人自爆で殺せなかった。");
+        if(notify)this.player.sendMessage("§c失敗だ。芸人を3人自爆で殺せなかった。");
         return false;
     }
 

@@ -12,10 +12,6 @@ commands:
     description: 試合を強制終了します．
     usage: /end
     default: op
-  goalfix:
-    description: 職業を固定します．None指定で解除します．
-    usage: /goalfix <player> <job>
-    default: op
   spawnentity:
     description: エンティティをスポーンさせます．
     usage: /spawnentity <entity id>

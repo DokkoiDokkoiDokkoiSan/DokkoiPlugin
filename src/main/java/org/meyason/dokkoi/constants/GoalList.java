@@ -23,6 +23,7 @@ public class GoalList {
     public static final GachaBeginner GACHABEGINNER = new GachaBeginner();
     public static final Pachikasu PACHIASU = new Pachikasu();
     public static final GamblerMaster GAMBLERMASTER = new GamblerMaster();
+    public static final DrugEnforcementAdministration DRUGENFORCEMENTADMINISTRATION = new DrugEnforcementAdministration();
     public static final PhotoAllPlayer PHOTOALLPLAYER = new PhotoAllPlayer();
 
     private static final HashMap<String, Goal> goalMap = new HashMap<>();
@@ -43,6 +44,7 @@ public class GoalList {
         goalMap.put(GACHABEGINNER.getName(), GACHABEGINNER);
         goalMap.put(PACHIASU.getName(), PACHIASU);
         goalMap.put(GAMBLERMASTER.getName(), GAMBLERMASTER);
+        goalMap.put(DRUGENFORCEMENTADMINISTRATION.getName(), DRUGENFORCEMENTADMINISTRATION);
         goalMap.put(PHOTOALLPLAYER.getName(), PHOTOALLPLAYER);
     }
 

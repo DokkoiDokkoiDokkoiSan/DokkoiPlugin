@@ -1,8 +1,8 @@
 package org.meyason.dokkoi.event.player;
 
 import org.bukkit.NamespacedKey;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
@@ -18,13 +19,15 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.Defender;
 import org.meyason.dokkoi.item.CustomItem;
-import org.meyason.dokkoi.item.battleitems.HealingCrystal;
+import org.meyason.dokkoi.item.battleitem.HealingCrystal;
 import org.meyason.dokkoi.item.dealeritem.Hayakunaru;
 import org.meyason.dokkoi.item.dealeritem.Katakunaru;
 import org.meyason.dokkoi.item.dealeritem.Kizukieru;
 import org.meyason.dokkoi.item.dealeritem.Tsuyokunaru;
 import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
+import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenu;
+import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 
 import java.util.List;
@@ -41,6 +44,30 @@ public class ItemInteractEvent implements Listener {
             player.sendMessage("§e視界内のプレイヤー数: " + players.size());
         }
         if(game.getGameStatesManager().getGameState() == GameState.IN_GAME) {
+        if(game.getGameStatesManager().getGameState() == GameState.PREP){
+            ItemStack item = event.getItem();
+            if (item == null) {
+                return;
+            }
+            NamespacedKey itemKey = new NamespacedKey(JavaPlugin.getPlugin(org.meyason.dokkoi.Dokkoi.class), "item_name");
+            ItemMeta meta = item.getItemMeta();
+
+            if (meta == null) {
+                return;
+            }
+            if (meta.getPersistentDataContainer().has(itemKey) &&
+                    meta.getPersistentDataContainer().get(itemKey, org.bukkit.persistence.PersistentDataType.STRING).equals(GoalSelectMenuItem.id)) {
+                if(game.getGameStatesManager().getPlayerJobs().containsKey(player.getUniqueId())){
+                    player.sendMessage("§c既に職業が選択されています。");
+                    event.setCancelled(true);
+                    return;
+                }
+                GoalSelectMenu goalSelectMenu = new GoalSelectMenu();
+                goalSelectMenu.sendMenu(event.getPlayer());
+                event.setCancelled(true);
+            }
+
+        }else if(game.getGameStatesManager().getGameState() == GameState.IN_GAME) {
             ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
             if (!item.hasItemMeta()) {
                 return;
@@ -57,7 +84,7 @@ public class ItemInteractEvent implements Listener {
 
 
 
-                if (isItem(container, itemKey, GameItemKeyString.KILLERLIST)) {
+                if (isItem(container, itemKey, KillerList.id)) {
                     if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
                         return;
                     }
@@ -68,18 +95,21 @@ public class ItemInteractEvent implements Listener {
                     }
 
 
-                } else if (isItem(container, itemKey, GameItemKeyString.BURIBURIGUARD)) {
+                } else if (isItem(container, itemKey, BuriBuriGuard.id)) {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
                     event.setCancelled(true);
-                    if(customItem instanceof BuriBuriGuard buriburiguard){
-                        Defender defender = (Defender) game.getGameStatesManager().getPlayerGoals().get(player.getUniqueId());
-                        buriburiguard.skill(player, defender.getTargetPlayer());
+                    if(customItem instanceof BuriBuriGuard){
+                        NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
+                        String itemSerial = container.get(serialKey, PersistentDataType.STRING);
+                        CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
+                        BuriBuriGuard buriburiguard = (BuriBuriGuard) serialItem;
+                        buriburiguard.skill();
                     }
 
 
-                }else if(isItem(container, itemKey, GameItemKeyString.TSUYOKUNARU)) {
+                }else if(isItem(container, itemKey, Tsuyokunaru.id)) {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
@@ -88,7 +118,7 @@ public class ItemInteractEvent implements Listener {
                     Tsuyokunaru.activate(player, item);
 
 
-                }else if(isItem(container, itemKey, GameItemKeyString.KIZUKIERU)) {
+                }else if(isItem(container, itemKey, Kizukieru.id)) {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
@@ -96,7 +126,7 @@ public class ItemInteractEvent implements Listener {
                     Kizukieru.activate(player, item);
 
 
-                }else if(isItem(container, itemKey, GameItemKeyString.HAYAKUNARU)) {
+                }else if(isItem(container, itemKey, Hayakunaru.id)) {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
@@ -104,7 +134,7 @@ public class ItemInteractEvent implements Listener {
                     Hayakunaru.activate(player, item);
 
 
-                }else if(isItem(container, itemKey, GameItemKeyString.KATAKUNARU)) {
+                }else if(isItem(container, itemKey, Katakunaru.id)) {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
@@ -112,27 +142,14 @@ public class ItemInteractEvent implements Listener {
                     Katakunaru.activate(player, item);
 
 
-                } else if (isItem(container, itemKey, GameItemKeyString.HEALINGCRYSTAL)) {
+                } else if (isItem(container, itemKey, HealingCrystal.id)) {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
                     event.setCancelled(true);
-                    if (customItem instanceof HealingCrystal) {
-                        if (player.getHealth() == player.getMaxHealth()) {
-                            player.sendActionBar("§c既に最大体力です。");
-                            return;
-                        }
-                        double newHealth = player.getHealth() + 5;
-                        if (newHealth > player.getMaxHealth()) {
-                            newHealth = player.getMaxHealth();
-                        }
-                        player.setHealth(newHealth);
-                        player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 10, 1);
-                        player.sendMessage("§a回復結晶を使用した！");
+                    HealingCrystal.activate(player, item);
 
-                        item.setAmount(item.getAmount() - 1);
-                        player.getInventory().setItemInMainHand(item);
-                    }
+
                 }
             }
         }
