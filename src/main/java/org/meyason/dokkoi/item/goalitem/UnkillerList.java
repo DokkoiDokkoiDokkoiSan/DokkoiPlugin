@@ -11,7 +11,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
@@ -22,19 +21,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class KillerList extends CustomItem {
+public class UnkillerList extends CustomItem {
 
-    public static final String id = "killer_list";
+    public static final String id = "unkiller_list";
+
 
     private Player player;
     private Game game;
 
     private List<UUID> targetPlayerList = new ArrayList<>();
 
-    public KillerList() {
-        super(id, "§a殺すノート", ItemStack.of(Material.WRITTEN_BOOK), 1);
+    public UnkillerList() {
+        super(id, "§a殺してないノート", ItemStack.of(Material.WRITTEN_BOOK), 1);
         isUnique = true;
     }
+
 
     @Override
     protected void registerItemFunction() {
@@ -42,17 +43,25 @@ public class KillerList extends CustomItem {
             ItemMeta meta = item.getItemMeta();
             if(meta != null){
                 BookMeta bookMeta = (BookMeta) item.getItemMeta();
-                bookMeta.setTitle("§a殺すノート");
+                bookMeta.setTitle("§a殺してないノート");
                 bookMeta.setAuthor("§6二階堂真紅");
                 List<Component> lore = List.of(
-                        Component.text("§5なんかでかいトカゲが落としたメモ帳。勝手に文字書かれる、こわ。"),
+                        Component.text("§5なんかでかいムカデが落としたメモ帳。勝手に文字消えてく、こわ。"),
                         Component.text(""),
                         Component.text("§b効果"),
-                        Component.text("§5殺人をしたプレイヤー名が自身のチャットログにアナウンスされ、ノートに記入される。"),
+                        Component.text("§5本を開くと、まだ殺人をしていないプレイヤー名が記入されている。"),
                         Component.text("§5また、ノートを左クリックすることで記入されたプレイヤーに発光を10秒間付与する。"),
                         Component.text("§cCT 30秒"),
                         Component.text("§bこれらのプレイヤーをすべて殺害せよ。")
                 );
+                List<UUID> alivePlayers = new ArrayList<>(game.getGameStatesManager().getAlivePlayers().stream().toList());
+                StringBuilder names = new StringBuilder();
+                for(UUID id : alivePlayers){
+                    Player p = Bukkit.getPlayer(id);
+                    if(p == null) continue;
+                    names.append("§2- ").append(p.getName()).append("\n");
+                }
+                bookMeta.setPages(names.toString());
                 bookMeta.lore(lore);
                 setDescription(lore);
                 item.setItemMeta(bookMeta);
@@ -64,24 +73,26 @@ public class KillerList extends CustomItem {
     public void setPlayer(Game game, Player player){
         this.game = game;
         this.player = player;
-        player.sendMessage(Component.text("§a殺すノート§bを手に入れた！"));
+        player.sendMessage(Component.text("§a殺してないノート§bを手に入れた！"));
         game.getGameStatesManager().setEnableKillerList(true);
     }
 
-    public void updateKillerList(){
+    public void updateUnKillerList(){
         ItemStack book = baseItem.clone();
-        GameItem.removeItem(player, KillerList.id, 1);
+        GameItem.removeItem(player, UnkillerList.id, 1);
         BookMeta bookMeta = (BookMeta) book.getItemMeta();
         List<UUID> killerPlayers = new ArrayList<>(game.getGameStatesManager().getKillerList().keySet());
+        List<UUID> alivePlayers = new ArrayList<>(game.getGameStatesManager().getAlivePlayers().stream().toList());
+        List<UUID> unKillerPlayers = new ArrayList<>();
+        for(UUID id : alivePlayers){
+            if(!killerPlayers.contains(id)){
+                unKillerPlayers.add(id);
+            }
+        }
         StringBuilder names = new StringBuilder();
-        for(UUID id : killerPlayers){
-            if(id.equals(player.getUniqueId())) continue;
+        for(UUID id : unKillerPlayers){
             Player p = Bukkit.getPlayer(id);
             if(p == null) continue;
-            if(!game.getGameStatesManager().getAlivePlayers().contains(id)){
-                names.append("§4§m- ").append(p.getName()).append("\n");
-                killerPlayers.remove(id);
-            }
             names.append("§2- ").append(p.getName()).append("\n");
         }
         bookMeta.setPages(names.toString());
@@ -89,7 +100,7 @@ public class KillerList extends CustomItem {
         this.baseItem = book;
         //アイテム更新
         this.player.getInventory().addItem(book);
-        this.targetPlayerList = killerPlayers;
+        this.targetPlayerList = unKillerPlayers;
     }
 
     public void skill(GameStatesManager gameStatesManager, Player owner){
@@ -119,9 +130,11 @@ public class KillerList extends CustomItem {
         };
         itemInitTask.runTaskLater(Dokkoi.getInstance(), 30 * 20L);
         gameStatesManager.addItemCoolDownScheduler(uuid, itemInitTask);
+        owner.sendMessage("§aひよってる奴らの身体が光りだした！");
     }
 
     public List<UUID> getTargetPlayerList() {
         return targetPlayerList;
     }
+
 }

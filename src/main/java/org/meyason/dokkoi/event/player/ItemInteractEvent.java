@@ -26,6 +26,7 @@ import org.meyason.dokkoi.item.dealeritem.Kizukieru;
 import org.meyason.dokkoi.item.dealeritem.Tsuyokunaru;
 import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
+import org.meyason.dokkoi.item.goalitem.UnkillerList;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenu;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
 
@@ -83,10 +84,27 @@ public class ItemInteractEvent implements Listener {
                     }
                     event.setCancelled(true);
                     GameStatesManager manager = game.getGameStatesManager();
-                    if (customItem instanceof KillerList killerList) {
+                    if (customItem instanceof KillerList) {
+                        NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
+                        String itemSerial = container.get(serialKey, PersistentDataType.STRING);
+                        CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
+                        KillerList killerList = (KillerList) serialItem;
                         killerList.skill(manager, player);
                     }
 
+                }else if(isItem(container, itemKey, UnkillerList.id)){
+                    if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    GameStatesManager manager = game.getGameStatesManager();
+                    if (customItem instanceof UnkillerList) {
+                        NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
+                        String itemSerial = container.get(serialKey, PersistentDataType.STRING);
+                        CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
+                        UnkillerList unkillerList = (UnkillerList) serialItem;
+                        unkillerList.skill(manager, player);
+                    }
 
                 } else if (isItem(container, itemKey, BuriBuriGuard.id)) {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {

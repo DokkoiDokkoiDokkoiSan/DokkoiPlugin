@@ -20,10 +20,7 @@ import org.meyason.dokkoi.entity.GameEntity;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
-import org.meyason.dokkoi.item.dealeritem.Hayakunaru;
-import org.meyason.dokkoi.job.DrugStore;
-
-import java.util.Objects;
+import org.meyason.dokkoi.menu.shopmenu.ShopMenu;
 
 public class EntityInteractEvent implements Listener {
 
@@ -68,7 +65,9 @@ public class EntityInteractEvent implements Listener {
                 }
 
             }else if(gameEntity instanceof Clerk clerk){
-                // 未実装
+                clerk.talk(player);
+                ShopMenu shopMenu = new ShopMenu();
+                shopMenu.sendMenu(clerk, player);
             }
 
         }

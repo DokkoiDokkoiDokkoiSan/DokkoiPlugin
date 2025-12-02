@@ -15,6 +15,7 @@ import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
+import org.meyason.dokkoi.goal.GangStar;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.goal.Police;
 import org.meyason.dokkoi.item.CustomItem;
@@ -68,6 +69,22 @@ public class DeathEvent {
         dead.sendMessage("§eキルしたプレイヤー: §l§c" + killer.getName() + "§r§e");
         killer.sendMessage("§aあなたは§l§6" + dead.getName() + "§r§aを倒しました");
 
+        if(manager.isEnableKillerList()){
+            HashMap<UUID, Goal> playerGoals = manager.getPlayerGoals();
+            for(UUID uuid : manager.getAlivePlayers()){
+                Player player = Bukkit.getPlayer(uuid);
+                if(player == null){continue;}
+                Goal goal = playerGoals.get(uuid);
+                if(goal instanceof Police police){
+                    if(player.equals(killer)){continue;}
+                    player.sendMessage("§a[殺すノート] §c" + killer.getName() + "§a が " + dead.getName() + " §aを倒しました");
+                    police.getKillerList().updateKillerList();
+                }else if(goal instanceof GangStar gangStar){
+                    gangStar.getUnKillerList().updateUnKillerList();
+                }
+            }
+        }
+
         if(!manager.getPlayerGoals().get(killerUUID).isKillable(dead)){
             String borderColor = "§6";
             String horizontal = "─".repeat(32);
@@ -95,20 +112,6 @@ public class DeathEvent {
             } catch (NoGameItemException e) {
                 e.printStackTrace();
                 return;
-            }
-        }
-
-        if(manager.isEnableKillerList()){
-            HashMap<UUID, Goal> playerGoals = manager.getPlayerGoals();
-            for(UUID uuid : manager.getAlivePlayers()){
-                Player player = Bukkit.getPlayer(uuid);
-                if(player == null){continue;}
-                Goal goal = playerGoals.get(uuid);
-                if(goal instanceof Police police){
-                    if(player.equals(killer)){continue;}
-                    player.sendMessage("§a[殺すノート] §c" + killer.getName() + "§a が " + dead.getName() + " §aを倒しました");
-                    police.killerList.updateKillerList();
-                }
             }
         }
 

@@ -67,8 +67,8 @@ public class DrugStore extends Job {
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.KILLER,
-                GoalList.CARPETBOMBING,
+                GoalList.GANGSTAR,
+                GoalList.MATSUMOTOKIYOSHI,
                 GoalList.SUGIYAKKYOKU
         );
     }

@@ -36,6 +36,7 @@ public class GameItem {
         items.put(Ultimate.id, new Ultimate());
         items.put(Passive.id, new Passive());
         items.put(KillerList.id, new KillerList());
+        items.put(UnkillerList.id, new UnkillerList());
         items.put(Rapier.id, new Rapier());
         items.put(TierPlayerList.id, new TierPlayerList());
         items.put(Ketsumou.id, new Ketsumou());
