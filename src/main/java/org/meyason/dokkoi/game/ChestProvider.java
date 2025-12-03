@@ -1,5 +1,11 @@
 package org.meyason.dokkoi.game;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.meyason.dokkoi.Dokkoi;
@@ -121,6 +127,22 @@ public class ChestProvider {
     }
 
     public void cancelTask(){
-        if(task != null) task.cancel();
+        if(task != null) {
+            isPopMamiya = false;
+            isPopTakashima = false;
+            isPopThunderJavelin = false;
+            task.cancel();
+        }
+    }
+
+    public static void removeAllChests() {
+        for(Location loc : GameLocation.chestLocations) {
+            Block block = Bukkit.getWorld("world").getBlockAt(loc);
+            if(block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST){
+                Chest chest = (Chest) block.getState();
+                Inventory inventory = chest.getInventory();
+                inventory.clear();
+            }
+        }
     }
 }

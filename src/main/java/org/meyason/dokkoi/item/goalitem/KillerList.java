@@ -3,10 +3,14 @@ package org.meyason.dokkoi.item.goalitem;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -34,6 +38,7 @@ public class KillerList extends CustomItem {
     public KillerList() {
         super(id, "§a殺すノート", ItemStack.of(Material.WRITTEN_BOOK), 1);
         isUnique = true;
+        hasSerialNumber = true;
     }
 
     @Override
@@ -57,6 +62,7 @@ public class KillerList extends CustomItem {
                 setDescription(lore);
                 item.setItemMeta(bookMeta);
             }
+            this.baseItem = item;
             return item;
         };
     }
@@ -69,27 +75,42 @@ public class KillerList extends CustomItem {
     }
 
     public void updateKillerList(){
-        ItemStack book = baseItem.clone();
-        GameItem.removeItem(player, KillerList.id, 1);
-        BookMeta bookMeta = (BookMeta) book.getItemMeta();
+        if(this.player == null || this.game == null){
+            return;
+        }
+        PlayerInventory inventory = this.player.getInventory();
+        int slot = findKillerListSlot(inventory);
+        if(slot == -1){
+            return;
+        }
+        ItemStack killerListItem = inventory.getItem(slot);
+        if(killerListItem == null){
+            return;
+        }
+        ItemMeta meta = killerListItem.getItemMeta();
+        if(!(meta instanceof BookMeta bookMeta)){
+            return;
+        }
         List<UUID> killerPlayers = new ArrayList<>(game.getGameStatesManager().getKillerList().keySet());
         StringBuilder names = new StringBuilder();
+        List<UUID> updatedTargets = new ArrayList<>();
         for(UUID id : killerPlayers){
             if(id.equals(player.getUniqueId())) continue;
             Player p = Bukkit.getPlayer(id);
             if(p == null) continue;
-            if(!game.getGameStatesManager().getAlivePlayers().contains(id)){
+            boolean isAlive = game.getGameStatesManager().getAlivePlayers().contains(id);
+            if(!isAlive){
                 names.append("§4§m- ").append(p.getName()).append("\n");
-                killerPlayers.remove(id);
+                continue;
             }
             names.append("§2- ").append(p.getName()).append("\n");
+            updatedTargets.add(id);
         }
         bookMeta.setPages(names.toString());
-        book.setItemMeta(bookMeta);
-        this.baseItem = book;
-        //アイテム更新
-        this.player.getInventory().addItem(book);
-        this.targetPlayerList = killerPlayers;
+        killerListItem.setItemMeta(bookMeta);
+        inventory.setItem(slot, killerListItem);
+        this.baseItem = killerListItem.clone();
+        this.targetPlayerList = updatedTargets;
     }
 
     public void skill(GameStatesManager gameStatesManager, Player owner){
@@ -124,5 +145,21 @@ public class KillerList extends CustomItem {
 
     public List<UUID> getTargetPlayerList() {
         return targetPlayerList;
+    }
+
+    private int findKillerListSlot(PlayerInventory inventory){
+        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+        for(int slot = 0; slot < inventory.getSize(); slot++){
+            ItemStack stack = inventory.getItem(slot);
+            if(stack == null) continue;
+            ItemMeta meta = stack.getItemMeta();
+            if(meta == null) continue;
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            if(container.has(itemKey, PersistentDataType.STRING) &&
+               KillerList.id.equals(container.get(itemKey, PersistentDataType.STRING))){
+                return slot;
+            }
+        }
+        return -1;
     }
 }

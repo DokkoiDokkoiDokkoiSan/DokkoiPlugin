@@ -41,18 +41,20 @@ public class GangStar extends Goal{
             this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：殺してないノート取得失敗");
             return;
         }
-        this.unKillerList = (UnkillerList) item;
+        UnkillerList unkillerList = (UnkillerList) item;
         ItemStack unKillerListItem = item.getItem();
         ItemMeta itemMeta = unKillerListItem.getItemMeta();
         PersistentDataContainer container = itemMeta.getPersistentDataContainer();
         NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
         String serialUUID = container.get(serialKey, PersistentDataType.STRING);
 
-        this.unKillerList.setPlayer(game, player);
-        Game.getInstance().getGameStatesManager().addCustomItemToSerialMap(serialUUID, this.unKillerList);
+        unkillerList.setPlayer(game, player);
+        Game.getInstance().getGameStatesManager().addCustomItemToSerialMap(serialUUID, unkillerList);
 
         PlayerInventory inventory = player.getInventory();
         inventory.addItem(unKillerListItem);
+
+        this.unKillerList = unkillerList;
 
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e殺してないリストに記入されているプレイヤーのみ"));
@@ -66,7 +68,7 @@ public class GangStar extends Goal{
             return false;
         }
         if(getUnKillerList().getTargetPlayerList().isEmpty()){
-            if(notify)this.player.sendMessage("§cよくやった！お前は街の治安をめちゃくちゃにした。");
+            if(notify)this.player.sendMessage("§6よくやった！お前は街の治安をめちゃくちゃにした。");
             return true;
         }
         if(notify)this.player.sendMessage("§c失敗だ。ちきってるやつがまだ生きている。");

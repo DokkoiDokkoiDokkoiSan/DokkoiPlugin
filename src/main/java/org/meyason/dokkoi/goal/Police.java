@@ -45,18 +45,21 @@ public class Police extends Goal {
             this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：殺すリスト取得失敗");
             return;
         }
-        this.killerList = (KillerList) item;
+        KillerList list = (KillerList) item;
         ItemStack killerListItem = item.getItem();
         ItemMeta itemMeta = killerListItem.getItemMeta();
         PersistentDataContainer container = itemMeta.getPersistentDataContainer();
         NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
         String serialUUID = container.get(serialKey, PersistentDataType.STRING);
 
-        this.killerList.setPlayer(game, player);
-        Game.getInstance().getGameStatesManager().addCustomItemToSerialMap(serialUUID, this.killerList);
+        list.setPlayer(game, player);
+        Game.getInstance().getGameStatesManager().addCustomItemToSerialMap(serialUUID, list);
 
         PlayerInventory inventory = player.getInventory();
         inventory.addItem(killerListItem);
+
+        this.killerList = list;
+
         this.player.sendMessage(Component.text("§b----------------------------"));
         this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e殺すリストに記載されたプレイヤーのみ"));
         this.player.sendMessage(Component.text("§bこれ以外を殺害するとペナルティが付与される"));

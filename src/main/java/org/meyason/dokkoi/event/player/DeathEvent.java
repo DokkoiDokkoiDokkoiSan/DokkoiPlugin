@@ -80,26 +80,6 @@ public class DeathEvent {
             killer.sendMessage("§aあなたは§l§6" + dead.getName() + "§r§aを倒しました");
         }
 
-        if(manager.isEnableKillerList()){
-            HashMap<UUID, Goal> playerGoals = manager.getPlayerGoals();
-            for(UUID uuid : manager.getAlivePlayers()){
-                Player player = Bukkit.getPlayer(uuid);
-                if(player == null){continue;}
-                Goal goal = playerGoals.get(uuid);
-                if(goal instanceof Police police){
-                    if(killer != null) {
-                        if (player.equals(killer)) {
-                            continue;
-                        }
-                        player.sendMessage("§a[殺すノート] §c" + killer.getName() + "§a が " + dead.getName() + " §aを倒しました");
-                    }
-                    police.getKillerList().updateKillerList();
-                }else if(goal instanceof GangStar gangStar){
-                    gangStar.getUnKillerList().updateUnKillerList();
-                }
-            }
-        }
-
         boolean hasRedHelmet = false;
         ItemStack helmet = dead.getInventory().getHelmet();
         if(helmet != null){
@@ -119,7 +99,7 @@ public class DeathEvent {
             }
         }
 
-        if(killer != null &&!manager.getPlayerGoals().get(killerUUID).isKillable(dead)){
+        if(killer != null && !manager.getPlayerGoals().get(killerUUID).isKillable(dead)){
             if(hasRedHelmet){
                 killer.sendMessage("§e[ペナルティ] §a" + dead.getName() + " §aは殺害できないプレイヤーですが，赤い帽子を被っていたためペナルティは免れました。");
                 dead.sendMessage("§e[ペナルティ免除] §aあなたは赤い帽子を被っていたため，ペナルティを免れました。");
@@ -141,7 +121,7 @@ public class DeathEvent {
                 int paddingLength = (horizontal.length() + 1 - length) * 2;
                 String forwardPadding = " ".repeat(paddingLength / 2);
                 String backPadding = " ".repeat(paddingLength - paddingLength / 2);
-                dead.sendMessage(forwardPadding.length() + " " + backPadding.length());
+                killer.sendMessage(Component.text(forwardPadding + line + backPadding));
             }
             killer.sendMessage(borderColor + "└" + horizontal + "┘");
             try {
@@ -150,6 +130,26 @@ public class DeathEvent {
             } catch (NoGameItemException e) {
                 e.printStackTrace();
                 return;
+            }
+        }
+
+        if(manager.isEnableKillerList()){
+            HashMap<UUID, Goal> playerGoals = manager.getPlayerGoals();
+            for(UUID uuid : manager.getAlivePlayers()){
+                Player player = Bukkit.getPlayer(uuid);
+                if(player == null){continue;}
+                Goal goal = playerGoals.get(uuid);
+                if(goal instanceof Police police){
+                    if(killer != null) {
+                        if (player.equals(killer)) {
+                            continue;
+                        }
+                        player.sendMessage("§a[殺すノート] §c" + killer.getName() + "§a が " + dead.getName() + " §aを倒しました");
+                    }
+                    police.getKillerList().updateKillerList();
+                }else if(goal instanceof GangStar gangStar){
+                    gangStar.getUnKillerList().updateUnKillerList();
+                }
             }
         }
 
@@ -163,19 +163,17 @@ public class DeathEvent {
             ItemMeta meta = item.getItemMeta();
             if(meta != null){
                 PersistentDataContainer container = meta.getPersistentDataContainer();
-                if(!container.has(itemKey)) {
-                    continue;
-                }
-                String gameItemName = container.get(itemKey, PersistentDataType.STRING);
-                if(GameItem.isCustomItem(item)){
-                    try {
-                        CustomItem customItem = GameItem.getItem(gameItemName);
-                        if (customItem.isUnique) {
-                            item.setAmount(0);
-                            break;
+                if(container.has(itemKey)) {
+                    String gameItemName = container.get(itemKey, PersistentDataType.STRING);
+                    if (GameItem.isCustomItem(item)) {
+                        try {
+                            CustomItem customItem = GameItem.getItem(gameItemName);
+                            if (customItem.isUnique) {
+                                item.setAmount(0);
+                            }
+                        } catch (NoGameItemException e) {
+                            continue;
                         }
-                    } catch (NoGameItemException e) {
-                        continue;
                     }
                 }
             }

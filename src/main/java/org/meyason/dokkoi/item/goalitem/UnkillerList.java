@@ -3,14 +3,19 @@ package org.meyason.dokkoi.item.goalitem;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
@@ -34,6 +39,7 @@ public class UnkillerList extends CustomItem {
     public UnkillerList() {
         super(id, "§a殺してないノート", ItemStack.of(Material.WRITTEN_BOOK), 1);
         isUnique = true;
+        hasSerialNumber = true;
     }
 
 
@@ -67,6 +73,7 @@ public class UnkillerList extends CustomItem {
                 setDescription(lore);
                 item.setItemMeta(bookMeta);
             }
+            this.baseItem = item;
             return item;
         };
     }
@@ -79,9 +86,22 @@ public class UnkillerList extends CustomItem {
     }
 
     public void updateUnKillerList(){
-        ItemStack book = baseItem.clone();
-        GameItem.removeItem(player, UnkillerList.id, 1);
-        BookMeta bookMeta = (BookMeta) book.getItemMeta();
+        if(this.player == null || this.game == null){
+            return;
+        }
+        PlayerInventory inventory = this.player.getInventory();
+        int slot = findUnkillerListSlot(inventory);
+        if(slot == -1){
+            return;
+        }
+        ItemStack book = inventory.getItem(slot);
+        if(book == null){
+            return;
+        }
+        ItemMeta meta = book.getItemMeta();
+        if(!(meta instanceof BookMeta bookMeta)){
+            return;
+        }
         List<UUID> killerPlayers = new ArrayList<>(game.getGameStatesManager().getKillerList().keySet());
         List<UUID> alivePlayers = new ArrayList<>(game.getGameStatesManager().getAlivePlayers().stream().toList());
         List<UUID> unKillerPlayers = new ArrayList<>();
@@ -98,9 +118,8 @@ public class UnkillerList extends CustomItem {
         }
         bookMeta.setPages(names.toString());
         book.setItemMeta(bookMeta);
-        this.baseItem = book;
-        //アイテム更新
-        this.player.getInventory().addItem(book);
+        player.getInventory().setItem(slot, book);
+        this.baseItem = book.clone();
         this.targetPlayerList = unKillerPlayers;
     }
 
@@ -137,6 +156,23 @@ public class UnkillerList extends CustomItem {
 
     public List<UUID> getTargetPlayerList() {
         return targetPlayerList;
+    }
+
+
+    private int findUnkillerListSlot(PlayerInventory inventory){
+        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+        for(int slot = 0; slot < inventory.getSize(); slot++){
+            ItemStack stack = inventory.getItem(slot);
+            if(stack == null) continue;
+            ItemMeta meta = stack.getItemMeta();
+            if(meta == null) continue;
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            if(container.has(itemKey, PersistentDataType.STRING) &&
+                    UnkillerList.id.equals(container.get(itemKey, PersistentDataType.STRING))){
+                return slot;
+            }
+        }
+        return -1;
     }
 
 }

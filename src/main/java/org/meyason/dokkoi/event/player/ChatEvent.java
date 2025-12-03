@@ -53,8 +53,8 @@ public class ChatEvent implements Listener {
                         UUID mamiyaOwner = manager.getPlayerWithMamiyaPhone();
                         Player mamiyaPlayer = Bukkit.getPlayer(mamiyaOwner);
                         if(mamiyaPlayer != null){
-                            Component message = Component.text("§b[高島ちゃんの携帯電話]<< §f " + event.message());
-                            mamiyaPlayer.sendMessage(message);
+                            Component message = Component.text("§b[高島ちゃんの携帯電話]<< §6 ");
+                            mamiyaPlayer.sendMessage(message.append(event.message()));
                         }
                     }
                 }else if(itemName.equals(MamiyaPhone.id)){
@@ -62,8 +62,8 @@ public class ChatEvent implements Listener {
                         UUID takashimaOwner = manager.getPlayerWithTakashimaPhone();
                         Player takashimaPlayer = Bukkit.getPlayer(takashimaOwner);
                         if(takashimaPlayer != null){
-                            Component message = Component.text("§d[間宮君の携帯電話]<< §f " + event.message());
-                            takashimaPlayer.sendMessage(message);
+                            Component message = Component.text("§d[間宮君の携帯電話]<< §6 ");
+                            takashimaPlayer.sendMessage(message.append(event.message()));
                         }
                     }
                 }

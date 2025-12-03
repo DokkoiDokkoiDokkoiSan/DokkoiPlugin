@@ -345,6 +345,7 @@ public class Game {
     public void resetGame(){
         if(!onGame) return;
         scheduler.cancel();
+        ChestProvider.removeAllChests();
         ChestProvider.getInstance().cancelTask();
         for(UUID uuid : gameStatesManager.getJoinedPlayers()){
             if(gameStatesManager.getCoolDownScheduler().containsKey(uuid)){
@@ -359,7 +360,8 @@ public class Game {
             }
             player.getInventory().clear();
             player.getInventory().setHelmet(null);
-            player.setHealth(20.0);
+            player.setMaxHealth(20.0);
+            player.setHealth(player.getMaxHealth());
             player.setFoodLevel(20);
             player.setCustomNameVisible(true);
             player.setGameMode(GameMode.CREATIVE);

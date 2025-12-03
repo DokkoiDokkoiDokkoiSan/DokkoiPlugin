@@ -35,7 +35,5 @@ public class ChestScheduler extends BukkitRunnable {
                 inventory.addItem(ChestProvider.getInstance().getRandomItem());
             }
         }
-
-
     }
 }

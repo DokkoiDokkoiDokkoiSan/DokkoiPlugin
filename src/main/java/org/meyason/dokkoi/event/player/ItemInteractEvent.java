@@ -46,22 +46,27 @@ public class ItemInteractEvent implements Listener {
             if (item == null) {
                 return;
             }
-            NamespacedKey itemKey = new NamespacedKey(JavaPlugin.getPlugin(org.meyason.dokkoi.Dokkoi.class), "item_name");
+            NamespacedKey itemKey = new NamespacedKey(JavaPlugin.getPlugin(org.meyason.dokkoi.Dokkoi.class), GameItemKeyString.ITEM_NAME);
             ItemMeta meta = item.getItemMeta();
 
             if (meta == null) {
                 return;
             }
-            if (meta.getPersistentDataContainer().has(itemKey) &&
-                    meta.getPersistentDataContainer().get(itemKey, org.bukkit.persistence.PersistentDataType.STRING).equals(GoalSelectMenuItem.id)) {
-                if(game.getGameStatesManager().getPlayerJobs().containsKey(player.getUniqueId())){
-                    player.sendMessage("§c既に職業が選択されています。");
-                    event.setCancelled(true);
+            if (meta.getPersistentDataContainer().has(itemKey)) {
+                String itemId = meta.getPersistentDataContainer().get(itemKey, PersistentDataType.STRING);
+                if (itemId == null) {
                     return;
                 }
-                GoalSelectMenu goalSelectMenu = new GoalSelectMenu();
-                goalSelectMenu.sendMenu(event.getPlayer());
-                event.setCancelled(true);
+                if(itemId.equals(GoalSelectMenuItem.id)) {
+                    if (game.getGameStatesManager().getPlayerJobs().get(player.getUniqueId()) != null) {
+                        player.sendMessage("§c既に職業が選択されています。");
+                        event.setCancelled(true);
+                        return;
+                    }
+                    GoalSelectMenu goalSelectMenu = new GoalSelectMenu();
+                    goalSelectMenu.sendMenu(event.getPlayer());
+                    event.setCancelled(true);
+                }
             }
 
         }else if(game.getGameStatesManager().getGameState() == GameState.IN_GAME) {
@@ -87,11 +92,13 @@ public class ItemInteractEvent implements Listener {
                     }
                     event.setCancelled(true);
                     GameStatesManager manager = game.getGameStatesManager();
-                    if (customItem instanceof KillerList) {
-                        NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
-                        String itemSerial = container.get(serialKey, PersistentDataType.STRING);
+                    NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
+                    String itemSerial = container.get(serialKey, PersistentDataType.STRING);
+                    if (customItem instanceof KillerList && itemSerial != null) {
                         CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
-                        KillerList killerList = (KillerList) serialItem;
+                        if (!(serialItem instanceof KillerList killerList)) {
+                            return;
+                        }
                         killerList.skill(manager, player);
                     }
 
@@ -101,11 +108,13 @@ public class ItemInteractEvent implements Listener {
                     }
                     event.setCancelled(true);
                     GameStatesManager manager = game.getGameStatesManager();
-                    if (customItem instanceof UnkillerList) {
-                        NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
-                        String itemSerial = container.get(serialKey, PersistentDataType.STRING);
+                    NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
+                    String itemSerial = container.get(serialKey, PersistentDataType.STRING);
+                    if (customItem instanceof UnkillerList && itemSerial != null) {
                         CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
-                        UnkillerList unkillerList = (UnkillerList) serialItem;
+                        if (!(serialItem instanceof UnkillerList unkillerList)) {
+                            return;
+                        }
                         unkillerList.skill(manager, player);
                     }
 
