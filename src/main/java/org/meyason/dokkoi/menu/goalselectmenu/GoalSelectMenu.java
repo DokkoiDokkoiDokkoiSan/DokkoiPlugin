@@ -77,7 +77,7 @@ public class GoalSelectMenu {
                     .addIngredient('#', border)
                     .addIngredient('a', new Tier3GoalItem(job));
         }else{
-            player.sendMessage("§c目標が設定されていません。");
+            player.sendMessage("§c勝利条件が設定されていません。");
             return;
         }
 

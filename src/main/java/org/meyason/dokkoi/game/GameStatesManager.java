@@ -34,6 +34,9 @@ public class GameStatesManager {
     private HashMap<UUID, Boolean> isDeactivateDamageOnce;
     private List<UUID> onDisablePotionEffectPlayers;
 
+    private HashMap<Boolean, UUID> whoHasTakashimaPhone;
+    private HashMap<Boolean, UUID> whoHasMamiyaPhone;
+
     private HashMap<String, CustomItem> serialCustomItemMap;
 
     private HashMap<UUID, BukkitRunnable> skillCoolDownTasks;
@@ -67,6 +70,10 @@ public class GameStatesManager {
         damageCutPercent = new HashMap<>();
         isDeactivateDamageOnce = new HashMap<>();
         onDisablePotionEffectPlayers = new ArrayList<>();
+        whoHasMamiyaPhone = new HashMap<>();
+        whoHasMamiyaPhone.put(false, null);
+        whoHasTakashimaPhone = new HashMap<>();
+        whoHasTakashimaPhone.put(false, null);
         serialCustomItemMap = new HashMap<>();
         skillCoolDownTasks = new HashMap<>();
         ultimateSkillCoolDownTasks = new HashMap<>();
@@ -90,6 +97,8 @@ public class GameStatesManager {
         damageCutPercent.clear();
         isDeactivateDamageOnce.clear();
         onDisablePotionEffectPlayers.clear();
+        whoHasMamiyaPhone.clear();
+        whoHasTakashimaPhone.clear();
         serialCustomItemMap.clear();
         skillCoolDownTasks.clear();
         ultimateSkillCoolDownTasks.clear();
@@ -254,6 +263,28 @@ public class GameStatesManager {
     public void removeOnDisablePotionEffectPlayer(UUID player) {
         if(!this.onDisablePotionEffectPlayers.contains(player)) return;
         this.onDisablePotionEffectPlayers.remove(player);
+    }
+
+    public boolean hasTakashimaPhone() {return whoHasTakashimaPhone.containsKey(true);}
+    public UUID getPlayerWithTakashimaPhone() {return whoHasTakashimaPhone.get(true);}
+    public void updatePlayerhasTakashimaPhone(UUID player) {
+        whoHasTakashimaPhone.clear();
+        whoHasTakashimaPhone.put(true, player);
+    }
+    public void clearWhoHasTakashimaPhone() {
+        whoHasTakashimaPhone.clear();
+        whoHasTakashimaPhone.put(false, null);
+    }
+
+    public boolean hasMamiyaPhone() {return whoHasMamiyaPhone.containsKey(true);}
+    public UUID getPlayerWithMamiyaPhone() {return whoHasMamiyaPhone.get(true);}
+    public void updatePlayerhasMamiyaPhone(UUID player) {
+        whoHasMamiyaPhone.clear();
+        whoHasMamiyaPhone.put(true, player);
+    }
+    public void clearWhoHasMamiyaPhone() {
+        whoHasMamiyaPhone.clear();
+        whoHasMamiyaPhone.put(false, null);
     }
 
     public CustomItem getCustomItemFromSerial(String uuid) {return serialCustomItemMap.get(uuid);}

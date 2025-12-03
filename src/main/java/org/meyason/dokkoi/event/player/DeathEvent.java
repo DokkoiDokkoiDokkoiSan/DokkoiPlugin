@@ -9,12 +9,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.DokkoiDatabaseAPI;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
+import org.meyason.dokkoi.game.LPManager;
 import org.meyason.dokkoi.goal.GangStar;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.goal.Police;
@@ -33,8 +36,12 @@ public class DeathEvent {
 
     public static void kill(Player killer, Player dead){
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
-        UUID killerUUID = killer.getUniqueId();
+        LPManager lpManager = Game.getInstance().getLPManager();
+        UUID killerUUID = null;
+        if(killer != null) killerUUID = killer.getUniqueId();
         UUID deadUUID = dead.getUniqueId();
+
+        // 生き返らせるならこの辺
 
         if(manager.getPlayerJobs().get(deadUUID) instanceof Bomber bomber){
             if(bomber.passive()){
@@ -60,14 +67,18 @@ public class DeathEvent {
             return;
         }
 
+        // 以下死亡処理
+
         manager.removeAlivePlayer(dead.getUniqueId());
-        manager.getKillerList().put(killerUUID, deadUUID);
+        if(killer != null)  manager.getKillerList().put(killerUUID, deadUUID);
         manager.removeAttackedPlayer(deadUUID);
         manager.removeDamagedPlayer(deadUUID);
 
         dead.sendMessage("§cあなたは§4§l死亡§r§cしました");
-        dead.sendMessage("§eキルしたプレイヤー: §l§c" + killer.getName() + "§r§e");
-        killer.sendMessage("§aあなたは§l§6" + dead.getName() + "§r§aを倒しました");
+        if(killer != null) {
+            dead.sendMessage("§eキルしたプレイヤー: §l§c" + killer.getName() + "§r§e");
+            killer.sendMessage("§aあなたは§l§6" + dead.getName() + "§r§aを倒しました");
+        }
 
         if(manager.isEnableKillerList()){
             HashMap<UUID, Goal> playerGoals = manager.getPlayerGoals();
@@ -76,8 +87,12 @@ public class DeathEvent {
                 if(player == null){continue;}
                 Goal goal = playerGoals.get(uuid);
                 if(goal instanceof Police police){
-                    if(player.equals(killer)){continue;}
-                    player.sendMessage("§a[殺すノート] §c" + killer.getName() + "§a が " + dead.getName() + " §aを倒しました");
+                    if(killer != null) {
+                        if (player.equals(killer)) {
+                            continue;
+                        }
+                        player.sendMessage("§a[殺すノート] §c" + killer.getName() + "§a が " + dead.getName() + " §aを倒しました");
+                    }
                     police.getKillerList().updateKillerList();
                 }else if(goal instanceof GangStar gangStar){
                     gangStar.getUnKillerList().updateUnKillerList();
@@ -85,7 +100,31 @@ public class DeathEvent {
             }
         }
 
-        if(!manager.getPlayerGoals().get(killerUUID).isKillable(dead)){
+        boolean hasRedHelmet = false;
+        ItemStack helmet = dead.getInventory().getHelmet();
+        if(helmet != null){
+            ItemMeta meta = helmet.getItemMeta();
+            if(meta != null){
+                PersistentDataContainer container = meta.getPersistentDataContainer();
+                NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+                if(container.has(itemKey, PersistentDataType.STRING)){
+                    String gameItemName = container.get(itemKey, PersistentDataType.STRING);
+                    if(gameItemName != null) {
+                        if (gameItemName.equals(RedHelmet.id)) {
+                            hasRedHelmet = true;
+                            if (killer != null) lpManager.addLP(killer.getUniqueId(), 30L);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(killer != null &&!manager.getPlayerGoals().get(killerUUID).isKillable(dead)){
+            if(hasRedHelmet){
+                killer.sendMessage("§e[ペナルティ] §a" + dead.getName() + " §aは殺害できないプレイヤーですが，赤い帽子を被っていたためペナルティは免れました。");
+                dead.sendMessage("§e[ペナルティ免除] §aあなたは赤い帽子を被っていたため，ペナルティを免れました。");
+                return;
+            }
             String borderColor = "§6";
             String horizontal = "─".repeat(32);
             List<String> boxMessage = List.of(
@@ -127,7 +166,7 @@ public class DeathEvent {
                 if(!container.has(itemKey)) {
                     continue;
                 }
-                String gameItemName = container.get(itemKey, org.bukkit.persistence.PersistentDataType.STRING);
+                String gameItemName = container.get(itemKey, PersistentDataType.STRING);
                 if(GameItem.isCustomItem(item)){
                     try {
                         CustomItem customItem = GameItem.getItem(gameItemName);

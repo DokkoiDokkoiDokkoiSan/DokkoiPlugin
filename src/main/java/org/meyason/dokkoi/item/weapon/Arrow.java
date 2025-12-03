@@ -19,7 +19,8 @@ public class Arrow extends CustomItem {
     public Arrow() {
         super(id, "§f矢", ItemStack.of(Material.ARROW), 64);
         List<Component> lore = List.of(
-                Component.text("§5まとめて逝っけーｯ！！これが私の全力コ゛ロ゛ナ゛レ゛イ゛ン゛ｯ！！")
+                Component.text("§5まとめて逝っけーｯ！！これが私の全力です！！！"),
+                Component.text("§5コ゛ロ゛ナ゛レ゛イ゛ン゛ｯ！！")
         );
         setDescription(lore);
     }

@@ -13,9 +13,6 @@ import java.util.List;
 
 public class HealingCrystal extends CustomItem {
 
-    private Game game;
-    private Player player;
-
     public static final String id = "healing_crystal";
 
     public HealingCrystal() {

@@ -111,6 +111,7 @@ public class KillerList extends CustomItem {
                     return;
                 }
                 if (!owner.isOnline() || !gameStatesManager.getItemCoolDownScheduler().containsKey(uuid)) {
+                    gameStatesManager.removeItemCoolDownScheduler(uuid);
                     cancel();
                     return;
                 }

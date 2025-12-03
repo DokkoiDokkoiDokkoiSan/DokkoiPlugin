@@ -20,3 +20,7 @@ commands:
     description: アイテムを取得します．
     usage: /getitem <item id> <amount>
     default: op
+  addLP:
+    description: LPを追加します．
+    usage: /addLP <player> <amount>
+    default: op

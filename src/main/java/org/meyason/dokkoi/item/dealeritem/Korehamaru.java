@@ -39,7 +39,7 @@ public class Korehamaru extends CustomItem {
     }
 
     public static void activate(Player player) {
-        player.sendMessage(Component.text("§aコレハマール§cの中毒になってしまった……"));
+        player.sendMessage(Component.text("§c頭がふらふらしてきた..."));
         player.setMaxHealth(20.0);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 1));
     }

@@ -66,6 +66,7 @@ public class Game {
     private GameEntityManager gameEntityManager;
 
     private LPManager lpManager;
+    public LPManager getLPManager(){ return lpManager; }
 
     public Game(){
         instance = this;
@@ -433,9 +434,6 @@ public class Game {
     public void updateScoreboardDisplay(Player player) {
         ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
         Scoreboard scoreboard = scoreboardManager.getNewScoreboard();
-        Team team = scoreboard.registerNewTeam("nametag");
-        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
-        team.addEntry(player.getName());
         Objective objective = scoreboard.registerNewObjective(player.getName(), Criteria.DUMMY, "§aステータス： " + gameStatesManager.getGameState().getDisplayName());
         objective.setDisplaySlot(org.bukkit.scoreboard.DisplaySlot.SIDEBAR);
 
@@ -488,7 +486,6 @@ public class Game {
                 if(executor.getArrestCount() >= 3){
                     color = achievedColor;
                 }
-                objective.getScore("§e目標逮捕数: §f" +  3 + "人").setScore(--i);
                 objective.getScore("§e現在の逮捕数: §" + color + executor.getArrestCount() + "人").setScore(--i);
             }else if(goal instanceof SugiYakkyoku){
                 String color = "c";
@@ -496,7 +493,6 @@ public class Game {
                 if(drugStore.getSellCount() >= 10){
                     color = achievedColor;
                 }
-                objective.getScore("§e目標販売数: §f" + 10 + "個").setScore(--i);
                 objective.getScore("§e現在の販売数: §" + color + drugStore.getSellCount() + "個").setScore(--i);
             }else if(goal instanceof MatsumotoKiyoshi){
                 String color = "c";
@@ -504,7 +500,6 @@ public class Game {
                 if(drugStore.getPickCount() >= 3){
                     color = achievedColor;
                 }
-                objective.getScore("§e目標回数: §f" + 3 + "回").setScore(--i);
                 objective.getScore("§e現在の回数: §" + color + drugStore.getPickCount() + "回").setScore(--i);
             }
 
@@ -515,13 +510,6 @@ public class Game {
                         color = achievedColor;
                     }
                     objective.getScore("§e目標の§9§lけつ毛§r§e: §" + color + ketsumouHunter.getTargetKetsumouCount() + "個").setScore(--i);
-                }else if(goal instanceof KetsumouPirate){
-                    int targetNum = 9;
-                    String color = "c";
-                    if(targetNum <= explorer.getHaveKetsumouCount()) {
-                        color = achievedColor;
-                    }
-                    objective.getScore("§e目標の§9§lけつ毛§r§e: §" + color + targetNum + "個").setScore(--i);
                 }
                 objective.getScore("§e発見した§9§lけつ毛§r§e: §f" + explorer.getHaveKetsumouCount() + "個").setScore(--i);
             }else if(job instanceof Prayer prayer){

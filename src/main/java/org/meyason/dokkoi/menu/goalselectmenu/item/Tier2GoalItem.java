@@ -46,6 +46,7 @@ public class Tier2GoalItem extends AbstractItem {
         if (meta != null) {
             meta.setDisplayName("§bTier 2");
             List<Component> lore = List.of(
+                    Component.text(Tier.TIER_2.getDescription()),
                     Component.text(this.goal.getName()),
                     Component.text(this.goal.getDescription())
             );

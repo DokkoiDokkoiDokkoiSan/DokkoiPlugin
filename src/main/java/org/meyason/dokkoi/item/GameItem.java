@@ -76,6 +76,7 @@ public class GameItem {
         items.put(Debug.id, new Debug());
         items.put(TakashimaPhone.id, new TakashimaPhone());
         items.put(MamiyaPhone.id, new MamiyaPhone());
+        items.put(InstantDevour.id, new InstantDevour());
     }
 
     public static CustomItem getItem(String id){

@@ -45,6 +45,6 @@ public class TotemoTsuyokunaru extends CustomItem {
         manager.addAdditionalDamage(player.getUniqueId(), 2);
         item.setAmount(item.getAmount() - 1);
         player.getInventory().setItemInMainHand(item);
-        player.sendMessage(Component.text("§aトテモツヨクナール§bの効果で攻撃力が上がった！"));
+        player.sendMessage(Component.text("§aめっちゃ強くなった気がする！"));
     }
 }

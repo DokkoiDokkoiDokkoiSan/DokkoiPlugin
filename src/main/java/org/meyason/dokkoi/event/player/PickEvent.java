@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -22,8 +23,8 @@ import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
-import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.battleitem.ArcherArmor;
+import org.meyason.dokkoi.item.battleitem.InstantDevour;
 import org.meyason.dokkoi.item.dealeritem.Korehamaru;
 import org.meyason.dokkoi.item.dealeritem.TotemoKorehamaru;
 import org.meyason.dokkoi.item.jobitem.Ketsumou;
@@ -31,6 +32,8 @@ import org.meyason.dokkoi.item.jobitem.Passive;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
 import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestBall;
+import org.meyason.dokkoi.item.utilitem.MamiyaPhone;
+import org.meyason.dokkoi.item.utilitem.TakashimaPhone;
 import org.meyason.dokkoi.job.DrugStore;
 import org.meyason.dokkoi.job.Job;
 
@@ -56,26 +59,30 @@ public class PickEvent implements Listener {
             String itemName = container.get(itemKey, org.bukkit.persistence.PersistentDataType.STRING);
             if(itemName != null){
 
-                CustomItem customItem = CustomItem.getItem(item);
-                if(customItem instanceof Ketsumou){
-                    Ketsumou.deactivate(player);
-                }else if(customItem instanceof ArcherArmor){
-                    manager.addIsDeactivateDamageOnce(player.getUniqueId(), false);
-                }else if(customItem instanceof StrongestStrongestBall){
-                    event.setCancelled(true);
-                    player.sendActionBar(Component.text("§aもっと最強のたまたま§bが手から離れない！？"));
+                switch (itemName) {
+                    case Ketsumou.id -> Ketsumou.deactivate(player);
 
-                }else if(customItem instanceof Skill){
-                    event.setCancelled(true);
-                }else if(customItem instanceof Ultimate){
-                    event.setCancelled(true);
-                }else if(customItem instanceof Passive){
-                    event.setCancelled(true);
-                }else if(customItem instanceof Korehamaru){
-                    if(!(job instanceof DrugStore)){
-                        player.sendMessage(Component.text("§cこれはすてたくない"));
+                    case ArcherArmor.id -> manager.addIsDeactivateDamageOnce(player.getUniqueId(), false);
+
+                    case StrongestStrongestBall.id -> {
                         event.setCancelled(true);
+                        player.sendActionBar(Component.text("§aもっと最強のたまたま§bが手から離れない！？"));
                     }
+
+                    case Skill.id, Ultimate.id, Passive.id -> event.setCancelled(true);
+
+                    case Korehamaru.id -> {
+                        if (!(job instanceof DrugStore)) {
+                            player.sendMessage(Component.text("§cこれはすてたくない"));
+                            event.setCancelled(true);
+                        }
+                    }
+
+                    case TakashimaPhone.id -> manager.clearWhoHasTakashimaPhone();
+
+                    case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
+
+                    case InstantDevour.id -> InstantDevour.changeHP(player, 1);
                 }
             }
         }
@@ -83,7 +90,8 @@ public class PickEvent implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
-        if(Game.getInstance().getGameStatesManager().getGameState() != GameState.IN_GAME){
+        GameStatesManager manager = Game.getInstance().getGameStatesManager();
+        if(manager.getGameState() != GameState.IN_GAME){
             return;
         }
         if (!(event.getWhoClicked() instanceof Player player)) return;
@@ -96,62 +104,128 @@ public class PickEvent implements Listener {
         boolean clickedIsBottom = event.getClickedInventory() != null
                 && event.getClickedInventory().equals(player.getOpenInventory().getBottomInventory());
 
-        Job job = Game.getInstance().getGameStatesManager().getPlayerJobs().get(player.getUniqueId());
+        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+
+        Job job = manager.getPlayerJobs().get(player.getUniqueId());
 
         // シフトクリックのとき
         if(event.getClick().isShiftClick()){
             if(slotItem == null){return;}
-            if(!slotItem.hasItemMeta()){return;}
-            CustomItem slotCustomItem = CustomItem.getItem(slotItem);
+            ItemMeta slotMeta = slotItem.getItemMeta();
+            if(slotMeta == null){return;}
+            PersistentDataContainer container = slotMeta.getPersistentDataContainer();
+            if(!container.has(itemKey, PersistentDataType.STRING)){return;}
+            String slotItemName = container.get(itemKey, PersistentDataType.STRING);
+            if(slotItemName == null){return;}
 
             // チェスト内のアイテムをシフトクリックしてインベントリに移した時
             if (clickedIsTop) {
-                if(slotCustomItem instanceof Ketsumou) {
-                    Ketsumou.activate(player);
-                }else if(slotCustomItem instanceof Korehamaru){
-                    if(!(job instanceof DrugStore)){
-                        for(UUID uuid : Game.getInstance().getGameStatesManager().getAlivePlayers()){
-                            Job targetJob = Game.getInstance().getGameStatesManager().getPlayerJobs().get(uuid);
-                            if(targetJob instanceof DrugStore drugStore){
-                                drugStore.incrementPickCount();
-                                Korehamaru.activate(player);
-                                break;
+                int amount = slotItem.getAmount();
+
+                switch (slotItemName) {
+                    case Ketsumou.id -> Ketsumou.activate(player);
+
+                    case Korehamaru.id -> {
+                        if (!(job instanceof DrugStore)) {
+                            for (UUID uuid : manager.getAlivePlayers()) {
+                                Job targetJob = manager.getPlayerJobs().get(uuid);
+                                if (targetJob instanceof DrugStore drugStore) {
+                                    drugStore.incrementPickCount();
+                                    Korehamaru.activate(player);
+                                    break;
+                                }
                             }
                         }
-                        player.sendMessage(Component.text("§cあたまがふらふらしてきた..."));
                     }
-                } else if(slotCustomItem instanceof TotemoKorehamaru){
-                    if(!(job instanceof DrugStore)){
-                        Player killer = Game.getInstance().getGameStatesManager().getPlayerJobs().entrySet().stream()
-                                .filter(entry -> entry.getValue() instanceof DrugStore)
-                                .map(entry -> Game.getInstance().getGameStatesManager().getAlivePlayers().contains(entry.getKey()) ? entry.getKey() : null)
-                                .filter(Objects::nonNull)
-                                .map(uuid -> player.getServer().getPlayer(uuid))
-                                .findFirst()
-                                .orElse(null);
-                        if(killer != null) {
+
+                    case TotemoKorehamaru.id -> {
+                        if (!(job instanceof DrugStore)) {
+                            Player killer = manager.getPlayerJobs().entrySet().stream()
+                                    .filter(entry -> entry.getValue() instanceof DrugStore)
+                                    .map(entry -> manager.getAlivePlayers().contains(entry.getKey()) ? entry.getKey() : null)
+                                    .filter(Objects::nonNull)
+                                    .map(uuid -> player.getServer().getPlayer(uuid))
+                                    .findFirst()
+                                    .orElse(null);
                             cursorItem.setAmount(0);
                             player.sendMessage(Component.text("§cOD発動！"));
                             DeathEvent.kill(killer, player);
                         }
                     }
+
+                    case TakashimaPhone.id -> manager.updatePlayerhasTakashimaPhone(player.getUniqueId());
+
+                    case MamiyaPhone.id -> manager.updatePlayerhasMamiyaPhone(player.getUniqueId());
+
+                    case InstantDevour.id -> InstantDevour.changeHP(player, amount);
                 }
                 return;
 
             // インベントリ内のアイテムをシフトクリックしてチェストに移した時
             }else if(clickedIsBottom){
-                if(slotCustomItem instanceof Ketsumou) {
-                    Ketsumou.deactivate(player);
-                }else if(slotCustomItem instanceof Skill || slotCustomItem instanceof Ultimate || slotCustomItem instanceof Passive){
+                int amount = slotItem.getAmount();
+
+                switch (slotItemName) {
+                    case Ketsumou.id -> Ketsumou.deactivate(player);
+
+                    case Skill.id, Ultimate.id, Passive.id -> event.setCancelled(true);
+
+                    case Korehamaru.id -> {
+                        if (!(job instanceof DrugStore)) {
+                            player.sendMessage(Component.text("§cこれはすてたくない"));
+                            event.setCancelled(true);
+                        }
+                    }
+
+                    case TakashimaPhone.id -> manager.clearWhoHasTakashimaPhone();
+
+                    case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
+
+                    case InstantDevour.id -> InstantDevour.changeHP(player, amount);
+                }
+                return;
+            }
+        }else if(event.getClick() == ClickType.CONTROL_DROP){
+            if(clickedIsTop){
+                return;
+            }
+            // コントロールドロップのとき(カーソルを合わせてCtrl+Q)
+            if(slotItem == null){return;}
+            ItemMeta slotMeta = slotItem.getItemMeta();
+            if(slotMeta == null){return;}
+            PersistentDataContainer container = slotMeta.getPersistentDataContainer();
+            if(!container.has(itemKey, PersistentDataType.STRING)){return;}
+            String slotItemName = container.get(itemKey, PersistentDataType.STRING);
+            if(slotItemName == null){return;}
+
+            int amount = slotItem.getAmount();
+
+            switch (slotItemName) {
+                case Ketsumou.id -> Ketsumou.deactivate(player);
+
+                case ArcherArmor.id -> manager.addIsDeactivateDamageOnce(player.getUniqueId(), false);
+
+                case StrongestStrongestBall.id -> {
                     event.setCancelled(true);
-                }else if(slotCustomItem instanceof Korehamaru){
-                    if(!(job instanceof DrugStore)){
+                    player.sendActionBar(Component.text("§aもっと最強のたまたま§bが手から離れない！？"));
+                }
+
+                case Skill.id, Ultimate.id, Passive.id -> event.setCancelled(true);
+
+                case Korehamaru.id -> {
+                    if (!(job instanceof DrugStore)) {
                         player.sendMessage(Component.text("§cこれはすてたくない"));
                         event.setCancelled(true);
                     }
                 }
-                return;
+
+                case TakashimaPhone.id -> manager.clearWhoHasTakashimaPhone();
+
+                case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
+
+                case InstantDevour.id -> InstantDevour.changeHP(player, amount);
             }
+            return;
         }
 
         // 通常クリックのとき
@@ -160,27 +234,44 @@ public class PickEvent implements Listener {
 
             // スロットが指定アイテムのとき(クリックで持ち上げたとき)
             if(slotItem != null && !slotItem.getType().isAir()){
+                int amount = slotItem.getAmount();
                 ItemMeta meta = slotItem.getItemMeta();
                 if(meta == null){return;}
-                CustomItem slotCustomItem = CustomItem.getItem(slotItem);
-                if(slotCustomItem instanceof Skill || slotCustomItem instanceof Ultimate || slotCustomItem instanceof Passive){
-                    event.setCancelled(true);
-                }else if(slotCustomItem instanceof Korehamaru){
-                    if(!(job instanceof DrugStore)){
-                        player.sendMessage(Component.text("§cこれはすてたくない"));
-                        event.setCancelled(true);
+                PersistentDataContainer container = meta.getPersistentDataContainer();
+                String slotItemName = container.get(itemKey, PersistentDataType.STRING);
+                if(slotItemName == null){return;}
+
+                switch (slotItemName) {
+                    case Skill.id, Ultimate.id, Passive.id -> event.setCancelled(true);
+
+                    case Korehamaru.id -> {
+                        if (!(job instanceof DrugStore)) {
+                            player.sendMessage(Component.text("§cこれはすてたくない"));
+                            event.setCancelled(true);
+                        }
                     }
-                }else if(slotCustomItem instanceof Ketsumou){
-                    Ketsumou.deactivate(player);
+
+                    case Ketsumou.id -> Ketsumou.deactivate(player);
+
+                    case TakashimaPhone.id -> manager.clearWhoHasTakashimaPhone();
+
+                    case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
+
+                    case InstantDevour.id -> InstantDevour.deactivate(player, amount);
                 }
             }
 
             // カーソルで指定アイテムを持っているとき(クリックでおこうとしたとき)
             if(cursorItem != null && !cursorItem.getType().isAir()) {
+                int amount = cursorItem.getAmount();
                 ItemMeta meta = cursorItem.getItemMeta();
-                if (meta != null) {
-                    CustomItem cursorCustomItem = CustomItem.getItem(cursorItem);
-                    if (cursorCustomItem instanceof Korehamaru) {
+                if(meta == null){return;}
+                PersistentDataContainer container = meta.getPersistentDataContainer();
+                String cursorItemName = container.get(itemKey, PersistentDataType.STRING);
+                if(cursorItemName == null){return;}
+
+                switch (cursorItemName) {
+                    case Korehamaru.id -> {
                         if (!(job instanceof DrugStore)) {
                             for (UUID uuid : Game.getInstance().getGameStatesManager().getAlivePlayers()) {
                                 Job targetJob = Game.getInstance().getGameStatesManager().getPlayerJobs().get(uuid);
@@ -190,12 +281,13 @@ public class PickEvent implements Listener {
                                     break;
                                 }
                             }
-                            player.sendMessage(Component.text("§cあたまがふらふらしてきた..."));
                         }
-                    } else if (cursorCustomItem instanceof Ketsumou) {
-                        Ketsumou.activate(player);
-                    } else if(cursorCustomItem instanceof TotemoKorehamaru){
-                        if(!(job instanceof DrugStore)){
+                    }
+
+                    case Ketsumou.id -> Ketsumou.activate(player);
+
+                    case TotemoKorehamaru.id -> {
+                        if (!(job instanceof DrugStore)) {
                             Player killer = Game.getInstance().getGameStatesManager().getPlayerJobs().entrySet().stream()
                                     .filter(entry -> entry.getValue() instanceof DrugStore)
                                     .map(entry -> Game.getInstance().getGameStatesManager().getAlivePlayers().contains(entry.getKey()) ? entry.getKey() : null)
@@ -203,13 +295,17 @@ public class PickEvent implements Listener {
                                     .map(uuid -> player.getServer().getPlayer(uuid))
                                     .findFirst()
                                     .orElse(null);
-                            if(killer != null) {
-                                cursorItem.setAmount(0);
-                                player.sendMessage(Component.text("§cOD発動！"));
-                                DeathEvent.kill(killer, player);
-                            }
+                            cursorItem.setAmount(0);
+                            player.sendMessage(Component.text("§cOD発動！"));
+                            DeathEvent.kill(killer, player);
                         }
                     }
+
+                    case TakashimaPhone.id -> manager.updatePlayerhasTakashimaPhone(player.getUniqueId());
+
+                    case MamiyaPhone.id -> manager.updatePlayerhasMamiyaPhone(player.getUniqueId());
+
+                    case InstantDevour.id -> InstantDevour.changeHP(player, amount);
                 }
             }
 
@@ -266,48 +362,59 @@ public class PickEvent implements Listener {
     @EventHandler
     public void onPlayerPickItem(EntityPickupItemEvent event){
         if(!(event.getEntity() instanceof Player player)) return;
+        GameStatesManager manager = Game.getInstance().getGameStatesManager();
+        if(manager.getGameState() != GameState.IN_GAME){
+            return;
+        }
 
         ItemStack item = event.getItem().getItemStack();
         if(!item.hasItemMeta()){return;}
-        Job job = Game.getInstance().getGameStatesManager().getPlayerJobs().get(player.getUniqueId());
+        Job job = manager.getPlayerJobs().get(player.getUniqueId());
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer container = meta.getPersistentDataContainer();
         NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
         if(container.has(itemKey)){
             String itemName = container.get(itemKey, org.bukkit.persistence.PersistentDataType.STRING);
             if(itemName != null){
-                CustomItem customItem = CustomItem.getItem(item);
-                if(customItem instanceof Ketsumou){
-                    Ketsumou.activate(player);
-                }else if(customItem instanceof Korehamaru){
-                    if(!(job instanceof DrugStore)){
-                        player.sendActionBar(Component.text("§cあたまがふらふらしてきた..."));
-                        for(UUID uuid : Game.getInstance().getGameStatesManager().getAlivePlayers()){
-                            Job targetJob = Game.getInstance().getGameStatesManager().getPlayerJobs().get(uuid);
-                            if(targetJob instanceof DrugStore drugStore){
-                                drugStore.incrementPickCount();
-                                Korehamaru.activate(player);
-                                break;
+
+                switch (itemName) {
+                    case Ketsumou.id -> Ketsumou.activate(player);
+
+                    case Korehamaru.id -> {
+                        if (!(job instanceof DrugStore)) {
+                            for (UUID uuid : manager.getAlivePlayers()) {
+                                Job targetJob = manager.getPlayerJobs().get(uuid);
+                                if (targetJob instanceof DrugStore drugStore) {
+                                    drugStore.incrementPickCount();
+                                    Korehamaru.activate(player);
+                                    break;
+                                }
                             }
                         }
                     }
-                }else if(customItem instanceof TotemoKorehamaru){
-                    if(!(job instanceof DrugStore)){
-                        Player killer = Game.getInstance().getGameStatesManager().getPlayerJobs().entrySet().stream()
-                                .filter(entry -> entry.getValue() instanceof DrugStore)
-                                .map(entry -> Game.getInstance().getGameStatesManager().getAlivePlayers().contains(entry.getKey()) ? entry.getKey() : null)
-                                .filter(Objects::nonNull)
-                                .map(uuid -> player.getServer().getPlayer(uuid))
-                                .filter(Objects::nonNull)
-                                .findFirst()
-                                .orElse(null);
-                        if(killer != null) {
+
+                    case TotemoKorehamaru.id -> {
+                        if (!(job instanceof DrugStore)) {
+                            Player killer = manager.getPlayerJobs().entrySet().stream()
+                                    .filter(entry -> entry.getValue() instanceof DrugStore)
+                                    .map(entry -> manager.getAlivePlayers().contains(entry.getKey()) ? entry.getKey() : null)
+                                    .filter(Objects::nonNull)
+                                    .map(uuid -> player.getServer().getPlayer(uuid))
+                                    .filter(Objects::nonNull)
+                                    .findFirst()
+                                    .orElse(null);
                             event.setCancelled(true);
                             event.getItem().remove();
                             player.sendActionBar(Component.text("§cOD発動！"));
                             DeathEvent.kill(killer, player);
                         }
                     }
+
+                    case MamiyaPhone.id -> manager.updatePlayerhasMamiyaPhone(player.getUniqueId());
+
+                    case TakashimaPhone.id -> manager.updatePlayerhasTakashimaPhone(player.getUniqueId());
+
+                    case InstantDevour.id -> InstantDevour.changeHP(player, item.getAmount());
                 }
             }
         }
@@ -324,8 +431,7 @@ public class PickEvent implements Listener {
             if(container.has(itemKey)){
                 String itemName = container.get(itemKey, org.bukkit.persistence.PersistentDataType.STRING);
                 if(itemName != null){
-                    CustomItem customItem = CustomItem.getItem(newItem);
-                    if(customItem instanceof StrongestStrongestBall){
+                    if(itemName.equals(StrongestStrongestBall.id)){
                         player.sendActionBar(Component.text("§aもっと最強のたまたま§bのさわやかな風に乗った。"));
                         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 10, false, false, true));
                     }
@@ -341,8 +447,7 @@ public class PickEvent implements Listener {
             if(container.has(itemKey)){
                 String itemName = container.get(itemKey, org.bukkit.persistence.PersistentDataType.STRING);
                 if(itemName != null){
-                    CustomItem customItem = CustomItem.getItem(oldItem);
-                    if(customItem instanceof StrongestStrongestBall){
+                    if(itemName.equals(StrongestStrongestBall.id)){
                         player.removePotionEffect(PotionEffectType.SPEED);
                     }
                 }

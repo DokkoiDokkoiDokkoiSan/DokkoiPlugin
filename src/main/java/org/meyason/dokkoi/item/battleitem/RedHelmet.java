@@ -28,7 +28,7 @@ public class RedHelmet extends CustomItem {
                 Component.text("§5サイズが合ってなくて結構きつい。脱げない。"),
                 Component.text(""),
                 Component.text("§b効果"),
-                Component.text("§5着用中は勝利条件に関係ない殺人が可能になるが、全員にノーペナルティで殺されるようになる。殺された相手には30LPを付与する。"),
+                Component.text("§5着用中は勝利条件に関係ない殺人が可能になるが、全員にノーペナルティで殺されるようになる。殺した相手には30LPを付与する。"),
                 Component.text("§5また、着用中は毒Lv255が常時付与される。この毒は役職、アイテム効果などで防ぐことは出来ない。脱ぐことは出来ない。")
         );
         setDescription(lore);
@@ -61,6 +61,7 @@ public class RedHelmet extends CustomItem {
             newHelmet.setItemMeta(leatherMeta);
         }
         player.getInventory().setHelmet(newHelmet);
+        player.setMaxHealth(1);
         player.setHealth(1);
         //毒
         player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, Integer.MAX_VALUE, 255, false, false));
