@@ -140,10 +140,7 @@ public class DeathEvent {
                 if(player == null){continue;}
                 Goal goal = playerGoals.get(uuid);
                 if(goal instanceof Police police){
-                    if(killer != null) {
-                        if (player.equals(killer)) {
-                            continue;
-                        }
+                    if(killer != null && !player.equals(killer)) {
                         player.sendMessage("§a[殺すノート] §c" + killer.getName() + "§a が " + dead.getName() + " §aを倒しました");
                     }
                     police.getKillerList().updateKillerList();
