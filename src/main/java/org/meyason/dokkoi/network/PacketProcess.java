@@ -19,9 +19,9 @@ public class PacketProcess {
     public static PacketContainer hideNameTag(Player player){
         PacketContainer packet = PacketData.create(player);
         List<WrappedDataValue> wrappedDataValues = WrappedDataWatcher.getEntityWatcher(player).toDataValueCollection();
-
+        wrappedDataValues.remove(0);
         wrappedDataValues.remove(6);
-        wrappedDataValues.add(new WrappedDataValue(0, WrappedDataWatcher.Registry.get(Byte.class), 0x02));
+        wrappedDataValues.add(new WrappedDataValue(0, WrappedDataWatcher.Registry.get(Byte.class), (byte)0x02));
         wrappedDataValues.add(new WrappedDataValue(6, WrappedDataWatcher.Registry.get(Pose.class), Pose.CROUCHING));
         packet.getDataValueCollectionModifier().write(0, wrappedDataValues);
         return packet;
