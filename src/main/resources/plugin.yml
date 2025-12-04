@@ -2,6 +2,7 @@ name: Dokkoi
 main: org.meyason.dokkoi.Dokkoi
 version: '1.0-SNAPSHOT'
 api-version: '1.21'
+depend: [ProtocolLib]
 
 commands:
   matching:

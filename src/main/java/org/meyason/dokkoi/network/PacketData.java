@@ -14,6 +14,7 @@ public class PacketData {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.ENTITY_METADATA);
         List<WrappedDataValue> wrappedDataValues = WrappedDataWatcher.getEntityWatcher(player).toDataValueCollection();
         packet.getDataValueCollectionModifier().write(0, wrappedDataValues);
+        packet.getIntegers().write(0, player.getEntityId());
         return packet;
     }
 }
