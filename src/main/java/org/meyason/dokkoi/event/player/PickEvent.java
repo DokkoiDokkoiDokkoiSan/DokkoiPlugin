@@ -18,24 +18,20 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
+import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
-import org.meyason.dokkoi.item.battleitem.ArcherArmor;
-import org.meyason.dokkoi.item.battleitem.InstantDevour;
-import org.meyason.dokkoi.item.dealeritem.Korehamaru;
-import org.meyason.dokkoi.item.dealeritem.TotemoKorehamaru;
-import org.meyason.dokkoi.item.jobitem.Ketsumou;
-import org.meyason.dokkoi.item.jobitem.Passive;
-import org.meyason.dokkoi.item.jobitem.Skill;
-import org.meyason.dokkoi.item.jobitem.Ultimate;
-import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestBall;
-import org.meyason.dokkoi.item.utilitem.MamiyaPhone;
-import org.meyason.dokkoi.item.utilitem.TakashimaPhone;
-import org.meyason.dokkoi.job.DrugStore;
-import org.meyason.dokkoi.job.Job;
+import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.battleitem.*;
+import org.meyason.dokkoi.item.dealeritem.*;
+import org.meyason.dokkoi.item.jobitem.*;
+import org.meyason.dokkoi.item.jobitem.gacha.*;
+import org.meyason.dokkoi.item.utilitem.*;
+import org.meyason.dokkoi.job.*;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -57,6 +53,9 @@ public class PickEvent implements Listener {
 
         if(container.has(itemKey)){
             String itemName = container.get(itemKey, org.bukkit.persistence.PersistentDataType.STRING);
+            if(isUniqueItem(item)){
+                event.setCancelled(true);
+            }
             if(itemName != null){
 
                 switch (itemName) {
@@ -68,8 +67,6 @@ public class PickEvent implements Listener {
                         event.setCancelled(true);
                         player.sendActionBar(Component.text("§aもっと最強のたまたま§bが手から離れない！？"));
                     }
-
-                    case Skill.id, Ultimate.id, Passive.id -> event.setCancelled(true);
 
                     case Korehamaru.id -> {
                         if (!(job instanceof DrugStore)) {
@@ -164,11 +161,12 @@ public class PickEvent implements Listener {
             // インベントリ内のアイテムをシフトクリックしてチェストに移した時
             }else if(clickedIsBottom){
                 int amount = slotItem.getAmount();
+                if(isUniqueItem(slotItem)){
+                    event.setCancelled(true);
+                }
 
                 switch (slotItemName) {
                     case Ketsumou.id -> Ketsumou.deactivate(player);
-
-                    case Skill.id, Ultimate.id, Passive.id -> event.setCancelled(true);
 
                     case Korehamaru.id -> {
                         if (!(job instanceof DrugStore)) {
@@ -241,8 +239,11 @@ public class PickEvent implements Listener {
                 String slotItemName = container.get(itemKey, PersistentDataType.STRING);
                 if(slotItemName == null){return;}
 
+                if(isUniqueItem(slotItem)){
+                    event.setCancelled(true);
+                }
+
                 switch (slotItemName) {
-                    case Skill.id, Ultimate.id, Passive.id -> event.setCancelled(true);
 
                     case Korehamaru.id -> {
                         if (!(job instanceof DrugStore)) {
@@ -453,5 +454,15 @@ public class PickEvent implements Listener {
                 }
             }
         }
+    }
+
+    private boolean isUniqueItem(ItemStack item){
+        CustomItem customItem;
+        try{
+            customItem = CustomItem.getItem(item);
+        } catch(NoGameItemException e){
+            return false;
+        }
+        return Objects.requireNonNull(customItem).isUnique;
     }
 }

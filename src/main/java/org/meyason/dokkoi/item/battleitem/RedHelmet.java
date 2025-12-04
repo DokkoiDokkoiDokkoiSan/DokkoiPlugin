@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.meyason.dokkoi.Dokkoi;
@@ -59,8 +60,8 @@ public class RedHelmet extends CustomItem {
             ItemMeta meta = currentHelmet.getItemMeta();
             if(meta != null){
                 PersistentDataContainer container = meta.getPersistentDataContainer();
-                if(container.has(key, org.bukkit.persistence.PersistentDataType.STRING)){
-                    String tag = container.get(key, org.bukkit.persistence.PersistentDataType.STRING);
+                if(container.has(key, PersistentDataType.STRING)){
+                    String tag = container.get(key, PersistentDataType.STRING);
                     if(tag != null && tag.equals(RedHelmet.id)){
                         // 既に赤い帽子を装備している場合は何もしない
                         return;

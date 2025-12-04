@@ -22,6 +22,7 @@ import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.Defender;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.battleitem.HealingCrystal;
+import org.meyason.dokkoi.item.battleitem.PotionBottleFull;
 import org.meyason.dokkoi.item.dealeritem.Hayakunaru;
 import org.meyason.dokkoi.item.dealeritem.Katakunaru;
 import org.meyason.dokkoi.item.dealeritem.Kizukieru;
@@ -183,6 +184,12 @@ public class ItemInteractEvent implements Listener {
                         player.sendMessage(Component.text("§aクリックしたブロックの座標"));
                         player.sendMessage(Component.text(location.getX() + ", " + location.getY() + ", " + location.getZ()));
                     }
+                }else if(isItem(container, itemKey, PotionBottleFull.id)){
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    PotionBottleFull.activate(player, item);
                 }
             }
         }

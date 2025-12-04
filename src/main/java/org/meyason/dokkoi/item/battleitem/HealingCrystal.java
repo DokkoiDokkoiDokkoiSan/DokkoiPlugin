@@ -18,7 +18,7 @@ public class HealingCrystal extends CustomItem {
     public HealingCrystal() {
         super(id,"§a回復結晶§r", ItemStack.of(Material.END_CRYSTAL),64);
         List<Component> lore = List.of(
-                Component.text("§5使用すると体力を5回復する。体力がMAXの時は使用できない。"),
+                Component.text("§5回復力が強そうな結晶。"),
                 Component.text(""),
                 Component.text("§b効果"),
                 Component.text("§5使用すると体力を5回復する。")
