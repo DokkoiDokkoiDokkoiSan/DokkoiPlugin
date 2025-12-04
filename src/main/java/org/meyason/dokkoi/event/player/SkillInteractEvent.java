@@ -176,6 +176,14 @@ public class SkillInteractEvent implements Listener {
                         case IronMaiden ironMaiden -> ironMaiden.ultimate();
                         case Explorer explorer -> explorer.ultimate();
                         case Prayer prayer -> prayer.ultimate();
+                        case Photographer photographer -> {
+                            if(photographer.canUseUltimate()){
+                                photographer.ultimate();
+                            }else{
+                                player.sendActionBar(Component.text("§cアルティメットを使用する条件を満たしていません。"));
+                                return;
+                            }
+                        }
                         default -> {
                         }
                     }

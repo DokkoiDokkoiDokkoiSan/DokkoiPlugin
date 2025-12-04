@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
@@ -49,12 +50,12 @@ public class Photographer extends Job {
         this.takenPhotoPlayersUUID.remove(targetPlayer);
     }
 
-    public void setTwoShotPhotoTaken(boolean isTwoShotPhotoTaken){
-        this.isTwoShotPhotoTaken = isTwoShotPhotoTaken;
-    }
-
     public boolean isTakenPhotoPlayer(UUID targetPlayer){
         return this.takenPhotoPlayersUUID.contains(targetPlayer);
+    }
+
+    public boolean isTwoShotPhotoTaken(){
+        return this.isTwoShotPhotoTaken;
     }
 
     @Override
@@ -116,11 +117,33 @@ public class Photographer extends Job {
                 this.player.sendActionBar(Component.text("§c写真に誰も写っていない..."));
                 return;
             }
+            if(quantityPlayers >= 2 && !this.isTwoShotPhotoTaken){
+                this.isTwoShotPhotoTaken = true;
+            }
             for(Player p : playerInSight){
                 this.addTakenPhotoPlayer(p.getUniqueId());
                 this.player.sendMessage(Component.text("§a=====撮影結果====="));
                 this.player.sendMessage(Component.text("§a" + p.getName() + "§r§aの写真を撮影した！"));
             }
         }
+    }
+
+    public boolean canUseUltimate(){
+        return !this.takenPhotoPlayersUUID.isEmpty();
+    }
+
+    public void ultimate(){
+        int affectedSeconds = this.takenPhotoPlayersUUID.size() * 2;
+        if(affectedSeconds == 0){
+            this.player.sendActionBar(Component.text("§c写真に写っているプレイヤーがいない..."));
+            return;
+        }
+        for(UUID uuid : this.takenPhotoPlayersUUID){
+            Player targetPlayer = Bukkit.getPlayer(uuid);
+            if(targetPlayer == null) continue;
+            targetPlayer.addPotionEffect(new org.bukkit.potion.PotionEffect(PotionEffectType.SLOWNESS, affectedSeconds * 20, 255));
+            targetPlayer.sendMessage(Component.text("§c写真が晒され、移動不能になった！"));
+        }
+        this.player.sendMessage(Component.text("§a写真に写っているプレイヤー全員に移動不能を" + affectedSeconds + "秒間付与した！"));
     }
 }

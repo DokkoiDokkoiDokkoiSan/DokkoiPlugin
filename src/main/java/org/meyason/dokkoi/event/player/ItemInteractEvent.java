@@ -40,12 +40,6 @@ public class ItemInteractEvent implements Listener {
     public void onItemInteract(PlayerInteractEvent event){
         Game game = Game.getInstance();
         Player player = event.getPlayer();
-        player.sendMessage("FUCK");
-        PacketContainer pk = PacketProcess.hideNameTag(player);
-        for(Player p : Bukkit.getOnlinePlayers()){
-            player.sendMessage(p.getName());
-            PacketSender.sendPacket(p, pk);
-        }
         if(game.getGameStatesManager().getGameState() == GameState.PREP){
             ItemStack item = event.getItem();
             if (item == null) {

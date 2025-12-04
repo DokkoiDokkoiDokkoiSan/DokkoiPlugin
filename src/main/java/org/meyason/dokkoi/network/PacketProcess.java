@@ -16,8 +16,7 @@ import java.util.List;
 
 public class PacketProcess {
 
-    public static PacketContainer hideNameTag(Player player){
-        PacketContainer packet = PacketData.create(player);
+    public static PacketContainer hideNameTag(Player player, PacketContainer packet) {
         List<WrappedDataValue> wrappedDataValues = WrappedDataWatcher.getEntityWatcher(player).toDataValueCollection();
         wrappedDataValues.remove(0);
         wrappedDataValues.remove(6);
