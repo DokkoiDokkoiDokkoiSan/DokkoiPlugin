@@ -9,8 +9,6 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.job.Photographer;
 
-import java.util.UUID;
-
 public class TakeTwoShot extends Goal{
 
     public TakeTwoShot() {
