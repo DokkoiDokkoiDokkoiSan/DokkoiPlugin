@@ -4,8 +4,10 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.meyason.dokkoi.constants.GoalList;
+import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
@@ -58,6 +60,10 @@ public class Photographer extends Job {
         return this.isTwoShotPhotoTaken;
     }
 
+    public void passive(){
+
+    }
+
     @Override
     public void setPlayer(Game game, Player player) {
         this.game = game;
@@ -70,6 +76,10 @@ public class Photographer extends Job {
 
     @Override
     public void attachGoal(Goal goal) {
+        this.goal = goal;
+        if(goal.tier == Tier.TIER_1){
+            twiceCoolTimeSkill();
+        }
         passive_skill_description = List.of(
                 Component.text("§5カメラで撮影した人間の数でステータスが変動する。"),
                 Component.text("§a0人　与ダメージ0固定、移動速度低下Lv1が常時付与されている。"),
@@ -92,7 +102,31 @@ public class Photographer extends Job {
 
     @Override
     public void ready() {
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 1));
+        game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), -500);
+    }
 
+    private void updatePassive(){
+        if(takenPhotoPlayersUUID.isEmpty()) return;
+        if(this.takenPhotoPlayersUUID.size() == 1){
+            this.player.removePotionEffect(PotionEffectType.SLOWNESS);
+            game.getGameStatesManager().addAdditionalDamage(this.player.getUniqueId(), 500);
+        } else if(this.takenPhotoPlayersUUID.size() == 4){
+            this.player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+            game.getGameStatesManager().addAdditionalDamage(this.player.getUniqueId(), 2);
+        } else if(this.takenPhotoPlayersUUID.size() == 7){
+            game.getGameStatesManager().addAdditionalDamage(this.player.getUniqueId(), 2);
+        } else if(this.takenPhotoPlayersUUID.size() == 9) {
+            this.player.removePotionEffect(PotionEffectType.SPEED);
+            this.player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+            game.getGameStatesManager().addAdditionalDamage(this.player.getUniqueId(), 1);
+            for(UUID uuid : this.game.getGameStatesManager().getAlivePlayers()){
+                if(uuid.equals(this.player.getUniqueId())) continue;
+                Player targetPlayer = Bukkit.getPlayer(uuid);
+                if(targetPlayer == null) continue;
+                targetPlayer.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));
+            }
+        }
     }
 
     public void skill(){
@@ -120,6 +154,7 @@ public class Photographer extends Job {
             if(quantityPlayers >= 2 && !this.isTwoShotPhotoTaken){
                 this.isTwoShotPhotoTaken = true;
             }
+            this.updatePassive();
             for(Player p : playerInSight){
                 this.addTakenPhotoPlayer(p.getUniqueId());
                 this.player.sendMessage(Component.text("§a=====撮影結果====="));
