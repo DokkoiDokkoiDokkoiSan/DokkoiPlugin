@@ -14,6 +14,7 @@ public class JobList {
     public static final IronMaiden IRONMAIDEN = new IronMaiden();
     public static final Explorer EXPLORER = new Explorer();
     public static final Prayer PRAYER = new Prayer();
+    public static final Photographer PHOTOGRAPHER = new Photographer();
     public static final DrugStore DRUGSTORE = new DrugStore();
 
     private static final HashMap<String, Job> jobMap = new HashMap<String, Job>();
@@ -25,6 +26,7 @@ public class JobList {
 //        jobMap.put(IRONMAIDEN.getName(), IRONMAIDEN);
 //        jobMap.put(EXPLORER.getName(), EXPLORER);
         jobMap.put(PRAYER.getName(), PRAYER);
+        jobMap.put(PHOTOGRAPHER.getName(), PHOTOGRAPHER);
         jobMap.put(DRUGSTORE.getName(), DRUGSTORE);
     }
 

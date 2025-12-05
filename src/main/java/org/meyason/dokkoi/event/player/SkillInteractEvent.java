@@ -146,6 +146,8 @@ public class SkillInteractEvent implements Listener {
 
                     }else if(job instanceof DrugStore drugStore) {
                         drugStore.skill();
+                    }else if(job instanceof Photographer photographer) {
+                        photographer.skill();
                     }
                     job.playSoundEffectSkill(player);
 
@@ -211,11 +213,13 @@ public class SkillInteractEvent implements Listener {
                                 }
                             }
                         }
-                        if(drugList.isEmpty()){
+                        if(drugList.isEmpty()) {
                             player.sendActionBar(Component.text("§c強化できる薬を所持していない。"));
                             return;
                         }
                         drugStore.ultimate(drugList);
+                    }else if(job instanceof Photographer photographer) {
+                        photographer.skill();
                     }
 
                     job.setRemainCoolTimeSkillUltimate(job.getCoolTimeSkillUltimate());
