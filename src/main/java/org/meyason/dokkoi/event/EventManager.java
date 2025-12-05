@@ -1,6 +1,7 @@
 package org.meyason.dokkoi.event;
 
 import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.event.block.ItemFrameProtect;
 import org.meyason.dokkoi.event.block.ProjectileHitBlockEvent;
 import org.meyason.dokkoi.event.entity.DespawnEvent;
 import org.meyason.dokkoi.event.entity.LaunchEvent;
@@ -24,5 +25,6 @@ public class EventManager {
         core.getServer().getPluginManager().registerEvents(new EntityInteractEvent(), core);
         core.getServer().getPluginManager().registerEvents(new LoginEvent(), core);
         core.getServer().getPluginManager().registerEvents(new ChatEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new ItemFrameProtect(), core);
     }
 }
