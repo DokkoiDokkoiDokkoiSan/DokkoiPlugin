@@ -15,6 +15,8 @@ import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.item.food.*;
+import org.meyason.dokkoi.item.utilitem.MamiyaPhone;
+import org.meyason.dokkoi.item.utilitem.TakashimaPhone;
 import org.meyason.dokkoi.item.weapon.*;
 import org.meyason.dokkoi.scheduler.ChestScheduler;
 
@@ -112,10 +114,21 @@ public class ChestProvider {
         }
         if(customItem instanceof ThunderJavelin){
             if(isPopThunderJavelin){
-                // 2個目以降は出さない
                 return getRandomItem();
             }else{
                 isPopThunderJavelin = true;
+            }
+        } else if (customItem instanceof MamiyaPhone){
+            if(isPopMamiya){
+                return getRandomItem();
+            }else{
+                isPopMamiya = true;
+            }
+        } else if (customItem instanceof TakashimaPhone){
+            if(isPopTakashima){
+                return getRandomItem();
+            }else{
+                isPopTakashima = true;
             }
         }
         ItemStack itemStack = customItem.getItem();
