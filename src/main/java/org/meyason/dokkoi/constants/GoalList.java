@@ -24,6 +24,9 @@ public class GoalList {
     public static final Pachikasu PACHIASU = new Pachikasu();
     public static final GamblerMaster GAMBLERMASTER = new GamblerMaster();
     public static final DrugEnforcementAdministration DRUGENFORCEMENTADMINISTRATION = new DrugEnforcementAdministration();
+    public static final SugiYakkyoku SUGIYAKKYOKU = new SugiYakkyoku();
+    public static final MatsumotoKiyoshi MATSUMOTOKIYOSHI = new MatsumotoKiyoshi();
+    public static final GangStar GANGSTAR = new GangStar();
 
     private static final HashMap<String, Goal> goalMap = new HashMap<>();
 
@@ -44,6 +47,9 @@ public class GoalList {
         goalMap.put(PACHIASU.getName(), PACHIASU);
         goalMap.put(GAMBLERMASTER.getName(), GAMBLERMASTER);
         goalMap.put(DRUGENFORCEMENTADMINISTRATION.getName(), DRUGENFORCEMENTADMINISTRATION);
+        goalMap.put(SUGIYAKKYOKU.getName(), SUGIYAKKYOKU);
+        goalMap.put(MATSUMOTOKIYOSHI.getName(), MATSUMOTOKIYOSHI);
+        goalMap.put(GANGSTAR.getName(), GANGSTAR);
     }
 
     public static List<Goal> getAllGoals(){

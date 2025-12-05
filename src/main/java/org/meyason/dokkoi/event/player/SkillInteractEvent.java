@@ -14,6 +14,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -25,9 +26,12 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.jobitem.*;
 import org.meyason.dokkoi.job.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class SkillInteractEvent implements Listener {
@@ -84,58 +88,64 @@ public class SkillInteractEvent implements Listener {
                     }
 
                     // 執行者
-                    switch (job) {
-                        case Executor executor -> {
-                            Vector direction = player.getEyeLocation().getDirection().normalize();
-                            Vector velocity = direction.multiply(3.0);
-                            Snowball projectile = player.launchProjectile(Snowball.class, velocity);
-                            manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
-                        }
-                        case Lonely lonely -> lonely.skill();
-                        case Bomber bomber -> {
-                            Vector direction = player.getEyeLocation().getDirection().normalize();
-                            Vector velocity = direction.multiply(2.0);
-                            Snowball projectile = player.launchProjectile(Snowball.class, velocity);
-                            manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
-                        }
-                        case IronMaiden ironMaiden -> ironMaiden.skill();
-                        case Explorer explorer -> {
-                            if (explorer.getHaveKetsumouCount() <= 0) {
-                                player.sendActionBar(Component.text("§c投擲できる§9§lけつ毛§r§cがない。"));
-                                return;
-                            }
-                            Vector direction = player.getEyeLocation().getDirection().normalize();
-                            Vector velocity = direction.multiply(2.0);
-                            Snowball projectile = player.launchProjectile(Snowball.class, velocity);
-                            ItemStack itemStack = new ItemStack(Material.PALE_HANGING_MOSS);
-                            ItemMeta itemMeta = itemStack.getItemMeta();
-                            if (itemMeta != null) {
-                                itemStack.setItemMeta(itemMeta);
-                            }
-                            projectile.setItem(itemStack);
+                    if(job instanceof Executor executor) {
+                        Vector direction = player.getEyeLocation().getDirection().normalize();
+                        Vector velocity = direction.multiply(3.0);
+                        Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+                        manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
 
-                            for (ItemStack iS : player.getInventory().getContents()) {
-                                if (iS == null) continue;
-                                if (iS.getItemMeta() != null) {
-                                    CustomItem cI = CustomItem.getItem(iS);
-                                    if (cI instanceof Ketsumou) {
-                                        player.getInventory().removeItem(iS);
-                                        break;
-                                    }
+                    } else if(job instanceof Lonely lonely) {
+                        lonely.skill();
+
+                    } else if(job instanceof Bomber) {
+                        Vector direction = player.getEyeLocation().getDirection().normalize();
+                        Vector velocity = direction.multiply(2.0);
+                        Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+                        manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
+
+                    }else if(job instanceof IronMaiden ironMaiden) {
+                        ironMaiden.skill();
+
+                    }else if(job instanceof Explorer explorer) {
+                        if (explorer.getHaveKetsumouCount() <= 0) {
+                            player.sendActionBar(Component.text("§c投擲できる§9§lけつ毛§r§cがない。"));
+                            return;
+                        }
+                        Vector direction = player.getEyeLocation().getDirection().normalize();
+                        Vector velocity = direction.multiply(2.0);
+                        Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+                        ItemStack itemStack = new ItemStack(Material.PALE_HANGING_MOSS);
+                        ItemMeta itemMeta = itemStack.getItemMeta();
+                        if (itemMeta != null) {
+                            itemStack.setItemMeta(itemMeta);
+                        }
+                        projectile.setItem(itemStack);
+
+                        for (ItemStack iS : player.getInventory().getContents()) {
+                            if (iS == null) continue;
+                            if (iS.getItemMeta() != null) {
+                                CustomItem cI = CustomItem.getItem(iS);
+                                if (cI instanceof Ketsumou) {
+                                    player.getInventory().removeItem(iS);
+                                    break;
                                 }
                             }
-                            manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
                         }
-                        case Prayer prayer -> {
-                            if (prayer.getGachaPoint() <= 0) {
-                                player.sendActionBar(Component.text("§cガチャポイントが足りません。"));
-                                return;
-                            }
-                            prayer.skill();
+                        manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
+
+                    } else if(job instanceof Prayer prayer) {
+                        if (prayer.getGachaPoint() <= 0) {
+                            player.sendActionBar(Component.text("§cガチャポイントが足りません。"));
+                            return;
                         }
-                        case DrugStore drugStore -> drugStore.skill();
-                        default -> {
+                        if(player.getInventory().firstEmpty() == -1) {
+                            player.sendActionBar(Component.text("§cインベントリに空きがありません。"));
+                            return;
                         }
+                        prayer.skill();
+
+                    }else if(job instanceof DrugStore drugStore) {
+                        drugStore.skill();
                     }
                     job.playSoundEffectSkill(player);
 
@@ -158,20 +168,54 @@ public class SkillInteractEvent implements Listener {
                         return;
                     }
                     job.playSoundEffectUltimateSkill(player);
-                    switch (job) {
-                        case Executor executor -> executor.ultimate();
-                        case Lonely lonely -> lonely.ultimate();
-                        case Bomber bomber -> {
-                            Vector direction = player.getEyeLocation().getDirection().normalize();
-                            Vector velocity = direction.multiply(2.0);
-                            Snowball projectile = player.launchProjectile(Snowball.class, velocity);
-                            manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
+                    if(job instanceof Executor executor) {
+                        executor.ultimate();
+
+                    }else if(job instanceof Lonely lonely) {
+                        lonely.ultimate();
+
+                    }else if(job instanceof Bomber bomber) {
+                        Vector direction = player.getEyeLocation().getDirection().normalize();
+                        Vector velocity = direction.multiply(2.0);
+                        Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+                        manager.addProjectileData(projectile, new ProjectileData(player, projectile, customItem.getId()));
+
+                    }else if(job instanceof IronMaiden ironMaiden) {
+                        ironMaiden.ultimate();
+
+                    }else if(job instanceof Explorer explorer) {
+                        explorer.ultimate();
+
+                    }else if(job instanceof Prayer prayer) {
+                        prayer.ultimate();
+
+                    }else if(job instanceof DrugStore drugStore) {
+                        List<String> drugList = new ArrayList<>();
+                        PlayerInventory inventory = player.getInventory();
+                        for(ItemStack i : inventory.getContents()){
+                            if(i == null) continue;
+                            ItemMeta m = i.getItemMeta();
+                            if(m == null) continue;
+                            if(m.getPersistentDataContainer().has(itemKey)){
+                                CustomItem c = CustomItem.getItem(i);
+                                if(c instanceof Katakunaru){
+                                    drugList.add(Katakunaru.id);
+                                }else if(c instanceof Kizukieru){
+                                    drugList.add(Kizukieru.id);
+                                }else if(c instanceof Hayakunaru){
+                                    drugList.add(Hayakunaru.id);
+                                }else if(c instanceof Tsuyokunaru){
+                                    drugList.add(Tsuyokunaru.id);
+                                }else if(c instanceof Korehamaru){
+                                    drugList.add(Korehamaru.id);
+                                }
+                            }
                         }
-                        case IronMaiden ironMaiden -> ironMaiden.ultimate();
-                        case Explorer explorer -> explorer.ultimate();
-                        case Prayer prayer -> prayer.ultimate();
-                        default -> {
+                        if(drugList.isEmpty()){
+                            player.sendActionBar(Component.text("§c強化できる薬を所持していない。"));
+                            return;
                         }
+                        drugStore.ultimate(drugList);
                     }
 
                     job.setRemainCoolTimeSkillUltimate(job.getCoolTimeSkillUltimate());

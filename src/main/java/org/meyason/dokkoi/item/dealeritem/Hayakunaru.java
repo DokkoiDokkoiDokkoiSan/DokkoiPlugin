@@ -17,7 +17,6 @@ public class Hayakunaru extends CustomItem {
 
     public Hayakunaru() {
         super(id, "§9ハヤクナール", ItemStack.of(Material.MELON_SEEDS), 64);
-        isUnique = true;
         List<Component> lore = List.of(
                 Component.text("§5足が速くなる気がする薬。"),
                 Component.text(""),

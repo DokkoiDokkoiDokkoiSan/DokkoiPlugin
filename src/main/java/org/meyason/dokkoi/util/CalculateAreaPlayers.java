@@ -13,8 +13,13 @@ public class CalculateAreaPlayers {
 
     public static List<Player> getPlayersInArea(Game game, Player exceptPlayer, Location location, double radius) {
         List<Player> playersInArea = new ArrayList<>();
+        UUID exceptUUID = null;
+        if(exceptPlayer != null) {
+            exceptUUID = exceptPlayer.getUniqueId();
+        }
         for(UUID uuid : game.getGameStatesManager().getAlivePlayers()){
-            if(uuid.equals(exceptPlayer.getUniqueId())){
+
+            if(exceptUUID != null && uuid.equals(exceptUUID)){
                 continue;
             }
             if(!game.getGameStatesManager().getAlivePlayers().contains(uuid)){

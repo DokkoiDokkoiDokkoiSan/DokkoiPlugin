@@ -18,7 +18,7 @@ public class ArcherArmor extends CustomItem {
     private Player player;
 
     public ArcherArmor() {
-        super(id, "弓使いの鎧", ItemStack.of(Material.GOLDEN_CHESTPLATE), 1);
+        super(id, "§a弓使いの鎧", ItemStack.of(Material.GOLDEN_CHESTPLATE), 1);
         List<Component> lore = List.of(
                 Component.text("§5矢を一発だけ防いでくれそうなアーマー。めちゃくちゃ脆い。"),
                 Component.text(""),
@@ -43,7 +43,7 @@ public class ArcherArmor extends CustomItem {
     public void setPlayer(Game game, Player player){
         this.game = game;
         this.player = player;
-        player.sendMessage(Component.text("§aロングソード§bを手に入れた！"));
+        player.sendMessage(Component.text("§a弓使いの鎧§bを手に入れた！"));
     }
 
 }

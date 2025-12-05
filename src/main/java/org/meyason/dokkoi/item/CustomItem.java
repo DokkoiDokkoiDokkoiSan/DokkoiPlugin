@@ -79,7 +79,13 @@ public abstract class CustomItem implements Cloneable {
     @Override
     public CustomItem clone() {
         try {
-            return (CustomItem) super.clone();
+            CustomItem clone = (CustomItem) super.clone();
+            if(this.baseItem != null){
+                clone.baseItem = this.baseItem.clone();
+            }
+            clone.description = new ArrayList<>(this.description);
+            clone.registerItemFunction();
+            return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
         }

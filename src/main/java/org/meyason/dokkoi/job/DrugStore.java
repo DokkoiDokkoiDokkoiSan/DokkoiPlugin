@@ -1,19 +1,27 @@
 package org.meyason.dokkoi.job;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
+import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
+import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.jobitem.DrugRecipe;
+import org.meyason.dokkoi.item.dealeritem.*;
+import org.meyason.dokkoi.item.jobitem.Ketsumou;
 import org.meyason.dokkoi.menu.drugrecipemenu.DrugRecipeMenu;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class DrugStore extends Job {
@@ -25,6 +33,22 @@ public class DrugStore extends Job {
     public void incrementSellCount() {
         this.sellCount++;
     }
+
+    private int pickCount = 0;
+    public int getPickCount() {
+        return pickCount;
+    }
+    public void incrementPickCount() {
+        this.pickCount++;
+    }
+
+    private HashMap<String, String> ultimateMap = new HashMap<>() {{
+        put(Tsuyokunaru.id, TotemoTsuyokunaru.id);
+        put(Katakunaru.id, TotemoKatakunaru.id);
+        put(Hayakunaru.id, TotemoHayakunaru.id);
+        put(Kizukieru.id, TotemoKizukieru.id);
+        put(Korehamaru.id, TotemoKorehamaru.id);
+    }};
 
     public DrugStore() {
         super("薬売師", "drag_store", 1, 100);
@@ -45,9 +69,9 @@ public class DrugStore extends Job {
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.KILLER,
-                GoalList.CARPETBOMBING,
-                GoalList.COMEDIANKILLER
+                GoalList.GANGSTAR,
+                GoalList.MATSUMOTOKIYOSHI,
+                GoalList.SUGIYAKKYOKU
         );
     }
 
@@ -90,6 +114,40 @@ public class DrugStore extends Job {
     public void skill(){
         DrugRecipeMenu drugRecipeMenu = new DrugRecipeMenu();
         drugRecipeMenu.sendMenu(player);
+    }
+
+    public void ultimate(List<String> drugList){
+        // ランダムに選出
+        String drugName = drugList.get((int)(Math.random() * drugList.size()));
+        PlayerInventory inventory = player.getInventory();
+        NamespacedKey key = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+        for (ItemStack iS : player.getInventory().getContents()) {
+            if (iS == null) continue;
+            ItemMeta itemMeta = iS.getItemMeta();
+            if (itemMeta == null) continue;
+            if (itemMeta.getPersistentDataContainer().has(key)) {
+                String itemName = itemMeta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+                if (itemName != null && itemName.equals(drugName)) {
+                    player.getInventory().removeItem(iS);
+                    String ultimateDrugName = ultimateMap.get(drugName);
+                    CustomItem ultimateItem;
+                    try{
+                        ultimateItem = GameItem.getItem(ultimateDrugName);
+                    } catch (NoGameItemException e){
+                        player.sendMessage(Component.text("§4エラー:薬が見つかりません。運営にお問い合わせください。" + ultimateDrugName));
+                        return;
+                    }
+                    ItemStack itemStack = ultimateItem.getItem();
+
+                    if (inventory.firstEmpty() == -1) {
+                        player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
+                    }
+                    inventory.addItem(itemStack);
+                    player.sendMessage(Component.text("§a調合完了！§e" + ultimateItem.getName() + "§aを手に入れた！"));
+                    return;
+                }
+            }
+        }
     }
 
 }

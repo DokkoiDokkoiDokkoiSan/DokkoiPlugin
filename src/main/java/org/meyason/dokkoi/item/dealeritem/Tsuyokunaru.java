@@ -19,12 +19,11 @@ public class Tsuyokunaru extends CustomItem {
 
     public Tsuyokunaru() {
         super(id, "§9ツヨクナール", ItemStack.of(Material.MELON_SEEDS), 64);
-        isUnique = true;
         List<Component> lore = List.of(
                 Component.text("§5力が強くなる気がする薬。"),
                 Component.text(""),
                 Component.text("§b効果"),
-                Component.text("§510秒間攻撃の与ダメージが2増える。")
+                Component.text("§51秒間攻撃の与ダメージが2増える。")
         );
         setDescription(lore);
     }
@@ -45,7 +44,7 @@ public class Tsuyokunaru extends CustomItem {
         manager.addAdditionalDamage(player.getUniqueId(), 2);
         item.setAmount(item.getAmount() - 1);
         player.getInventory().setItemInMainHand(item);
-        player.sendMessage(Component.text("§aツヨクナール§bの効果で攻撃力が上がった！"));
+        player.sendMessage(Component.text("§aちょっと固くなった気がする！"));
         new BukkitRunnable() {
 
             @Override
@@ -54,6 +53,6 @@ public class Tsuyokunaru extends CustomItem {
                 manager.addAdditionalDamage(player.getUniqueId(), -2);
 
             }
-        }.runTaskLater(Dokkoi.getInstance(), 10 * 20L);
+        }.runTaskLater(Dokkoi.getInstance(), 25L);
     }
 }

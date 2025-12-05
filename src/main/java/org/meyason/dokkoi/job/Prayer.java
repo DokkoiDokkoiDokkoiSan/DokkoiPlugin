@@ -9,18 +9,19 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.event.player.DamageEvent;
 import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.item.battleitem.ArcherArmor;
-import org.meyason.dokkoi.item.food.BakedPotato;
-import org.meyason.dokkoi.item.food.GoldenCarrot;
+import org.meyason.dokkoi.item.battleitem.HealingCrystal;
+import org.meyason.dokkoi.item.food.*;
 import org.meyason.dokkoi.item.jobitem.gacha.StrongestBall;
 import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestBall;
 import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestStrongestBall;
+import org.meyason.dokkoi.item.utilitem.Monei;
+import org.meyason.dokkoi.item.weapon.Arrow;
 import org.meyason.dokkoi.item.weapon.LongSword;
 import org.meyason.dokkoi.item.weapon.ThunderJavelin;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
@@ -29,12 +30,13 @@ import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
+
 
 public class Prayer extends Job {
 
@@ -66,14 +68,25 @@ public class Prayer extends Job {
 
     public static final HashMap<String, List<String>> rarityEffectMap = new HashMap<>(){{
         put(R, List.of(
-                BakedPotato.id
+                BakedPotato.id,
+                Arrow.id,
+                Cod.id,
+                Bread.id,
+                HealingCrystal.id,
+                Salmon.id,
+                CookedChicken.id
         ));
         put(SR, List.of(
                 ArcherArmor.id,
-                GoldenCarrot.id
+                GoldenCarrot.id,
+                CookedPorkchop.id,
+                CookedBeef.id,
+                GlisteringMelonSlice.id,
+                LongSword.id,
+                PumpkinPie.id
         ));
         put(UR, List.of(
-                LongSword.id
+                Monei.id
         ));
         put(LR, List.of(
                 ThunderJavelin.id
@@ -101,11 +114,6 @@ public class Prayer extends Job {
     private int gachaCount = 0;
     public int getGachaCount(){
         return gachaCount;
-    }
-
-    private boolean onLREffect = false;
-    public boolean isOnLREffect(){
-        return onLREffect;
     }
 
     private boolean hasStrongestStrongestBall = false;
@@ -226,7 +234,7 @@ public class Prayer extends Job {
         if(Objects.equals(selectedRarity, R)) {
             List<Player> targets = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 20);
             for(Player target : targets){
-                DamageEvent.calculateDamage(player, target, 1);
+                DamageEvent.calculateDamageBySkill(player, target, 1);
             }
         }else if(Objects.equals(selectedRarity, SR)) {
             List<Player> targets = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 20);
@@ -251,7 +259,7 @@ public class Prayer extends Job {
             }.runTaskLater(Dokkoi.getInstance(), 20 * 10);
         }else if(Objects.equals(selectedRarity, LR)) {
             game.getGameStatesManager().addDamageCutPercent(player.getUniqueId(), 100);
-            onLREffect = true;
+            game.getGameStatesManager().addOnDisablePotionEffectPlayer(player.getUniqueId());
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -259,7 +267,7 @@ public class Prayer extends Job {
                         cancel();
                         return;
                     }
-                    onLREffect = false;
+                    game.getGameStatesManager().removeAdditionalDamage(player.getUniqueId());
                     game.getGameStatesManager().addDamageCutPercent(player.getUniqueId(), -100);
                 }
             }.runTaskTimer(Dokkoi.getInstance(), 0, 10 * 20);

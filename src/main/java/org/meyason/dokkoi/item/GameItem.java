@@ -10,12 +10,13 @@ import org.bukkit.persistence.PersistentDataType;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.exception.NoGameItemException;
-import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.dealeritem.*;
+import org.meyason.dokkoi.item.debug.Debug;
 import org.meyason.dokkoi.item.food.*;
 import org.meyason.dokkoi.item.jobitem.gacha.*;
 import org.meyason.dokkoi.item.goalitem.*;
 import org.meyason.dokkoi.item.jobitem.*;
+import org.meyason.dokkoi.item.utilitem.*;
 import org.meyason.dokkoi.item.weapon.*;
 import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
@@ -35,6 +36,7 @@ public class GameItem {
         items.put(Ultimate.id, new Ultimate());
         items.put(Passive.id, new Passive());
         items.put(KillerList.id, new KillerList());
+        items.put(UnkillerList.id, new UnkillerList());
         items.put(Rapier.id, new Rapier());
         items.put(TierPlayerList.id, new TierPlayerList());
         items.put(Ketsumou.id, new Ketsumou());
@@ -45,6 +47,7 @@ public class GameItem {
         items.put(StrongestStrongestStrongestBall.id, new StrongestStrongestStrongestBall());
         items.put(GoldenCarrot.id, new GoldenCarrot());
         items.put(LongSword.id, new LongSword());
+        items.put(Arrow.id, new Arrow());
         items.put(ArcherArmor.id, new ArcherArmor());
         items.put(BakedPotato.id, new BakedPotato());
         items.put(ThunderJavelin.id, new ThunderJavelin());
@@ -54,6 +57,11 @@ public class GameItem {
         items.put(Kizukieru.id, new Kizukieru());
         items.put(Katakunaru.id, new Katakunaru());
         items.put(Korehamaru.id, new Korehamaru());
+        items.put(TotemoTsuyokunaru.id, new TotemoTsuyokunaru());
+        items.put(TotemoKorehamaru.id, new TotemoKorehamaru());
+        items.put(TotemoHayakunaru.id, new TotemoHayakunaru());
+        items.put(TotemoKatakunaru.id, new TotemoKatakunaru());
+        items.put(TotemoKizukieru.id, new TotemoKizukieru());
         items.put(DrugRecipe.id, new DrugRecipe());
         items.put(PumpkinPie.id, new PumpkinPie());
         items.put(CookedChicken.id, new CookedChicken());
@@ -64,6 +72,11 @@ public class GameItem {
         items.put(Cod.id, new Cod());
         items.put(Salmon.id, new Salmon());
         items.put(Bread.id, new Bread());
+        items.put(Monei.id, new Monei());
+        items.put(Debug.id, new Debug());
+        items.put(TakashimaPhone.id, new TakashimaPhone());
+        items.put(MamiyaPhone.id, new MamiyaPhone());
+        items.put(InstantDevour.id, new InstantDevour());
     }
 
     public static CustomItem getItem(String id){
