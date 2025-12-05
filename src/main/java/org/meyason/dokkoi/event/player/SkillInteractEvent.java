@@ -1,7 +1,6 @@
 package org.meyason.dokkoi.event.player;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -30,12 +29,10 @@ import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.jobitem.*;
 import org.meyason.dokkoi.job.*;
-import org.meyason.dokkoi.util.CalculateAreaPlayers;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 public class SkillInteractEvent implements Listener {
 
@@ -149,6 +146,8 @@ public class SkillInteractEvent implements Listener {
 
                     }else if(job instanceof DrugStore drugStore) {
                         drugStore.skill();
+                    }else if(job instanceof Photographer photographer) {
+                        photographer.skill();
                     }
                     job.playSoundEffectSkill(player);
 
@@ -214,11 +213,13 @@ public class SkillInteractEvent implements Listener {
                                 }
                             }
                         }
-                        if(drugList.isEmpty()){
+                        if(drugList.isEmpty()) {
                             player.sendActionBar(Component.text("§c強化できる薬を所持していない。"));
                             return;
                         }
                         drugStore.ultimate(drugList);
+                    }else if(job instanceof Photographer photographer) {
+                        photographer.skill();
                     }
 
                     job.setRemainCoolTimeSkillUltimate(job.getCoolTimeSkillUltimate());
