@@ -113,7 +113,7 @@ public class Photographer extends Job {
             game.getGameStatesManager().addAdditionalDamage(this.player.getUniqueId(), 501);
         } else if(this.takenPhotoPlayersUUID.size() == 4){
             this.player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-            game.getGameStatesManager().addAdditionalDamage(this.player.getUniqueId(), 2);
+            game.getGameStatesManager().addAdditionalDamage(this.player.getUniqueId(), 1);
         } else if(this.takenPhotoPlayersUUID.size() == 7){
             game.getGameStatesManager().addAdditionalDamage(this.player.getUniqueId(), 2);
         } else if(this.takenPhotoPlayersUUID.size() == 9) {
