@@ -2,7 +2,7 @@
 なんか実装中
 エビフライうまい
 
-#Dependencies
+### Dependencies
  - [ProtocolLib](https://github.com/dmulloy2/ProtocolLib/releases/tag/5.4.0)
 
 
