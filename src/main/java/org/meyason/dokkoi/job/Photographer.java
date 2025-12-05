@@ -110,7 +110,7 @@ public class Photographer extends Job {
         if(takenPhotoPlayersUUID.isEmpty()) return;
         if(this.takenPhotoPlayersUUID.size() == 1){
             this.player.removePotionEffect(PotionEffectType.SLOWNESS);
-            game.getGameStatesManager().addAdditionalDamage(this.player.getUniqueId(), 500);
+            game.getGameStatesManager().addAdditionalDamage(this.player.getUniqueId(), 501);
         } else if(this.takenPhotoPlayersUUID.size() == 4){
             this.player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
             game.getGameStatesManager().addAdditionalDamage(this.player.getUniqueId(), 2);
@@ -135,6 +135,7 @@ public class Photographer extends Job {
             this.player.sendMessage(Component.text("§a=====写真を撮影していないプレイヤー一覧====="));
             for(UUID uuid : this.game.getGameStatesManager().getJoinedPlayers()){
                 if(this.isTakenPhotoPlayer(uuid)) continue;
+                if(uuid.equals(this.player.getUniqueId())) continue;
                 targets.add(uuid);
             }
             if(targets.size() == this.game.getGameStatesManager().getJoinedPlayers().size()){

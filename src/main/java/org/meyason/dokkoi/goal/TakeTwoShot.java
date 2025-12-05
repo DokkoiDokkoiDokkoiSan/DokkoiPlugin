@@ -12,14 +12,13 @@ import org.meyason.dokkoi.job.Photographer;
 public class TakeTwoShot extends Goal{
 
     public TakeTwoShot() {
-        super("§TakeTwoShot", "§e2人以上のプレイヤーをカメラに収めよう！", Tier.TIER_3);
+        super("§cTakeTwoShot", "§e2人以上のプレイヤーをカメラに収めよう！", Tier.TIER_3);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
     @Override

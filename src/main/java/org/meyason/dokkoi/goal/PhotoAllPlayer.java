@@ -18,14 +18,13 @@ import java.util.UUID;
 public class PhotoAllPlayer extends Goal{
 
     public PhotoAllPlayer() {
-        super("§cPhotoAllPlayer", "§e生存プレイヤーを全員カメラで撮影しよう！", Tier.TIER_2);
+        super("§bPhotoAllPlayer", "§e生存プレイヤーを全員カメラで撮影しよう！", Tier.TIER_2);
     }
 
     @Override
     public void setGoal(Game game, Player player) {
         this.game = game;
         this.player = player;
-        setDamageMultiplier(this.tier.getDamageMultiplier());
     }
 
     @Override
