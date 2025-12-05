@@ -22,6 +22,7 @@ import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.JobList;
 import org.meyason.dokkoi.item.battleitem.ArcherArmor;
 import org.meyason.dokkoi.item.jobitem.Skill;
+import org.meyason.dokkoi.item.jobitem.SummonersBrave;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
 import org.meyason.dokkoi.item.jobitem.gacha.StrongestBall;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
@@ -317,6 +318,7 @@ public class DamageEvent implements Listener {
         }
 
         GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
+        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
 
 
         if(damaged instanceof Player damagedPlayer && attacker instanceof Player attackerPlayer) {
@@ -328,6 +330,25 @@ public class DamageEvent implements Listener {
                 if(prayer.getHasStrongestStrongestBall()){
                     damagedPlayer.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
                     return;
+                }
+            }
+            if(gameStatesManager.isNaito(attacker.getUniqueId())){
+                if(gameStatesManager.getPlayerJobs().get(damagedPlayer.getUniqueId()) instanceof Summoner){
+                    damagedPlayer.sendActionBar(Component.text("§c内藤はマスターに攻撃できない！"));
+                    return;
+                }
+            }
+            if(gameStatesManager.isNaito(damaged.getUniqueId())){
+                ItemStack item = attackerPlayer.getInventory().getItemInMainHand();
+                ItemMeta meta = item.getItemMeta();
+                if(meta != null){
+                    PersistentDataContainer container = meta.getPersistentDataContainer();
+                    if(container.has(itemKey, PersistentDataType.STRING)){
+                        if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), SummonersBrave.id)){
+                            DeathEvent.kill(attackerPlayer, damagedPlayer);
+                            return;
+                        }
+                    }
                 }
             }
 

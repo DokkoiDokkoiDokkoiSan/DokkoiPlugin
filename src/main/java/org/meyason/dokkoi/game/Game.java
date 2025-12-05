@@ -503,6 +503,8 @@ public class Game {
                     color = achievedColor;
                 }
                 objective.getScore("§e現在の回数: §" + color + drugStore.getPickCount() + "回").setScore(--i);
+            }else if(goal instanceof FiftyPercent){
+                objective.getScore("§a参加者数: §f" + gameStatesManager.getJoinedPlayers().size() + "人").setScore(--i);
             }
 
             if(job instanceof Explorer explorer){
@@ -517,6 +519,8 @@ public class Game {
             }else if(job instanceof Prayer prayer){
                 objective.getScore("§eガチャポイント: §f" + prayer.getGachaPoint()).setScore(--i);
                 objective.getScore("§eガチャ回数: §f" + prayer.getGachaCount() + "回").setScore(--i);
+            }else if(job instanceof Summoner){
+                objective.getScore("§e召喚体数: §f" + gameStatesManager.getNaito().size() + "体").setScore(--i);
             }
         }
         player.setScoreboard(scoreboard);

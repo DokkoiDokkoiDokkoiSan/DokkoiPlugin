@@ -27,6 +27,7 @@ public class GoalList {
     public static final SugiYakkyoku SUGIYAKKYOKU = new SugiYakkyoku();
     public static final MatsumotoKiyoshi MATSUMOTOKIYOSHI = new MatsumotoKiyoshi();
     public static final GangStar GANGSTAR = new GangStar();
+    public static final FiftyPercent FIFTYPERCENT = new FiftyPercent();
 
     private static final HashMap<String, Goal> goalMap = new HashMap<>();
 
@@ -50,6 +51,7 @@ public class GoalList {
         goalMap.put(SUGIYAKKYOKU.getName(), SUGIYAKKYOKU);
         goalMap.put(MATSUMOTOKIYOSHI.getName(), MATSUMOTOKIYOSHI);
         goalMap.put(GANGSTAR.getName(), GANGSTAR);
+        goalMap.put(FIFTYPERCENT.getName(), FIFTYPERCENT);
     }
 
     public static List<Goal> getAllGoals(){

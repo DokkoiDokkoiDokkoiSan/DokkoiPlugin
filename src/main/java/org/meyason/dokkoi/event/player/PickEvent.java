@@ -368,6 +368,11 @@ public class PickEvent implements Listener {
             return;
         }
 
+        if(manager.isNaito(player.getUniqueId())){
+            event.setCancelled(true);
+            return;
+        }
+
         ItemStack item = event.getItem().getItemStack();
         if(!item.hasItemMeta()){return;}
         Job job = manager.getPlayerJobs().get(player.getUniqueId());

@@ -85,7 +85,8 @@ public class Bomber extends Job {
         );
     }
 
-    public void ready(){}
+    public void ready() {
+    }
 
     public boolean passive(){
         this.player.spawnParticle(Particle.EXPLOSION_EMITTER, this.player.getLocation(), 1);

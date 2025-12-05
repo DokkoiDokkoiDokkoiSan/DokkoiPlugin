@@ -33,6 +33,7 @@ import org.meyason.dokkoi.job.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class SkillInteractEvent implements Listener {
 
@@ -51,6 +52,10 @@ public class SkillInteractEvent implements Listener {
         }else if(game.getGameStatesManager().getGameState() == GameState.IN_GAME) {
 
             if(event.getClickedBlock() != null && event.getClickedBlock().getState() instanceof InventoryHolder chest) {
+                if(game.getGameStatesManager().isNaito(player.getUniqueId())){
+                    event.setCancelled(true);
+                    return;
+                }
                 if(game.getGameStatesManager().getPlayerJobs().get(player.getUniqueId()) instanceof Prayer prayer){
                     if(prayer.addLocationToAlreadyOpenedChests(chest.getInventory().getLocation())){
                         player.sendActionBar(Component.text("§b[ガチャポイント]§b このチェストは初めて開ける。"));
@@ -146,12 +151,16 @@ public class SkillInteractEvent implements Listener {
 
                     }else if(job instanceof DrugStore drugStore) {
                         drugStore.skill();
+                    }else if(job instanceof Summoner summoner) {
+                        summoner.skill();
                     }
                     job.playSoundEffectSkill(player);
 
                     job.setRemainCoolTimeSkill(job.getCoolTimeSkill());
                     job.chargeSkill(player, manager);
 
+
+                    // アルティメット発動
                 } else if (Objects.equals(container.get(itemKey, PersistentDataType.STRING), Ultimate.id)) {
                     CustomItem customItem = CustomItem.getItem(item);
                     if (customItem == null) {
@@ -192,30 +201,38 @@ public class SkillInteractEvent implements Listener {
                     }else if(job instanceof DrugStore drugStore) {
                         List<String> drugList = new ArrayList<>();
                         PlayerInventory inventory = player.getInventory();
-                        for(ItemStack i : inventory.getContents()){
-                            if(i == null) continue;
+                        for (ItemStack i : inventory.getContents()) {
+                            if (i == null) continue;
                             ItemMeta m = i.getItemMeta();
-                            if(m == null) continue;
-                            if(m.getPersistentDataContainer().has(itemKey)){
+                            if (m == null) continue;
+                            if (m.getPersistentDataContainer().has(itemKey)) {
                                 CustomItem c = CustomItem.getItem(i);
-                                if(c instanceof Katakunaru){
+                                if (c instanceof Katakunaru) {
                                     drugList.add(Katakunaru.id);
-                                }else if(c instanceof Kizukieru){
+                                } else if (c instanceof Kizukieru) {
                                     drugList.add(Kizukieru.id);
-                                }else if(c instanceof Hayakunaru){
+                                } else if (c instanceof Hayakunaru) {
                                     drugList.add(Hayakunaru.id);
-                                }else if(c instanceof Tsuyokunaru){
+                                } else if (c instanceof Tsuyokunaru) {
                                     drugList.add(Tsuyokunaru.id);
-                                }else if(c instanceof Korehamaru){
+                                } else if (c instanceof Korehamaru) {
                                     drugList.add(Korehamaru.id);
                                 }
                             }
                         }
-                        if(drugList.isEmpty()){
+                        if (drugList.isEmpty()) {
                             player.sendActionBar(Component.text("§c強化できる薬を所持していない。"));
                             return;
                         }
                         drugStore.ultimate(drugList);
+
+                    }else if(job instanceof Summoner summoner) {
+                        List<UUID> targetPlayers = manager.getVictims();
+                        if(targetPlayers.isEmpty()){
+                            player.sendActionBar(Component.text("§c召喚できる対象がいない。"));
+                            return;
+                        }
+                        summoner.ultimate(targetPlayers);
                     }
 
                     job.setRemainCoolTimeSkillUltimate(job.getCoolTimeSkillUltimate());

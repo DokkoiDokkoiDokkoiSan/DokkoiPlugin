@@ -59,8 +59,8 @@ public class ItemInteractEvent implements Listener {
                     return;
                 }
                 if(itemId.equals(GoalSelectMenuItem.id)) {
-                    if (game.getGameStatesManager().getPlayerJobs().get(player.getUniqueId()) != null) {
-                        player.sendMessage("§c既に職業が選択されています。");
+                    if (game.getGameStatesManager().getPlayerGoals().get(player.getUniqueId()) != null) {
+                        player.sendMessage("§c既に勝利条件が選択されています。");
                         event.setCancelled(true);
                         return;
                     }

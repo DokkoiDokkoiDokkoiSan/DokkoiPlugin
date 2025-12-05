@@ -25,7 +25,9 @@ import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.battleitem.RedHelmet;
 import org.meyason.dokkoi.job.Bomber;
+import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.job.Prayer;
+import org.meyason.dokkoi.job.Summoner;
 
 import java.util.HashMap;
 import java.util.List;
@@ -99,7 +101,7 @@ public class DeathEvent {
             }
         }
 
-        if(killer != null && !manager.getPlayerGoals().get(killerUUID).isKillable(dead)){
+        if(killer != null && !manager.isNaito(deadUUID) && !manager.getPlayerGoals().get(killerUUID).isKillable(dead)){
             if(hasRedHelmet){
                 killer.sendMessage("§e[ペナルティ] §a" + dead.getName() + " §aは殺害できないプレイヤーですが，赤い帽子を被っていたためペナルティは免れました。");
                 dead.sendMessage("§e[ペナルティ免除] §aあなたは赤い帽子を被っていたため，ペナルティを免れました。");
@@ -152,6 +154,16 @@ public class DeathEvent {
 
         dead.setGameMode(GameMode.SPECTATOR);
         dead.setHealth(dead.getMaxHealth());
+
+        lpManager.addLP(killerUUID, 10L);
+
+        if(manager.getExistSummoner()){
+            for(Job job : manager.getPlayerJobs().values()){
+                if(job instanceof Summoner summoner){
+                    summoner.passive(dead);
+                }
+            }
+        }
 
         World world = dead.getWorld();
         NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
