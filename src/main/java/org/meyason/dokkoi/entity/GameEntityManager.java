@@ -46,6 +46,11 @@ public class GameEntityManager {
             }
         }
 
+        GameEntity gameEntity = GameEntity.getGameEntityFromId(GameEntity.CLERK);
+        if(gameEntity instanceof Clerk clerk){
+            spawnClerk(location, clerk);
+        }
+
     }
 
     public void unregisterEntity(){

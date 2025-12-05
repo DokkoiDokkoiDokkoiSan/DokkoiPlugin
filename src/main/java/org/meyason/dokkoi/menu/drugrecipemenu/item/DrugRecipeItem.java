@@ -103,12 +103,8 @@ public class DrugRecipeItem extends AbstractItem {
                 player.sendMessage(craftedItem.getName() + "§aの調合に成功しました");
                 DrugStore drugStore = (DrugStore) Game.getInstance().getGameStatesManager().getPlayerJobs().get(player.getUniqueId());
                 drugStore.setCoolTimeSkill(5);
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        drugStore.setCoolTimeSkill(1);
-                    }
-                }.runTaskLater(Dokkoi.getInstance(), 5 * 21);
+                drugStore.setRemainCoolTimeSkill(5);
+                drugStore.chargeSkill(player, Game.getInstance().getGameStatesManager());
                 player.closeInventory();
             }
         }else{

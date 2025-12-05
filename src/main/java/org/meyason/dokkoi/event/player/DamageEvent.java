@@ -172,7 +172,7 @@ public class DamageEvent implements Listener {
             if (job instanceof Bomber bomber) {
                 String attackItem = projectileData.getCustomItemName();
                 if(attackItem.equals(Skill.id)) {
-                    List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attackedPlayer, snowball.getLocation(), 10);
+                    List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, snowball.getLocation(), 10);
                     bomber.skill(snowball.getLocation(), effectedPlayers);
                 }else if(attackItem.equals(Ultimate.id)){
                     bomber.ultimate(snowball.getLocation());
@@ -249,7 +249,7 @@ public class DamageEvent implements Listener {
                         }
                     }
                     event.setCancelled(true);
-                    calculateDamage(shooterEntity, damagedEntity, damage);
+                    calculateDamageByEntity(shooterEntity, damagedEntity, damage);
                 }
                 return;
             }
@@ -260,8 +260,7 @@ public class DamageEvent implements Listener {
                 //自分が放つ矢が着弾した位置に爆発を起こす。爆発は当たった対象に固定10ダメージを与える。
                 arrow.getWorld().spawnParticle(Particle.EXPLOSION, arrow.getLocation(), 1);
                 arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10.0F, 1.0F);
-                List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), attackedPlayer, arrow.getLocation(), 3);
-                effectedPlayers.add(attackedPlayer);
+                List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, arrow.getLocation(), 3);
                 gameStatesManager.addAttackedPlayer(attackedUUID);
                 for (Player damaged : effectedPlayers) {
                     gameStatesManager.addDamagedPlayer(damaged.getUniqueId());
@@ -272,7 +271,7 @@ public class DamageEvent implements Listener {
             gameStatesManager.removeProjectileData(arrow);
         }
 
-        calculateDamage(attackedPlayer, event.getEntity(), damage);
+        calculateDamageByEntity(attackedPlayer, event.getEntity(), damage);
 
     }
 
@@ -331,6 +330,9 @@ public class DamageEvent implements Listener {
                     return;
                 }
             }
+
+            damage *= gameStatesManager.getPlayerGoals().get(damaged.getUniqueId()).getDamageMultiplier();
+
             double additionalDamage = gameStatesManager.getAdditionalDamage().get(attackerPlayer.getUniqueId());
             if (additionalDamage <= -300) {
                 damage = 1.0;
@@ -338,9 +340,87 @@ public class DamageEvent implements Listener {
                 damage += additionalDamage;
             }
 
-            damage *= gameStatesManager.getPlayerGoals().get(damaged.getUniqueId()).getDamageMultiplier();
             if (gameStatesManager.getKillerList().containsKey(attackerPlayer.getUniqueId()) && gameStatesManager.getPlayerJobs().get(damaged.getUniqueId()).equals(JobList.EXECUTOR)) {
                 damage /= 2.0;
+            }
+
+
+            int damageCutPercent = gameStatesManager.getDamageCutPercent().get(damaged.getUniqueId());
+            damage = damage * (100 - damageCutPercent) / 100.0;
+
+            if (damage < 0) {
+                return;
+            }
+
+            double afterHealth = damagedPlayer.getHealth() - damage;
+            // 死亡処理
+            if (afterHealth <= 0) {
+                DeathEvent.kill(attackerPlayer, damagedPlayer);
+            }else{
+                damagedPlayer.damage(damage);
+            }
+        }
+    }
+
+    public static void calculateDamageByEntity(Entity attacker, Entity damaged, double damage){
+        if(attacker == null || damaged == null) {
+            return;
+        }
+
+        GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
+
+        if(damaged instanceof Player damagedPlayer && attacker instanceof Player attackerPlayer) {
+            if(Game.getInstance().getNowTime() > 500){
+                attackerPlayer.sendActionBar(Component.text("§c保護システムに攻撃が無力化された。"));
+                return;
+            }
+            if(gameStatesManager.getPlayerJobs().get(damagedPlayer.getUniqueId()) instanceof Prayer prayer){
+                if(prayer.getHasStrongestStrongestBall()){
+                    damagedPlayer.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
+                    return;
+                }
+            }
+
+            damage *= gameStatesManager.getPlayerGoals().get(damaged.getUniqueId()).getDamageMultiplier();
+
+            if (gameStatesManager.getKillerList().containsKey(attackerPlayer.getUniqueId()) && gameStatesManager.getPlayerJobs().get(damaged.getUniqueId()).equals(JobList.EXECUTOR)) {
+                damage /= 2.0;
+            }
+
+            int damageCutPercent = gameStatesManager.getDamageCutPercent().get(damaged.getUniqueId());
+            damage = damage * (100 - damageCutPercent) / 100.0;
+
+            if (damage < 0) {
+                return;
+            }
+
+            double afterHealth = damagedPlayer.getHealth() - damage;
+            // 死亡処理
+            if (afterHealth <= 0) {
+                DeathEvent.kill(attackerPlayer, damagedPlayer);
+            }else{
+                damagedPlayer.damage(damage);
+            }
+        }
+    }
+
+    public static void calculateDamageBySkill(Entity attacker, Entity damaged, double damage){
+        if(attacker == null || damaged == null) {
+            return;
+        }
+
+        GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
+
+        if(damaged instanceof Player damagedPlayer && attacker instanceof Player attackerPlayer) {
+            if(Game.getInstance().getNowTime() > 500){
+                attackerPlayer.sendActionBar(Component.text("§c保護システムに攻撃が無力化された。"));
+                return;
+            }
+            if(gameStatesManager.getPlayerJobs().get(damagedPlayer.getUniqueId()) instanceof Prayer prayer){
+                if(prayer.getHasStrongestStrongestBall()){
+                    damagedPlayer.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
+                    return;
+                }
             }
 
             int damageCutPercent = gameStatesManager.getDamageCutPercent().get(damaged.getUniqueId());

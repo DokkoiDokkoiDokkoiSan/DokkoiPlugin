@@ -78,6 +78,7 @@ public class BuriBuriGuard extends CustomItem {
                     return;
                 }
                 if (!player.isOnline() || !targetPlayer.isOnline() || !gameStatesManager.getItemCoolDownScheduler().containsKey(player.getUniqueId())) {
+                    gameStatesManager.removeItemCoolDownScheduler(player.getUniqueId());
                     this.cancel();
                     return;
                 }

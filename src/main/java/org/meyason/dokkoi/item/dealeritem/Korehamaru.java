@@ -17,7 +17,6 @@ public class Korehamaru extends CustomItem {
 
     public Korehamaru() {
         super(id, "§9コレハマール", ItemStack.of(Material.MELON_SEEDS), 64);
-        isUnique = true;
         List<Component> lore = List.of(
                 Component.text("§5中毒性が高い気がする薬。"),
                 Component.text(""),
@@ -40,7 +39,7 @@ public class Korehamaru extends CustomItem {
     }
 
     public static void activate(Player player) {
-        player.sendMessage(Component.text("§aコレハマール§cの中毒になってしまった……"));
+        player.sendMessage(Component.text("§c頭がふらふらしてきた..."));
         player.setMaxHealth(20.0);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 1));
     }

@@ -32,11 +32,12 @@ public class GameStatesManager {
     private HashMap<UUID, Integer> additionalDamage;
     private HashMap<UUID, Integer> damageCutPercent;
     private HashMap<UUID, Boolean> isDeactivateDamageOnce;
+    private List<UUID> onDisablePotionEffectPlayers;
+
+    private HashMap<Boolean, UUID> whoHasTakashimaPhone;
+    private HashMap<Boolean, UUID> whoHasMamiyaPhone;
 
     private HashMap<String, CustomItem> serialCustomItemMap;
-
-    private HashMap<UUID, Long> LPMap;
-    private HashMap<UUID, Long> moneyMap;
 
     private HashMap<UUID, BukkitRunnable> skillCoolDownTasks;
     private HashMap<UUID, BukkitRunnable> ultimateSkillCoolDownTasks;
@@ -68,9 +69,12 @@ public class GameStatesManager {
         additionalDamage = new HashMap<>();
         damageCutPercent = new HashMap<>();
         isDeactivateDamageOnce = new HashMap<>();
+        onDisablePotionEffectPlayers = new ArrayList<>();
+        whoHasMamiyaPhone = new HashMap<>();
+        whoHasMamiyaPhone.put(false, null);
+        whoHasTakashimaPhone = new HashMap<>();
+        whoHasTakashimaPhone.put(false, null);
         serialCustomItemMap = new HashMap<>();
-        LPMap = new HashMap<>();
-        moneyMap = new HashMap<>();
         skillCoolDownTasks = new HashMap<>();
         ultimateSkillCoolDownTasks = new HashMap<>();
         coolDownScheduler = new HashMap<>();
@@ -92,8 +96,10 @@ public class GameStatesManager {
         additionalDamage.clear();
         damageCutPercent.clear();
         isDeactivateDamageOnce.clear();
+        onDisablePotionEffectPlayers.clear();
+        whoHasMamiyaPhone.clear();
+        whoHasTakashimaPhone.clear();
         serialCustomItemMap.clear();
-        moneyMap.clear();
         skillCoolDownTasks.clear();
         ultimateSkillCoolDownTasks.clear();
         coolDownScheduler.clear();
@@ -114,8 +120,7 @@ public class GameStatesManager {
         removeAdditionalDamage(uuid);
         removeDamageCutPercent(uuid);
         removeIsDeactivateDamageOnce(uuid);
-        removeMoneyMap(uuid);
-        removeMoneyMap(uuid);
+        removeOnDisablePotionEffectPlayer(uuid);
         removeSkillCoolDownTask(uuid);
         removeUltimateSkillCoolDownTask(uuid);
         removeCoolDownScheduler(uuid);
@@ -248,6 +253,40 @@ public class GameStatesManager {
         this.isDeactivateDamageOnce.remove(player);
     }
 
+    public boolean isInOnDisablePotionEffectPlayers(UUID player) {
+        return onDisablePotionEffectPlayers.contains(player);
+    }
+    public void addOnDisablePotionEffectPlayer(UUID player) {
+        if(this.onDisablePotionEffectPlayers.contains(player)) return;
+        this.onDisablePotionEffectPlayers.add(player);
+    }
+    public void removeOnDisablePotionEffectPlayer(UUID player) {
+        if(!this.onDisablePotionEffectPlayers.contains(player)) return;
+        this.onDisablePotionEffectPlayers.remove(player);
+    }
+
+    public boolean hasTakashimaPhone() {return whoHasTakashimaPhone.containsKey(true);}
+    public UUID getPlayerWithTakashimaPhone() {return whoHasTakashimaPhone.get(true);}
+    public void updatePlayerhasTakashimaPhone(UUID player) {
+        whoHasTakashimaPhone.clear();
+        whoHasTakashimaPhone.put(true, player);
+    }
+    public void clearWhoHasTakashimaPhone() {
+        whoHasTakashimaPhone.clear();
+        whoHasTakashimaPhone.put(false, null);
+    }
+
+    public boolean hasMamiyaPhone() {return whoHasMamiyaPhone.containsKey(true);}
+    public UUID getPlayerWithMamiyaPhone() {return whoHasMamiyaPhone.get(true);}
+    public void updatePlayerhasMamiyaPhone(UUID player) {
+        whoHasMamiyaPhone.clear();
+        whoHasMamiyaPhone.put(true, player);
+    }
+    public void clearWhoHasMamiyaPhone() {
+        whoHasMamiyaPhone.clear();
+        whoHasMamiyaPhone.put(false, null);
+    }
+
     public CustomItem getCustomItemFromSerial(String uuid) {return serialCustomItemMap.get(uuid);}
     public boolean isExistsCustomItemFromSerial(String uuid) {return serialCustomItemMap.containsKey(uuid);}
     public void addCustomItemToSerialMap(String uuid, CustomItem customItem) {this.serialCustomItemMap.put(uuid, customItem);}
@@ -256,42 +295,6 @@ public class GameStatesManager {
         this.serialCustomItemMap.remove(uuid);
     }
 
-    public Long getLPFromUUID(UUID player) {return LPMap.get(player);}
-    public boolean isExistsLPFromUUID(UUID player) {return LPMap.containsKey(player);}
-    public void setLPFromUUID(UUID player, Long value) {this.LPMap.put(player, value);}
-    public void addLPFromUUID(UUID player, Long value){
-        this.LPMap.put(player, this.LPMap.getOrDefault(player, 0L) + value);
-    }
-    public boolean reduceLPFromUUID(UUID player, Long value){
-        if(!this.LPMap.containsKey(player)) {return false;}
-        Long currentLP = this.LPMap.get(player);
-        Long newLP = currentLP - value;
-        if(newLP < 0) {return false;}
-        this.LPMap.put(player, newLP);
-        return true;
-    }
-    public void removeLPFromUUID(UUID player) {
-        if(!this.LPMap.containsKey(player)) {return;}
-        this.LPMap.remove(player);
-    }
-
-    public HashMap<UUID, Long> getMoneyMap() {return moneyMap;}
-    public void setMoneyMap(HashMap<UUID, Long> moneyMap) {this.moneyMap = moneyMap;}
-    public void addMoneyMap(UUID player, long amount) {
-        this.moneyMap.put(player, this.moneyMap.getOrDefault(player, 0L) + amount);
-    }
-    public boolean reduceMoneyMap(UUID player, long amount) {
-        if(!this.moneyMap.containsKey(player)) {return false;}
-        long currentMoney = this.moneyMap.get(player);
-        long newMoney = currentMoney - amount;
-        if(newMoney < 0) {return false;}
-        this.moneyMap.put(player, newMoney);
-        return true;
-    }
-    public void removeMoneyMap(UUID player) {
-        if(!this.moneyMap.containsKey(player)) {return;}
-        this.moneyMap.remove(player);
-    }
 
     public HashMap<UUID, BukkitRunnable> getUltimateSkillCoolDownTasks() {return ultimateSkillCoolDownTasks;}
     public void setUltimateSkillCoolDownTasks(HashMap<UUID, BukkitRunnable> ultimateSkillCoolDownTasks) {this.ultimateSkillCoolDownTasks = ultimateSkillCoolDownTasks;}

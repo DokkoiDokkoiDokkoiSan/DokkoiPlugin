@@ -15,7 +15,6 @@ public class Kizukieru extends CustomItem {
 
     public Kizukieru(){
         super(id, "§9キズキエール", ItemStack.of(Material.MELON_SEEDS), 64);
-        isUnique = true;
         List<Component> lore = List.of(
                 Component.text("§5傷が治る気がする薬。"),
                 Component.text(""),
