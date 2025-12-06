@@ -78,17 +78,12 @@ shadowJar {
     archiveClassifier.set('')
 
     relocate 'net.wesjd.anvilgui', 'org.meyason.lib.anvilgui'
-
-    // InvUIとInventoryAccessは元のパッケージ名のまま埋め込む（relocateしない）
-    // これによりNMSクラスへのリフレクションアクセスが正常に動作する
 }
 
-// 通常のjarタスクを無効化し、shadowJarを使う
 jar {
     enabled = false
 }
 
-// reobfJarをshadowJarの出力に対して実行
 reobfJar {
     inputJar.set(shadowJar.archiveFile)
 }
