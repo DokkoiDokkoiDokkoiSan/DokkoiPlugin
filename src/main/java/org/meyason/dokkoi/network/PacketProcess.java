@@ -23,6 +23,16 @@ public class PacketProcess {
         wrappedDataValues.add(new WrappedDataValue(0, WrappedDataWatcher.Registry.get(Byte.class), (byte)0x02));
         wrappedDataValues.add(new WrappedDataValue(6, WrappedDataWatcher.Registry.get(Pose.class), Pose.CROUCHING));
         packet.getDataValueCollectionModifier().write(0, wrappedDataValues);
+        packet.getIntegers().write(0, player.getEntityId());
+        return packet;
+    }
+
+    public static PacketContainer editNameTag(Player player, PacketContainer packet) {
+        List<WrappedDataValue> wrappedDataValues = WrappedDataWatcher.getEntityWatcher(player).toDataValueCollection();
+        wrappedDataValues.remove(0);
+        wrappedDataValues.add(new WrappedDataValue(0, WrappedDataWatcher.Registry.get(Byte.class), (byte)0x00));
+        packet.getDataValueCollectionModifier().write(0, wrappedDataValues);
+        packet.getIntegers().write(0, player.getEntityId());
         return packet;
     }
 }
