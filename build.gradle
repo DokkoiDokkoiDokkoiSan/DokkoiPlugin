@@ -4,6 +4,7 @@ plugins {
     id('maven-publish')
     id 'com.gradleup.shadow' version "9.2.2"
     id("org.flywaydb.flyway") version "8.0.0"
+    id("io.papermc.paperweight.userdev") version "1.7.2"
 }
 
 group = 'org.meyason'
@@ -23,6 +24,13 @@ repositories {
         name = "InvUI"
         url 'https://repo.xenondevs.xyz/releases'
     }
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
+    maven {
+        url = 'https://repo.codemc.io/repository/maven-public/'
+    }
 }
 
 dependencies {
@@ -32,6 +40,9 @@ dependencies {
     implementation "com.mysql:mysql-connector-j:8.0.32"
     implementation "org.flywaydb:flyway-core:8.0.0"
     compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
+    compileOnly 'net.dmulloy2:ProtocolLib:5.3.0'
+
+    paperweight.paperDevBundle("1.21.3-R0.1-SNAPSHOT")
 }
 
 def targetJavaVersion = 21

@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.meyason.dokkoi.database.DatabaseConnector;
 import org.meyason.dokkoi.event.EventManager;
 import org.meyason.dokkoi.command.CommandManager;
+import org.meyason.dokkoi.event.network.DebugPacketListener;
 import org.meyason.dokkoi.file.Config;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.LPManager;
@@ -40,6 +41,8 @@ public final class Dokkoi extends JavaPlugin {
         new CommandManager(this);
         new GameItem();
         new Game();
+        // PacketListener for debugging, developing;
+        // new DebugPacketListener().register();
     }
 
     @Override

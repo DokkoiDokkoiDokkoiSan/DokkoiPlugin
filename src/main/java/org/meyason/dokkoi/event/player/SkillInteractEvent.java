@@ -151,6 +151,8 @@ public class SkillInteractEvent implements Listener {
 
                     }else if(job instanceof DrugStore drugStore) {
                         drugStore.skill();
+                    }else if(job instanceof Photographer photographer) {
+                        photographer.skill();
                     }else if(job instanceof Summoner summoner) {
                         summoner.skill();
                     }
@@ -225,6 +227,8 @@ public class SkillInteractEvent implements Listener {
                             return;
                         }
                         drugStore.ultimate(drugList);
+                    }else if(job instanceof Photographer photographer) {
+                        photographer.skill();
 
                     }else if(job instanceof Summoner summoner) {
                         List<UUID> targetPlayers = manager.getVictims();
