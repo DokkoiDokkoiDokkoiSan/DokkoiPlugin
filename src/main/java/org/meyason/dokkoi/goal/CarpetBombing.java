@@ -7,6 +7,7 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.job.Bomber;
 
 import java.util.Random;
+import java.util.UUID;
 
 import static java.lang.Integer.min;
 
@@ -33,8 +34,7 @@ public class CarpetBombing extends Goal {
         this.player.sendMessage("§e指定人数： §a§l" + goalNumber + "§2人");
         this.bomber = (Bomber) game.getGameStatesManager().getPlayerJobs().get(this.player.getUniqueId());
         this.player.sendMessage(Component.text("§b----------------------------"));
-        this.player.sendMessage(Component.text("§b殺害できるプレイヤー： §e" + goalNumber + " 人"));
-        this.player.sendMessage(Component.text("§bこれ以上殺害するとペナルティが付与される"));
+        this.player.sendMessage(Component.text("§b条件を達成するまでパッシブを用いてであれば誰でも殺害可能"));
         return;
     }
 
@@ -58,6 +58,15 @@ public class CarpetBombing extends Goal {
 
     @Override
     public boolean isKillable(Player targetPlayer){
+        int allKillNum = 0;
+        for(UUID uuid : game.getGameStatesManager().getKillers()) {
+            if (uuid.equals(targetPlayer.getUniqueId())) {
+                allKillNum++;
+            }
+        }
+        if(allKillNum != getKillCount()){
+            return false;
+        }
         return bomber.killCount + 1 <= goalNumber;
     }
 }

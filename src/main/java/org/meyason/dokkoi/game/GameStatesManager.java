@@ -34,6 +34,9 @@ public class GameStatesManager {
     private HashMap<UUID, Boolean> isDeactivateDamageOnce;
     private List<UUID> onDisablePotionEffectPlayers;
 
+    private boolean existSummoner;
+    private List<UUID> naito;
+
     private HashMap<Boolean, UUID> whoHasTakashimaPhone;
     private HashMap<Boolean, UUID> whoHasMamiyaPhone;
 
@@ -65,6 +68,8 @@ public class GameStatesManager {
         killCounts = new HashMap<>();
         attackedPlayers = new ArrayList<>();
         damagedPlayers = new ArrayList<>();
+        existSummoner = false;
+        naito = new ArrayList<>();
         projectileDataMap = new HashMap<>();
         additionalDamage = new HashMap<>();
         damageCutPercent = new HashMap<>();
@@ -92,6 +97,7 @@ public class GameStatesManager {
         killCounts.clear();
         attackedPlayers.clear();
         damagedPlayers.clear();
+        naito.clear();
         projectileDataMap.clear();
         additionalDamage.clear();
         damageCutPercent.clear();
@@ -117,6 +123,7 @@ public class GameStatesManager {
         removeKillCount(uuid);
         removeAttackedPlayer(uuid);
         removeDamagedPlayer(uuid);
+        removeNaito(uuid);
         removeAdditionalDamage(uuid);
         removeDamageCutPercent(uuid);
         removeIsDeactivateDamageOnce(uuid);
@@ -174,6 +181,15 @@ public class GameStatesManager {
         if (!this.killerList.containsKey(killer)) {return;}
         this.killerList.remove(killer);
     }
+    public List<UUID> getKillers() {
+        return new ArrayList<>(this.killerList.keySet());
+    }
+    public List<UUID> getVictims() {
+        return new ArrayList<>(this.killerList.values());
+    }
+
+    public boolean getExistSummoner() {return existSummoner;}
+    public void setExistSummoner(boolean existSummoner) {this.existSummoner = existSummoner;}
 
     public HashMap<UUID, Integer> getKillCounts() {return killCounts;}
     public void setKillCounts(HashMap<UUID, Integer> killCounts) {this.killCounts = killCounts;}
@@ -205,6 +221,19 @@ public class GameStatesManager {
     public void removeDamagedPlayer(UUID player) {
         if(this.damagedPlayers.contains(player)) return;
         this.damagedPlayers.remove(player);
+    }
+
+    public List<UUID> getNaito() {return naito;}
+    public boolean isNaito(UUID player) {
+        return naito.contains(player);
+    }
+    public void addNaito(UUID player) {
+        if(this.naito.contains(player)) return;
+        this.naito.add(player);
+    }
+    public void removeNaito(UUID player) {
+        if(!this.naito.contains(player)) return;
+        this.naito.remove(player);
     }
 
     public HashMap<Entity, ProjectileData> getProjectileDataMap() {return projectileDataMap;}

@@ -16,6 +16,7 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.utilitem.MamiyaPhone;
 import org.meyason.dokkoi.item.utilitem.TakashimaPhone;
+import org.meyason.dokkoi.job.Summoner;
 
 import java.util.List;
 import java.util.UUID;
@@ -75,6 +76,14 @@ public class ChatEvent implements Listener {
         event.setCancelled(false);
         event.viewers().clear();
         for(UUID uuid : joinedPlayers){
+            if(manager.getExistSummoner()){
+                if(manager.getPlayerJobs().get(uuid) instanceof Summoner){
+                    Player target = Bukkit.getPlayer(uuid);
+                    if(target != null){
+                        event.viewers().add(target);
+                    }
+                }
+            }
             if(alivePlayers.contains(uuid)){
                 continue;
             }
