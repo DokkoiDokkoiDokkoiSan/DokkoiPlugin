@@ -174,7 +174,7 @@ public class DamageCalculator {
     private static double applyMeleeDamageModifiers(double damage, Player attacker, Player damaged, GameStatesManager gsm) {
         double additionalDamage = gsm.getAdditionalDamage().get(attacker.getUniqueId());
         if (additionalDamage <= -300) {
-            return 1.0;
+            return 0.0;
         }
         return damage + additionalDamage;
     }
