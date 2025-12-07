@@ -41,6 +41,14 @@ public class ProjectileHitBlockEvent implements Listener {
                 Player attacker = projectileData.getAttacker();
                 String attackItem = projectileData.getCustomItemName();
 
+                if(manager.isExistGunFromSerial(attackItem)){
+                    if (event.getHitBlock().getType().toString().contains("GLASS")) {
+                        snowball.getWorld().playSound(snowball.getLocation(), Sound.BLOCK_GLASS_BREAK, 2.0F, 1.0F);
+                    }
+                    manager.removeProjectileData(snowball);
+                    return;
+                }
+
                 Job job = manager.getPlayerJobs().get(attacker.getUniqueId());
                 if (job instanceof Bomber bomber) {
                     if (attackItem.equals(Skill.id)) {

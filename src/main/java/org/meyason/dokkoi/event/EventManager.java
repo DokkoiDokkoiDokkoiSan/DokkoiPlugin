@@ -26,5 +26,7 @@ public class EventManager {
         core.getServer().getPluginManager().registerEvents(new ItemFrameProtect(), core);
         core.getServer().getPluginManager().registerEvents(new MobCombustProtect(), core);
         core.getServer().getPluginManager().registerEvents(new EntityDeathEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new BlockInteractEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new GunShootEvent(), core);
     }
 }

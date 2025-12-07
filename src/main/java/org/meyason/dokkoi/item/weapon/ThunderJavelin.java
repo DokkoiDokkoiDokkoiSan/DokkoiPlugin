@@ -60,7 +60,7 @@ public class ThunderJavelin extends CustomItem {
                 location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 10.0F, 1.0F);
                 List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, location, 4);
                 for (Player damaged : effectedPlayers) {
-                    DamageCalculator.calculateSkillDamage(shooter, damaged, 20.0);
+                    DamageCalculator.calculateSkillDamage(shooter, damaged, 35.0);
                     Game.getInstance().getGameStatesManager().addDamagedPlayer(damaged.getUniqueId());
                 }
             }

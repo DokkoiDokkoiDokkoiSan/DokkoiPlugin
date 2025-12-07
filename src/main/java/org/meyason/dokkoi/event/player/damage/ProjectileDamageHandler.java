@@ -8,6 +8,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
+import org.meyason.dokkoi.item.gunitem.GunItem;
 import org.meyason.dokkoi.item.jobitem.Rapier;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
@@ -53,6 +54,10 @@ public class ProjectileDamageHandler {
 
         Job job = gsm.getPlayerJobs().get(attacker.getUniqueId());
         String attackItem = projectileData.getCustomItemName();
+        if(gsm.isExistGunFromSerial(attackItem)){
+            handleGunProjectile(attacker, attackItem, event, gsm, damagedEntity);
+            return HandleResult.handled();
+        }
 
         // Bomber処理
         if (job instanceof Bomber bomber) {
@@ -217,5 +222,24 @@ public class ProjectileDamageHandler {
         }
 
         gsm.removeProjectileData(arrow);
+    }
+
+    private static void handleGunProjectile(Player attacker, String gunSerial, EntityDamageByEntityEvent event,
+                                            GameStatesManager gsm, Entity damagedEntity) {
+        GunItem gun = gsm.getGunStatusFromSerial(gunSerial).getGun();
+        double damage = gun.getBaseDamage();
+
+        event.setCancelled(true);
+
+        DamageContext context = DamageContext.builder()
+                .attacker(attacker)
+                .damaged(damagedEntity)
+                .baseDamage(damage)
+                .source(DamageContext.DamageSource.PROJECTILE)
+                .originalEvent(event)
+                .build();
+
+        DamageCalculator.calculate(context);
+        return;
     }
 }
