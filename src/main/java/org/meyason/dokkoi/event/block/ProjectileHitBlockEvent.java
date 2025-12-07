@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.meyason.dokkoi.constants.GameItemKeyString;
-import org.meyason.dokkoi.event.player.DamageEvent;
+import org.meyason.dokkoi.event.player.damage.DamageCalculator;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
@@ -89,7 +89,7 @@ public class ProjectileHitBlockEvent implements Listener {
                     List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, arrow.getLocation(), 3);
                     manager.addAttackedPlayer(attacker.getUniqueId());
                     for (Player damaged : effectedPlayers) {
-                        DamageEvent.calculateDamageBySkill(attacker, damaged, 10.0);
+                        DamageCalculator.calculateSkillDamage(attacker, damaged, 10.0);
                         manager.addDamagedPlayer(damaged.getUniqueId());
                     }
                     manager.removeProjectileData(arrow);

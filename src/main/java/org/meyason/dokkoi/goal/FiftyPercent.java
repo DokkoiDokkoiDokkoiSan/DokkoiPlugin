@@ -11,7 +11,7 @@ import org.meyason.dokkoi.item.jobitem.gacha.StrongestBall;
 public class FiftyPercent extends Goal{
 
     public FiftyPercent() {
-        super("§bFiftyPercent", "§e生存者を半数にしろ！", Tier.TIER_3);
+        super("§bFiftyPercent", "§e生存者を半数にしろ！", Tier.TIER_2);
     }
 
     @Override

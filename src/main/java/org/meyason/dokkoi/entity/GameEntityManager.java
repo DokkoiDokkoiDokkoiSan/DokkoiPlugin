@@ -86,6 +86,10 @@ public class GameEntityManager {
             spawnClerk(location, clerk);
             player.sendMessage(Component.text("Clerk spawned"));
             return true;
+        }else if(gameEntity instanceof Skeleton skeleton){
+            spawnSkeleton(location, skeleton);
+            player.sendMessage(Component.text("Skeleton spawned"));
+            return true;
         }
         return false;
     }
@@ -158,6 +162,29 @@ public class GameEntityManager {
         Game.getInstance().getGameStatesManager().addSpawnedEntity(uuid, clerk);
     }
 
+    public static void spawnSkeleton(Location location, Skeleton skeleton){
+        String name = skeleton.getName();
+        World world = location.getWorld();
+        org.bukkit.entity.Skeleton bukkitSkeleton = (org.bukkit.entity.Skeleton) world.spawnEntity(location, EntityType.SKELETON);
+        bukkitSkeleton.setCustomName(name);
+        bukkitSkeleton.setCustomNameVisible(true);
+        bukkitSkeleton.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
+        bukkitSkeleton.getEquipment().setItemInOffHand(new ItemStack(Material.AIR));
+        bukkitSkeleton.getEquipment().setHelmet(new ItemStack(Material.AIR));
+        bukkitSkeleton.getEquipment().setChestplate(new ItemStack(Material.AIR));
+        bukkitSkeleton.getEquipment().setLeggings(new ItemStack(Material.AIR));
+        bukkitSkeleton.getEquipment().setBoots(new ItemStack(Material.AIR));
+        bukkitSkeleton.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.4D);
+        bukkitSkeleton.getAttribute(Attribute.ATTACK_KNOCKBACK).setBaseValue(1.0D);
+        bukkitSkeleton.getAttribute(Attribute.ATTACK_DAMAGE).setBaseValue(0.0D);
+        bukkitSkeleton.setMaxHealth(5.0);
+        bukkitSkeleton.setHealth(5.0);
+        bukkitSkeleton.setAggressive(true);
+        String uuid = UUID.randomUUID().toString();
+        bukkitSkeleton.getPersistentDataContainer().set(new NamespacedKey(Dokkoi.getInstance(), GameEntityKeyString.ENEMY), PersistentDataType.STRING, uuid);
+        Game.getInstance().getGameStatesManager().addSpawnedEntity(uuid, skeleton);
+    }
+
     public static void killVillager(Villager villager){
         if(!villager.getPersistentDataContainer().isEmpty()){
             String npcName = villager.getPersistentDataContainer().get(new NamespacedKey(Dokkoi.getInstance(), GameEntityKeyString.NPC), PersistentDataType.STRING);
@@ -171,5 +198,16 @@ public class GameEntityManager {
         }
         villager.setHealth(0.0);
         villager.remove();
+    }
+
+    public static void killSkeleton(org.bukkit.entity.Skeleton skeleton){
+        if(!skeleton.getPersistentDataContainer().isEmpty()){
+            String enemyName = skeleton.getPersistentDataContainer().get(new NamespacedKey(Dokkoi.getInstance(), GameEntityKeyString.ENEMY), PersistentDataType.STRING);
+            if(enemyName != null){
+                Game.getInstance().getGameStatesManager().removeSpawnedEntity(enemyName);
+            }
+        }
+        skeleton.setHealth(0.0);
+        skeleton.remove();
     }
 }

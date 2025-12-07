@@ -7,7 +7,8 @@ public enum GameEntityList {
     OGATA("ogata", GameEntityKeyString.COMEDIAN),
     OOKI("ooki", GameEntityKeyString.COMEDIAN),
     DEALER("dealer", GameEntityKeyString.NPC),
-    CLERK("clerk", GameEntityKeyString.NPC);
+    CLERK("clerk", GameEntityKeyString.NPC),
+    SKELETON("skeleton", GameEntityKeyString.ENEMY);
 
     private final String id;
     private final String type;

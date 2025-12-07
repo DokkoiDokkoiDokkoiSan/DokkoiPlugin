@@ -31,8 +31,8 @@ public class TakeTwoShot extends Goal{
 
     @Override
     public boolean isAchieved(boolean notify) {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
-            this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())){
+            if(notify)this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;
         }
         Job job = this.game.getGameStatesManager().getPlayerJobs().get(this.player.getUniqueId());

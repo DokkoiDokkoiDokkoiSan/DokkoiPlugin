@@ -51,7 +51,7 @@ public class ShopMenuItem extends AbstractItem {
     @Override
     public ItemProvider getItemProvider() {
         int amount = 1;
-        if(customItem instanceof Arrow){
+        if (customItem instanceof Arrow) {
             itemStack.setAmount(32);
         }
         List<Component> description = this.customItem.getDescription();
@@ -65,9 +65,9 @@ public class ShopMenuItem extends AbstractItem {
 
     @Override
     public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull InventoryClickEvent event) {
-        if(clerk.canBuyItem(player, id)){
+        if (clerk.canBuyItem(player, id)) {
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
-        }else{
+        } else {
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
         }
     }

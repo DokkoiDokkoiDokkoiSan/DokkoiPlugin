@@ -1,488 +1,242 @@
 package org.meyason.dokkoi.event.player;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.projectiles.ProjectileSource;
-import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.constants.GameItemKeyString;
-import org.meyason.dokkoi.constants.GameState;
-import org.meyason.dokkoi.constants.JobList;
-import org.meyason.dokkoi.item.battleitem.ArcherArmor;
-import org.meyason.dokkoi.item.jobitem.Skill;
-import org.meyason.dokkoi.item.jobitem.SummonersBrave;
-import org.meyason.dokkoi.item.jobitem.Ultimate;
-import org.meyason.dokkoi.item.jobitem.gacha.StrongestBall;
-import org.meyason.dokkoi.util.CalculateAreaPlayers;
+import org.meyason.dokkoi.event.player.damage.DamageCalculator;
+import org.meyason.dokkoi.event.player.damage.DamageContext;
+import org.meyason.dokkoi.event.player.damage.DamageValidator;
+import org.meyason.dokkoi.event.player.damage.ProjectileDamageHandler;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
-import org.meyason.dokkoi.game.ProjectileData;
-import org.meyason.dokkoi.item.jobitem.Rapier;
-import org.meyason.dokkoi.job.*;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-
+/**
+ * ダメージイベントのリスナー
+ * 
+ * 責務:
+ * - イベントの振り分けと事前検証
+ * - 各種ダメージ処理クラスへの委譲
+ * 
+ * @see DamageCalculator ダメージ計算
+ * @see DamageValidator 事前検証
+ * @see ProjectileDamageHandler 発射物処理
+ */
 public class DamageEvent implements Listener {
 
-    // プレイヤーからプレイヤーへのダメージ
+    // ================================
+    // プレイヤー → プレイヤー（近接攻撃）
+    // ================================
     @EventHandler
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event){
-        Entity attacker = event.getDamager();
-        Entity damaged = event.getEntity();
-        if(!(attacker instanceof Player attackedPlayer) || !(damaged instanceof Player damagedPlayer)) return;
+    public void onPlayerMeleeAttack(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player attacker)) return;
+        if (!(event.getEntity() instanceof Player damaged)) return;
 
-        UUID attackedUUID = attackedPlayer.getUniqueId();
-        UUID damagedUUID = damagedPlayer.getUniqueId();
+        GameStatesManager gsm = Game.getInstance().getGameStatesManager();
 
-        if(damagedPlayer.getNoDamageTicks() >= 10){
-            event.setCancelled(true);
-            return;
-        }
-        Game game = Game.getInstance();
-        GameStatesManager gameStatesManager = game.getGameStatesManager();
-        if(gameStatesManager.getGameState() != GameState.IN_GAME) {
+        // 事前検証
+        if (!DamageValidator.isGameInProgress()) {
             event.setCancelled(true);
             return;
         }
 
-        if(gameStatesManager.getPlayerJobs().get(attackedUUID) instanceof Prayer prayer){
-            if(prayer.getHasStrongestStrongestBall()){
-                event.setCancelled(true);
-                attackedPlayer.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
-                return;
-            }
-        }else if(gameStatesManager.getPlayerJobs().get(damagedUUID) instanceof Prayer prayer){
-            if(prayer.getHasStrongestStrongestBall()){
-                event.setCancelled(true);
-                damagedPlayer.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
-                return;
-            }
-        }
-
-        gameStatesManager.addAttackedPlayer(attackedPlayer.getUniqueId());
-        gameStatesManager.addDamagedPlayer(damagedPlayer.getUniqueId());
-
-        if(gameStatesManager.getPlayerJobs().get(attackedUUID) instanceof Lonely lonely){
-            lonely.lastAttackedTime = System.currentTimeMillis();
-        }else if(gameStatesManager.getPlayerJobs().get(damagedUUID) instanceof Lonely lonely){
-            lonely.lastDamagedTime = System.currentTimeMillis();
-        }
-
-        if(disableDamageOnce(gameStatesManager, damagedPlayer)){
+        if (DamageValidator.hasNoDamageTicks(damaged)) {
             event.setCancelled(true);
             return;
         }
 
-        if(gameStatesManager.getPlayerJobs().get(damagedUUID) instanceof Prayer){
-            PlayerInventory inventory = damagedPlayer.getInventory();
-            double cutDamagePercent = 1.0;
-            // 一個70%の確率でダメージ無効化、2個で(1-0.7*0.7)=91%、3個で(1-0.7*0.7*0.7)=97.3%
-            int count = 0;
-            for(ItemStack itemStack : inventory.getContents()){
-                if(itemStack == null || !itemStack.hasItemMeta()){continue;}
-                ItemMeta meta = itemStack.getItemMeta();
-                if(meta == null){continue;}
-                PersistentDataContainer container = meta.getPersistentDataContainer();
-                NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
-                if(container.has(itemKey, PersistentDataType.STRING)){
-                    String itemName = Objects.requireNonNull(container.get(itemKey, PersistentDataType.STRING));
-                    if(itemName.equals(StrongestBall.id)){
-                        count++;
-                    }
-                }
-            }
-            for(int i=0; i<count; i++){
-                cutDamagePercent *= 0.3;
-            }
-            if(Math.random() >= cutDamagePercent) {
-                damagedPlayer.sendActionBar(Component.text("§a最強のたまたま§bがダメージを肩代わりした！"));
-                event.setCancelled(true);
-                return;
-            }
-
+        // 最強のたまたまチェック（攻撃者・被ダメージ者両方）
+        DamageValidator.ValidationResult attackerCheck = DamageValidator.checkStrongestBall(attacker, gsm);
+        if (attackerCheck.shouldCancel()) {
+            event.setCancelled(true);
+            attacker.sendActionBar(Component.text(attackerCheck.message()));
+            return;
         }
 
-        double damage = event.getFinalDamage();
+        DamageValidator.ValidationResult damagedCheck = DamageValidator.checkStrongestBall(damaged, gsm);
+        if (damagedCheck.shouldCancel()) {
+            event.setCancelled(true);
+            damaged.sendActionBar(Component.text(damagedCheck.message()));
+            return;
+        }
+
+        // 戦闘参加者を登録
+        DamageValidator.registerCombatants(attacker, damaged, gsm);
+
+        // 一度だけダメージ無効化チェック
+        if (DamageValidator.checkDisableDamageOnce(damaged, gsm)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        // 最強のたまたまによるダメージ軽減
+        if (DamageValidator.checkStrongestBallDamageReduction(damaged, gsm)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        // ダメージ計算
         event.setCancelled(true);
-        calculateDamage(attackedPlayer, damagedPlayer, damage);
+        DamageContext context = DamageContext.builder()
+                .attacker(attacker)
+                .damaged(damaged)
+                .baseDamage(event.getFinalDamage())
+                .source(DamageContext.DamageSource.MELEE)
+                .originalEvent(event)
+                .build();
+
+        DamageCalculator.calculate(context);
     }
 
-    // エンティティからのダメージ
+    // ================================
+    // 発射物 → エンティティ
+    // ================================
     @EventHandler
-    public void onPlayerHit(EntityDamageByEntityEvent event){
-        if(event.getDamager() instanceof Player) return;
+    public void onProjectileHit(EntityDamageByEntityEvent event) {
+        // プレイヤー直接攻撃は別ハンドラで処理
+        if (event.getDamager() instanceof Player) return;
 
-        GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
-        Entity entity = event.getEntity();
-        if (event.getEntity().isDead()) {
-            return;
-        }
-        if (!(entity instanceof LivingEntity livingEntity)) {
-            return;
-        }
+        // 発射物以外は別ハンドラで処理
+        if (!(event.getDamager() instanceof Projectile)) return;
 
-        Player attackedPlayer = null;
-        Player damagedPlayer = null;
+        GameStatesManager gsm = Game.getInstance().getGameStatesManager();
         Entity damagedEntity = event.getEntity();
+
+        if (damagedEntity.isDead()) return;
+        if (!(damagedEntity instanceof LivingEntity)) return;
+
         double damage = event.getFinalDamage();
 
-        if(damagedEntity instanceof Player dp){
-            if(disableDamageOnce(gameStatesManager, dp)){
+        // プレイヤーが被ダメージの場合の事前チェック
+        if (damagedEntity instanceof Player damagedPlayer) {
+            if (DamageValidator.checkDisableDamageOnce(damagedPlayer, gsm)) {
                 event.setCancelled(true);
                 return;
             }
-            if(gameStatesManager.getPlayerJobs().get(dp.getUniqueId()) instanceof Prayer prayer){
-                if(prayer.getHasStrongestStrongestBall()){
-                    event.setCancelled(true);
-                    dp.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
-                    return;
-                }
+
+            DamageValidator.ValidationResult check = DamageValidator.checkStrongestBall(damagedPlayer, gsm);
+            if (check.shouldCancel()) {
+                event.setCancelled(true);
+                damagedPlayer.sendActionBar(Component.text(check.message()));
+                return;
             }
         }
 
-        // だいたいのスキル系投擲物はsnowball
-        if(event.getDamager() instanceof Snowball snowball) {
-            ProjectileData projectileData = gameStatesManager.getProjectileDataMap().get(snowball);
-            if (projectileData == null) {
-                return;
-            }
+        // 発射物の種類別処理
+        ProjectileDamageHandler.HandleResult result;
 
-            attackedPlayer = projectileData.getAttacker();
-            if(gameStatesManager.getPlayerJobs().get(attackedPlayer.getUniqueId()) instanceof Lonely lonely){
-                lonely.lastAttackedTime = System.currentTimeMillis();
-            }
-
-            Job job = gameStatesManager.getPlayerJobs().get(attackedPlayer.getUniqueId());
-
-            // 当たったエンティティがプレイヤーじゃなくてもいい場合はこっち
-            if (job instanceof Bomber bomber) {
-                String attackItem = projectileData.getCustomItemName();
-                if(attackItem.equals(Skill.id)) {
-                    List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, snowball.getLocation(), 10);
-                    bomber.skill(snowball.getLocation(), effectedPlayers);
-                }else if(attackItem.equals(Ultimate.id)){
-                    bomber.ultimate(snowball.getLocation());
-                }
-                gameStatesManager.removeProjectileData(snowball);
-                return;
-            }else if(job instanceof Explorer explorer) {
-                String attackItem = projectileData.getCustomItemName();
-                if(attackItem.equals(Skill.id)) {
-                    explorer.skill(snowball);
-                }
-                gameStatesManager.removeProjectileData(snowball);
-                return;
-            }else if(job instanceof Executor executor){
-                executor.skill(damagedEntity);
-                gameStatesManager.removeProjectileData(snowball);
-                return;
-            }
-
-            // 当たったエンティティがプレイヤーに限定する効果はこっち
-            if(livingEntity instanceof Player damaged) {
-
-                damagedPlayer = damaged;
-
-                gameStatesManager.addAttackedPlayer(attackedPlayer.getUniqueId());
-                gameStatesManager.addDamagedPlayer(damagedPlayer.getUniqueId());
-
-                if(gameStatesManager.getPlayerJobs().get(damagedPlayer.getUniqueId()) instanceof Lonely lonely){
-                    lonely.lastDamagedTime = System.currentTimeMillis();
-                }
-
-                gameStatesManager.removeProjectileData(snowball);
-                return;
-            }
-
-        }else if(event.getDamager() instanceof Trident trident) {
-            ProjectileData projectileData = gameStatesManager.getProjectileDataMap().get(trident);
-            // 特殊アイテムじゃないばあい(素のトライデント)
-            if (projectileData == null) {
-                return;
-            }
-            trident.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
-            if(projectileData.getCustomItemName().equals(Rapier.id)) {
-                attackedPlayer = projectileData.getAttacker();
-                if(gameStatesManager.getPlayerJobs().get(attackedPlayer.getUniqueId()) instanceof Lonely lonely){
-                    lonely.lastAttackedTime = System.currentTimeMillis();
-                }
-
-                Job job = gameStatesManager.getPlayerJobs().get(attackedPlayer.getUniqueId());
-                if(job instanceof IronMaiden ironMaiden){
-                    event.setCancelled(true);
-
-                    Rapier rapier = ironMaiden.getRapier();
-                    rapier.activate(trident, trident.getLocation());
-                    gameStatesManager.removeProjectileData(trident);
-                    return;
-                }
-            }
-
-        }else if(event.getDamager() instanceof Arrow arrow) {
-            ProjectileData projectileData = gameStatesManager.getProjectileDataMap().get(arrow);
-
-            if (projectileData == null) {
-                ProjectileSource source = arrow.getShooter();
-                if(source instanceof Entity shooterEntity){
-                    if(shooterEntity instanceof Player attackerPlayer){
-                        if(gameStatesManager.getPlayerJobs().get(attackerPlayer.getUniqueId()) instanceof Lonely lonely){
-                            lonely.lastAttackedTime = System.currentTimeMillis();
-                        }
-                    }
-                    if(damagedEntity instanceof Player damagedP){
-                        if(gameStatesManager.getPlayerJobs().get(damagedP.getUniqueId()) instanceof Lonely lonely){
-                            lonely.lastDamagedTime = System.currentTimeMillis();
-                        }
-                    }
-                    event.setCancelled(true);
-                    calculateDamageByEntity(shooterEntity, damagedEntity, damage);
-                }
-                return;
-            }
-
-            attackedPlayer = projectileData.getAttacker();
-            UUID attackedUUID = attackedPlayer.getUniqueId();
-            if(gameStatesManager.getPlayerJobs().get(attackedUUID) instanceof Explorer) {
-                //自分が放つ矢が着弾した位置に爆発を起こす。爆発は当たった対象に固定10ダメージを与える。
-                arrow.getWorld().spawnParticle(Particle.EXPLOSION, arrow.getLocation(), 1);
-                arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10.0F, 1.0F);
-                List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, arrow.getLocation(), 3);
-                gameStatesManager.addAttackedPlayer(attackedUUID);
-                for (Player damaged : effectedPlayers) {
-                    gameStatesManager.addDamagedPlayer(damaged.getUniqueId());
-                }
-                gameStatesManager.removeProjectileData(arrow);
-                return;
-            }
-            gameStatesManager.removeProjectileData(arrow);
-        }
-
-        calculateDamageByEntity(attackedPlayer, event.getEntity(), damage);
-
-    }
-
-    //　プレイヤーからエンティティへのダメージ
-    @EventHandler
-    public static void onEntityDamage(EntityDamageByEntityEvent event){
-        Entity damaged = event.getEntity();
-        if(damaged instanceof Player){return;}
-        if(!(event.getDamager() instanceof Player attacker)){return;}
-        if(damaged.isDead()){
+        if (event.getDamager() instanceof Snowball snowball) {
+            result = ProjectileDamageHandler.handleSnowball(snowball, event, gsm, damagedEntity);
+        } else if (event.getDamager() instanceof Trident trident) {
+            result = ProjectileDamageHandler.handleTrident(trident, event, gsm);
+        } else if (event.getDamager() instanceof Arrow arrow) {
+            result = ProjectileDamageHandler.handleArrow(arrow, event, gsm, damagedEntity, damage);
+        } else {
             return;
         }
-        Game game = Game.getInstance();
-        GameStatesManager gameStatesManager = game.getGameStatesManager();
-        if(gameStatesManager.getGameState() != GameState.IN_GAME) {
+
+        if (result.isHandled()) {
+            return;
+        }
+    }
+
+    // ================================
+    // プレイヤー → MOB
+    // ================================
+    @EventHandler
+    public void onPlayerAttackMob(EntityDamageByEntityEvent event) {
+        Entity damaged = event.getEntity();
+        if (damaged instanceof Player) return;
+        if (!(event.getDamager() instanceof Player attacker)) return;
+        if (damaged.isDead()) return;
+
+        GameStatesManager gsm = Game.getInstance().getGameStatesManager();
+
+        if (!DamageValidator.isGameInProgress()) {
             event.setCancelled(true);
             return;
         }
 
-        if(gameStatesManager.getPlayerJobs().get(attacker.getUniqueId()) instanceof Lonely lonely){
-            lonely.lastAttackedTime = System.currentTimeMillis();
-        }
+        DamageValidator.updateLonelyTimestamp(attacker, gsm, true);
+
+        DamageContext context = DamageContext.builder()
+                .attacker(attacker)
+                .damaged(damaged)
+                .baseDamage(event.getFinalDamage())
+                .source(DamageContext.DamageSource.MELEE)
+                .originalEvent(event)
+                .build();
+
+        DamageCalculator.calculate(context);
     }
 
+    // ================================
+    // MOB → プレイヤー
+    // ================================
     @EventHandler
-    public static void onEntityDamage(EntityDamageEvent event){
-        if(event.getEntity() instanceof Player player){
-            Game game = Game.getInstance();
-            GameStatesManager gameStatesManager = game.getGameStatesManager();
-            if(gameStatesManager.getGameState() != GameState.IN_GAME) {
-                event.setCancelled(true);
-                return;
-            }
+    public void onMobAttackPlayer(EntityDamageByEntityEvent event) {
+        Entity attacker = event.getDamager();
+        if (attacker instanceof Player) return;
+        if (attacker instanceof Projectile) return;
+        if (!(event.getEntity() instanceof Player damaged)) return;
 
-            if(event.getCause() == EntityDamageEvent.DamageCause.FALL) event.setCancelled(true);
-            if(event.getCause() == EntityDamageEvent.DamageCause.VOID) event.setCancelled(true);
-        }
-    }
+        GameStatesManager gsm = Game.getInstance().getGameStatesManager();
 
-    public static void calculateDamage(Entity attacker, Entity damaged, double damage){
-        if(attacker == null || damaged == null) {
+        if (!DamageValidator.isGameInProgress()) {
+            event.setCancelled(true);
             return;
         }
 
-        GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
-        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
-
-
-        if(damaged instanceof Player damagedPlayer && attacker instanceof Player attackerPlayer) {
-            if(Game.getInstance().getNowTime() > 500){
-                attackerPlayer.sendActionBar(Component.text("§c保護システムに攻撃が無力化された。"));
-                return;
-            }
-            if(gameStatesManager.getPlayerJobs().get(damagedPlayer.getUniqueId()) instanceof Prayer prayer){
-                if(prayer.getHasStrongestStrongestBall()){
-                    damagedPlayer.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
-                    return;
-                }
-            }
-            if(gameStatesManager.isNaito(attacker.getUniqueId())){
-                if(gameStatesManager.getPlayerJobs().get(damagedPlayer.getUniqueId()) instanceof Summoner){
-                    damagedPlayer.sendActionBar(Component.text("§c内藤はマスターに攻撃できない！"));
-                    return;
-                }
-            }
-            if(gameStatesManager.isNaito(damaged.getUniqueId())){
-                ItemStack item = attackerPlayer.getInventory().getItemInMainHand();
-                ItemMeta meta = item.getItemMeta();
-                if(meta != null){
-                    PersistentDataContainer container = meta.getPersistentDataContainer();
-                    if(container.has(itemKey, PersistentDataType.STRING)){
-                        if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), SummonersBrave.id)){
-                            DeathEvent.kill(attackerPlayer, damagedPlayer);
-                            return;
-                        }
-                    }
-                }
-            }
-
-            damage *= gameStatesManager.getPlayerGoals().get(damaged.getUniqueId()).getDamageMultiplier();
-
-            double additionalDamage = gameStatesManager.getAdditionalDamage().get(attackerPlayer.getUniqueId());
-            if (additionalDamage <= -300) {
-                damage = 1.0;
-            } else {
-                damage += additionalDamage;
-            }
-
-            if (gameStatesManager.getKillerList().containsKey(attackerPlayer.getUniqueId()) && gameStatesManager.getPlayerJobs().get(damaged.getUniqueId()).equals(JobList.EXECUTOR)) {
-                damage /= 2.0;
-            }
-
-
-            int damageCutPercent = gameStatesManager.getDamageCutPercent().get(damaged.getUniqueId());
-            damage = damage * (100 - damageCutPercent) / 100.0;
-
-            if (damage < 0) {
-                return;
-            }
-
-            double afterHealth = damagedPlayer.getHealth() - damage;
-            // 死亡処理
-            if (afterHealth <= 0) {
-                DeathEvent.kill(attackerPlayer, damagedPlayer);
-            }else{
-                damagedPlayer.damage(damage);
-            }
-        }
-    }
-
-    public static void calculateDamageByEntity(Entity attacker, Entity damaged, double damage){
-        if(attacker == null || damaged == null) {
+        if (DamageValidator.hasNoDamageTicks(damaged)) {
+            event.setCancelled(true);
             return;
         }
 
-        GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
-
-        if(damaged instanceof Player damagedPlayer && attacker instanceof Player attackerPlayer) {
-            if(Game.getInstance().getNowTime() > 500){
-                attackerPlayer.sendActionBar(Component.text("§c保護システムに攻撃が無力化された。"));
-                return;
-            }
-            if(gameStatesManager.getPlayerJobs().get(damagedPlayer.getUniqueId()) instanceof Prayer prayer){
-                if(prayer.getHasStrongestStrongestBall()){
-                    damagedPlayer.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
-                    return;
-                }
-            }
-
-            damage *= gameStatesManager.getPlayerGoals().get(damaged.getUniqueId()).getDamageMultiplier();
-
-            if (gameStatesManager.getKillerList().containsKey(attackerPlayer.getUniqueId()) && gameStatesManager.getPlayerJobs().get(damaged.getUniqueId()).equals(JobList.EXECUTOR)) {
-                damage /= 2.0;
-            }
-
-            int damageCutPercent = gameStatesManager.getDamageCutPercent().get(damaged.getUniqueId());
-            damage = damage * (100 - damageCutPercent) / 100.0;
-
-            if (damage < 0) {
-                return;
-            }
-
-            double afterHealth = damagedPlayer.getHealth() - damage;
-            // 死亡処理
-            if (afterHealth <= 0) {
-                DeathEvent.kill(attackerPlayer, damagedPlayer);
-            }else{
-                damagedPlayer.damage(damage);
-            }
-        }
-    }
-
-    public static void calculateDamageBySkill(Entity attacker, Entity damaged, double damage){
-        if(attacker == null || damaged == null) {
+        DamageValidator.ValidationResult check = DamageValidator.checkStrongestBall(damaged, gsm);
+        if (check.shouldCancel()) {
+            event.setCancelled(true);
+            damaged.sendActionBar(Component.text(check.message()));
             return;
         }
 
-        GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
+        gsm.addDamagedPlayer(damaged.getUniqueId());
+        DamageValidator.updateLonelyTimestamp(damaged, gsm, false);
 
-        if(damaged instanceof Player damagedPlayer && attacker instanceof Player attackerPlayer) {
-            if(Game.getInstance().getNowTime() > 500){
-                attackerPlayer.sendActionBar(Component.text("§c保護システムに攻撃が無力化された。"));
-                return;
-            }
-            if(gameStatesManager.getPlayerJobs().get(damagedPlayer.getUniqueId()) instanceof Prayer prayer){
-                if(prayer.getHasStrongestStrongestBall()){
-                    damagedPlayer.sendActionBar(Component.text("§aもっと最強のたまたま§bが攻撃を許さない！"));
-                    return;
-                }
-            }
-
-            int damageCutPercent = gameStatesManager.getDamageCutPercent().get(damaged.getUniqueId());
-            damage = damage * (100 - damageCutPercent) / 100.0;
-
-            if (damage < 0) {
-                return;
-            }
-
-            double afterHealth = damagedPlayer.getHealth() - damage;
-            // 死亡処理
-            if (afterHealth <= 0) {
-                DeathEvent.kill(attackerPlayer, damagedPlayer);
-            }else{
-                damagedPlayer.damage(damage);
-            }
+        if (DamageValidator.checkDisableDamageOnce(damaged, gsm)) {
+            event.setCancelled(true);
+            return;
         }
+
+        event.setCancelled(true);
+        DamageContext context = DamageContext.builder()
+                .attacker(attacker)
+                .damaged(damaged)
+                .baseDamage(event.getFinalDamage())
+                .source(DamageContext.DamageSource.MOB)
+                .originalEvent(event)
+                .build();
+
+        DamageCalculator.calculate(context);
     }
 
-    public static boolean disableDamageOnce(GameStatesManager manager, Player player){
-        if(manager.getIsDeactivateDamageOnce().get(player.getUniqueId())){
-            ItemStack item = player.getInventory().getChestplate();
-            if(item != null){
-                ItemMeta meta = item.getItemMeta();
-                if(meta != null){
-                    PersistentDataContainer container = meta.getPersistentDataContainer();
-                    NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
-                    if(container.has(itemKey, PersistentDataType.STRING)){
-                        if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), ArcherArmor.id)){
-                            player.getInventory().setChestplate(null);
-                            player.sendMessage(Component.text("§a弓使いの鎧§bでダメージを無効化した！"));
-                            manager.addIsDeactivateDamageOnce(player.getUniqueId(), false);
-                            return true;
-                        }
-                    }
-                }
-            }
-            player.sendMessage(Component.text("§aカタクナール§bでダメージを無効化した！"));
-            manager.addIsDeactivateDamageOnce(player.getUniqueId(), false);
-            return true;
+    // ================================
+    // 環境ダメージ（落下、奈落）
+    // ================================
+    @EventHandler
+    public void onEnvironmentDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) return;
+
+        if (!DamageValidator.isGameInProgress()) {
+            event.setCancelled(true);
+            return;
         }
-        return false;
+
+        EntityDamageEvent.DamageCause cause = event.getCause();
+        if (cause == EntityDamageEvent.DamageCause.FALL || 
+            cause == EntityDamageEvent.DamageCause.VOID) {
+            event.setCancelled(true);
+        }
     }
 }

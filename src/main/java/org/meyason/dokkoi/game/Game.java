@@ -30,7 +30,9 @@ import org.meyason.dokkoi.scheduler.Scheduler;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.UUID;
 
 public class Game {
@@ -43,10 +45,17 @@ public class Game {
 
     public final int minimumGameStartPlayers = 2;
 
+    public final int maximumGamePlayers = JobList.getAllJobs().size();
+
+    private Queue<UUID> matchQueue = new LinkedList<>();
+    public void addToMatchQueue(UUID uuid){ matchQueue.add(uuid); }
+    public void removeFromMatchQueue(UUID uuid){ matchQueue.remove(uuid); }
+
     private int nowTime;
     public final int matchingPhaseTime = 5;
     public final int prepPhaseTime = 60;
     public final int gamePhaseTime = 600;
+    public final int preEndPhaseTime = 10;
     public final int resultPhaseTime = 10;
 
     private final boolean debugMode = false;
@@ -80,6 +89,7 @@ public class Game {
         clearScoreboardDisplay();
         gameStatesManager.init();
         setNowTime(matchingPhaseTime);
+        matchQueue.clear();
     }
 
     public void matching(){
@@ -102,14 +112,20 @@ public class Game {
             team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
             team.addEntry(player.getName());
             player.setScoreboard(scoreboard);
+            matchQueue.add(player.getUniqueId());
         }
 
         updateScoreboardDisplay();
     }
 
     public void prepPhase(){
-        for(Player player : Bukkit.getOnlinePlayers()){
-            UUID uuid = player.getUniqueId();
+        int participantCount = 0;
+        while(!matchQueue.isEmpty() && participantCount < maximumGamePlayers){
+            UUID uuid = matchQueue.poll();
+            Player player = Bukkit.getPlayer(uuid);
+            if(player == null || !player.isOnline()){
+                continue;
+            }
             gameStatesManager.addAlivePlayer(uuid);
             gameStatesManager.addJoinedPlayer(uuid);
             player.getInventory().clear();
@@ -118,7 +134,17 @@ public class Game {
             player.setHealth(40.0);
             player.setFoodLevel(20);
             player.setCustomNameVisible(false);
+            participantCount++;
         }
+
+        while(!matchQueue.isEmpty()){
+            UUID uuid = matchQueue.poll();
+            Player player = Bukkit.getPlayer(uuid);
+            if(player != null && player.isOnline()){
+                player.sendMessage("§c参加者が最大人数(" + maximumGamePlayers + "人)に達したため、ゲームに参加できませんでした。");
+            }
+        }
+
         onGame = true;
         gameStatesManager.setGameState(GameState.PREP);
         setNowTime(prepPhaseTime);
@@ -127,7 +153,7 @@ public class Game {
         message.append(Component.text("\n§e" + prepPhaseTime + "秒後にゲームが開始"));
         Bukkit.getServer().broadcast(message);
 
-        if(Bukkit.getOnlinePlayers().size() < minimumGameStartPlayers){
+        if(gameStatesManager.getJoinedPlayers().size() < minimumGameStartPlayers){
             Component cancelMessage = Component.text("§c参加者が最低人数(" + minimumGameStartPlayers + "人)に達していないため、ゲームを中止します。");
             Bukkit.getServer().broadcast(cancelMessage);
             resetGame();
@@ -231,7 +257,7 @@ public class Game {
                 continue;
             }
             player.closeInventory();
-            player.setGameMode(GameMode.SURVIVAL);
+            player.setGameMode(GameMode.ADVENTURE);
             gameStatesManager.getPlayerJobs().get(uuid).chargeUltimateSkill(player, gameStatesManager);
             updateScoreboardDisplay(player);
 
@@ -248,11 +274,27 @@ public class Game {
         ChestProvider.getInstance().startTask();
     }
 
+    public void preEndGame(){
+        gameStatesManager.setGameState(GameState.PRE_END);
+        Component message = Component.text("§bゲーム終了。10秒後に結果発表が行われる。");
+        Bukkit.getServer().broadcast(message);
+        setNowTime(preEndPhaseTime);
+        for(UUID uuid : gameStatesManager.getJoinedPlayers()){
+            if(gameStatesManager.isNaito(uuid)){
+                Player player = Bukkit.getPlayer(uuid);
+                if(player == null || !player.isOnline()){
+                    continue;
+                }
+                player.setGameMode(GameMode.SPECTATOR);
+            }
+        }
+    }
+
     public void endGame(){
         gameStatesManager.setGameState(GameState.END);
         gameEntityManager.unregisterEntity();
         setNowTime(resultPhaseTime);
-        Component message = Component.text("§aゲーム終了");
+        Component message = Component.text("§a結果発表おおおおおおおおおおおおおおおおおお！");
         Bukkit.getServer().broadcast(message);
 
         ChestProvider.getInstance().cancelTask();
@@ -505,6 +547,13 @@ public class Game {
                 objective.getScore("§e現在の回数: §" + color + drugStore.getPickCount() + "回").setScore(--i);
             }else if(goal instanceof FiftyPercent){
                 objective.getScore("§a参加者数: §f" + gameStatesManager.getJoinedPlayers().size() + "人").setScore(--i);
+            }else if(goal instanceof SkeletonSlayer skeletonSlayer){
+                String color = "c";
+                if(skeletonSlayer.getSkeletonsKilled() >= 50){
+                    color = achievedColor;
+                }
+                objective.getScore("§e目標殺害数: §f" + 50 + "体").setScore(--i);
+                objective.getScore("§e現在の殺害数: §" + color + skeletonSlayer.getSkeletonsKilled() + "体").setScore(--i);
             }
 
             if(job instanceof Explorer explorer){
@@ -521,6 +570,8 @@ public class Game {
                 objective.getScore("§eガチャ回数: §f" + prayer.getGachaCount() + "回").setScore(--i);
             }else if(job instanceof Summoner){
                 objective.getScore("§e召喚体数: §f" + gameStatesManager.getNaito().size() + "体").setScore(--i);
+            }else if(job instanceof Photographer photographer){
+                objective.getScore("§e撮影人数: §f" + photographer.getTakenPhotoPlayersCount() + "人").setScore(--i);
             }
         }
         player.setScoreboard(scoreboard);

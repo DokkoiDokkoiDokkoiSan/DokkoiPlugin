@@ -67,10 +67,12 @@ public class Scheduler extends BukkitRunnable {
             case IN_GAME:
                 game.setNowTime(game.getNowTime() - 1);
                 if(game.getNowTime() < 0){
-                    game.endGame();
+                    onCountdown = false;
+                    game.preEndGame();
                 }
                 if(game.getGameStatesManager().getAlivePlayers().size() <= 1){
-                    game.endGame();
+                    onCountdown = false;
+                    game.preEndGame();
                 }
 
                 if(!onCountdown && Game.getInstance().checkAllPlayerGoalAchieved()){
@@ -115,6 +117,15 @@ public class Scheduler extends BukkitRunnable {
                 }
                 game.updateScoreboardDisplay();
                 break;
+
+            case PRE_END:
+                onCountdown = false;
+                game.setNowTime(game.getNowTime() - 1);
+                if(game.getNowTime() < 0){
+                    game.endGame();
+                }
+                game.updateScoreboardDisplay();
+                break;
             case END:
                 game.setNowTime(game.getNowTime() - 1);
                 if(game.getNowTime() < 0){
@@ -131,11 +142,15 @@ public class Scheduler extends BukkitRunnable {
 
     private void GoalAchieveWatchDog(){
         onCountdown = true;
-        new BukkitRunnable() {
+        BukkitRunnable goalAchieveTask = new BukkitRunnable() {
             int counter = 0;
             @Override
             public void run() {
                 Game game = Game.getInstance();
+                if(!onCountdown){
+                    this.cancel();
+                    return;
+                }
                 if(!game.checkAllPlayerGoalAchieved()){
                     Bukkit.getServer().broadcast(Component.text("§c全員が目標を達成した状態ではなくなったので、カウントダウンがキャンセルされました。"));
                     this.cancel();
@@ -145,11 +160,13 @@ public class Scheduler extends BukkitRunnable {
                 if(counter >= 30){
                     Bukkit.getServer().broadcast(Component.text("§6全員が目標を達成した状態が30秒間維持されたため、ゲームを終了します。"));
                     this.cancel();
-                    game.endGame();
+                    game.preEndGame();
                     return;
                 }
                 counter++;
             }
-        }.runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
+        };
+
+        goalAchieveTask.runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
     }
 }

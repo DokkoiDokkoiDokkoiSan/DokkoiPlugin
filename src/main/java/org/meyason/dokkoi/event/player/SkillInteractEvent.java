@@ -26,6 +26,7 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.jobitem.*;
 import org.meyason.dokkoi.job.*;
@@ -177,6 +178,9 @@ public class SkillInteractEvent implements Listener {
                     if (job.isUltimateSkillCoolDown(player)) {
                         player.sendActionBar(Component.text("§cアルティメットはクールダウン中です。"));
                         return;
+                    }else if(job.getRemainCoolTimeSkill() == -1){
+                        player.sendActionBar(Component.text("§cアルティメットスキルは既に使用しています。"));
+                        return;
                     }
                     job.playSoundEffectUltimateSkill(player);
                     if(job instanceof Executor executor) {
@@ -239,8 +243,7 @@ public class SkillInteractEvent implements Listener {
                         summoner.ultimate(targetPlayers);
                     }
 
-                    job.setRemainCoolTimeSkillUltimate(job.getCoolTimeSkillUltimate());
-                    job.chargeUltimateSkill(player, manager);
+                    job.setRemainCoolTimeSkillUltimate(-1);
 
                 }
             }

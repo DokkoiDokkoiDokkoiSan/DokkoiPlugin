@@ -101,38 +101,37 @@ public class DeathEvent {
             }
         }
 
-        if(killer != null && !manager.isNaito(deadUUID) && !manager.getPlayerGoals().get(killerUUID).isKillable(dead)){
-            if(hasRedHelmet){
-                killer.sendMessage("§e[ペナルティ] §a" + dead.getName() + " §aは殺害できないプレイヤーですが，赤い帽子を被っていたためペナルティは免れました。");
-                dead.sendMessage("§e[ペナルティ免除] §aあなたは赤い帽子を被っていたため，ペナルティを免れました。");
-                return;
+        if(!hasRedHelmet) {
+            if (killer != null && !manager.isNaito(deadUUID) && !manager.getPlayerGoals().get(killerUUID).isKillable(dead)) {
+                String borderColor = "§6";
+                String horizontal = "─".repeat(32);
+                List<String> boxMessage = List.of(
+                        "§c§lペナルティ§r§c：許可されていない殺害",
+                        "§6" + dead.getName(),
+                        "§cは、殺害できるプレイヤーではない。赤い帽子を被せられた。"
+                );
+                killer.sendMessage(borderColor + "┌" + horizontal + "┐");
+                for (String box : boxMessage) {
+                    String line = box;
+                    Function<String, Integer> visibleLen =
+                            s -> s.replaceAll("(?i)§.", "").length();
+                    int length = visibleLen.apply(box);
+                    int paddingLength = (horizontal.length() + 1 - length) * 2;
+                    String forwardPadding = " ".repeat(paddingLength / 2);
+                    String backPadding = " ".repeat(paddingLength - paddingLength / 2);
+                    killer.sendMessage(Component.text(forwardPadding + line + backPadding));
+                }
+                killer.sendMessage(borderColor + "└" + horizontal + "┘");
+                try {
+                    RedHelmet item = (RedHelmet) GameItem.getItem(RedHelmet.id);
+                    item.setPlayerHead(killer);
+                } catch (NoGameItemException e) {
+                    e.printStackTrace();
+                    return;
+                }
             }
-            String borderColor = "§6";
-            String horizontal = "─".repeat(32);
-            List<String> boxMessage = List.of(
-                    "§c§lペナルティ§r§c：許可されていない殺害",
-                    "§6" + dead.getName(),
-                    "§cは、殺害できるプレイヤーではない。赤い帽子を被せられた。"
-            );
-            killer.sendMessage(borderColor + "┌" + horizontal + "┐");
-            for(String box : boxMessage){
-                String line = box;
-                Function<String, Integer> visibleLen =
-                        s -> s.replaceAll("(?i)§.", "").length();
-                int length = visibleLen.apply(box);
-                int paddingLength = (horizontal.length() + 1 - length) * 2;
-                String forwardPadding = " ".repeat(paddingLength / 2);
-                String backPadding = " ".repeat(paddingLength - paddingLength / 2);
-                killer.sendMessage(Component.text(forwardPadding + line + backPadding));
-            }
-            killer.sendMessage(borderColor + "└" + horizontal + "┘");
-            try {
-                RedHelmet item = (RedHelmet) GameItem.getItem(RedHelmet.id);
-                item.setPlayerHead(killer);
-            } catch (NoGameItemException e) {
-                e.printStackTrace();
-                return;
-            }
+        }else {
+            if(killer!=null) killer.sendMessage("§e[ペナルティ] §a" + dead.getName() + " §aは殺害できないプレイヤーですが，赤い帽子を被っていたためペナルティは免れました。");
         }
 
         if(manager.isEnableKillerList()){

@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.event.player.DamageEvent;
+import org.meyason.dokkoi.event.player.damage.DamageCalculator;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
@@ -60,7 +60,7 @@ public class ThunderJavelin extends CustomItem {
                 location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 10.0F, 1.0F);
                 List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, location, 4);
                 for (Player damaged : effectedPlayers) {
-                    DamageEvent.calculateDamageBySkill(shooter, damaged, 20.0);
+                    DamageCalculator.calculateSkillDamage(shooter, damaged, 20.0);
                     Game.getInstance().getGameStatesManager().addDamagedPlayer(damaged.getUniqueId());
                 }
             }

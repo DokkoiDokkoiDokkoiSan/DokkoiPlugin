@@ -40,10 +40,12 @@ public class SkillScheduler extends BukkitRunnable {
         if(gameStatesManager.getPlayerGoals().get(playerUUID).tier != Tier.TIER_3){
             job.setCoolTimeSkillUltimateViewer("§4使用不可");
             gameStatesManager.removeUltimateSkillCoolDownTask(playerUUID);
-        }else if(gameStatesManager.getUltimateSkillCoolDownTasks().containsKey(playerUUID)){
+        }else if(gameStatesManager.getUltimateSkillCoolDownTasks().containsKey(playerUUID)) {
             int remainCoolTimeUltimate = job.getRemainCoolTimeSkillUltimate();
             job.setRemainCoolTimeSkillUltimate(remainCoolTimeUltimate - 1);
             job.setCoolTimeSkillUltimateViewer("§eチャージ§c" + job.getRemainCoolTimeSkillUltimate() + "秒");
+        }else if(gameStatesManager.getPlayerJobs().get(playerUUID).getCoolTimeSkillUltimate() == -1){
+            job.setCoolTimeSkillUltimateViewer("§4使用不可");
         }else {
             job.setCoolTimeSkillUltimateViewer("§g§lREADY!");
         }

@@ -48,6 +48,10 @@ public class Photographer extends Job {
         }
     }
 
+    public int getTakenPhotoPlayersCount(){
+        return this.takenPhotoPlayersUUID.size();
+    }
+
     public void removeTakenPhotoPlayer(UUID targetPlayer){
         this.takenPhotoPlayersUUID.remove(targetPlayer);
     }
@@ -70,7 +74,8 @@ public class Photographer extends Job {
         this.player = player;
         this.goals = List.of(
                 GoalList.DEFENDER,
-                GoalList.PHOTOALLPLAYER
+                GoalList.PHOTOALLPLAYER,
+                GoalList.TAKETWOSHORT
         );
     }
 

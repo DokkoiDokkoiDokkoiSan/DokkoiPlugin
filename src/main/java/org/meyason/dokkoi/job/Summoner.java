@@ -55,7 +55,8 @@ public class Summoner extends Job{
         this.player = player;
         this.goals = List.of(
                 GoalList.LASTMAN,
-                GoalList.FIFTYPERCENT
+                GoalList.FIFTYPERCENT,
+                GoalList.SKELETONSLAYER
         );
         game.getGameStatesManager().setExistSummoner(true);
     }
@@ -126,7 +127,7 @@ public class Summoner extends Job{
             targetPlayer.setHealth(targetPlayer.getMaxHealth());
             targetPlayer.setFoodLevel(20);
             targetPlayer.setGameMode(GameMode.ADVENTURE);
-            targetPlayer.setDisplayName("内藤");
+            targetPlayer.setCustomName("§6内藤");
             game.getGameStatesManager().addNaito(uuid);
 
             CustomItem customItem;

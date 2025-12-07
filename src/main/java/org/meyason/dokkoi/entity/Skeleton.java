@@ -2,6 +2,7 @@ package org.meyason.dokkoi.entity;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
@@ -40,7 +41,9 @@ public class Skeleton extends GameEntity {
             }
             entity.getWorld().dropItemNaturally(entity.getLocation(), item);
         }
-        entity.remove();
+        if(entity instanceof LivingEntity livingEntity) {
+            livingEntity.setHealth(0);
+        }
     }
 
 }
