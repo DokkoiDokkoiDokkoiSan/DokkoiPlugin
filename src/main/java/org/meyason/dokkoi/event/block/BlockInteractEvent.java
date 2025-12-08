@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -16,7 +17,7 @@ import org.meyason.dokkoi.job.Prayer;
 
 public class BlockInteractEvent implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onBlockInteract(PlayerInteractEvent event){
         Game game = Game.getInstance();
         Player player = event.getPlayer();

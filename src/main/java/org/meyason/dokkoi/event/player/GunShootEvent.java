@@ -1,79 +1,27 @@
 package org.meyason.dokkoi.event.player;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.constants.GameItemKeyString;
-import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.gun.GunShot;
 import org.meyason.dokkoi.gun.GunStatus;
 import org.meyason.dokkoi.gun.constants.GunType;
-import org.meyason.dokkoi.item.CustomItem;
-import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.gunitem.GunItem;
 
-public class GunShootEvent implements Listener {
+public class GunShootEvent{
 
-    @EventHandler
-    public void onGunShoot(PlayerInteractEvent event){
+    public static void onGunShoot(PlayerInteractEvent event, String gunSerial, GunItem gun){
         Game game = Game.getInstance();
         Player player = event.getPlayer();
-        if (event.getHand() != EquipmentSlot.HAND) {
-            return;
-        }
 
-        ItemStack item = player.getInventory().getItemInMainHand();
-        if (!item.hasItemMeta()) {
-            return;
-        }
-        ItemMeta meta = item.getItemMeta();
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-
-        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
-        NamespacedKey gunSerialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.GUN_SERIAL);
-
-        if (!container.has(itemKey, PersistentDataType.STRING)) {
-            return;
-        }
-        String gunSerial = container.get(gunSerialKey, PersistentDataType.STRING);
-        if(gunSerial == null){
-            return;
-        }
-
-        String itemID = container.get(itemKey, PersistentDataType.STRING);
-        if (itemID == null) {
-            return;
-        }
-
-        event.setCancelled(true);
         GameStatesManager manager = game.getGameStatesManager();
-
-        CustomItem customItem;
-        try {
-            customItem = GameItem.getItem(itemID);
-        } catch (NoGameItemException e) {
-            return;
-        }
-
-        if(!(customItem instanceof GunItem gun)){
-            return;
-        }
 
         if(!manager.isExistGunFromSerial(gunSerial)){
             manager.registerGun(gunSerial, gun);
@@ -81,7 +29,7 @@ public class GunShootEvent implements Listener {
 
         GunStatus gunStatus = manager.getGunStatusFromSerial(gunSerial);
 
-
+        event.setCancelled(true);
         // 右クリック　射撃
         if(event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR){
             if (manager.isOnReloading(player.getUniqueId())) {
@@ -94,8 +42,8 @@ public class GunShootEvent implements Listener {
                 return;
             }
 
-            manager.setIsShootingGunSerial(gunSerial, true);
-            if(manager.isOnShootingGunTask(gunSerial)){
+            // 射撃タスクがまだなければ作成
+            if(!manager.isOnShootingGunTask(gunSerial)){
 
                 BukkitRunnable shootingTask = new BukkitRunnable() {
                     @Override
@@ -112,35 +60,50 @@ public class GunShootEvent implements Listener {
                         manager.addProjectileData(gunshot.getProjectile(), projectileData);
 
                         if (gunStatus.getMagazineAmmo() <= 0) {
-                            manager.setIsShootingGunSerial(gunSerial, false);
+                            // 弾切れ時は射撃停止タイマーを削除して停止
+                            if(manager.hasShootingStopTask(gunSerial)){
+                                BukkitRunnable stopTask = manager.getShootingStopTask(gunSerial);
+                                if(stopTask != null){
+                                    stopTask.cancel();
+                                }
+                                manager.removeShootingStopTask(gunSerial);
+                            }
                         }
                     }
                 };
                 shootingTask.runTaskTimer(Dokkoi.getInstance(), 0, gun.getFireRate());
                 manager.addShootingGunTask(gunSerial, shootingTask);
             }
-            new BukkitRunnable() {
+
+            // 既存の射撃停止タイマーがあればキャンセル（フラグ延長のため）
+            if(manager.hasShootingStopTask(gunSerial)){
+                BukkitRunnable oldStopTask = manager.getShootingStopTask(gunSerial);
+                if(oldStopTask != null){
+                    oldStopTask.cancel();
+                }
+                manager.removeShootingStopTask(gunSerial);
+            }
+
+            // 4tick後に自動で射撃停止タイマーを削除するタスクを作成
+            BukkitRunnable stopTask = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (!manager.isShootingGunSerial(gunSerial)) {
-                        BukkitRunnable task = manager.getShootingGunTask(gunSerial);
-                        if (task != null) {
-                            task.cancel();
-                            manager.removeShootingGunTask(gunSerial);
-                        }
-                    }
-                    manager.setIsShootingGunSerial(gunSerial, true);
+                    manager.removeShootingStopTask(gunSerial);
+                    // タスクが削除されると、次のshootingTask実行時に自動停止される
                 }
-            }.runTaskLater(Dokkoi.getInstance(), 4); // 4tick
+            };
+            stopTask.runTaskLater(Dokkoi.getInstance(), 4);
+            manager.addShootingStopTask(gunSerial, stopTask);
 
         }else if(event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK){
+            if(manager.hasShootingStopTask(gunSerial)) return;
             if (!manager.isOnReloading(player.getUniqueId())) {
                 startReload(player, gun, gunStatus);
             }
         }
     }
 
-    private void startReload(Player player, GunItem gun, GunStatus gunStatus) {
+    private static void startReload(Player player, GunItem gun, GunStatus gunStatus) {
         if (gunStatus.getIsReloading()) {
             return;
         }
@@ -185,99 +148,5 @@ public class GunShootEvent implements Listener {
                 gunStatus.updateActionBar(player);
             }
         }.runTaskTimer(Dokkoi.getInstance(), 0, 2);
-    }
-
-
-    @EventHandler
-    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
-        Player player = event.getPlayer();
-        GameStatesManager manager = Game.getInstance().getGameStatesManager();
-        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
-        NamespacedKey gunSerialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.GUN_SERIAL);
-
-        ItemStack oldInHand = player.getInventory().getItem(event.getPreviousSlot());
-        if (oldInHand != null && oldInHand.hasItemMeta()) {
-            cancelOldGun(oldInHand, player);
-        }
-
-        ItemStack newInHand = player.getInventory().getItem(event.getNewSlot());
-        if (newInHand != null) {
-            if (!newInHand.hasItemMeta()) {
-                return;
-            }
-            ItemMeta newMeta = newInHand.getItemMeta();
-            PersistentDataContainer newContainer = newMeta.getPersistentDataContainer();
-            String itemID = newContainer.get(itemKey, PersistentDataType.STRING);
-            if (itemID == null) {
-                return;
-            }
-            String gunSerial = newContainer.get(gunSerialKey, PersistentDataType.STRING);
-            if (gunSerial == null) {
-                return;
-            }
-
-            CustomItem customItem;
-            try{
-                customItem = GameItem.getItem(itemID);
-            } catch (NoGameItemException e) {
-                return;
-            }
-            if(!(customItem instanceof GunItem newGun)){
-                return;
-            }
-
-            if (!manager.isExistGunFromSerial(gunSerial)) {
-                manager.registerGun(gunSerial, newGun);
-            }
-
-            GunStatus gunStatus = manager.getGunStatusFromSerial(gunSerial);
-
-            gunStatus.updateAmmo(newGun.getGunType(), player);
-
-            gunStatus.updateActionBar(player);
-        }
-    }
-
-    private void cancelOldGun(ItemStack oldInHand, Player player) {
-        GameStatesManager manager = Game.getInstance().getGameStatesManager();
-        ItemMeta oldMeta = oldInHand.getItemMeta();
-        PersistentDataContainer oldContainer = oldMeta.getPersistentDataContainer();
-        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
-        NamespacedKey gunSerialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.GUN_SERIAL);
-        String oldItemID = oldContainer.get(itemKey, PersistentDataType.STRING);
-        if (oldItemID == null) {
-            return;
-        }
-        String oldGunSerial = oldContainer.get(gunSerialKey, PersistentDataType.STRING);
-        if (oldGunSerial == null) {
-            return;
-        }
-
-        CustomItem customItem;
-        try{
-            customItem = GameItem.getItem(oldItemID);
-        } catch (NoGameItemException e) {
-            return;
-        }
-        if (!(customItem instanceof GunItem oldGun)) {
-            return;
-        }
-
-        if (!manager.isExistGunFromSerial(oldGunSerial)) {
-            manager.registerGun(oldGunSerial, oldGun);
-        }
-
-        GunStatus oldGunStatus = manager.getGunStatusFromSerial(oldGunSerial);
-        oldGunStatus.updateAmmo(oldGun.getGunType(), player);
-
-        if (manager.isOnReloading(player.getUniqueId())){
-            BukkitRunnable task = manager.getReloadGunTask(player.getUniqueId());
-            if(task != null){
-                task.cancel();
-                manager.removeReloadGunTask(player.getUniqueId());
-            }
-            oldGunStatus.cancelReload();
-            oldGunStatus.updateActionBar(player);
-        }
     }
 }

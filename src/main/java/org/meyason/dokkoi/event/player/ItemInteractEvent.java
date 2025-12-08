@@ -39,46 +39,15 @@ import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
 
 import java.util.Objects;
 
-public class ItemInteractEvent implements Listener {
+public class ItemInteractEvent{
 
-    @EventHandler
-    public void onItemInteract(PlayerInteractEvent event){
+    public static void onItemInteract(PlayerInteractEvent event, String itemID, String itemSerial, CustomItem customItem){
         Game game = Game.getInstance();
         Player player = event.getPlayer();
-        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
-        NamespacedKey gunSerialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.GUN_SERIAL);
-
-        // 早期return用
-        ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
-        if(!item.hasItemMeta()){
-            return;
-        }
-        ItemMeta meta = item.getItemMeta();
-        if(meta == null){
-            return;
-        }
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        if(!container.has(itemKey)){
-            return;
-        }
-
-        if(container.has(gunSerialKey)){
-            // 銃用(GunShootEventで処理)
-            return;
-        }
-        String itemId = container.get(itemKey, PersistentDataType.STRING);
-        if(itemId == null){
-            return;
-        }
-        if(itemId.equals(Skill.id) || itemId.equals(Ultimate.id)){
-            // スキル・アルティメット用(SkillInteractEventで処理)
-            return;
-        }
-
 
         if(game.getGameStatesManager().getGameState() == GameState.PREP){
 
-            if(itemId.equals(GoalSelectMenuItem.id)) {
+            if(itemID.equals(GoalSelectMenuItem.id)) {
                 if (game.getGameStatesManager().getPlayerGoals().get(player.getUniqueId()) != null) {
                     player.sendMessage("§c既に勝利条件が選択されています。");
                     event.setCancelled(true);
@@ -90,28 +59,20 @@ public class ItemInteractEvent implements Listener {
             }
 
         }else if(game.getGameStatesManager().getGameState() == GameState.IN_GAME) {
-            CustomItem customItem;
-            try {
-                customItem = CustomItem.getItem(item);
-            } catch (NoGameItemException e) {
-                return;
-            }
+            GameStatesManager manager = game.getGameStatesManager();
 
 
-            switch (itemId) {
+            switch (itemID) {
                 case KillerList.id -> {
                     if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
                         return;
                     }
-                    event.setCancelled(true);
-                    GameStatesManager manager = game.getGameStatesManager();
-                    NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
-                    String itemSerial = container.get(serialKey, PersistentDataType.STRING);
                     if (customItem instanceof KillerList && itemSerial != null) {
                         CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
                         if (!(serialItem instanceof KillerList killerList)) {
                             return;
                         }
+                        event.setCancelled(true);
                         killerList.skill(manager, player);
                     }
 
@@ -120,15 +81,12 @@ public class ItemInteractEvent implements Listener {
                     if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
                         return;
                     }
-                    event.setCancelled(true);
-                    GameStatesManager manager = game.getGameStatesManager();
-                    NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
-                    String itemSerial = container.get(serialKey, PersistentDataType.STRING);
                     if (customItem instanceof UnkillerList && itemSerial != null) {
                         CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
                         if (!(serialItem instanceof UnkillerList unkillerList)) {
                             return;
                         }
+                        event.setCancelled(true);
                         unkillerList.skill(manager, player);
                     }
 
@@ -137,10 +95,8 @@ public class ItemInteractEvent implements Listener {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
-                    event.setCancelled(true);
                     if (customItem instanceof BuriBuriGuard) {
-                        NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
-                        String itemSerial = container.get(serialKey, PersistentDataType.STRING);
+                        event.setCancelled(true);
                         CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
                         BuriBuriGuard buriburiguard = (BuriBuriGuard) serialItem;
                         buriburiguard.skill();
@@ -152,35 +108,35 @@ public class ItemInteractEvent implements Listener {
                     }
                     event.setCancelled(true);
                     game.getGameStatesManager().addIsDeactivateDamageOnce(player.getUniqueId(), true);
-                    Tsuyokunaru.activate(player, item);
+                    Tsuyokunaru.activate(player, customItem.getItem());
                 }
                 case Kizukieru.id -> {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
                     event.setCancelled(true);
-                    Kizukieru.activate(player, item);
+                    Kizukieru.activate(player, customItem.getItem());
                 }
                 case Hayakunaru.id -> {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
                     event.setCancelled(true);
-                    Hayakunaru.activate(player, item);
+                    Hayakunaru.activate(player, customItem.getItem());
                 }
                 case Katakunaru.id -> {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
                     event.setCancelled(true);
-                    Katakunaru.activate(player, item);
+                    Katakunaru.activate(player, customItem.getItem());
                 }
                 case HealingCrystal.id -> {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
                     event.setCancelled(true);
-                    HealingCrystal.activate(player, item);
+                    HealingCrystal.activate(player, customItem.getItem());
                 }
                 case Debug.id -> {
                     if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
@@ -188,7 +144,7 @@ public class ItemInteractEvent implements Listener {
                     }
                     event.setCancelled(true);
                     if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                        Location location = event.getClickedBlock().getLocation();
+                        Location location = Objects.requireNonNull(event.getClickedBlock()).getLocation();
                         player.sendMessage(Component.text("§aクリックしたブロックの座標"));
                         player.sendMessage(Component.text(location.getX() + ", " + location.getY() + ", " + location.getZ()));
                     }
@@ -198,7 +154,7 @@ public class ItemInteractEvent implements Listener {
                         return;
                     }
                     event.setCancelled(true);
-                    PotionBottleFull.activate(player, item);
+                    PotionBottleFull.activate(player, customItem.getItem());
                 }
                 case HGMagazine.id -> {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {

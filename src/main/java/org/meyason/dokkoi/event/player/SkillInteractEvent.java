@@ -36,10 +36,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class SkillInteractEvent implements Listener {
+public class SkillInteractEvent{
 
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event){
+    public static void onSkillInteract(PlayerInteractEvent event, String itemID){
         Game game = Game.getInstance();
         Player player = event.getPlayer();
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
@@ -47,33 +46,6 @@ public class SkillInteractEvent implements Listener {
         }
 
         if(game.getGameStatesManager().getGameState() == GameState.IN_GAME) {
-
-            ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
-            if (!item.hasItemMeta()) {
-                return;
-            }
-            ItemMeta meta = item.getItemMeta();
-            PersistentDataContainer container = meta.getPersistentDataContainer();
-
-            NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
-            NamespacedKey gunSerialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.GUN_SERIAL);
-
-            if (!container.has(itemKey, PersistentDataType.STRING)) {
-                return;
-            }
-            if(container.has(gunSerialKey, PersistentDataType.STRING)){
-                // 銃の場合は処理しない(GunShootEventで処理する)
-                return;
-            }
-
-            String itemID = container.get(itemKey, PersistentDataType.STRING);
-            if (itemID == null) {
-                return;
-            }
-            if (!itemID.equals(Skill.id) && !itemID.equals(Ultimate.id)) {
-                // アイテム処理(ItemInteractEventで処理する)
-                return;
-            }
 
             event.setCancelled(true);
             GameStatesManager manager = game.getGameStatesManager();
@@ -188,6 +160,7 @@ public class SkillInteractEvent implements Listener {
                     prayer.ultimate();
 
                 } else if (job instanceof DrugStore drugStore) {
+                    NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
                     List<String> drugList = new ArrayList<>();
                     PlayerInventory inventory = player.getInventory();
                     for (ItemStack i : inventory.getContents()) {

@@ -11,9 +11,8 @@ public class EventManager {
     }
 
     private void init(Dokkoi core) {
+        core.getServer().getPluginManager().registerEvents(new PlayerInteractManager(), core);
         core.getServer().getPluginManager().registerEvents(new DamageEvent(), core);
-        core.getServer().getPluginManager().registerEvents(new SkillInteractEvent(), core);
-        core.getServer().getPluginManager().registerEvents(new ItemInteractEvent(), core);
         core.getServer().getPluginManager().registerEvents(new ProjectileHitBlockEvent(), core);
         core.getServer().getPluginManager().registerEvents(new LaunchEvent(), core);
         core.getServer().getPluginManager().registerEvents(new DespawnEvent(), core);
@@ -27,6 +26,6 @@ public class EventManager {
         core.getServer().getPluginManager().registerEvents(new MobCombustProtect(), core);
         core.getServer().getPluginManager().registerEvents(new EntityDeathEvent(), core);
         core.getServer().getPluginManager().registerEvents(new BlockInteractEvent(), core);
-        core.getServer().getPluginManager().registerEvents(new GunShootEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new GunSwapEvent(), core);
     }
 }

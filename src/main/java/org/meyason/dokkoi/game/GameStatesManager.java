@@ -47,7 +47,7 @@ public class GameStatesManager {
 
     private HashMap<UUID, BukkitRunnable>  reloadGunTasks;
     private HashMap<String, BukkitRunnable> shootingGunTasks;
-    private HashMap<String, Boolean> isShootingGun;
+    private HashMap<String, BukkitRunnable> shootingStopTasks;
 
     private HashMap<UUID, Long> HGInventoryAmmo;
 
@@ -92,7 +92,7 @@ public class GameStatesManager {
         serialGunItemMap = new HashMap<>();
         reloadGunTasks = new HashMap<>();
         shootingGunTasks = new HashMap<>();
-        isShootingGun = new HashMap<>();
+        shootingStopTasks = new HashMap<>();
         HGInventoryAmmo = new HashMap<>();
         skillCoolDownTasks = new HashMap<>();
         ultimateSkillCoolDownTasks = new HashMap<>();
@@ -388,10 +388,21 @@ public class GameStatesManager {
     }
 
     public boolean isShootingGunSerial(String gunSerial){
-        return this.isShootingGun.getOrDefault(gunSerial, false);
+        return this.shootingStopTasks.containsKey(gunSerial);
     }
-    public void setIsShootingGunSerial(String gunSerial, boolean isShooting){
-        this.isShootingGun.put(gunSerial, isShooting);
+
+    public boolean hasShootingStopTask(String gunSerial){
+        return this.shootingStopTasks.containsKey(gunSerial);
+    }
+    public void addShootingStopTask(String gunSerial, BukkitRunnable task){
+        this.shootingStopTasks.put(gunSerial, task);
+    }
+    public void removeShootingStopTask(String gunSerial){
+        if(!this.shootingStopTasks.containsKey(gunSerial)) {return;}
+        this.shootingStopTasks.remove(gunSerial);
+    }
+    public BukkitRunnable getShootingStopTask(String gunSerial){
+        return this.shootingStopTasks.get(gunSerial);
     }
 
     public long getHGInventoryAmmo(UUID player){
