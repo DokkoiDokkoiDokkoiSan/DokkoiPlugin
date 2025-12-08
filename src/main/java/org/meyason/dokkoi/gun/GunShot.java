@@ -33,11 +33,6 @@ public class GunShot {
         Vector velocity = direction.multiply(gun.getBulletSpeed());
         projectile = player.launchProjectile(Snowball.class, velocity);
         ItemStack itemStack = new ItemStack(Material.SNOWBALL);
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
-            itemMeta.setCustomModelData(1);
-            itemStack.setItemMeta(itemMeta);
-        }
         projectile.setItem(itemStack);
         projectile.setGravity(false);
         ShotEffect();

@@ -33,6 +33,7 @@ public class LogoutEvent implements Listener {
         GameStatesManager gameStatesManager = game.getGameStatesManager();
         LPManager lpManager = Dokkoi.getInstance().getLPManager();
         Player player = event.getPlayer();
+        player.getInventory().clear();
         UUID playerUniqueId = event.getPlayer().getUniqueId();
 
         Long inGameLP = lpManager.getLP(playerUniqueId);

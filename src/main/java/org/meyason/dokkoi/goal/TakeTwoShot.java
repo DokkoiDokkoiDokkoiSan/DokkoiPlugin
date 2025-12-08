@@ -40,10 +40,10 @@ public class TakeTwoShot extends Goal{
             throw new JobDataMismatchException(JobList.PHOTOGRAPHER, job);
         }
         if(!photographer.isTwoShotPhotoTaken()){
-            this.player.sendMessage(Component.text("§c2人以上のプレイヤーをカメラに収めることができなかった。"));
+            if(notify)this.player.sendMessage(Component.text("§c2人以上のプレイヤーをカメラに収めることができなかった。"));
             return false;
         }
-        this.player.sendMessage(Component.text("§6よくやった。全員を撮影したな！目標達成！"));
+        if(notify)this.player.sendMessage(Component.text("§6よくやった。全員を撮影したな！目標達成！"));
         return true;
     }
 

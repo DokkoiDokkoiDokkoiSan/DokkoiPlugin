@@ -83,6 +83,8 @@ public class GameItem {
         items.put(SummonersBrave.id, new SummonersBrave());
         items.put(Pistol.id, new Pistol());
         items.put(HGMagazine.id, new HGMagazine());
+        items.put(PotionBottleFull.id, new PotionBottleFull());
+        items.put(PotionBottleEmpty.id, new PotionBottleEmpty());
     }
 
     public static CustomItem getItem(String id){

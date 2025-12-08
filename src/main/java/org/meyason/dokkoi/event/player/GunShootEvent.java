@@ -111,12 +111,15 @@ public class GunShootEvent{
         GunType gunType = gun.getGunType();
         int reloadTime = gun.getReloadTime();
 
+        if(gunStatus.getMagazineAmmo() == gun.getMagazineSize()) return;
+
         boolean result = gunStatus.startReload(gunType, reloadTime, player);
         if (!result) {
             player.sendActionBar(Component.text("§c弾薬を補充してください"));
             return;
         }
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_IRON_DOOR_OPEN, 1.0F, 1.0F);
+
         BukkitRunnable reloadingTask = new BukkitRunnable() {
             @Override
             public void run() {

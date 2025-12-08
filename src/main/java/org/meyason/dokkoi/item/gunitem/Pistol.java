@@ -18,7 +18,7 @@ public class Pistol extends GunItem {
         this.gunType = GunType.HG;
         this.magazineSize = 10;
         this.reloadTime = 1500;
-        this.baseDamage = 3;
+        this.baseDamage = 3.0D;
         this.isExplosive = false;
         this.fireRate = 10;
         this.spread = 0.15D;

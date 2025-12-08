@@ -123,7 +123,6 @@ public class GameStatesManager {
         serialGunItemMap.clear();
         reloadGunTasks.clear();
         shootingGunTasks.clear();
-        isShootingGun.clear();
         HGInventoryAmmo.clear();
         skillCoolDownTasks.clear();
         ultimateSkillCoolDownTasks.clear();
