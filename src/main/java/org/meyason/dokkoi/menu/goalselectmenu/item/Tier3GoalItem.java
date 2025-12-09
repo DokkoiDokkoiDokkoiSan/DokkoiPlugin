@@ -46,7 +46,9 @@ public class Tier3GoalItem extends AbstractItem {
         if (meta != null) {
             meta.setDisplayName("§cTier 3");
             List<Component> lore = List.of(
-                    Component.text(Tier.TIER_3.getDescription()),
+                    Component.text("§bHPが0になるダメージを受けたとき、"),
+                    Component.text("§b1度だけ全回復してマップ内のどこかにtpする。"),
+                    Component.text("§b選択費用:0LP　勝利時:20LP"),
                     Component.text(goal.getName()),
                     Component.text(goal.getDescription())
             );

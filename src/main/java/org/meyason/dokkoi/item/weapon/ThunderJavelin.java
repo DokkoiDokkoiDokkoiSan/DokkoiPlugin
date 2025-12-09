@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.event.player.DamageEvent;
+import org.meyason.dokkoi.event.player.damage.DamageCalculator;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
@@ -31,7 +31,7 @@ public class ThunderJavelin extends CustomItem {
                 Component.text(""),
                 Component.text("§b効果"),
                 Component.text("§5投げて使用する。投げて着弾した位置で2秒後に爆発する。"),
-                Component.text("§5爆発は半径4m以内のプレイヤーに固定20ダメージを与える。 ")
+                Component.text("§5爆発は半径4m以内のプレイヤーに固定35ダメージを与える。 ")
         );
         setDescription(lore);
     }
@@ -51,18 +51,21 @@ public class ThunderJavelin extends CustomItem {
         Location location = trident.getLocation();
         Player shooter = (Player) trident.getShooter();
         trident.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
-        trident.remove();
+        // 半径4mの地面にパーティクル出す　黒系のパーティクル
+        location.getWorld().spawnParticle(Particle.SNEEZE, location, 20, 4.0, 1.0,4.0, 0.1);
+
 
         new BukkitRunnable(){
             @Override
             public void run() {
-                location.getWorld().spawnParticle(Particle.EXPLOSION, location, 1);
+                location.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, location, 1);
                 location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 10.0F, 1.0F);
                 List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, location, 4);
                 for (Player damaged : effectedPlayers) {
-                    DamageEvent.calculateDamageBySkill(shooter, damaged, 20.0);
+                    DamageCalculator.calculateSkillDamage(shooter, damaged, 35.0);
                     Game.getInstance().getGameStatesManager().addDamagedPlayer(damaged.getUniqueId());
                 }
+                trident.remove();
             }
         }.runTaskLater(Dokkoi.getInstance(), 2*20L);
     }

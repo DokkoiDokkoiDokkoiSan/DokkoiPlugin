@@ -6,7 +6,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.entity.GameEntity;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.gun.GunStatus;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.gunitem.GunItem;
 import org.meyason.dokkoi.job.Job;
 
 import java.util.ArrayList;
@@ -34,10 +36,21 @@ public class GameStatesManager {
     private HashMap<UUID, Boolean> isDeactivateDamageOnce;
     private List<UUID> onDisablePotionEffectPlayers;
 
+    private boolean existSummoner;
+    private List<UUID> naito;
+
     private HashMap<Boolean, UUID> whoHasTakashimaPhone;
     private HashMap<Boolean, UUID> whoHasMamiyaPhone;
 
     private HashMap<String, CustomItem> serialCustomItemMap;
+    private HashMap<String, GunStatus> serialGunItemMap;
+
+    private HashMap<UUID, BukkitRunnable>  reloadGunTasks;
+    private HashMap<String, BukkitRunnable> shootingGunTasks;
+    private HashMap<String, BukkitRunnable> shootingStopTasks;
+
+    private HashMap<UUID, Long> HGInventoryAmmo;
+    private HashMap<UUID, Long> SMGInventoryAmmo;
 
     private HashMap<UUID, BukkitRunnable> skillCoolDownTasks;
     private HashMap<UUID, BukkitRunnable> ultimateSkillCoolDownTasks;
@@ -65,6 +78,8 @@ public class GameStatesManager {
         killCounts = new HashMap<>();
         attackedPlayers = new ArrayList<>();
         damagedPlayers = new ArrayList<>();
+        existSummoner = false;
+        naito = new ArrayList<>();
         projectileDataMap = new HashMap<>();
         additionalDamage = new HashMap<>();
         damageCutPercent = new HashMap<>();
@@ -75,6 +90,12 @@ public class GameStatesManager {
         whoHasTakashimaPhone = new HashMap<>();
         whoHasTakashimaPhone.put(false, null);
         serialCustomItemMap = new HashMap<>();
+        serialGunItemMap = new HashMap<>();
+        reloadGunTasks = new HashMap<>();
+        shootingGunTasks = new HashMap<>();
+        shootingStopTasks = new HashMap<>();
+        HGInventoryAmmo = new HashMap<>();
+        SMGInventoryAmmo = new HashMap<>();
         skillCoolDownTasks = new HashMap<>();
         ultimateSkillCoolDownTasks = new HashMap<>();
         coolDownScheduler = new HashMap<>();
@@ -92,6 +113,7 @@ public class GameStatesManager {
         killCounts.clear();
         attackedPlayers.clear();
         damagedPlayers.clear();
+        naito.clear();
         projectileDataMap.clear();
         additionalDamage.clear();
         damageCutPercent.clear();
@@ -100,6 +122,10 @@ public class GameStatesManager {
         whoHasMamiyaPhone.clear();
         whoHasTakashimaPhone.clear();
         serialCustomItemMap.clear();
+        serialGunItemMap.clear();
+        reloadGunTasks.clear();
+        shootingGunTasks.clear();
+        HGInventoryAmmo.clear();
         skillCoolDownTasks.clear();
         ultimateSkillCoolDownTasks.clear();
         coolDownScheduler.clear();
@@ -117,9 +143,11 @@ public class GameStatesManager {
         removeKillCount(uuid);
         removeAttackedPlayer(uuid);
         removeDamagedPlayer(uuid);
+        removeNaito(uuid);
         removeAdditionalDamage(uuid);
         removeDamageCutPercent(uuid);
         removeIsDeactivateDamageOnce(uuid);
+        removeReloadGunTask(uuid);
         removeOnDisablePotionEffectPlayer(uuid);
         removeSkillCoolDownTask(uuid);
         removeUltimateSkillCoolDownTask(uuid);
@@ -174,6 +202,15 @@ public class GameStatesManager {
         if (!this.killerList.containsKey(killer)) {return;}
         this.killerList.remove(killer);
     }
+    public List<UUID> getKillers() {
+        return new ArrayList<>(this.killerList.keySet());
+    }
+    public List<UUID> getVictims() {
+        return new ArrayList<>(this.killerList.values());
+    }
+
+    public boolean getExistSummoner() {return existSummoner;}
+    public void setExistSummoner(boolean existSummoner) {this.existSummoner = existSummoner;}
 
     public HashMap<UUID, Integer> getKillCounts() {return killCounts;}
     public void setKillCounts(HashMap<UUID, Integer> killCounts) {this.killCounts = killCounts;}
@@ -205,6 +242,19 @@ public class GameStatesManager {
     public void removeDamagedPlayer(UUID player) {
         if(this.damagedPlayers.contains(player)) return;
         this.damagedPlayers.remove(player);
+    }
+
+    public List<UUID> getNaito() {return naito;}
+    public boolean isNaito(UUID player) {
+        return naito.contains(player);
+    }
+    public void addNaito(UUID player) {
+        if(this.naito.contains(player)) return;
+        this.naito.add(player);
+    }
+    public void removeNaito(UUID player) {
+        if(!this.naito.contains(player)) return;
+        this.naito.remove(player);
     }
 
     public HashMap<Entity, ProjectileData> getProjectileDataMap() {return projectileDataMap;}
@@ -295,6 +345,80 @@ public class GameStatesManager {
         this.serialCustomItemMap.remove(uuid);
     }
 
+    public void registerGun(String uuid, GunItem gunItem) {
+        GunStatus gunStatus = new GunStatus(gunItem);
+        this.serialGunItemMap.put(uuid, gunStatus);
+    }
+    public boolean isExistGunFromSerial(String uuid) {
+        return this.serialGunItemMap.containsKey(uuid);
+    }
+    public GunStatus getGunStatusFromSerial(String uuid) {
+        return this.serialGunItemMap.get(uuid);
+    }
+    public void removeGunStatusFromSerial(String uuid) {
+        if(!this.serialGunItemMap.containsKey(uuid)) {return;}
+        this.serialGunItemMap.remove(uuid);
+    }
+
+    public boolean isOnReloading(UUID player){
+        return this.reloadGunTasks.containsKey(player);
+    }
+    public void addReloadGunTask(UUID player, BukkitRunnable task){
+        this.reloadGunTasks.put(player, task);
+    }
+    public void removeReloadGunTask(UUID player){
+        if(!this.reloadGunTasks.containsKey(player)) {return;}
+        this.reloadGunTasks.remove(player);
+    }
+    public BukkitRunnable getReloadGunTask(UUID player){
+        return this.reloadGunTasks.get(player);
+    }
+
+    public boolean isOnShootingGunTask(String gunSerial){
+        return this.shootingGunTasks.containsKey(gunSerial);
+    }
+    public void addShootingGunTask(String gunSerial, BukkitRunnable task){
+        this.shootingGunTasks.put(gunSerial, task);
+    }
+    public void removeShootingGunTask(String gunSerial){
+        if(!this.shootingGunTasks.containsKey(gunSerial)) {return;}
+        this.shootingGunTasks.remove(gunSerial);
+    }
+    public BukkitRunnable getShootingGunTask(String gunSerial){
+        return this.shootingGunTasks.get(gunSerial);
+    }
+
+    public boolean isShootingGunSerial(String gunSerial){
+        return this.shootingStopTasks.containsKey(gunSerial);
+    }
+
+    public boolean hasShootingStopTask(String gunSerial){
+        return this.shootingStopTasks.containsKey(gunSerial);
+    }
+    public void addShootingStopTask(String gunSerial, BukkitRunnable task){
+        this.shootingStopTasks.put(gunSerial, task);
+    }
+    public void removeShootingStopTask(String gunSerial){
+        if(!this.shootingStopTasks.containsKey(gunSerial)) {return;}
+        this.shootingStopTasks.remove(gunSerial);
+    }
+    public BukkitRunnable getShootingStopTask(String gunSerial){
+        return this.shootingStopTasks.get(gunSerial);
+    }
+
+    public long getHGInventoryAmmo(UUID player){
+        return this.HGInventoryAmmo.getOrDefault(player, 0L);
+    }
+    public void setHGInventoryAmmo(UUID player, long ammo){
+        this.HGInventoryAmmo.put(player, ammo);
+    }
+
+    public long getSMGInventoryAmmo(UUID player){
+        return this.SMGInventoryAmmo.getOrDefault(player, 0L);
+    }
+    public void setSMGInventoryAmmo(UUID player, long ammo){
+        this.SMGInventoryAmmo.put(player, ammo);
+    }
 
     public HashMap<UUID, BukkitRunnable> getUltimateSkillCoolDownTasks() {return ultimateSkillCoolDownTasks;}
     public void setUltimateSkillCoolDownTasks(HashMap<UUID, BukkitRunnable> ultimateSkillCoolDownTasks) {this.ultimateSkillCoolDownTasks = ultimateSkillCoolDownTasks;}

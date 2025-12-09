@@ -15,6 +15,7 @@ public abstract class GameEntity {
     public static final String OOKI = "ooki";
     public static final String DEALER = "dealer";
     public static final String CLERK = "clerk";
+    public static final String SKELETON = "skeleton";
 
     public static HashMap<String, String> nameMap = new HashMap<>(){{
         put(YOSHIO, "小島よしお");
@@ -25,6 +26,7 @@ public abstract class GameEntity {
 
         put(DEALER, "§5密売人");
         put(CLERK, "§3ショップおじいちゃん");
+        put(SKELETON, "§7スケルトン");
     }};
 
     public static HashMap<String, String> deathMessageMap = new HashMap<>(){{
@@ -63,6 +65,12 @@ public abstract class GameEntity {
                 switch (id) {
                     case DEALER -> new Dealer();
                     case CLERK -> new Clerk();
+                    default -> throw new GameEntityIDNotFoundException("wrong id");
+                }
+            );
+            case GameEntityKeyString.ENEMY -> (
+                switch (id) {
+                    case SKELETON -> new Skeleton();
                     default -> throw new GameEntityIDNotFoundException("wrong id");
                 }
             );

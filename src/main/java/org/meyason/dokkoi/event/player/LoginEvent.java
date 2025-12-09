@@ -29,9 +29,12 @@ public class LoginEvent implements Listener {
         Player player = event.getPlayer();
         String name = player.getName();
         UUID uuid = player.getUniqueId();
-        if(Game.getInstance().getGameStatesManager().getGameState() == GameState.IN_GAME){
+        Game game = Game.getInstance();
+        if(game.getGameStatesManager().getGameState() == GameState.IN_GAME){
             player.kick(Component.text("§c[エラー] ゲーム進行中のため、参加できません。"));
             return;
+        }else if(game.getGameStatesManager().getGameState() == GameState.MATCHING){
+            game.addToMatchQueue(uuid);
         }
 
         LPManager lpManager = Dokkoi.getInstance().getLPManager();

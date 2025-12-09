@@ -16,11 +16,12 @@ public class JobList {
     public static final Prayer PRAYER = new Prayer();
     public static final Photographer PHOTOGRAPHER = new Photographer();
     public static final DrugStore DRUGSTORE = new DrugStore();
+    public static final Summoner SUMMONER = new Summoner();
 
     private static final HashMap<String, Job> jobMap = new HashMap<String, Job>();
 
     static{
-        jobMap.put(EXECUTOR.getName(), EXECUTOR);
+//        jobMap.put(EXECUTOR.getName(), EXECUTOR);
 //        jobMap.put(LONELY.getName(), LONELY);
 //        jobMap.put(BOMBER.getName(), BOMBER);
 //        jobMap.put(IRONMAIDEN.getName(), IRONMAIDEN);
@@ -28,6 +29,7 @@ public class JobList {
         jobMap.put(PRAYER.getName(), PRAYER);
         jobMap.put(PHOTOGRAPHER.getName(), PHOTOGRAPHER);
         jobMap.put(DRUGSTORE.getName(), DRUGSTORE);
+        jobMap.put(SUMMONER.getName(), SUMMONER);
     }
 
     public static List<Job> getAllJobs(){

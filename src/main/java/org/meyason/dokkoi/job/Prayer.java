@@ -11,7 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
-import org.meyason.dokkoi.event.player.DamageEvent;
+import org.meyason.dokkoi.event.player.damage.DamageCalculator;
 import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.item.battleitem.ArcherArmor;
@@ -234,7 +234,7 @@ public class Prayer extends Job {
         if(Objects.equals(selectedRarity, R)) {
             List<Player> targets = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 20);
             for(Player target : targets){
-                DamageEvent.calculateDamageBySkill(player, target, 1);
+                DamageCalculator.calculateSkillDamage(player, target, 1);
             }
         }else if(Objects.equals(selectedRarity, SR)) {
             List<Player> targets = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 20);
