@@ -169,6 +169,8 @@ public class Photographer extends Job {
                 if(this.canAddTakenPhotoPlayerNewly(p.getUniqueId())){
                     this.addTakenPhotoPlayer(p.getUniqueId());
                     this.updatePassive();
+                }else{
+                    this.addTakenPhotoPlayer(p.getUniqueId());
                 }
                 p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 5*20, 1));
                 this.player.sendMessage(Component.text("§6" + p.getName() + "§r§aの写真を撮影した！"));
