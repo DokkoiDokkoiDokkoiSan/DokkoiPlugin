@@ -86,6 +86,8 @@ public class GunStatus {
             setInventoryAmmo(gunType, player, nowAllAmmo - (long)(gun.getMagazineSize()));
             this.magazineAmmo = gun.getMagazineSize();
         }
+        this.inventoryAmmo = getInventoryAmmo(gunType, player);
+        updateActionBar(player);
     }
 
     public void updateAmmo(GunType gunType, Player player){

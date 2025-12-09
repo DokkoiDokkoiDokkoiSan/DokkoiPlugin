@@ -30,6 +30,10 @@ public class Config {
         return this.config.getInt("db.port");
     }
 
+    public String getDBDatabase(){
+        return this.config.getString("db.database");
+    }
+
     public String getDBUserName(){
         return this.config.getString("db.username");
     }

@@ -48,11 +48,11 @@ public class PhotoAllPlayer extends Goal{
         for (UUID alivePlayer : this.game.getGameStatesManager().getAlivePlayers()){
             if(Objects.equals(alivePlayer, this.player.getUniqueId())) continue;
             if(!photographer.isTakenPhotoPlayer(alivePlayer)) {
-                this.player.sendMessage(Component.text("§c全員を撮影することができなかった。"));
+                if(notify)this.player.sendMessage(Component.text("§c全員を撮影することができなかった。"));
                 return false;
             }
         }
-        this.player.sendMessage(Component.text("§6よくやった。全員を撮影したな！目標達成！"));
+        if(notify)this.player.sendMessage(Component.text("§6よくやった。全員を撮影したな！目標達成！"));
         return true;
     }
 
