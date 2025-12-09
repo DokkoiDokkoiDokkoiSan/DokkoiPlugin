@@ -42,13 +42,15 @@ public class Photographer extends Job {
         this.isTwoShotPhotoTaken = false;
     }
 
-    public void addTakenPhotoPlayer(UUID targetPlayer){
+    private boolean addTakenPhotoPlayer(UUID targetPlayer){
         if(!this.takenPhotoPlayersUUID.contains(targetPlayer)){
             this.takenPhotoPlayersUUID.add(targetPlayer);
+            return true;
         }
+        return false;
     }
 
-    public void removeTakenPhotoPlayer(UUID targetPlayer){
+    private void removeTakenPhotoPlayer(UUID targetPlayer){
         this.takenPhotoPlayersUUID.remove(targetPlayer);
     }
 
@@ -58,10 +60,6 @@ public class Photographer extends Job {
 
     public boolean isTwoShotPhotoTaken(){
         return this.isTwoShotPhotoTaken;
-    }
-
-    public void passive(){
-
     }
 
     @Override
@@ -155,11 +153,16 @@ public class Photographer extends Job {
             if(quantityPlayers >= 2 && !this.isTwoShotPhotoTaken){
                 this.isTwoShotPhotoTaken = true;
             }
-            this.updatePassive();
+            boolean hasNewPhoto = false;
             for(Player p : playerInSight){
-                this.addTakenPhotoPlayer(p.getUniqueId());
+                if(this.addTakenPhotoPlayer(p.getUniqueId())){
+                    hasNewPhoto = true;
+                }
                 this.player.sendMessage(Component.text("§a=====撮影結果====="));
                 this.player.sendMessage(Component.text("§a" + p.getName() + "§r§aの写真を撮影した！"));
+            }
+            if (hasNewPhoto){
+                this.updatePassive();
             }
         }
     }
