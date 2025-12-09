@@ -166,8 +166,8 @@ public class Photographer extends Job {
             }
             this.player.sendMessage(Component.text("§a=====撮影結果====="));
             for(Player p : playerInSight){
-                this.addTakenPhotoPlayer(p.getUniqueId());
                 if(this.canAddTakenPhotoPlayerNewly(p.getUniqueId())){
+                    this.addTakenPhotoPlayer(p.getUniqueId());
                     this.updatePassive();
                 }
                 p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 5*20, 1));
