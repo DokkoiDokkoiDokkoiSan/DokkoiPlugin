@@ -42,12 +42,14 @@ public class Photographer extends Job {
         this.isTwoShotPhotoTaken = false;
     }
 
-    private boolean addTakenPhotoPlayer(UUID targetPlayer){
+    private boolean canAddTakenPhotoPlayerNewly(UUID targetPlayer){
+        return !this.takenPhotoPlayersUUID.contains(targetPlayer);
+    }
+
+    private void addTakenPhotoPlayer(UUID targetPlayer){
         if(!this.takenPhotoPlayersUUID.contains(targetPlayer)){
             this.takenPhotoPlayersUUID.add(targetPlayer);
-            return true;
         }
-        return false;
     }
 
     public int getTakenPhotoPlayersCount(){
@@ -162,16 +164,13 @@ public class Photographer extends Job {
             if(quantityPlayers >= 2 && !this.isTwoShotPhotoTaken){
                 this.isTwoShotPhotoTaken = true;
             }
-            boolean hasNewPhoto = false;
             for(Player p : playerInSight){
-                if(this.addTakenPhotoPlayer(p.getUniqueId())){
-                    hasNewPhoto = true;
+                if(this.canAddTakenPhotoPlayerNewly(p.getUniqueId())){
+                    this.updatePassive();
                 }
+                this.addTakenPhotoPlayer(p.getUniqueId());
                 this.player.sendMessage(Component.text("§a=====撮影結果====="));
                 this.player.sendMessage(Component.text("§a" + p.getName() + "§r§aの写真を撮影した！"));
-            }
-            if (hasNewPhoto){
-                this.updatePassive();
             }
         }
     }
