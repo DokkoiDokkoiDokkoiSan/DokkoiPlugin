@@ -2,15 +2,7 @@ package org.meyason.dokkoi.menu.shopmenu;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.entity.Clerk;
-import org.meyason.dokkoi.game.Game;
-import org.meyason.dokkoi.goal.Goal;
-import org.meyason.dokkoi.job.Job;
-import org.meyason.dokkoi.menu.goalselectmenu.item.Tier1GoalItem;
-import org.meyason.dokkoi.menu.goalselectmenu.item.Tier2GoalItem;
-import org.meyason.dokkoi.menu.goalselectmenu.item.Tier3GoalItem;
 import org.meyason.dokkoi.menu.shopmenu.item.BackItem;
 import org.meyason.dokkoi.menu.shopmenu.item.ForwardItem;
 import org.meyason.dokkoi.menu.shopmenu.item.ShopMenuItem;

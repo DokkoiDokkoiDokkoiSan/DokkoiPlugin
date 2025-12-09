@@ -3,6 +3,7 @@ package org.meyason.dokkoi.scheduler;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -57,6 +58,16 @@ public class Scheduler extends BukkitRunnable {
                         continue;
                     }
                     player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 5 * 20, 1));
+                }
+                if(game.getNowTime() <= 5){
+                    for(UUID uuid : game.getGameStatesManager().getAlivePlayers()){
+                        Player player = Bukkit.getPlayer(uuid);
+                        if(player == null){
+                            continue;
+                        }
+                        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 1.0f);
+                    }
+                    Bukkit.getServer().broadcast(Component.text(game.getNowTime()));
                 }
                 if(!goalFlag){
                     Bukkit.getServer().broadcast(Component.text("§a全員が目標を設定しました。ゲームを開始します。"));

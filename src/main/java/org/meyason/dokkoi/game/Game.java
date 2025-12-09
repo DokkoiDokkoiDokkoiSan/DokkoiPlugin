@@ -210,6 +210,7 @@ public class Game {
             if(player == null || !player.isOnline()){
                 continue;
             }
+            player.playSound(player, Sound.ITEM_GOAT_HORN_SOUND_0, 1.0F, 1.0F);
             player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
             player.getInventory().clear();
             gameStatesManager.addKillCount(uuid);
@@ -304,6 +305,7 @@ public class Game {
             if(player == null || !player.isOnline()){
                 continue;
             }
+            player.playSound(player, Sound.ITEM_GOAT_HORN_SOUND_5, 1.0F, 1.0F);
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
             Team team = scoreboard.getTeam("nametag");
             if(team == null) team = scoreboard.registerNewTeam("nametag");

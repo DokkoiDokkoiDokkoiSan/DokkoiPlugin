@@ -50,6 +50,7 @@ public class GameStatesManager {
     private HashMap<String, BukkitRunnable> shootingStopTasks;
 
     private HashMap<UUID, Long> HGInventoryAmmo;
+    private HashMap<UUID, Long> SMGInventoryAmmo;
 
     private HashMap<UUID, BukkitRunnable> skillCoolDownTasks;
     private HashMap<UUID, BukkitRunnable> ultimateSkillCoolDownTasks;
@@ -94,6 +95,7 @@ public class GameStatesManager {
         shootingGunTasks = new HashMap<>();
         shootingStopTasks = new HashMap<>();
         HGInventoryAmmo = new HashMap<>();
+        SMGInventoryAmmo = new HashMap<>();
         skillCoolDownTasks = new HashMap<>();
         ultimateSkillCoolDownTasks = new HashMap<>();
         coolDownScheduler = new HashMap<>();
@@ -409,6 +411,13 @@ public class GameStatesManager {
     }
     public void setHGInventoryAmmo(UUID player, long ammo){
         this.HGInventoryAmmo.put(player, ammo);
+    }
+
+    public long getSMGInventoryAmmo(UUID player){
+        return this.SMGInventoryAmmo.getOrDefault(player, 0L);
+    }
+    public void setSMGInventoryAmmo(UUID player, long ammo){
+        this.SMGInventoryAmmo.put(player, ammo);
     }
 
     public HashMap<UUID, BukkitRunnable> getUltimateSkillCoolDownTasks() {return ultimateSkillCoolDownTasks;}

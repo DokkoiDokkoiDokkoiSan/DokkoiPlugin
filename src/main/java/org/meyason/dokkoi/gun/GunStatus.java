@@ -37,6 +37,9 @@ public class GunStatus {
             case HG:
                 manager.setHGInventoryAmmo(player.getUniqueId(), inventoryAmmo);
                 break;
+            case SMG:
+                manager.setSMGInventoryAmmo(player.getUniqueId(), inventoryAmmo);
+                break;
         }
     }
 
@@ -44,6 +47,8 @@ public class GunStatus {
         switch (gunType){
             case HG:
                 return manager.getHGInventoryAmmo(player.getUniqueId());
+            case SMG:
+                return manager.getSMGInventoryAmmo(player.getUniqueId());
         }
         return 0;
     }
@@ -73,6 +78,7 @@ public class GunStatus {
     public void finishReload(GunType gunType, Player player){
         this.isReloading = false;
         long nowAllAmmo = getInventoryAmmo(gunType, player) + (long)magazineAmmo;
+        setInventoryAmmo(gunType, player, nowAllAmmo);
         if(nowAllAmmo <= gun.getMagazineSize()){
             this.magazineAmmo = (int) nowAllAmmo;
             setInventoryAmmo(gunType, player, 0);

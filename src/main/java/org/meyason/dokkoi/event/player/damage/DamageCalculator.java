@@ -249,10 +249,9 @@ public class DamageCalculator {
 
         String enemyId = attackedMob.getPersistentDataContainer().get(ENEMY_KEY, PersistentDataType.STRING);
         if (enemyId != null){
-            if(gsm.getSpawnedEntitiesFromUUID(enemyId) instanceof Skeleton) {
+            if(gsm.getSpawnedEntitiesFromUUID(enemyId) instanceof Skeleton skeleton) {
                 // 疑似的にノックバック
-                Vector fromSkeletonToPlayer = damaged.getLocation().toVector().subtract(attackedMob.getLocation().toVector()).normalize();
-                damaged.setVelocity(fromSkeletonToPlayer.multiply(3).setY(0.2));
+                skeleton.knockback(attackedMob, damaged);
             }
         }
 

@@ -59,7 +59,8 @@ public class Lonely extends Job {
         this.player = player;
         this.goals = List.of(
                 GoalList.LASTMAN,
-                GoalList.SHADOW
+                GoalList.SHADOW,
+                GoalList.ASSASIN
         );
     }
 

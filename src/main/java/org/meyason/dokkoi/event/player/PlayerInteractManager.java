@@ -63,6 +63,6 @@ public class PlayerInteractManager implements Listener {
         }
 
         String itemSerial = container.get(uniqueIdKey,  PersistentDataType.STRING);
-        ItemInteractEvent.onItemInteract(event, itemID, itemSerial, customItem);
+        ItemInteractEvent.onItemInteract(event, itemID, itemSerial, customItem, item);
     }
 }

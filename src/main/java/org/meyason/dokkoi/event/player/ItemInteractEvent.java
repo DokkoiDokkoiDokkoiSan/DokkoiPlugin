@@ -33,6 +33,7 @@ import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
 import org.meyason.dokkoi.item.goalitem.UnkillerList;
 import org.meyason.dokkoi.item.gunitem.HGMagazine;
+import org.meyason.dokkoi.item.gunitem.SMGMagazine;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenu;
@@ -42,7 +43,7 @@ import java.util.Objects;
 
 public class ItemInteractEvent{
 
-    public static void onItemInteract(PlayerInteractEvent event, String itemID, String itemSerial, CustomItem customItem){
+    public static void onItemInteract(PlayerInteractEvent event, String itemID, String itemSerial, CustomItem customItem, ItemStack itemStack){
         Game game = Game.getInstance();
         Player player = event.getPlayer();
 
@@ -109,35 +110,35 @@ public class ItemInteractEvent{
                     }
                     event.setCancelled(true);
                     game.getGameStatesManager().addIsDeactivateDamageOnce(player.getUniqueId(), true);
-                    Tsuyokunaru.activate(player, customItem.getItem());
+                    Tsuyokunaru.activate(player, itemStack);
                 }
                 case Kizukieru.id -> {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
                     event.setCancelled(true);
-                    Kizukieru.activate(player, customItem.getItem());
+                    Kizukieru.activate(player, itemStack);
                 }
                 case Hayakunaru.id -> {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
                     event.setCancelled(true);
-                    Hayakunaru.activate(player, customItem.getItem());
+                    Hayakunaru.activate(player, itemStack);
                 }
                 case Katakunaru.id -> {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
                     event.setCancelled(true);
-                    Katakunaru.activate(player, customItem.getItem());
+                    Katakunaru.activate(player, itemStack);
                 }
                 case HealingCrystal.id -> {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
                     event.setCancelled(true);
-                    HealingCrystal.activate(player, customItem.getItem());
+                    HealingCrystal.activate(player, itemStack);
                 }
                 case Debug.id -> {
                     if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
@@ -155,7 +156,7 @@ public class ItemInteractEvent{
                         return;
                     }
                     event.setCancelled(true);
-                    PotionBottleFull.activate(player, customItem.getItem());
+                    PotionBottleFull.activate(player, itemStack);
                 }
                 case HGMagazine.id -> {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
@@ -163,6 +164,13 @@ public class ItemInteractEvent{
                     }
                     event.setCancelled(true);
                     HGMagazine.activate(player);
+                }
+                case SMGMagazine.id -> {
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    SMGMagazine.activate(player);
                 }
             }
         }

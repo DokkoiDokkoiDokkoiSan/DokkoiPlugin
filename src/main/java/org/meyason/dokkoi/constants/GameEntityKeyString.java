@@ -11,7 +11,8 @@ public class GameEntityKeyString {
 
     private static final List<String> entityKeyStringHashMap = List.of(
             COMEDIAN,
-            NPC
+            NPC,
+            ENEMY
     );
 
     public static List<String> getEntityKeyStringHashMap() {return entityKeyStringHashMap;}

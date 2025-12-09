@@ -14,7 +14,7 @@ public class Pistol extends GunItem {
     public static final String id = "pistol";
 
     public Pistol() {
-        super("pistol", "ピストル", ItemStack.of(Material.WOODEN_HOE), 1);
+        super("pistol", "§aピストル", ItemStack.of(Material.WOODEN_HOE), 1);
         this.gunType = GunType.HG;
         this.magazineSize = 10;
         this.reloadTime = 1500;
