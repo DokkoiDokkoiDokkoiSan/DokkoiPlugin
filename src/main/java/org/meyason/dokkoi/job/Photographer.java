@@ -42,7 +42,11 @@ public class Photographer extends Job {
         this.isTwoShotPhotoTaken = false;
     }
 
-    public void addTakenPhotoPlayer(UUID targetPlayer){
+    private boolean canAddTakenPhotoPlayerNewly(UUID targetPlayer){
+        return !this.takenPhotoPlayersUUID.contains(targetPlayer);
+    }
+
+    private void addTakenPhotoPlayer(UUID targetPlayer){
         if(!this.takenPhotoPlayersUUID.contains(targetPlayer)){
             this.takenPhotoPlayersUUID.add(targetPlayer);
         }
@@ -52,7 +56,7 @@ public class Photographer extends Job {
         return this.takenPhotoPlayersUUID.size();
     }
 
-    public void removeTakenPhotoPlayer(UUID targetPlayer){
+    private void removeTakenPhotoPlayer(UUID targetPlayer){
         this.takenPhotoPlayersUUID.remove(targetPlayer);
     }
 
@@ -160,11 +164,14 @@ public class Photographer extends Job {
             if(quantityPlayers >= 2 && !this.isTwoShotPhotoTaken){
                 this.isTwoShotPhotoTaken = true;
             }
-            this.updatePassive();
+            this.player.sendMessage(Component.text("§a=====撮影結果====="));
             for(Player p : playerInSight){
+                if(this.canAddTakenPhotoPlayerNewly(p.getUniqueId())){
+                    this.updatePassive();
+                }
                 this.addTakenPhotoPlayer(p.getUniqueId());
-                this.player.sendMessage(Component.text("§a=====撮影結果====="));
-                this.player.sendMessage(Component.text("§a" + p.getName() + "§r§aの写真を撮影した！"));
+                p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 5*20, 1));
+                this.player.sendMessage(Component.text("§6" + p.getName() + "§r§aの写真を撮影した！"));
             }
         }
     }
