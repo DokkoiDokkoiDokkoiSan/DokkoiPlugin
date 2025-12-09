@@ -59,7 +59,8 @@ public class Lonely extends Job {
         this.player = player;
         this.goals = List.of(
                 GoalList.LASTMAN,
-                GoalList.SHADOW
+                GoalList.SHADOW,
+                GoalList.ASSASIN
         );
     }
 
@@ -115,21 +116,6 @@ public class Lonely extends Job {
 
     public void ultimate(){
         this.isUltimateActive = true;
-        // アルティメットアイテムを削除
-        for(ItemStack item : player.getInventory().getContents()){
-            if(item == null) continue;
-            if(item.getItemMeta() != null){
-                ItemMeta meta = item.getItemMeta();
-                PersistentDataContainer container = meta.getPersistentDataContainer();
-                NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
-                if(GameItem.isCustomItem(item)){
-                    if(Objects.equals(container.get(itemKey, PersistentDataType.STRING), Ultimate.id)){
-                        item.setAmount(0);
-                        break;
-                    }
-                }
-            }
-        }
     }
 
     public void passive(){

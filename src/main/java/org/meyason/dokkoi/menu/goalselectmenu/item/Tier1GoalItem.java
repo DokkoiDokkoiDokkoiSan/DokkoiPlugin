@@ -47,7 +47,9 @@ public class Tier1GoalItem extends AbstractItem {
         if (meta != null) {
             meta.setDisplayName("§6Tier 1");
             List<Component> lore = List.of(
-                    Component.text(Tier.TIER_1.getDescription()),
+                    Component.text("§bアルティメットの使用が不可能。スキルのCTが2倍になる。"),
+                    Component.text("§cTier3§bから受けるダメージが3倍になる。"),
+                    Component.text("§b選択費用:50LP　勝利時:200LP"),
                     Component.text(this.goal.getName()),
                     Component.text(this.goal.getDescription())
             );

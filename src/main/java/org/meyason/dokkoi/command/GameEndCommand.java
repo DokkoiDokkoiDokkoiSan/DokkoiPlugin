@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.game.Game;
 
 public class GameEndCommand implements CommandExecutor {
@@ -19,8 +20,12 @@ public class GameEndCommand implements CommandExecutor {
             player.sendMessage("§cあなたにはこのコマンドを実行する権限がありません。");
             return false;
         }
-        Game.getInstance().endGame();
+        if(Game.getInstance().getGameStatesManager().getGameState() == GameState.IN_GAME){
+            Game.getInstance().preEndGame();
+            return true;
+        }
+        player.sendMessage("§c現在ゲーム中ではありません。");
 
-        return true;
+        return false;
     }
 }

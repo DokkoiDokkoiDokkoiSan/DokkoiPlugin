@@ -13,4 +13,9 @@ public class GameLocation {
             new Location(Bukkit.getWorld("world"), -1, 74, 3),
             new Location(Bukkit.getWorld("world"), -1, 74, 0)
     );
+
+    public static List<Location> heliChairLocations = List.of(
+            new Location(Bukkit.getWorld("world"), 10, 80, 10),
+            new Location(Bukkit.getWorld("world"), -10, 80, -10)
+    );
 }

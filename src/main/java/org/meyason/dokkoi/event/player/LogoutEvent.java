@@ -33,6 +33,7 @@ public class LogoutEvent implements Listener {
         GameStatesManager gameStatesManager = game.getGameStatesManager();
         LPManager lpManager = Dokkoi.getInstance().getLPManager();
         Player player = event.getPlayer();
+        player.getInventory().clear();
         UUID playerUniqueId = event.getPlayer().getUniqueId();
 
         Long inGameLP = lpManager.getLP(playerUniqueId);
@@ -41,7 +42,7 @@ public class LogoutEvent implements Listener {
 
         gameStatesManager.removePlayerData(event.getPlayer().getUniqueId());
 
-        if(gameStatesManager.getGameState() == GameState.WAITING || gameStatesManager.getGameState() == GameState.MATCHING || gameStatesManager.getGameState() == GameState.END) {
+        if(gameStatesManager.getGameState() == GameState.END) {
             return;
         }else if (gameStatesManager.getGameState() == GameState.PREP || gameStatesManager.getGameState() == GameState.IN_GAME) {
             if(gameStatesManager.getAlivePlayers().size() < game.minimumGameStartPlayers){
@@ -67,6 +68,9 @@ public class LogoutEvent implements Listener {
                 Objects.requireNonNull(defender).setTargetPlayer();
                 defenderPlayer.sendMessage(Component.text("§6あなたの守護対象がログアウトしたため、新たに守護対象を選定しました。"));
             }
+        }else if(gameStatesManager.getGameState() == GameState.MATCHING){
+            game.removeFromMatchQueue(playerUniqueId);
+
         }
     }
 }

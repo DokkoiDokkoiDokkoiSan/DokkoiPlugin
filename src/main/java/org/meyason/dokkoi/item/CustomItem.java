@@ -8,6 +8,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
+import org.meyason.dokkoi.game.Game;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public abstract class CustomItem implements Cloneable {
     public List<Component> description = new ArrayList<>();
     public boolean isUnique = false;
     public boolean hasSerialNumber = false;
+    public boolean isGun = false;
 
     protected Function<ItemStack, ItemStack> default_setting;
 
@@ -45,13 +47,19 @@ public abstract class CustomItem implements Cloneable {
     public ItemStack getBaseItem() {return this.baseItem;}
 
     public ItemStack getItem(){
+        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+        NamespacedKey uniqueItemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
+        NamespacedKey gunSerialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.GUN_SERIAL);
         ItemStack item = getBaseItem().clone();
         ItemMeta meta = item.getItemMeta();
         if(meta != null){
             PersistentDataContainer container = meta.getPersistentDataContainer();
-            container.set(new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME), PersistentDataType.STRING, this.id);
+            container.set(itemKey, PersistentDataType.STRING, this.id);
             if(hasSerialNumber){
-                container.set(new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM), PersistentDataType.STRING, UUID.randomUUID().toString());
+                container.set(uniqueItemKey, PersistentDataType.STRING, UUID.randomUUID().toString());
+            }
+            if(isGun){
+                container.set(gunSerialKey, PersistentDataType.STRING, UUID.randomUUID().toString());
             }
             meta.setMaxStackSize(this.maxStackSize);
             meta.displayName(Component.text(this.name));

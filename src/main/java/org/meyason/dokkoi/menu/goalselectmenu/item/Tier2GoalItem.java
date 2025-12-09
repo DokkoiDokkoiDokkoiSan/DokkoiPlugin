@@ -46,7 +46,9 @@ public class Tier2GoalItem extends AbstractItem {
         if (meta != null) {
             meta.setDisplayName("§bTier 2");
             List<Component> lore = List.of(
-                    Component.text(Tier.TIER_2.getDescription()),
+                    Component.text("§bアルティメットの使用が不可能。"),
+                    Component.text("§cTier3§bから受けるダメージが2倍になる。"),
+                    Component.text("§b選択費用:20LP　勝利時:100LP"),
                     Component.text(this.goal.getName()),
                     Component.text(this.goal.getDescription())
             );

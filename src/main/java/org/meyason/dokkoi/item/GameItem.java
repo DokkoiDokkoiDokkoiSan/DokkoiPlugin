@@ -13,6 +13,10 @@ import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.debug.Debug;
 import org.meyason.dokkoi.item.food.*;
+import org.meyason.dokkoi.item.gunitem.HGMagazine;
+import org.meyason.dokkoi.item.gunitem.Pistol;
+import org.meyason.dokkoi.item.gunitem.SMGMagazine;
+import org.meyason.dokkoi.item.gunitem.Stinger;
 import org.meyason.dokkoi.item.jobitem.gacha.*;
 import org.meyason.dokkoi.item.goalitem.*;
 import org.meyason.dokkoi.item.jobitem.*;
@@ -77,6 +81,14 @@ public class GameItem {
         items.put(TakashimaPhone.id, new TakashimaPhone());
         items.put(MamiyaPhone.id, new MamiyaPhone());
         items.put(InstantDevour.id, new InstantDevour());
+        items.put(Hikakin.id, new Hikakin());
+        items.put(SummonersBrave.id, new SummonersBrave());
+        items.put(Pistol.id, new Pistol());
+        items.put(Stinger.id, new Stinger());
+        items.put(HGMagazine.id, new HGMagazine());
+        items.put(SMGMagazine.id, new SMGMagazine());
+        items.put(PotionBottleFull.id, new PotionBottleFull());
+        items.put(PotionBottleEmpty.id, new PotionBottleEmpty());
     }
 
     public static CustomItem getItem(String id){

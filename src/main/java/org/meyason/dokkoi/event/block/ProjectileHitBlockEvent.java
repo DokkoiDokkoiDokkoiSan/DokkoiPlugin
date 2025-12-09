@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.meyason.dokkoi.constants.GameItemKeyString;
-import org.meyason.dokkoi.event.player.DamageEvent;
+import org.meyason.dokkoi.event.player.damage.DamageCalculator;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
@@ -40,6 +40,14 @@ public class ProjectileHitBlockEvent implements Listener {
 
                 Player attacker = projectileData.getAttacker();
                 String attackItem = projectileData.getCustomItemName();
+
+                if(manager.isExistGunFromSerial(attackItem)){
+                    if (event.getHitBlock().getType().toString().contains("GLASS")) {
+                        snowball.getWorld().playSound(snowball.getLocation(), Sound.BLOCK_GLASS_BREAK, 2.0F, 1.0F);
+                    }
+                    manager.removeProjectileData(snowball);
+                    return;
+                }
 
                 Job job = manager.getPlayerJobs().get(attacker.getUniqueId());
                 if (job instanceof Bomber bomber) {
@@ -89,7 +97,7 @@ public class ProjectileHitBlockEvent implements Listener {
                     List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, arrow.getLocation(), 3);
                     manager.addAttackedPlayer(attacker.getUniqueId());
                     for (Player damaged : effectedPlayers) {
-                        DamageEvent.calculateDamageBySkill(attacker, damaged, 10.0);
+                        DamageCalculator.calculateSkillDamage(attacker, damaged, 10.0);
                         manager.addDamagedPlayer(damaged.getUniqueId());
                     }
                     manager.removeProjectileData(arrow);

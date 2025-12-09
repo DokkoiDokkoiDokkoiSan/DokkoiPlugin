@@ -17,7 +17,7 @@ import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.entity.Dealer;
 import org.meyason.dokkoi.entity.GameEntity;
-import org.meyason.dokkoi.event.player.DamageEvent;
+import org.meyason.dokkoi.event.player.damage.DamageCalculator;
 import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
@@ -113,7 +113,7 @@ public class Executor extends Job{
             } else {
                 damage = 500;
             }
-            DamageEvent.calculateDamageBySkill(player, targetPlayer, damage);
+            DamageCalculator.calculateSkillDamage(player, targetPlayer, damage);
 
         }else if(target instanceof Villager villager){
             NamespacedKey npcKey = new NamespacedKey(Dokkoi.getInstance(), GameEntityKeyString.NPC);

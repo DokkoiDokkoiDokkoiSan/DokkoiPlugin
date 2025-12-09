@@ -31,8 +31,8 @@ public class TakeTwoShot extends Goal{
 
     @Override
     public boolean isAchieved(boolean notify) {
-        if(this.game.getGameStatesManager().getAlivePlayers().stream().noneMatch(p -> p.equals(this.player))){
-            this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
+        if(!this.game.getGameStatesManager().getAlivePlayers().contains(this.player.getUniqueId())){
+            if(notify)this.player.sendMessage(Component.text("§cお前はもう死んでいる。"));
             return false;
         }
         Job job = this.game.getGameStatesManager().getPlayerJobs().get(this.player.getUniqueId());
@@ -40,10 +40,10 @@ public class TakeTwoShot extends Goal{
             throw new JobDataMismatchException(JobList.PHOTOGRAPHER, job);
         }
         if(!photographer.isTwoShotPhotoTaken()){
-            this.player.sendMessage(Component.text("§c2人以上のプレイヤーをカメラに収めることができなかった。"));
+            if(notify)this.player.sendMessage(Component.text("§c2人以上のプレイヤーをカメラに収めることができなかった。"));
             return false;
         }
-        this.player.sendMessage(Component.text("§6よくやった。全員を撮影したな！目標達成！"));
+        if(notify)this.player.sendMessage(Component.text("§6よくやった。全員を撮影したな！目標達成！"));
         return true;
     }
 

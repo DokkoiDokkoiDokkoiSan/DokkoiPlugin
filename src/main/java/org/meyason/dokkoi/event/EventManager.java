@@ -1,10 +1,8 @@
 package org.meyason.dokkoi.event;
 
 import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.event.block.ItemFrameProtect;
-import org.meyason.dokkoi.event.block.ProjectileHitBlockEvent;
-import org.meyason.dokkoi.event.entity.DespawnEvent;
-import org.meyason.dokkoi.event.entity.LaunchEvent;
+import org.meyason.dokkoi.event.block.*;
+import org.meyason.dokkoi.event.entity.*;
 import org.meyason.dokkoi.event.player.*;
 
 public class EventManager {
@@ -13,9 +11,8 @@ public class EventManager {
     }
 
     private void init(Dokkoi core) {
+        core.getServer().getPluginManager().registerEvents(new PlayerInteractManager(), core);
         core.getServer().getPluginManager().registerEvents(new DamageEvent(), core);
-        core.getServer().getPluginManager().registerEvents(new SkillInteractEvent(), core);
-        core.getServer().getPluginManager().registerEvents(new ItemInteractEvent(), core);
         core.getServer().getPluginManager().registerEvents(new ProjectileHitBlockEvent(), core);
         core.getServer().getPluginManager().registerEvents(new LaunchEvent(), core);
         core.getServer().getPluginManager().registerEvents(new DespawnEvent(), core);
@@ -26,5 +23,11 @@ public class EventManager {
         core.getServer().getPluginManager().registerEvents(new LoginEvent(), core);
         core.getServer().getPluginManager().registerEvents(new ChatEvent(), core);
         core.getServer().getPluginManager().registerEvents(new ItemFrameProtect(), core);
+        core.getServer().getPluginManager().registerEvents(new MobCombustProtect(), core);
+        core.getServer().getPluginManager().registerEvents(new EntityDeathEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new BlockInteractEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new GunSwapEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new FlowerProtect(), core);
+        core.getServer().getPluginManager().registerEvents(new CraftProtect(), core);
     }
 }
