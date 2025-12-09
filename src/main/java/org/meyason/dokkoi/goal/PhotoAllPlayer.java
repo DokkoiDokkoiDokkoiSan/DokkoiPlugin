@@ -46,6 +46,7 @@ public class PhotoAllPlayer extends Goal{
             throw new JobDataMismatchException(JobList.PHOTOGRAPHER, job);
         }
         for (UUID alivePlayer : this.game.getGameStatesManager().getAlivePlayers()){
+            if(Objects.equals(alivePlayer, this.player.getUniqueId())) continue;
             if(!photographer.isTakenPhotoPlayer(alivePlayer)) {
                 this.player.sendMessage(Component.text("§c全員を撮影することができなかった。"));
                 return false;
