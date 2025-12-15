@@ -8,6 +8,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameEntityKeyString;
@@ -19,7 +21,9 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.SkeletonSlayer;
 import org.meyason.dokkoi.item.jobitem.SummonersBrave;
+import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.job.Prayer;
+import org.meyason.dokkoi.job.Sniper;
 import org.meyason.dokkoi.job.Summoner;
 
 import java.util.Objects;
@@ -148,6 +152,15 @@ public class DamageCalculator {
         // 近接攻撃の場合のみ追加ダメージを適用
         if (context.isMeleeAttack()) {
             damage = applyMeleeDamageModifiers(damage, attacker, damaged, gsm);
+        }else{
+            Job attackerJob = context.getAttackerJob();
+            if(attackerJob instanceof Sniper){
+                damage += 1.0;
+                if(gsm.isSniperSkillActive()){
+                    damage += 10.0;
+                    damaged.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 10 * 20, 2));
+                }
+            }
         }
 
         // ゴールによるダメージ倍率

@@ -1,6 +1,5 @@
-package org.meyason.dokkoi.event.player;
+package org.meyason.dokkoi.event.entity;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -18,11 +17,9 @@ import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.entity.Clerk;
 import org.meyason.dokkoi.entity.Dealer;
 import org.meyason.dokkoi.entity.GameEntity;
-import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
-import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.battleitem.PotionBottleEmpty;
 import org.meyason.dokkoi.menu.shopmenu.ShopMenu;
 

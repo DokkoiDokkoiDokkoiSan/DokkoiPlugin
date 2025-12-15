@@ -47,7 +47,7 @@ public class PotionBottleFull extends CustomItem {
             player.sendActionBar(Component.text("§c既に最大体力です。"));
             return;
         }
-        player.setMaxHealth(player.getMaxHealth());
+        player.setHealth(player.getMaxHealth());
         player.sendMessage(Component.text("§a詰め替えポーションを使用した！"));
 
         itemStack.setAmount(0);

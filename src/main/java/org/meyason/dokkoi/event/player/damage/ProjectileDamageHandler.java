@@ -43,7 +43,7 @@ public class ProjectileDamageHandler {
      * スノーボールによるダメージ処理
      */
     public static HandleResult handleSnowball(Snowball snowball, EntityDamageByEntityEvent event, 
-                                               GameStatesManager gsm, Entity damagedEntity) {
+                                               GameStatesManager gsm, Entity damagedEntity, LivingEntity livingEntity) {
         ProjectileData projectileData = gsm.getProjectileDataMap().get(snowball);
         if (projectileData == null) {
             return HandleResult.skip();
@@ -54,8 +54,7 @@ public class ProjectileDamageHandler {
 
         Job job = gsm.getPlayerJobs().get(attacker.getUniqueId());
         String attackItem = projectileData.getCustomItemName();
-        if(gsm.isExistGunFromSerial(attackItem)){
-            handleGunProjectile(attacker, attackItem, event, gsm, damagedEntity);
+        if (handleGunProjectileIfNeeded(attacker, attackItem, event, gsm, damagedEntity, livingEntity)) {
             return HandleResult.handled();
         }
 
@@ -151,6 +150,12 @@ public class ProjectileDamageHandler {
             return handleNormalArrow(arrow, event, gsm, damagedEntity, damage);
         }
 
+        Player attacker = projectileData.getAttacker();
+        if (handleGunProjectileIfNeeded(attacker, projectileData.getCustomItemName(), event, gsm,
+                damagedEntity, damagedEntity instanceof LivingEntity living ? living : null)) {
+            return HandleResult.handled();
+        }
+
         // 特殊アイテムの矢
         return handleSpecialArrow(arrow, projectileData, gsm, damage);
     }
@@ -224,12 +229,22 @@ public class ProjectileDamageHandler {
         gsm.removeProjectileData(arrow);
     }
 
-    private static void handleGunProjectile(Player attacker, String gunSerial, EntityDamageByEntityEvent event,
-                                            GameStatesManager gsm, Entity damagedEntity) {
+    private static boolean handleGunProjectileIfNeeded(Player attacker, String gunSerial, EntityDamageByEntityEvent event,
+                                                       GameStatesManager gsm, Entity damagedEntity, LivingEntity livingEntity) {
+        if (livingEntity == null) {
+            return false;
+        }
+        if (!gsm.isExistGunFromSerial(gunSerial)) {
+            return false;
+        }
+
         GunItem gun = gsm.getGunStatusFromSerial(gunSerial).getGun();
         double damage = gun.getBaseDamage();
 
         event.setCancelled(true);
+        livingEntity.setMaximumNoDamageTicks(0);
+        livingEntity.setNoDamageTicks(0);
+        livingEntity.setLastDamage(Integer.MAX_VALUE);
 
         DamageContext context = DamageContext.builder()
                 .attacker(attacker)
@@ -240,6 +255,6 @@ public class ProjectileDamageHandler {
                 .build();
 
         DamageCalculator.calculate(context);
-        return;
+        return true;
     }
 }

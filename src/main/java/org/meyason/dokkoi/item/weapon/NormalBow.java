@@ -8,15 +8,15 @@ import org.meyason.dokkoi.item.CustomItem;
 
 import java.util.List;
 
-public class Arrow extends CustomItem {
+public class NormalBow extends CustomItem {
 
-    public static final String id = "arrow";
+    public static final String id = "bow";
 
-    public Arrow() {
-        super(id, "§f矢", ItemStack.of(Material.ARROW), 64);
+    public NormalBow() {
+        super(id, "§f普通の弓", ItemStack.of(Material.BOW), 1);
         List<Component> lore = List.of(
-                Component.text("§5まとめて逝っけーｯ！！これが私の全力です！！！"),
-                Component.text("§5コ゛ロ゛ナ゛レ゛イ゛ン゛ｯ！！")
+                Component.text("§5ガチで特徴ない弓。"),
+                Component.text("§5なんか弦が汗臭い。")
         );
         setDescription(lore);
     }

@@ -9,6 +9,8 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.*;
 
@@ -234,6 +236,7 @@ public class Game {
                 tier3Count++;
             }
             playerGoalNoticer(uuid);
+            player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, Integer.MAX_VALUE, false, false, false));
         }
         List<Component> goalInstructions = List.of(
                 Component.text("§a---本ゲームの勝利条件内訳---"),

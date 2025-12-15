@@ -36,7 +36,9 @@ public class GameStatesManager {
     private HashMap<UUID, Boolean> isDeactivateDamageOnce;
     private List<UUID> onDisablePotionEffectPlayers;
 
+    private boolean isSniperSkillActive;
     private boolean existSummoner;
+    private boolean isSniperOnVehicle;
     private List<UUID> naito;
 
     private HashMap<Boolean, UUID> whoHasTakashimaPhone;
@@ -51,6 +53,7 @@ public class GameStatesManager {
 
     private HashMap<UUID, Long> HGInventoryAmmo;
     private HashMap<UUID, Long> SMGInventoryAmmo;
+    private HashMap<UUID, Long> ARInventoryAmmo;
 
     private HashMap<UUID, BukkitRunnable> skillCoolDownTasks;
     private HashMap<UUID, BukkitRunnable> ultimateSkillCoolDownTasks;
@@ -78,6 +81,8 @@ public class GameStatesManager {
         killCounts = new HashMap<>();
         attackedPlayers = new ArrayList<>();
         damagedPlayers = new ArrayList<>();
+        isSniperSkillActive = false;
+        isSniperOnVehicle = false;
         existSummoner = false;
         naito = new ArrayList<>();
         projectileDataMap = new HashMap<>();
@@ -96,6 +101,7 @@ public class GameStatesManager {
         shootingStopTasks = new HashMap<>();
         HGInventoryAmmo = new HashMap<>();
         SMGInventoryAmmo = new HashMap<>();
+        ARInventoryAmmo = new HashMap<>();
         skillCoolDownTasks = new HashMap<>();
         ultimateSkillCoolDownTasks = new HashMap<>();
         coolDownScheduler = new HashMap<>();
@@ -126,6 +132,8 @@ public class GameStatesManager {
         reloadGunTasks.clear();
         shootingGunTasks.clear();
         HGInventoryAmmo.clear();
+        SMGInventoryAmmo.clear();
+        ARInventoryAmmo.clear();
         skillCoolDownTasks.clear();
         ultimateSkillCoolDownTasks.clear();
         coolDownScheduler.clear();
@@ -209,6 +217,10 @@ public class GameStatesManager {
         return new ArrayList<>(this.killerList.values());
     }
 
+    public boolean isSniperSkillActive() {return isSniperSkillActive;}
+    public void setSniperSkillActive(boolean sniperSkillActive) {isSniperSkillActive = sniperSkillActive;}
+    public boolean isSniperOnVehicle() {return isSniperOnVehicle;}
+    public void setSniperOnVehicle(boolean sniperOnVehicle) {isSniperOnVehicle = sniperOnVehicle;}
     public boolean getExistSummoner() {return existSummoner;}
     public void setExistSummoner(boolean existSummoner) {this.existSummoner = existSummoner;}
 
@@ -418,6 +430,13 @@ public class GameStatesManager {
     }
     public void setSMGInventoryAmmo(UUID player, long ammo){
         this.SMGInventoryAmmo.put(player, ammo);
+    }
+
+    public long getARInventoryAmmo(UUID player){
+        return this.ARInventoryAmmo.getOrDefault(player, 0L);
+    }
+    public void setARInventoryAmmo(UUID player, long ammo){
+        this.ARInventoryAmmo.put(player, ammo);
     }
 
     public HashMap<UUID, BukkitRunnable> getUltimateSkillCoolDownTasks() {return ultimateSkillCoolDownTasks;}

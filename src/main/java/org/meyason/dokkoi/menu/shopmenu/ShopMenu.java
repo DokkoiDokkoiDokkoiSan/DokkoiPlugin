@@ -24,9 +24,7 @@ public class ShopMenu {
 
         Item border = new SimpleItem(new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE));
 
-        List<String> itemNames = Clerk.itemPrices.keySet().stream().toList();
-
-        List<Item> items = itemNames.stream()
+        List<Item> items = Clerk.availableItems.stream()
                 .map(name -> new ShopMenuItem(name, clerk))
                 .collect(Collectors.toList());
 

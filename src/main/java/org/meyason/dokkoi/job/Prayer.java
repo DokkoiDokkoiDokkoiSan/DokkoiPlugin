@@ -14,16 +14,12 @@ import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.event.player.damage.DamageCalculator;
 import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.exception.NoGameItemException;
-import org.meyason.dokkoi.item.battleitem.ArcherArmor;
-import org.meyason.dokkoi.item.battleitem.HealingCrystal;
+import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.item.food.*;
-import org.meyason.dokkoi.item.jobitem.gacha.StrongestBall;
-import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestBall;
-import org.meyason.dokkoi.item.jobitem.gacha.StrongestStrongestStrongestBall;
+import org.meyason.dokkoi.item.gunitem.*;
+import org.meyason.dokkoi.item.jobitem.gacha.*;
 import org.meyason.dokkoi.item.utilitem.Monei;
-import org.meyason.dokkoi.item.weapon.Arrow;
-import org.meyason.dokkoi.item.weapon.LongSword;
-import org.meyason.dokkoi.item.weapon.ThunderJavelin;
+import org.meyason.dokkoi.item.weapon.*;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
@@ -77,19 +73,28 @@ public class Prayer extends Job {
                 CookedChicken.id
         ));
         put(SR, List.of(
+                NormalBow.id,
                 ArcherArmor.id,
                 GoldenCarrot.id,
                 CookedPorkchop.id,
                 CookedBeef.id,
                 GlisteringMelonSlice.id,
                 LongSword.id,
-                PumpkinPie.id
+                PumpkinPie.id,
+                Pistol.id,
+                SMGMagazine.id,
+                ARMagazine.id,
+                InstantDevour.id
         ));
         put(UR, List.of(
+                RedBow.id,
+                Stinger.id,
                 Monei.id
         ));
         put(LR, List.of(
-                ThunderJavelin.id
+                ThunderJavelin.id,
+                RailGun.id,
+                DrH.id
         ));
         put(KETSU, List.of(StrongestBall.id));
         put(KETSUGE, List.of(StrongestStrongestBall.id));

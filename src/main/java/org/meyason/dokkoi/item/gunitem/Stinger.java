@@ -16,6 +16,7 @@ public class Stinger extends GunItem{
         super(id, "§aスティンガー", ItemStack.of(Material.STONE_HOE), 1);
         this.gunType = GunType.SMG;
         this.magazineSize = 20;
+        this.reloadTime = 2250;
         this.baseDamage = 1.0D;
         this.isExplosive = false;
         this.fireRate = 1;

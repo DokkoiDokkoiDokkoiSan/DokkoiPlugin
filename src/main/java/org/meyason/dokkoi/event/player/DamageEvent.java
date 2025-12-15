@@ -105,7 +105,10 @@ public class DamageEvent implements Listener {
         Entity damagedEntity = event.getEntity();
 
         if (damagedEntity.isDead()) return;
-        if (!(damagedEntity instanceof LivingEntity)) return;
+        if (!(damagedEntity instanceof LivingEntity livingEntity)) return;
+
+//        livingEntity.setMaximumNoDamageTicks(10);
+//        livingEntity.setNoDamageTicks(10);
 
         double damage = event.getFinalDamage();
 
@@ -128,7 +131,7 @@ public class DamageEvent implements Listener {
         ProjectileDamageHandler.HandleResult result;
 
         if (event.getDamager() instanceof Snowball snowball) {
-            result = ProjectileDamageHandler.handleSnowball(snowball, event, gsm, damagedEntity);
+            result = ProjectileDamageHandler.handleSnowball(snowball, event, gsm, damagedEntity, livingEntity);
         } else if (event.getDamager() instanceof Trident trident) {
             result = ProjectileDamageHandler.handleTrident(trident, event, gsm);
         } else if (event.getDamager() instanceof Arrow arrow) {
@@ -150,7 +153,9 @@ public class DamageEvent implements Listener {
         Entity damaged = event.getEntity();
         if (damaged instanceof Player) return;
         if (!(event.getDamager() instanceof Player attacker)) return;
-        if (damaged.isDead()) return;
+        if (!(damaged instanceof LivingEntity livingEntity)) return;
+//        livingEntity.setMaximumNoDamageTicks(10);
+//        livingEntity.setNoDamageTicks(10);
 
         GameStatesManager gsm = Game.getInstance().getGameStatesManager();
 
@@ -208,6 +213,9 @@ public class DamageEvent implements Listener {
             event.setCancelled(true);
             return;
         }
+
+//        damaged.setMaximumNoDamageTicks(10);
+//        damaged.setNoDamageTicks(10);
 
         event.setCancelled(true);
         DamageContext context = DamageContext.builder()

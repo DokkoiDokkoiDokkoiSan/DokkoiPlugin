@@ -79,7 +79,7 @@ public class PickEvent implements Listener {
 
                     case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
 
-                    case InstantDevour.id -> InstantDevour.changeHP(player, 1);
+                    case InstantDevour.id -> InstantDevour.changeHP(player, -1);
                 }
             }
         }
@@ -179,7 +179,7 @@ public class PickEvent implements Listener {
 
                     case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
 
-                    case InstantDevour.id -> InstantDevour.changeHP(player, amount);
+                    case InstantDevour.id -> InstantDevour.changeHP(player, -amount);
                 }
                 return;
             }
@@ -221,7 +221,7 @@ public class PickEvent implements Listener {
 
                 case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
 
-                case InstantDevour.id -> InstantDevour.changeHP(player, amount);
+                case InstantDevour.id -> InstantDevour.changeHP(player, -amount);
             }
             return;
         }
@@ -258,7 +258,7 @@ public class PickEvent implements Listener {
 
                     case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
 
-                    case InstantDevour.id -> InstantDevour.deactivate(player, amount);
+                    case InstantDevour.id -> InstantDevour.changeHP(player, -amount);
                 }
             }
 

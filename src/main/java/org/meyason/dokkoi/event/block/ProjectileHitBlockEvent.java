@@ -30,6 +30,13 @@ public class ProjectileHitBlockEvent implements Listener {
 
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
         Entity entity = event.getEntity();
+        if(event.getEntity().getShooter() instanceof Player player){
+            if(manager.getPlayerJobs().get(player.getUniqueId()) instanceof Sniper){
+                if(manager.isSniperSkillActive()){
+                    manager.setSniperSkillActive(false);
+                }
+            }
+        }
 
         switch (entity) {
             case Snowball snowball -> {

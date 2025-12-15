@@ -25,9 +25,10 @@ public class EventManager {
         core.getServer().getPluginManager().registerEvents(new ItemFrameProtect(), core);
         core.getServer().getPluginManager().registerEvents(new MobCombustProtect(), core);
         core.getServer().getPluginManager().registerEvents(new EntityDeathEvent(), core);
-        core.getServer().getPluginManager().registerEvents(new BlockInteractEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new ChestInteractEvent(), core);
         core.getServer().getPluginManager().registerEvents(new GunSwapEvent(), core);
         core.getServer().getPluginManager().registerEvents(new FlowerProtect(), core);
         core.getServer().getPluginManager().registerEvents(new CraftProtect(), core);
+        core.getServer().getPluginManager().registerEvents(new ChairInteractEvent(), core);
     }
 }

@@ -1,34 +1,59 @@
 package org.meyason.dokkoi.entity;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.battleitem.ArcherArmor;
-import org.meyason.dokkoi.item.battleitem.HealingCrystal;
+import org.meyason.dokkoi.item.battleitem.*;
+import org.meyason.dokkoi.item.gunitem.*;
 import org.meyason.dokkoi.item.utilitem.Monei;
-import org.meyason.dokkoi.item.weapon.Arrow;
-import org.meyason.dokkoi.item.weapon.LongSword;
+import org.meyason.dokkoi.item.weapon.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class Clerk extends GameEntity {
 
     public static final HashMap<String, Integer> itemPrices = new HashMap<>() {{
+        put(PotionBottleFull.id, 3);
+        put(InstantDevour.id, 3);
+
         put(HealingCrystal.id, 1);
         put(ArcherArmor.id, 2);
+
         put(LongSword.id, 5);
         put(Arrow.id, 1);
+        put(Pistol.id, 11);
+        put(Stinger.id, 17);
+        put(DrH.id, 23);
+        put(HGMagazine.id, 2);
+        put(SMGMagazine.id, 2);
+        put(ARMagazine.id, 2);
     }};
+
+    public static final List<String> availableItems = List.of(
+            PotionBottleFull.id,
+            InstantDevour.id,
+            HealingCrystal.id,
+            ArcherArmor.id,
+            LongSword.id,
+            Arrow.id,
+            Pistol.id,
+            Stinger.id,
+            DrH.id,
+            HGMagazine.id,
+            SMGMagazine.id,
+            ARMagazine.id
+    );
 
     public Clerk() {
         super(GameEntity.CLERK);

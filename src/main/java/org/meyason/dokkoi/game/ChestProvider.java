@@ -15,8 +15,8 @@ import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.item.food.*;
-import org.meyason.dokkoi.item.utilitem.MamiyaPhone;
-import org.meyason.dokkoi.item.utilitem.TakashimaPhone;
+import org.meyason.dokkoi.item.gunitem.*;
+import org.meyason.dokkoi.item.utilitem.*;
 import org.meyason.dokkoi.item.weapon.*;
 import org.meyason.dokkoi.scheduler.ChestScheduler;
 
@@ -42,6 +42,7 @@ public class ChestProvider {
     private boolean isPopTakashima = false;
 
     private boolean isPopThunderJavelin = false;
+    private boolean isPopRailGun = false;
 
     private BukkitTask task;
 
@@ -69,13 +70,22 @@ public class ChestProvider {
         ));
         put(SR, List.of(
                 HealingCrystal.id,
-                ArcherArmor.id
+                ArcherArmor.id,
+                MamiyaPhone.id,
+                TakashimaPhone.id,
+                InstantDevour.id
         ));
         put(SSR, List.of(
-                LongSword.id
+                LongSword.id,
+                HGMagazine.id,
+                SMGMagazine.id,
+                ARMagazine.id,
+                Pistol.id,
+                NormalBow.id
         ));
         put(UR, List.of(
-                ThunderJavelin.id
+                ThunderJavelin.id,
+                RailGun.id
         ));
     }};
 
@@ -130,6 +140,12 @@ public class ChestProvider {
             }else{
                 isPopTakashima = true;
             }
+        } else if (customItem instanceof RailGun){
+            if(isPopRailGun){
+                return getRandomItem();
+            }else{
+                isPopRailGun = true;
+            }
         }
         ItemStack itemStack = customItem.getItem();
         return itemStack;
@@ -144,6 +160,7 @@ public class ChestProvider {
             isPopMamiya = false;
             isPopTakashima = false;
             isPopThunderJavelin = false;
+            isPopRailGun = false;
             task.cancel();
         }
     }

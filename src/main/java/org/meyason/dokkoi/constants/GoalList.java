@@ -32,6 +32,7 @@ public class GoalList {
     public static final FiftyPercent FIFTYPERCENT = new FiftyPercent();
     public static final SkeletonSlayer SKELETONSLAYER = new SkeletonSlayer();
     public static final Assasin ASSASIN = new Assasin();
+    public static final EscapeFromUnkov ESCAPEFROMUNKOV = new EscapeFromUnkov();
 
     private static final HashMap<String, Goal> goalMap = new HashMap<>();
 
@@ -60,6 +61,7 @@ public class GoalList {
         goalMap.put(FIFTYPERCENT.getName(), FIFTYPERCENT);
         goalMap.put(SKELETONSLAYER.getName(), SKELETONSLAYER);
         goalMap.put(ASSASIN.getName(), ASSASIN);
+        goalMap.put(ESCAPEFROMUNKOV.getName(), ESCAPEFROMUNKOV);
     }
 
     public static List<Goal> getAllGoals(){

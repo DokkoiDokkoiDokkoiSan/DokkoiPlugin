@@ -32,6 +32,7 @@ import org.meyason.dokkoi.item.debug.Debug;
 import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
 import org.meyason.dokkoi.item.goalitem.UnkillerList;
+import org.meyason.dokkoi.item.gunitem.ARMagazine;
 import org.meyason.dokkoi.item.gunitem.HGMagazine;
 import org.meyason.dokkoi.item.gunitem.SMGMagazine;
 import org.meyason.dokkoi.item.jobitem.Skill;
@@ -171,6 +172,13 @@ public class ItemInteractEvent{
                     }
                     event.setCancelled(true);
                     SMGMagazine.activate(player);
+                }
+                case ARMagazine.id -> {
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    ARMagazine.activate(player);
                 }
             }
         }
