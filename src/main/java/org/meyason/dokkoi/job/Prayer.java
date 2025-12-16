@@ -88,8 +88,11 @@ public class Prayer extends Job {
         ));
         put(UR, List.of(
                 RedBow.id,
+                BlueBow.id,
                 Stinger.id,
-                Monei.id
+                Monei.id,
+                DragonBrade.id,
+                DrainBrade.id
         ));
         put(LR, List.of(
                 ThunderJavelin.id,

@@ -9,29 +9,26 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 
 import java.util.List;
 
-public class LongSword extends CustomItem {
+public class DrainBrade extends CustomItem {
 
-    public static final String id = "long_sword";
+    public static final String id = "drain_brade";
 
-    public Game game;
-    private Player player;
-
-    public LongSword(){
-        super(id, "§aロングソード", ItemStack.of(Material.STONE_SWORD), 1);
+    public DrainBrade() {
+        super(id, "§aドランブレード", ItemStack.of(Material.IRON_SWORD), 1);
         List<Component> lore = List.of(
-                Component.text("§5割と安い剣、確か350円くらいで買った。"),
+                Component.text("§5体力吸収しそうな剣。"),
+                Component.text("§5あんまり早く売らない方がいい気がする。"),
                 Component.text(""),
                 Component.text("§b効果"),
-                Component.text("§5攻撃力3")
+                Component.text("§5攻撃力5"),
+                Component.text("§5プレイヤーやモブを斬ったとき、自身のHPを1回復する。")
         );
         setDescription(lore);
     }
-
 
     @Override
     protected void registerItemFunction() {
@@ -41,7 +38,7 @@ public class LongSword extends CustomItem {
                 meta.removeAttributeModifier(Attribute.ATTACK_DAMAGE);
                 AttributeModifier modifier = new AttributeModifier(
                         new NamespacedKey(JavaPlugin.getProvidingPlugin(getClass()), id),
-                        3.0,
+                        5.0,
                         AttributeModifier.Operation.ADD_NUMBER
                 );
                 meta.addAttributeModifier(Attribute.ATTACK_DAMAGE, modifier);
@@ -51,10 +48,7 @@ public class LongSword extends CustomItem {
         };
     }
 
-    public void setPlayer(Game game, Player player){
-        this.game = game;
-        this.player = player;
-        player.sendMessage(Component.text("§aロングソード§bを手に入れた！"));
+    public static void activate(Player player) {
+        player.setHealth(Math.min(player.getHealth() + 1.0, player.getMaxHealth()));
     }
-
 }

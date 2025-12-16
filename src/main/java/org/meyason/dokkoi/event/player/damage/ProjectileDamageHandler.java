@@ -12,6 +12,7 @@ import org.meyason.dokkoi.item.gunitem.GunItem;
 import org.meyason.dokkoi.item.jobitem.Rapier;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
+import org.meyason.dokkoi.item.weapon.BlueBow;
 import org.meyason.dokkoi.job.*;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 
@@ -196,7 +197,7 @@ public class ProjectileDamageHandler {
     /**
      * 特殊アイテムの矢処理
      */
-    private static HandleResult handleSpecialArrow(Arrow arrow, ProjectileData projectileData,
+    private static HandleResult handleSpecialArrow(Arrow arrow, EntityDamageByEntityEvent event, ProjectileData projectileData,
                                                     GameStatesManager gsm, double damage) {
         Player attacker = projectileData.getAttacker();
 
@@ -207,6 +208,22 @@ public class ProjectileDamageHandler {
         }
 
         gsm.removeProjectileData(arrow);
+
+        if(projectileData.getCustomItemName().equals(BlueBow.id)){
+            event.setCancelled(true);
+
+            DamageContext context = DamageContext.builder()
+                    .attacker(attacker)
+                    .damaged(event.getEntity())
+                    .baseDamage(4.0)
+                    .source(DamageContext.DamageSource.PROJECTILE)
+                    .originalEvent(event)
+                    .build();
+
+            DamageCalculator.calculate(context);
+            return HandleResult.handled();
+        }
+
         return HandleResult.continueProcessing();
     }
 
@@ -242,15 +259,12 @@ public class ProjectileDamageHandler {
         double damage = gun.getBaseDamage();
 
         event.setCancelled(true);
-        livingEntity.setMaximumNoDamageTicks(0);
-        livingEntity.setNoDamageTicks(0);
-        livingEntity.setLastDamage(Integer.MAX_VALUE);
 
         DamageContext context = DamageContext.builder()
                 .attacker(attacker)
                 .damaged(damagedEntity)
                 .baseDamage(damage)
-                .source(DamageContext.DamageSource.PROJECTILE)
+                .source(DamageContext.DamageSource.GUN)
                 .originalEvent(event)
                 .build();
 

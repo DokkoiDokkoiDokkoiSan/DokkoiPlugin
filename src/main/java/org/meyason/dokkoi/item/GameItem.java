@@ -91,6 +91,9 @@ public class GameItem {
         items.put(PotionBottleEmpty.id, new PotionBottleEmpty());
         items.put(NormalBow.id, new NormalBow());
         items.put(RedBow.id, new RedBow());
+        items.put(BlueBow.id, new BlueBow());
+        items.put(DragonBrade.id, new DragonBrade());
+        items.put(DrainBrade.id, new DrainBrade());
     }
 
     public static CustomItem getItem(String id){

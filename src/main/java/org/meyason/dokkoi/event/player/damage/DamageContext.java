@@ -21,7 +21,8 @@ public class DamageContext {
         PROJECTILE,      // 発射物（矢、スノーボール等）
         SKILL,           // スキルによるダメージ
         MOB,             // MOBからの攻撃
-        ENVIRONMENT      // 環境ダメージ（落下等）
+        ENVIRONMENT,      // 環境ダメージ（落下等）
+        GUN            // 銃によるダメージ
     }
 
     private final Entity attacker;
@@ -127,6 +128,10 @@ public class DamageContext {
     public void cancel(String reason) {
         this.cancelled = true;
         this.cancelReason = reason;
+    }
+
+    public boolean isDamageFromGun() {
+        return this.source == DamageSource.GUN;
     }
 
     @Nullable

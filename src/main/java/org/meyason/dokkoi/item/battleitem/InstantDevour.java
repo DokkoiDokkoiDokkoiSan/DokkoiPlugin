@@ -70,6 +70,7 @@ public class InstantDevour extends CustomItem {
                 }
             }
         }
+        player.sendMessage("now amount: " + currentAmount + ", change amount: " + changedAmount);
 
         if(changedAmount > 0) {
             int newAmount = Math.min(currentAmount + changedAmount, 15);

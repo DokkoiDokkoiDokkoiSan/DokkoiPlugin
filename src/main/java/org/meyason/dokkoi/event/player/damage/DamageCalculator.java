@@ -114,7 +114,7 @@ public class DamageCalculator {
         if (damage < 0) return;
 
         // ダメージ適用
-        applyDamageToPlayer(attacker, damaged, damage);
+        applyDamageToPlayer(attacker, damaged, damage, context.isDamageFromGun());
     }
 
     /**
@@ -178,7 +178,7 @@ public class DamageCalculator {
         if (damage < 0) return;
 
         // ダメージ適用
-        applyDamageToPlayer(attacker, damaged, damage);
+        applyDamageToPlayer(attacker, damaged, damage, context.isDamageFromGun());
     }
 
     /**
@@ -277,7 +277,7 @@ public class DamageCalculator {
         if (damage < 0) return;
 
         // ダメージ適用
-        applyDamageToPlayer(null, damaged, damage);
+        applyDamageToPlayer(null, damaged, damage, context.isDamageFromGun());
     }
 
     /**
@@ -309,11 +309,19 @@ public class DamageCalculator {
     /**
      * プレイヤーにダメージを適用
      */
-    private static void applyDamageToPlayer(Player attacker, Player damaged, double damage) {
+    private static void applyDamageToPlayer(Player attacker, Player damaged, double damage, boolean isGun) {
         double afterHealth = damaged.getHealth() - damage;
         if (afterHealth <= 0) {
             DeathEvent.kill(attacker, damaged);
         } else {
+            if(isGun){
+                damaged.setMaximumNoDamageTicks(0);
+                damaged.setNoDamageTicks(0);
+                damaged.setLastDamage(Integer.MAX_VALUE);
+            }else{
+                damaged.setMaximumNoDamageTicks(10);
+                damaged.setNoDamageTicks(10);
+            }
             damaged.damage(damage);
         }
     }

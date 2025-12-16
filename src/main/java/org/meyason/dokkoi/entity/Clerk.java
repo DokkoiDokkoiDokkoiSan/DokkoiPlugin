@@ -31,6 +31,11 @@ public class Clerk extends GameEntity {
         put(ArcherArmor.id, 2);
 
         put(LongSword.id, 5);
+        put(DrainBrade.id, 10);
+        put(DragonBrade.id, 10);
+        put(NormalBow.id, 4);
+        put(RedBow.id, 9);
+        put(BlueBow.id, 14);
         put(Arrow.id, 1);
         put(Pistol.id, 11);
         put(Stinger.id, 17);
@@ -46,6 +51,11 @@ public class Clerk extends GameEntity {
             HealingCrystal.id,
             ArcherArmor.id,
             LongSword.id,
+            DrainBrade.id,
+            DragonBrade.id,
+            NormalBow.id,
+            RedBow.id,
+            BlueBow.id,
             Arrow.id,
             Pistol.id,
             Stinger.id,
