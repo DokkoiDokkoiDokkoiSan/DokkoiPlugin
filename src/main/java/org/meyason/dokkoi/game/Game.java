@@ -1,5 +1,6 @@
 package org.meyason.dokkoi.game;
 
+import com.comphenix.protocol.events.PacketContainer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.*;
@@ -28,6 +29,9 @@ import org.meyason.dokkoi.item.utilitem.Monei;
 import org.meyason.dokkoi.job.*;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenu;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
+import org.meyason.dokkoi.network.PacketData;
+import org.meyason.dokkoi.network.PacketProcess;
+import org.meyason.dokkoi.network.PacketSender;
 import org.meyason.dokkoi.scheduler.Scheduler;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
 
@@ -264,6 +268,17 @@ public class Game {
             player.setGameMode(GameMode.ADVENTURE);
             gameStatesManager.getPlayerJobs().get(uuid).chargeUltimateSkill(player, gameStatesManager);
             updateScoreboardDisplay(player);
+
+            PacketContainer container = PacketData.create(player);
+            PacketContainer pk = PacketProcess.hideNameTag(player, container);
+            gameStatesManager.getAlivePlayers().forEach(other -> {
+                if(!other.equals(uuid)){
+                    Player sender = Bukkit.getPlayer(other);
+                    if(sender != null && sender.isOnline()){
+                        PacketSender.sendPacket(sender, pk);
+                    }
+                }
+            });
 
             SkillScheduler scheduler = new SkillScheduler(this, player);
             scheduler.runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
