@@ -40,17 +40,19 @@ public class GunStatus {
             case SMG:
                 manager.setSMGInventoryAmmo(player.getUniqueId(), inventoryAmmo);
                 break;
+            case AR:
+                manager.setARInventoryAmmo(player.getUniqueId(), inventoryAmmo);
+                break;
         }
     }
 
     public long getInventoryAmmo(GunType gunType, Player player){
-        switch (gunType){
-            case HG:
-                return manager.getHGInventoryAmmo(player.getUniqueId());
-            case SMG:
-                return manager.getSMGInventoryAmmo(player.getUniqueId());
-        }
-        return 0;
+        return switch (gunType) {
+            case HG -> manager.getHGInventoryAmmo(player.getUniqueId());
+            case SMG -> manager.getSMGInventoryAmmo(player.getUniqueId());
+            case AR -> manager.getARInventoryAmmo(player.getUniqueId());
+            default -> 0;
+        };
     }
 
     public int getMagazineAmmo(){
@@ -86,6 +88,8 @@ public class GunStatus {
             setInventoryAmmo(gunType, player, nowAllAmmo - (long)(gun.getMagazineSize()));
             this.magazineAmmo = gun.getMagazineSize();
         }
+        this.inventoryAmmo = getInventoryAmmo(gunType, player);
+        updateActionBar(player);
     }
 
     public void updateAmmo(GunType gunType, Player player){

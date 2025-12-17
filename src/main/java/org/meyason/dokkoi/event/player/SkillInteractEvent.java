@@ -122,6 +122,8 @@ public class SkillInteractEvent{
                     photographer.skill();
                 } else if (job instanceof Summoner summoner) {
                     summoner.skill();
+                } else if (job instanceof Sniper sniper){
+                        sniper.skill();
                 }
                 job.playSoundEffectSkill(player);
 
@@ -198,6 +200,8 @@ public class SkillInteractEvent{
                         return;
                     }
                     summoner.ultimate(targetPlayers);
+                } else if (job instanceof Sniper sniper){
+                    sniper.ultimate();
                 }
 
                 job.setRemainCoolTimeSkillUltimate(-1);

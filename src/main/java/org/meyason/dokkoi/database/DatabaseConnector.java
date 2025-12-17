@@ -13,12 +13,14 @@ public class DatabaseConnector {
 
 
     private String jdbc;
+    private String database;
     private String user;
     private String password;
 
     private SessionFactory sessionFactory;
 
-    public DatabaseConnector(String host, int port, String user, String password) {
+    public DatabaseConnector(String host, int port, String database, String user, String password) {
+        this.database = database;
         this.user = user;
         this.password = password;
         this.jdbc = "jdbc:mysql://" + host + ":" + port;
@@ -33,7 +35,7 @@ public class DatabaseConnector {
     private void migrate() {
         LogFactory.setLogCreator(new JavaUtilLogCreator());
         Flyway.configure(getClass().getClassLoader())
-                .dataSource(jdbc, this.user, this.password)
+                .dataSource(jdbc + "/" + this.database, this.user, this.password)
                 .baselineVersion("2023.09.20.01")
                 .locations("classpath:db/migration/")
                 .schemas("flyway_schema")
@@ -54,7 +56,7 @@ public class DatabaseConnector {
 
     private Configuration registerProperties(Configuration configuration) {
         return configuration.setProperty(DRIVER, "com.mysql.cj.jdbc.Driver")
-                .setProperty(URL, jdbc + "/Dokkoi")
+                .setProperty(URL, jdbc + "/" + this.database)
                 .setProperty(USER, this.user)
                 .setProperty(PASS, this.password)
                 .setProperty(POOL_SIZE, "1")

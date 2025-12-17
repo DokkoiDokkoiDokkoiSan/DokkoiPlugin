@@ -17,6 +17,7 @@ public class JobList {
     public static final Photographer PHOTOGRAPHER = new Photographer();
     public static final DrugStore DRUGSTORE = new DrugStore();
     public static final Summoner SUMMONER = new Summoner();
+    public static final Sniper SNIPER = new Sniper();
 
     private static final HashMap<String, Job> jobMap = new HashMap<String, Job>();
 
@@ -27,9 +28,10 @@ public class JobList {
 //        jobMap.put(IRONMAIDEN.getName(), IRONMAIDEN);
 //        jobMap.put(EXPLORER.getName(), EXPLORER);
         jobMap.put(PRAYER.getName(), PRAYER);
-        jobMap.put(PHOTOGRAPHER.getName(), PHOTOGRAPHER);
-        jobMap.put(DRUGSTORE.getName(), DRUGSTORE);
-        jobMap.put(SUMMONER.getName(), SUMMONER);
+//        jobMap.put(PHOTOGRAPHER.getName(), PHOTOGRAPHER);
+//        jobMap.put(DRUGSTORE.getName(), DRUGSTORE);
+//        jobMap.put(SUMMONER.getName(), SUMMONER);
+        jobMap.put(SNIPER.getName(), SNIPER);
     }
 
     public static List<Job> getAllJobs(){

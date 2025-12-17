@@ -32,6 +32,7 @@ public final class Dokkoi extends JavaPlugin {
         this.databaseConnector = new DatabaseConnector(
                 config.getDBHost(),
                 config.getDBPort(),
+                config.getDBDatabase(),
                 config.getDBUserName(),
                 config.getDBUserPassword()
         );

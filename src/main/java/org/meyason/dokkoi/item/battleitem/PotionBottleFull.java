@@ -18,7 +18,7 @@ public class PotionBottleFull extends CustomItem {
     public static final String id = "potion_bottle_full";
 
     public PotionBottleFull() {
-        super(id, "詰め替えポーション", ItemStack.of(Material.POTION), 1);
+        super(id, "§a詰め替えポーション", ItemStack.of(Material.POTION), 1);
         List<Component> lore = List.of(
                 Component.text("§5別の世界から輸入してくる時に時間がかかりすぎて変色したらしい。"),
                 Component.text("§5元々は緑色だったんだとか。"),
@@ -47,7 +47,7 @@ public class PotionBottleFull extends CustomItem {
             player.sendActionBar(Component.text("§c既に最大体力です。"));
             return;
         }
-        player.setMaxHealth(player.getMaxHealth());
+        player.setHealth(player.getMaxHealth());
         player.sendMessage(Component.text("§a詰め替えポーションを使用した！"));
 
         itemStack.setAmount(0);

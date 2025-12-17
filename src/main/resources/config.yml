@@ -1,5 +1,6 @@
 db:
   host: "db"
   port: 3306
+  database: "Dokkoi"
   username: "root"
   password: "password"

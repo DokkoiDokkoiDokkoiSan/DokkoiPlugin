@@ -12,6 +12,7 @@ import org.meyason.dokkoi.item.gunitem.GunItem;
 import org.meyason.dokkoi.item.jobitem.Rapier;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
+import org.meyason.dokkoi.item.weapon.BlueBow;
 import org.meyason.dokkoi.job.*;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 
@@ -43,7 +44,7 @@ public class ProjectileDamageHandler {
      * スノーボールによるダメージ処理
      */
     public static HandleResult handleSnowball(Snowball snowball, EntityDamageByEntityEvent event, 
-                                               GameStatesManager gsm, Entity damagedEntity) {
+                                               GameStatesManager gsm, Entity damagedEntity, LivingEntity livingEntity) {
         ProjectileData projectileData = gsm.getProjectileDataMap().get(snowball);
         if (projectileData == null) {
             return HandleResult.skip();
@@ -54,8 +55,7 @@ public class ProjectileDamageHandler {
 
         Job job = gsm.getPlayerJobs().get(attacker.getUniqueId());
         String attackItem = projectileData.getCustomItemName();
-        if(gsm.isExistGunFromSerial(attackItem)){
-            handleGunProjectile(attacker, attackItem, event, gsm, damagedEntity);
+        if (handleGunProjectileIfNeeded(attacker, attackItem, event, gsm, damagedEntity, livingEntity)) {
             return HandleResult.handled();
         }
 
@@ -151,8 +151,14 @@ public class ProjectileDamageHandler {
             return handleNormalArrow(arrow, event, gsm, damagedEntity, damage);
         }
 
+        Player attacker = projectileData.getAttacker();
+        if (handleGunProjectileIfNeeded(attacker, projectileData.getCustomItemName(), event, gsm,
+                damagedEntity, damagedEntity instanceof LivingEntity living ? living : null)) {
+            return HandleResult.handled();
+        }
+
         // 特殊アイテムの矢
-        return handleSpecialArrow(arrow, projectileData, gsm, damage);
+        return handleSpecialArrow(arrow, event, projectileData, gsm, damage);
     }
 
     /**
@@ -191,7 +197,7 @@ public class ProjectileDamageHandler {
     /**
      * 特殊アイテムの矢処理
      */
-    private static HandleResult handleSpecialArrow(Arrow arrow, ProjectileData projectileData,
+    private static HandleResult handleSpecialArrow(Arrow arrow, EntityDamageByEntityEvent event, ProjectileData projectileData,
                                                     GameStatesManager gsm, double damage) {
         Player attacker = projectileData.getAttacker();
 
@@ -202,6 +208,22 @@ public class ProjectileDamageHandler {
         }
 
         gsm.removeProjectileData(arrow);
+
+        if(projectileData.getCustomItemName().equals(BlueBow.id)){
+            event.setCancelled(true);
+
+            DamageContext context = DamageContext.builder()
+                    .attacker(attacker)
+                    .damaged(event.getEntity())
+                    .baseDamage(4.0)
+                    .source(DamageContext.DamageSource.PROJECTILE)
+                    .originalEvent(event)
+                    .build();
+
+            DamageCalculator.calculate(context);
+            return HandleResult.handled();
+        }
+
         return HandleResult.continueProcessing();
     }
 
@@ -224,8 +246,15 @@ public class ProjectileDamageHandler {
         gsm.removeProjectileData(arrow);
     }
 
-    private static void handleGunProjectile(Player attacker, String gunSerial, EntityDamageByEntityEvent event,
-                                            GameStatesManager gsm, Entity damagedEntity) {
+    private static boolean handleGunProjectileIfNeeded(Player attacker, String gunSerial, EntityDamageByEntityEvent event,
+                                                       GameStatesManager gsm, Entity damagedEntity, LivingEntity livingEntity) {
+        if (livingEntity == null) {
+            return false;
+        }
+        if (!gsm.isExistGunFromSerial(gunSerial)) {
+            return false;
+        }
+
         GunItem gun = gsm.getGunStatusFromSerial(gunSerial).getGun();
         double damage = gun.getBaseDamage();
 
@@ -235,11 +264,11 @@ public class ProjectileDamageHandler {
                 .attacker(attacker)
                 .damaged(damagedEntity)
                 .baseDamage(damage)
-                .source(DamageContext.DamageSource.PROJECTILE)
+                .source(DamageContext.DamageSource.GUN)
                 .originalEvent(event)
                 .build();
 
         DamageCalculator.calculate(context);
-        return;
+        return true;
     }
 }

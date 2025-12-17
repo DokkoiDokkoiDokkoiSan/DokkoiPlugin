@@ -9,29 +9,28 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.meyason.dokkoi.game.Game;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.meyason.dokkoi.item.CustomItem;
 
 import java.util.List;
 
-public class LongSword extends CustomItem {
+public class DragonBrade extends CustomItem {
 
-    public static final String id = "long_sword";
+    public static final String id = "dragon_brade";
 
-    public Game game;
-    private Player player;
-
-    public LongSword(){
-        super(id, "§aロングソード", ItemStack.of(Material.STONE_SWORD), 1);
+    public DragonBrade() {
+        super(id, "§a龍一文字", ItemStack.of(Material.IRON_SWORD), 1);
         List<Component> lore = List.of(
-                Component.text("§5割と安い剣、確か350円くらいで買った。"),
+                Component.text("§5体竜神の意思が宿ってそうな剣。"),
+                Component.text("§6ﾁｭｲｰﾝwwwwﾁｭｲｰﾝwwwwwwﾁｭｲﾝﾁｭｲﾝwwwﾁｭｲｰﾝwwwwﾁｭｲｰﾝwwwwwwﾁｭｲﾝﾁｭｲﾝwwwｳﾞｫﾝwwwwwｳﾞｫﾝwwwwｳﾞｫﾁｭｲｰﾝwwwwww"),
                 Component.text(""),
                 Component.text("§b効果"),
-                Component.text("§5攻撃力3")
+                Component.text("§5攻撃力5"),
+                Component.text("§5手に持っている間移動速度上昇Lv1とジャンプ力上昇Lv1を得る。")
         );
         setDescription(lore);
     }
-
 
     @Override
     protected void registerItemFunction() {
@@ -41,7 +40,7 @@ public class LongSword extends CustomItem {
                 meta.removeAttributeModifier(Attribute.ATTACK_DAMAGE);
                 AttributeModifier modifier = new AttributeModifier(
                         new NamespacedKey(JavaPlugin.getProvidingPlugin(getClass()), id),
-                        3.0,
+                        5.0,
                         AttributeModifier.Operation.ADD_NUMBER
                 );
                 meta.addAttributeModifier(Attribute.ATTACK_DAMAGE, modifier);
@@ -51,10 +50,13 @@ public class LongSword extends CustomItem {
         };
     }
 
-    public void setPlayer(Game game, Player player){
-        this.game = game;
-        this.player = player;
-        player.sendMessage(Component.text("§aロングソード§bを手に入れた！"));
+    public static void activate(Player player) {
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false, false, true));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, Integer.MAX_VALUE, 1, false, false, true));
     }
 
+    public static void deactivate(Player player) {
+        player.removePotionEffect(PotionEffectType.SPEED);
+        player.removePotionEffect(PotionEffectType.JUMP_BOOST);
+    }
 }

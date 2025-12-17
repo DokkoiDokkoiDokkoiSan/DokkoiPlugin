@@ -31,6 +31,8 @@ import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.jobitem.*;
 import org.meyason.dokkoi.item.jobitem.gacha.*;
 import org.meyason.dokkoi.item.utilitem.*;
+import org.meyason.dokkoi.item.weapon.DragonBrade;
+import org.meyason.dokkoi.item.weapon.DrainBrade;
 import org.meyason.dokkoi.job.*;
 
 import java.util.Objects;
@@ -41,6 +43,7 @@ public class PickEvent implements Listener {
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         ItemStack item = event.getItemDrop().getItemStack();
+        int amount = item.getAmount();
         if(!item.hasItemMeta()){return;}
 
         Player player = event.getPlayer();
@@ -79,7 +82,7 @@ public class PickEvent implements Listener {
 
                     case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
 
-                    case InstantDevour.id -> InstantDevour.changeHP(player, 1);
+                    case InstantDevour.id -> InstantDevour.changeHP(player, -amount);
                 }
             }
         }
@@ -179,7 +182,7 @@ public class PickEvent implements Listener {
 
                     case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
 
-                    case InstantDevour.id -> InstantDevour.changeHP(player, amount);
+                    case InstantDevour.id -> InstantDevour.changeHP(player, -amount);
                 }
                 return;
             }
@@ -221,7 +224,7 @@ public class PickEvent implements Listener {
 
                 case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
 
-                case InstantDevour.id -> InstantDevour.changeHP(player, amount);
+                case InstantDevour.id -> InstantDevour.changeHP(player, -amount);
             }
             return;
         }
@@ -230,41 +233,12 @@ public class PickEvent implements Listener {
         // インベントリをクリックしたとき
         if(clickedIsBottom) {
 
-            // スロットが指定アイテムのとき(クリックで持ち上げたとき)
-            if(slotItem != null && !slotItem.getType().isAir()){
-                int amount = slotItem.getAmount();
-                ItemMeta meta = slotItem.getItemMeta();
-                if(meta == null){return;}
-                PersistentDataContainer container = meta.getPersistentDataContainer();
-                String slotItemName = container.get(itemKey, PersistentDataType.STRING);
-                if(slotItemName == null){return;}
-
-                if(isUniqueItem(slotItem)){
-                    event.setCancelled(true);
-                }
-
-                switch (slotItemName) {
-
-                    case Korehamaru.id -> {
-                        if (!(job instanceof DrugStore)) {
-                            player.sendMessage(Component.text("§cこれはすてたくない"));
-                            event.setCancelled(true);
-                        }
-                    }
-
-                    case Ketsumou.id -> Ketsumou.deactivate(player);
-
-                    case TakashimaPhone.id -> manager.clearWhoHasTakashimaPhone();
-
-                    case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
-
-                    case InstantDevour.id -> InstantDevour.deactivate(player, amount);
-                }
-            }
-
             // カーソルで指定アイテムを持っているとき(クリックでおこうとしたとき)
             if(cursorItem != null && !cursorItem.getType().isAir()) {
                 int amount = cursorItem.getAmount();
+                if(event.getClick() == ClickType.RIGHT){
+                    amount = 1;
+                }
                 ItemMeta meta = cursorItem.getItemMeta();
                 if(meta == null){return;}
                 PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -308,6 +282,47 @@ public class PickEvent implements Listener {
 
                     case InstantDevour.id -> InstantDevour.changeHP(player, amount);
                 }
+                return;
+            }
+
+            // スロットが指定アイテムのとき(クリックで持ち上げたとき)
+            if(slotItem != null && !slotItem.getType().isAir()){
+                int amount = slotItem.getAmount();
+                if(event.getClick() == ClickType.RIGHT){
+                    if(amount % 2 == 0){
+                        amount = amount / 2;
+                    }else{
+                        amount = (amount + 1) / 2;
+                    }
+                }
+                ItemMeta meta = slotItem.getItemMeta();
+                if(meta == null){return;}
+                PersistentDataContainer container = meta.getPersistentDataContainer();
+                String slotItemName = container.get(itemKey, PersistentDataType.STRING);
+                if(slotItemName == null){return;}
+
+                if(isUniqueItem(slotItem)){
+                    event.setCancelled(true);
+                }
+
+                switch (slotItemName) {
+
+                    case Korehamaru.id -> {
+                        if (!(job instanceof DrugStore)) {
+                            player.sendMessage(Component.text("§cこれはすてたくない"));
+                            event.setCancelled(true);
+                        }
+                    }
+
+                    case Ketsumou.id -> Ketsumou.deactivate(player);
+
+                    case TakashimaPhone.id -> manager.clearWhoHasTakashimaPhone();
+
+                    case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
+
+                    case InstantDevour.id -> InstantDevour.changeHP(player, -amount);
+                }
+                return;
             }
 
         }else{
@@ -440,6 +455,9 @@ public class PickEvent implements Listener {
                     if(itemName.equals(StrongestStrongestBall.id)){
                         player.sendActionBar(Component.text("§aもっと最強のたまたま§bのさわやかな風に乗った。"));
                         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 10, false, false, true));
+                    }else if(itemName.equals(DragonBrade.id)){
+                        player.sendActionBar(Component.text("§a龍一文字§eの力がみなぎってきた！"));
+                        DragonBrade.activate(player);
                     }
                 }
             }
@@ -455,6 +473,8 @@ public class PickEvent implements Listener {
                 if(itemName != null){
                     if(itemName.equals(StrongestStrongestBall.id)){
                         player.removePotionEffect(PotionEffectType.SPEED);
+                    }else if(itemName.equals(DragonBrade.id)){
+                        DragonBrade.deactivate(player);
                     }
                 }
             }

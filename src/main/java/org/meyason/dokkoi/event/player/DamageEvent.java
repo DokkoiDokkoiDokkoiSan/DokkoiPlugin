@@ -1,17 +1,26 @@
 package org.meyason.dokkoi.event.player;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.event.player.damage.DamageCalculator;
 import org.meyason.dokkoi.event.player.damage.DamageContext;
 import org.meyason.dokkoi.event.player.damage.DamageValidator;
 import org.meyason.dokkoi.event.player.damage.ProjectileDamageHandler;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
+import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.weapon.DrainBrade;
 
 /**
  * ダメージイベントのリスナー
@@ -77,6 +86,18 @@ public class DamageEvent implements Listener {
             return;
         }
 
+        ItemMeta weaponMeta = attacker.getInventory().getItemInMainHand().getItemMeta();
+        if(weaponMeta != null){
+            NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+            PersistentDataContainer container = weaponMeta.getPersistentDataContainer();
+            String weaponID = container.get(itemKey, PersistentDataType.STRING);
+            if(weaponID != null){
+                switch (weaponID){
+                    case DrainBrade.id -> DrainBrade.activate(attacker);
+                }
+            }
+        }
+
         // ダメージ計算
         event.setCancelled(true);
         DamageContext context = DamageContext.builder()
@@ -105,7 +126,7 @@ public class DamageEvent implements Listener {
         Entity damagedEntity = event.getEntity();
 
         if (damagedEntity.isDead()) return;
-        if (!(damagedEntity instanceof LivingEntity)) return;
+        if (!(damagedEntity instanceof LivingEntity livingEntity)) return;
 
         double damage = event.getFinalDamage();
 
@@ -128,7 +149,7 @@ public class DamageEvent implements Listener {
         ProjectileDamageHandler.HandleResult result;
 
         if (event.getDamager() instanceof Snowball snowball) {
-            result = ProjectileDamageHandler.handleSnowball(snowball, event, gsm, damagedEntity);
+            result = ProjectileDamageHandler.handleSnowball(snowball, event, gsm, damagedEntity, livingEntity);
         } else if (event.getDamager() instanceof Trident trident) {
             result = ProjectileDamageHandler.handleTrident(trident, event, gsm);
         } else if (event.getDamager() instanceof Arrow arrow) {
@@ -150,7 +171,7 @@ public class DamageEvent implements Listener {
         Entity damaged = event.getEntity();
         if (damaged instanceof Player) return;
         if (!(event.getDamager() instanceof Player attacker)) return;
-        if (damaged.isDead()) return;
+        if (!(damaged instanceof LivingEntity)) return;
 
         GameStatesManager gsm = Game.getInstance().getGameStatesManager();
 

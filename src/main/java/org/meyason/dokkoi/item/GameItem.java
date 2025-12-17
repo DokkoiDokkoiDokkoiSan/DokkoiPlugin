@@ -13,10 +13,7 @@ import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.debug.Debug;
 import org.meyason.dokkoi.item.food.*;
-import org.meyason.dokkoi.item.gunitem.HGMagazine;
-import org.meyason.dokkoi.item.gunitem.Pistol;
-import org.meyason.dokkoi.item.gunitem.SMGMagazine;
-import org.meyason.dokkoi.item.gunitem.Stinger;
+import org.meyason.dokkoi.item.gunitem.*;
 import org.meyason.dokkoi.item.jobitem.gacha.*;
 import org.meyason.dokkoi.item.goalitem.*;
 import org.meyason.dokkoi.item.jobitem.*;
@@ -85,10 +82,20 @@ public class GameItem {
         items.put(SummonersBrave.id, new SummonersBrave());
         items.put(Pistol.id, new Pistol());
         items.put(Stinger.id, new Stinger());
+        items.put(DrH.id, new DrH());
+        items.put(RailGun.id, new RailGun());
         items.put(HGMagazine.id, new HGMagazine());
         items.put(SMGMagazine.id, new SMGMagazine());
+        items.put(ARMagazine.id, new ARMagazine());
         items.put(PotionBottleFull.id, new PotionBottleFull());
         items.put(PotionBottleEmpty.id, new PotionBottleEmpty());
+        items.put(NormalBow.id, new NormalBow());
+        items.put(RedBow.id, new RedBow());
+        items.put(BlueBow.id, new BlueBow());
+        items.put(DragonBrade.id, new DragonBrade());
+        items.put(DrainBrade.id, new DrainBrade());
+        items.put(IdiotDetector.id, new IdiotDetector());
+        items.put(FortuneBall.id, new FortuneBall());
     }
 
     public static CustomItem getItem(String id){

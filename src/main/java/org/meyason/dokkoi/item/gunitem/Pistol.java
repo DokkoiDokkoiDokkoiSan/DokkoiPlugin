@@ -8,7 +8,6 @@ import org.meyason.dokkoi.gun.constants.GunType;
 
 import java.util.List;
 
-
 public class Pistol extends GunItem {
 
     public static final String id = "pistol";

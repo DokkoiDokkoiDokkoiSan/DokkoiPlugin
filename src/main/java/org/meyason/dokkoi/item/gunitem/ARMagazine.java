@@ -11,21 +11,20 @@ import org.meyason.dokkoi.item.CustomItem;
 
 import java.util.List;
 
-public class SMGMagazine extends CustomItem {
+public class ARMagazine extends CustomItem {
 
-    public static final String id = "smg_magazine";
+    public static final String id = "ar_magazine";
 
-    public SMGMagazine() {
-        super(id, "§aSMGのマガジン", ItemStack.of(Material.IRON_INGOT), 64);
+    public ARMagazine() {
+        super(id, "§aARのマガジン", ItemStack.of(Material.NETHERITE_INGOT), 64);
         List<Component> lore = List.of(
-                Component.text("§5SMGのリロードで使用するマガジン。"),
+                Component.text("§5ARのリロードで使用するマガジン。"),
                 Component.text(""),
                 Component.text("§b効果"),
-                Component.text("§5右クリックすることでサブマシンガン系の弾が40発手に入る。")
+                Component.text("§5右クリックすることでアサルトライフル系の弾が50発手に入る。")
         );
         setDescription(lore);
     }
-
 
     @Override
     protected void registerItemFunction() {
@@ -41,7 +40,7 @@ public class SMGMagazine extends CustomItem {
     public static void activate(Player player){
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
         long nowAmmo = manager.getHGInventoryAmmo(player.getUniqueId());
-        manager.setSMGInventoryAmmo(player.getUniqueId(), nowAmmo + 40);
+        manager.setARInventoryAmmo(player.getUniqueId(), nowAmmo + 50);
         ItemStack item = player.getInventory().getItemInMainHand();
         item.setAmount(item.getAmount() - 1);
     }

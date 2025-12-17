@@ -3,7 +3,6 @@ package org.meyason.dokkoi.event.block;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,7 +14,7 @@ import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.job.Prayer;
 
-public class BlockInteractEvent implements Listener {
+public class ChestInteractEvent implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onBlockInteract(PlayerInteractEvent event){

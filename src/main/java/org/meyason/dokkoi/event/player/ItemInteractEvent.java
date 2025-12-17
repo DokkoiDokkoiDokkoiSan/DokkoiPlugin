@@ -32,10 +32,14 @@ import org.meyason.dokkoi.item.debug.Debug;
 import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
 import org.meyason.dokkoi.item.goalitem.UnkillerList;
+import org.meyason.dokkoi.item.gunitem.ARMagazine;
 import org.meyason.dokkoi.item.gunitem.HGMagazine;
 import org.meyason.dokkoi.item.gunitem.SMGMagazine;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
+import org.meyason.dokkoi.item.utilitem.FortuneBall;
+import org.meyason.dokkoi.item.utilitem.IdiotDetector;
+import org.meyason.dokkoi.menu.fortuneballmenu.FortuneBallMenu;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenu;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
 
@@ -171,6 +175,28 @@ public class ItemInteractEvent{
                     }
                     event.setCancelled(true);
                     SMGMagazine.activate(player);
+                }
+                case ARMagazine.id -> {
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    ARMagazine.activate(player);
+                }
+                case IdiotDetector.id -> {
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    IdiotDetector.activate(player, itemStack);
+                }
+                case FortuneBall.id -> {
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    FortuneBallMenu fortuneBallMenu = new FortuneBallMenu();
+                    fortuneBallMenu.sendMenu(itemStack, player);
                 }
             }
         }

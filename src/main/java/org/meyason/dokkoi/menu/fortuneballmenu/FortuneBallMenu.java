@@ -1,8 +1,11 @@
-package org.meyason.dokkoi.menu.shopmenu;
+package org.meyason.dokkoi.menu.fortuneballmenu;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.meyason.dokkoi.entity.Clerk;
+import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.menu.fortuneballmenu.item.FortuneBallMenuItem;
 import org.meyason.dokkoi.menu.shopmenu.item.BackItem;
 import org.meyason.dokkoi.menu.shopmenu.item.ForwardItem;
 import org.meyason.dokkoi.menu.shopmenu.item.ShopMenuItem;
@@ -14,18 +17,19 @@ import xyz.xenondevs.invui.item.builder.ItemBuilder;
 import xyz.xenondevs.invui.item.impl.SimpleItem;
 import xyz.xenondevs.invui.window.Window;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ShopMenu {
+public class FortuneBallMenu {
 
-    public void sendMenu(Clerk clerk, Player player){
+    public void sendMenu(ItemStack itemStack, Player player) {
 
         Item border = new SimpleItem(new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE));
 
-        List<Item> items = Clerk.availableItems.stream()
-                .map(name -> new ShopMenuItem(name, clerk))
+        // 自分は除外
+        List<Item> items = Game.getInstance().getGameStatesManager().getJoinedPlayers().stream()
+                .filter(p -> !p.equals(player.getUniqueId()))
+                .map(name -> new FortuneBallMenuItem(player, itemStack, name))
                 .collect(Collectors.toList());
 
         Gui gui = PagedGui.items()
@@ -44,7 +48,7 @@ public class ShopMenu {
         xyz.xenondevs.invui.window.Window window = Window.single()
                 .setViewer(player)
                 .setGui(gui)
-                .setTitle("§a§lショップ")
+                .setTitle("§a§l占いのできるたまたま")
                 .build();
 
         window.open();

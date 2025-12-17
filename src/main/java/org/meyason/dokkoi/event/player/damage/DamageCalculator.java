@@ -8,6 +8,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameEntityKeyString;
@@ -19,7 +21,9 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.SkeletonSlayer;
 import org.meyason.dokkoi.item.jobitem.SummonersBrave;
+import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.job.Prayer;
+import org.meyason.dokkoi.job.Sniper;
 import org.meyason.dokkoi.job.Summoner;
 
 import java.util.Objects;
@@ -110,7 +114,7 @@ public class DamageCalculator {
         if (damage < 0) return;
 
         // ダメージ適用
-        applyDamageToPlayer(attacker, damaged, damage);
+        applyDamageToPlayer(attacker, damaged, damage, context.isDamageFromGun());
     }
 
     /**
@@ -148,6 +152,15 @@ public class DamageCalculator {
         // 近接攻撃の場合のみ追加ダメージを適用
         if (context.isMeleeAttack()) {
             damage = applyMeleeDamageModifiers(damage, attacker, damaged, gsm);
+        }else{
+            Job attackerJob = context.getAttackerJob();
+            if(attackerJob instanceof Sniper){
+                damage += 1.0;
+                if(gsm.isSniperSkillActive()){
+                    damage += 10.0;
+                    damaged.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 10 * 20, 2));
+                }
+            }
         }
 
         // ゴールによるダメージ倍率
@@ -165,7 +178,7 @@ public class DamageCalculator {
         if (damage < 0) return;
 
         // ダメージ適用
-        applyDamageToPlayer(attacker, damaged, damage);
+        applyDamageToPlayer(attacker, damaged, damage, context.isDamageFromGun());
     }
 
     /**
@@ -264,7 +277,7 @@ public class DamageCalculator {
         if (damage < 0) return;
 
         // ダメージ適用
-        applyDamageToPlayer(null, damaged, damage);
+        applyDamageToPlayer(null, damaged, damage, context.isDamageFromGun());
     }
 
     /**
@@ -296,12 +309,20 @@ public class DamageCalculator {
     /**
      * プレイヤーにダメージを適用
      */
-    private static void applyDamageToPlayer(Player attacker, Player damaged, double damage) {
+    private static void applyDamageToPlayer(Player attacker, Player damaged, double damage, boolean isGun) {
         double afterHealth = damaged.getHealth() - damage;
         if (afterHealth <= 0) {
             DeathEvent.kill(attacker, damaged);
         } else {
             damaged.damage(damage);
+            if(isGun){
+                damaged.setMaximumNoDamageTicks(0);
+                damaged.setNoDamageTicks(0);
+                damaged.setLastDamage(Integer.MAX_VALUE);
+            }else{
+                damaged.setMaximumNoDamageTicks(10);
+                damaged.setNoDamageTicks(10);
+            }
         }
     }
 }

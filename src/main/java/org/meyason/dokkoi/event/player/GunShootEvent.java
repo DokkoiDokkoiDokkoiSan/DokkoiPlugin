@@ -5,6 +5,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.game.Game;
@@ -58,6 +59,14 @@ public class GunShootEvent{
                         GunShot gunshot = new GunShot(player, gun, gunStatus);
                         ProjectileData projectileData = new ProjectileData(player, gunshot.getProjectile(), gunSerial);
                         manager.addProjectileData(gunshot.getProjectile(), projectileData);
+
+                        if(gun.getGunType() == GunType.EXPLOSIVE){
+                            ItemStack item = player.getInventory().getItemInMainHand();
+                            item.setAmount(0);
+                            player.getInventory().setItemInMainHand(item);
+                            player.playSound(player, Sound.ENTITY_ITEM_BREAK, 1.0F, 1.0F);
+                            return;
+                        }
 
                         if (gunStatus.getMagazineAmmo() <= 0) {
                             // 弾切れ時は射撃停止タイマーを削除して停止
