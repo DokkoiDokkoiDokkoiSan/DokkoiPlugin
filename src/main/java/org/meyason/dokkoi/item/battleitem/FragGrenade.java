@@ -39,4 +39,8 @@ public class FragGrenade extends CustomItem {
     public static void throwGrenade(){
 
     }
+
+    public static void explodeGrenade(){
+
+    }
 }
