@@ -455,7 +455,7 @@ public class PickEvent implements Listener {
                         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 10, false, false, true));
                     }else if(itemName.equals(DragonBrade.id)){
                         player.sendActionBar(Component.text("§a龍一文字§eの力がみなぎってきた！"));
-                        DrainBrade.activate(player);
+                        DragonBrade.activate(player);
                     }
                 }
             }

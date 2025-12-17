@@ -94,6 +94,8 @@ public class GameItem {
         items.put(BlueBow.id, new BlueBow());
         items.put(DragonBrade.id, new DragonBrade());
         items.put(DrainBrade.id, new DrainBrade());
+        items.put(IdiotDetector.id, new IdiotDetector());
+        items.put(FortuneBall.id, new FortuneBall());
     }
 
     public static CustomItem getItem(String id){
