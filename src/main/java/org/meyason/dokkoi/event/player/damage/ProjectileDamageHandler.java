@@ -158,7 +158,7 @@ public class ProjectileDamageHandler {
         }
 
         // 特殊アイテムの矢
-        return handleSpecialArrow(arrow, projectileData, gsm, damage);
+        return handleSpecialArrow(arrow, event, projectileData, gsm, damage);
     }
 
     /**

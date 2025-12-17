@@ -121,9 +121,6 @@ public class PickEvent implements Listener {
             // チェスト内のアイテムをシフトクリックしてインベントリに移した時
             if (clickedIsTop) {
                 int amount = slotItem.getAmount();
-                if(event.getClick() == ClickType.RIGHT){
-                    amount /= 2;
-                }
 
                 switch (slotItemName) {
                     case Ketsumou.id -> Ketsumou.activate(player);
@@ -167,9 +164,6 @@ public class PickEvent implements Listener {
             // インベントリ内のアイテムをシフトクリックしてチェストに移した時
             }else if(clickedIsBottom){
                 int amount = slotItem.getAmount();
-                if(event.getClick() == ClickType.RIGHT){
-                    amount /= 2;
-                }
                 if(isUniqueItem(slotItem)){
                     event.setCancelled(true);
                 }
@@ -243,7 +237,11 @@ public class PickEvent implements Listener {
             if(slotItem != null && !slotItem.getType().isAir()){
                 int amount = slotItem.getAmount();
                 if(event.getClick() == ClickType.RIGHT){
-                    amount /= 2;
+                    if(amount % 2 == 0){
+                        amount = amount / 2;
+                    }else{
+                        amount = (amount + 1) / 2;
+                    }
                 }
                 ItemMeta meta = slotItem.getItemMeta();
                 if(meta == null){return;}
@@ -278,7 +276,7 @@ public class PickEvent implements Listener {
             if(cursorItem != null && !cursorItem.getType().isAir()) {
                 int amount = cursorItem.getAmount();
                 if(event.getClick() == ClickType.RIGHT){
-                    amount /= 2;
+                    amount = 1;
                 }
                 ItemMeta meta = cursorItem.getItemMeta();
                 if(meta == null){return;}

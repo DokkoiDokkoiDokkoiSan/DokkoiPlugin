@@ -314,6 +314,7 @@ public class DamageCalculator {
         if (afterHealth <= 0) {
             DeathEvent.kill(attacker, damaged);
         } else {
+            damaged.damage(damage);
             if(isGun){
                 damaged.setMaximumNoDamageTicks(0);
                 damaged.setNoDamageTicks(0);
@@ -322,7 +323,6 @@ public class DamageCalculator {
                 damaged.setMaximumNoDamageTicks(10);
                 damaged.setNoDamageTicks(10);
             }
-            damaged.damage(damage);
         }
     }
 }
