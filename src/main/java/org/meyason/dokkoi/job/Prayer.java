@@ -18,6 +18,8 @@ import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.item.food.*;
 import org.meyason.dokkoi.item.gunitem.*;
 import org.meyason.dokkoi.item.jobitem.gacha.*;
+import org.meyason.dokkoi.item.utilitem.FortuneBall;
+import org.meyason.dokkoi.item.utilitem.IdiotDetector;
 import org.meyason.dokkoi.item.utilitem.Monei;
 import org.meyason.dokkoi.item.weapon.*;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
@@ -73,6 +75,7 @@ public class Prayer extends Job {
                 CookedChicken.id
         ));
         put(SR, List.of(
+                FortuneBall.id,
                 NormalBow.id,
                 ArcherArmor.id,
                 GoldenCarrot.id,
@@ -84,7 +87,9 @@ public class Prayer extends Job {
                 Pistol.id,
                 SMGMagazine.id,
                 ARMagazine.id,
-                InstantDevour.id
+                IdiotDetector.id,
+                InstantDevour.id,
+                FragGrenade.id
         ));
         put(UR, List.of(
                 RedBow.id,

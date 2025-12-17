@@ -18,6 +18,7 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.battleitem.FragGrenade;
 import org.meyason.dokkoi.item.jobitem.Rapier;
 import org.meyason.dokkoi.item.weapon.BlueBow;
 import org.meyason.dokkoi.item.weapon.ThunderJavelin;
@@ -78,8 +79,24 @@ public class LaunchEvent implements Listener {
                         }
                     }
                 }
-
-
+            }
+        }else if(projectile.getType() == EntityType.EGG){
+            ProjectileSource projectileSource = projectile.getShooter();
+            if(projectileSource instanceof Player player){
+                ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
+                ItemMeta itemMeta = itemInMainHand.getItemMeta();
+                if(itemMeta != null){
+                    PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+                    String itemID = container.get(itemKey, PersistentDataType.STRING);
+                    if(itemID != null){
+                        if(itemID.equals(FragGrenade.id)){
+                            ProjectileData projectileData = new ProjectileData(player, projectile, FragGrenade.id);
+                            manager.addProjectileData(projectile, projectileData);
+                            FragGrenade.throwGrenade(projectileData);
+                            return;
+                        }
+                    }
+                }
             }
         }
     }

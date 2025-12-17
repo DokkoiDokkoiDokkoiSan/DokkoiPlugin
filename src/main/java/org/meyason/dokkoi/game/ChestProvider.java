@@ -71,9 +71,11 @@ public class ChestProvider {
         put(SR, List.of(
                 HealingCrystal.id,
                 ArcherArmor.id,
+                IdiotDetector.id,
                 MamiyaPhone.id,
                 TakashimaPhone.id,
-                InstantDevour.id
+                InstantDevour.id,
+                FragGrenade.id
         ));
         put(SSR, List.of(
                 LongSword.id,
@@ -81,7 +83,8 @@ public class ChestProvider {
                 SMGMagazine.id,
                 ARMagazine.id,
                 Pistol.id,
-                NormalBow.id
+                NormalBow.id,
+                FortuneBall.id
         ));
         put(UR, List.of(
                 ThunderJavelin.id,

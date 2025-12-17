@@ -19,7 +19,9 @@ import org.meyason.dokkoi.event.player.damage.DamageValidator;
 import org.meyason.dokkoi.event.player.damage.ProjectileDamageHandler;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
+import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.battleitem.FragGrenade;
 import org.meyason.dokkoi.item.weapon.DrainBrade;
 
 /**
@@ -154,6 +156,12 @@ public class DamageEvent implements Listener {
             result = ProjectileDamageHandler.handleTrident(trident, event, gsm);
         } else if (event.getDamager() instanceof Arrow arrow) {
             result = ProjectileDamageHandler.handleArrow(arrow, event, gsm, damagedEntity, damage);
+        } else if (event.getDamager() instanceof Egg egg) {
+            ProjectileData projectileData = gsm.getProjectileDataMap().get(egg);
+            if(projectileData != null){
+                FragGrenade.onHit(projectileData);
+            }
+            return;
         } else {
             return;
         }
