@@ -39,7 +39,7 @@ public class FortuneBallMenuItem extends AbstractItem {
 
     @Override
     public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull InventoryClickEvent event) {
-        FortuneBall.activate(targetPlayer);
+        FortuneBall.activate(player, targetPlayer);
         itemStack.setAmount(0);
         event.getInventory().close();
     }

@@ -233,45 +233,6 @@ public class PickEvent implements Listener {
         // インベントリをクリックしたとき
         if(clickedIsBottom) {
 
-            // スロットが指定アイテムのとき(クリックで持ち上げたとき)
-            if(slotItem != null && !slotItem.getType().isAir()){
-                int amount = slotItem.getAmount();
-                if(event.getClick() == ClickType.RIGHT){
-                    if(amount % 2 == 0){
-                        amount = amount / 2;
-                    }else{
-                        amount = (amount + 1) / 2;
-                    }
-                }
-                ItemMeta meta = slotItem.getItemMeta();
-                if(meta == null){return;}
-                PersistentDataContainer container = meta.getPersistentDataContainer();
-                String slotItemName = container.get(itemKey, PersistentDataType.STRING);
-                if(slotItemName == null){return;}
-
-                if(isUniqueItem(slotItem)){
-                    event.setCancelled(true);
-                }
-
-                switch (slotItemName) {
-
-                    case Korehamaru.id -> {
-                        if (!(job instanceof DrugStore)) {
-                            player.sendMessage(Component.text("§cこれはすてたくない"));
-                            event.setCancelled(true);
-                        }
-                    }
-
-                    case Ketsumou.id -> Ketsumou.deactivate(player);
-
-                    case TakashimaPhone.id -> manager.clearWhoHasTakashimaPhone();
-
-                    case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
-
-                    case InstantDevour.id -> InstantDevour.changeHP(player, -amount);
-                }
-            }
-
             // カーソルで指定アイテムを持っているとき(クリックでおこうとしたとき)
             if(cursorItem != null && !cursorItem.getType().isAir()) {
                 int amount = cursorItem.getAmount();
@@ -321,6 +282,47 @@ public class PickEvent implements Listener {
 
                     case InstantDevour.id -> InstantDevour.changeHP(player, amount);
                 }
+                return;
+            }
+
+            // スロットが指定アイテムのとき(クリックで持ち上げたとき)
+            if(slotItem != null && !slotItem.getType().isAir()){
+                int amount = slotItem.getAmount();
+                if(event.getClick() == ClickType.RIGHT){
+                    if(amount % 2 == 0){
+                        amount = amount / 2;
+                    }else{
+                        amount = (amount + 1) / 2;
+                    }
+                }
+                ItemMeta meta = slotItem.getItemMeta();
+                if(meta == null){return;}
+                PersistentDataContainer container = meta.getPersistentDataContainer();
+                String slotItemName = container.get(itemKey, PersistentDataType.STRING);
+                if(slotItemName == null){return;}
+
+                if(isUniqueItem(slotItem)){
+                    event.setCancelled(true);
+                }
+
+                switch (slotItemName) {
+
+                    case Korehamaru.id -> {
+                        if (!(job instanceof DrugStore)) {
+                            player.sendMessage(Component.text("§cこれはすてたくない"));
+                            event.setCancelled(true);
+                        }
+                    }
+
+                    case Ketsumou.id -> Ketsumou.deactivate(player);
+
+                    case TakashimaPhone.id -> manager.clearWhoHasTakashimaPhone();
+
+                    case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
+
+                    case InstantDevour.id -> InstantDevour.changeHP(player, -amount);
+                }
+                return;
             }
 
         }else{

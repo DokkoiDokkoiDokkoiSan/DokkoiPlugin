@@ -18,7 +18,7 @@ public class PotionBottleFull extends CustomItem {
     public static final String id = "potion_bottle_full";
 
     public PotionBottleFull() {
-        super(id, "詰め替えポーション", ItemStack.of(Material.POTION), 1);
+        super(id, "§a詰め替えポーション", ItemStack.of(Material.POTION), 1);
         List<Component> lore = List.of(
                 Component.text("§5別の世界から輸入してくる時に時間がかかりすぎて変色したらしい。"),
                 Component.text("§5元々は緑色だったんだとか。"),

@@ -26,7 +26,9 @@ public class FortuneBallMenu {
 
         Item border = new SimpleItem(new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE));
 
+        // 自分は除外
         List<Item> items = Game.getInstance().getGameStatesManager().getJoinedPlayers().stream()
+                .filter(p -> !p.equals(player.getUniqueId()))
                 .map(name -> new FortuneBallMenuItem(player, itemStack, name))
                 .collect(Collectors.toList());
 

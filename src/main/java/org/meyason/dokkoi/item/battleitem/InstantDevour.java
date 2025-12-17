@@ -19,7 +19,7 @@ public class InstantDevour extends CustomItem {
     public static final String id = "instant_devour";
 
     public InstantDevour() {
-        super(id, "インスタントデバウアー", ItemStack.of(Material.AMETHYST_CLUSTER), 64);
+        super(id, "§aインスタントデバウアー", ItemStack.of(Material.AMETHYST_CLUSTER), 64);
         List<Component> lore = List.of(
                 Component.text("§5メキシコから輸入されてきた、持っている人間に追加体力を付与する塊。"),
                 Component.text("§5本場のこのアイテムは使えば使うほどエゴが強くなるらしい。"),
@@ -48,7 +48,7 @@ public class InstantDevour extends CustomItem {
     }
 
     public static void deactivate(Player player, int amount) {
-        if(player.getHealth() <= 4 * amount){
+        if(player.getMaxHealth() <= 4 * amount){
             DeathEvent.kill(null, player);
         }
         if(player.getHealth() > player.getMaxHealth() - 4 * amount){
@@ -70,7 +70,6 @@ public class InstantDevour extends CustomItem {
                 }
             }
         }
-        player.sendMessage("now amount: " + currentAmount + ", change amount: " + changedAmount);
 
         if(changedAmount > 0) {
             int newAmount = Math.min(currentAmount + changedAmount, 15);
@@ -82,6 +81,9 @@ public class InstantDevour extends CustomItem {
         } else{
             int newAmount = Math.max(currentAmount + changedAmount, 0);
             int effectiveChange = currentAmount - newAmount;
+            if(currentAmount > 15){
+                effectiveChange = 15 - newAmount;
+            }
             if (effectiveChange > 0) {
                 deactivate(player, effectiveChange);
                 return true;

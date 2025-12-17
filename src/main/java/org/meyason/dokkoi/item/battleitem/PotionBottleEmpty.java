@@ -18,7 +18,7 @@ public class PotionBottleEmpty extends CustomItem {
     public static final String id = "potion_bottle_empty";
 
     public PotionBottleEmpty() {
-        super(id, "詰め替えポーション(空)", ItemStack.of(Material.GLASS_BOTTLE), 1);
+        super(id, "§a詰め替えポーション(空)", ItemStack.of(Material.GLASS_BOTTLE), 1);
         List<Component> lore = List.of(
                 Component.text("§5中身が空になった詰め替えポーション。"),
                 Component.text("§5ショップおじいちゃんに話しかけて回復してもらおう。"),

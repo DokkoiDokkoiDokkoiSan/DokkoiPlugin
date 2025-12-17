@@ -41,7 +41,7 @@ public class FortuneBall extends CustomItem {
         };
     }
 
-    public static void activate(Player targetPlayer){
+    public static void activate(Player player, Player targetPlayer){
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
         Goal goal = manager.getPlayerGoals().get(targetPlayer.getUniqueId());
         boolean isLie = Math.random() < 0.25;
@@ -57,6 +57,6 @@ public class FortuneBall extends CustomItem {
         } else {
             goalName = goal.getName();
         }
-        targetPlayer.sendMessage(Component.text("§d" + targetPlayer.getName() + "§aの勝利条件って§e" + goalName + "§aらしいで～ｗ"));
+        player.sendMessage(Component.text("§d" + targetPlayer.getName() + "§aの勝利条件って§e" + goalName + "§aらしいで～ｗ"));
     }
 }
