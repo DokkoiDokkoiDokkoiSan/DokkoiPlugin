@@ -62,6 +62,7 @@ public class GameStatesManager {
     private HashMap<UUID, BukkitRunnable> itemCoolDownScheduler;
     private HashMap<Trident, BukkitRunnable> tridentDespawnWatchDogs;
     private HashMap<Egg, BukkitRunnable> fragGrenadeScheduler;
+    private HashMap<UUID, BukkitRunnable> EdenChimeTasks;
 
     private HashMap<String, GameEntity> spawnedEntities;
 
@@ -110,6 +111,7 @@ public class GameStatesManager {
         itemCoolDownScheduler = new HashMap<>();
         tridentDespawnWatchDogs = new HashMap<>();
         fragGrenadeScheduler = new HashMap<>();
+        EdenChimeTasks = new HashMap<>();
         spawnedEntities = new HashMap<>();
     }
 
@@ -143,6 +145,7 @@ public class GameStatesManager {
         itemCoolDownScheduler.clear();
         tridentDespawnWatchDogs.clear();
         fragGrenadeScheduler.clear();
+        EdenChimeTasks.clear();
         spawnedEntities.clear();
     }
 
@@ -165,6 +168,7 @@ public class GameStatesManager {
         removeUltimateSkillCoolDownTask(uuid);
         removeCoolDownScheduler(uuid);
         removeItemCoolDownScheduler(uuid);
+        removeEdenChimeTask(uuid);
     }
 
     public GameState getGameState() {
@@ -481,6 +485,15 @@ public class GameStatesManager {
     public void removeFragGrenadeScheduler(Egg egg) {
         if(!this.fragGrenadeScheduler.containsKey(egg)) {return;}
         this.fragGrenadeScheduler.remove(egg);
+    }
+
+    public HashMap<UUID, BukkitRunnable> getEdenChimeTasks() {return EdenChimeTasks;}
+    public void setEdenChimeTasks(HashMap<UUID, BukkitRunnable> edenChimeTasks) {EdenChimeTasks = edenChimeTasks;}
+    public void addEdenChimeTask(UUID player, BukkitRunnable task) {this.EdenChimeTasks.put(player, task);}
+    public boolean isExistEdenChimeTask(UUID player) {return this.EdenChimeTasks.containsKey(player);}
+    public void removeEdenChimeTask(UUID player) {
+        if(!this.EdenChimeTasks.containsKey(player)) {return;}
+        this.EdenChimeTasks.remove(player);
     }
 
     public GameEntity getSpawnedEntitiesFromUUID(String uuid) {return spawnedEntities.get(uuid);}

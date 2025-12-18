@@ -55,40 +55,39 @@ public class ChestProvider {
 
     public static final HashMap<String, List<String>> rarityEffectMap = new HashMap<>(){{
         put(R, List.of(
-                BakedPotato.id,
-                Arrow.id,
-                Cod.id,
-                Bread.id,
-                HealingCrystal.id,
-                Salmon.id,
                 CookedChicken.id,
+                Cod.id,
+                Salmon.id,
+                Bread.id,
+                BakedPotato.id,
                 GoldenCarrot.id,
-                CookedPorkchop.id,
-                CookedBeef.id,
                 GlisteringMelonSlice.id,
+                CookedBeef.id,
+                CookedPorkchop.id,
                 PumpkinPie.id
         ));
         put(SR, List.of(
                 HealingCrystal.id,
                 ArcherArmor.id,
                 IdiotDetector.id,
+                InstantDevour.id,
                 MamiyaPhone.id,
                 TakashimaPhone.id,
-                InstantDevour.id,
                 FragGrenade.id
         ));
         put(SSR, List.of(
-                LongSword.id,
+                NormalBow.id,
                 HGMagazine.id,
                 SMGMagazine.id,
                 ARMagazine.id,
                 Pistol.id,
-                NormalBow.id,
-                FortuneBall.id
+                LongSword.id,
+                FortuneBall.id,
+                EdenChime.id
         ));
         put(UR, List.of(
-                ThunderJavelin.id,
-                RailGun.id
+                RailGun.id,
+                ThunderJavelin.id
         ));
     }};
 

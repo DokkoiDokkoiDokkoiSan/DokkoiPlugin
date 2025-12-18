@@ -15,7 +15,7 @@ import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.item.gunitem.*;
-import org.meyason.dokkoi.item.utilitem.Monei;
+import org.meyason.dokkoi.item.utilitem.*;
 import org.meyason.dokkoi.item.weapon.*;
 
 import java.util.HashMap;
@@ -24,19 +24,25 @@ import java.util.List;
 public class Clerk extends GameEntity {
 
     public static final HashMap<String, Integer> itemPrices = new HashMap<>() {{
+        put(IdiotDetector.id, 2);
+        put(FortuneBall.id, 5);
         put(PotionBottleFull.id, 3);
         put(InstantDevour.id, 3);
 
         put(HealingCrystal.id, 1);
         put(ArcherArmor.id, 2);
+        put(EdenChime.id, 5);
+        put(FragGrenade.id, 3);
 
         put(LongSword.id, 5);
         put(DrainBrade.id, 10);
         put(DragonBrade.id, 10);
+
         put(NormalBow.id, 4);
         put(RedBow.id, 9);
         put(BlueBow.id, 14);
         put(Arrow.id, 1);
+
         put(Pistol.id, 11);
         put(Stinger.id, 17);
         put(DrH.id, 23);
@@ -46,17 +52,25 @@ public class Clerk extends GameEntity {
     }};
 
     public static final List<String> availableItems = List.of(
+            IdiotDetector.id,
+            FortuneBall.id,
             PotionBottleFull.id,
             InstantDevour.id,
+
             HealingCrystal.id,
             ArcherArmor.id,
+            EdenChime.id,
+            FragGrenade.id,
+
             LongSword.id,
             DrainBrade.id,
             DragonBrade.id,
+
             NormalBow.id,
             RedBow.id,
             BlueBow.id,
             Arrow.id,
+
             Pistol.id,
             Stinger.id,
             DrH.id,

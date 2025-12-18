@@ -66,27 +66,29 @@ public class Prayer extends Job {
 
     public static final HashMap<String, List<String>> rarityEffectMap = new HashMap<>(){{
         put(R, List.of(
+                CookedChicken.id,
+                Cod.id,
+                Salmon.id,
+                Bread.id,
                 BakedPotato.id,
                 Arrow.id,
-                Cod.id,
-                Bread.id,
-                HealingCrystal.id,
-                Salmon.id,
-                CookedChicken.id
+                HealingCrystal.id
         ));
         put(SR, List.of(
                 FortuneBall.id,
                 NormalBow.id,
-                ArcherArmor.id,
                 GoldenCarrot.id,
-                CookedPorkchop.id,
-                CookedBeef.id,
                 GlisteringMelonSlice.id,
-                LongSword.id,
+                CookedBeef.id,
+                CookedPorkchop.id,
                 PumpkinPie.id,
                 Pistol.id,
+                LongSword.id,
+                ArcherArmor.id,
+                HGMagazine.id,
                 SMGMagazine.id,
                 ARMagazine.id,
+                EdenChime.id,
                 IdiotDetector.id,
                 InstantDevour.id,
                 FragGrenade.id
@@ -95,14 +97,14 @@ public class Prayer extends Job {
                 RedBow.id,
                 BlueBow.id,
                 Stinger.id,
-                Monei.id,
                 DragonBrade.id,
-                DrainBrade.id
+                DrainBrade.id,
+                Monei.id
         ));
         put(LR, List.of(
-                ThunderJavelin.id,
                 RailGun.id,
-                DrH.id
+                DrH.id,
+                ThunderJavelin.id
         ));
         put(KETSU, List.of(StrongestBall.id));
         put(KETSUGE, List.of(StrongestStrongestBall.id));

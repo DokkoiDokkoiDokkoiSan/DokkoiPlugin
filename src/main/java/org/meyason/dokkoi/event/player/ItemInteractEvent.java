@@ -22,6 +22,7 @@ import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.battleitem.EdenChime;
 import org.meyason.dokkoi.item.battleitem.HealingCrystal;
 import org.meyason.dokkoi.item.battleitem.PotionBottleFull;
 import org.meyason.dokkoi.item.dealeritem.Hayakunaru;
@@ -197,6 +198,13 @@ public class ItemInteractEvent{
                     event.setCancelled(true);
                     FortuneBallMenu fortuneBallMenu = new FortuneBallMenu();
                     fortuneBallMenu.sendMenu(itemStack, player);
+                }
+                case EdenChime.id -> {
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    EdenChime.activate(player, itemStack);
                 }
             }
         }
