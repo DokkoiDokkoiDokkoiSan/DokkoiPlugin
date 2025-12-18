@@ -188,6 +188,17 @@ public class Game {
             if(player == null || !player.isOnline()){
                 continue;
             }
+
+            PacketContainer pk = PacketProcess.hideNameTag(player, null);
+            gameStatesManager.getJoinedPlayers().forEach(other -> {
+                if(!other.equals(uuid)){
+                    Player sender = Bukkit.getPlayer(other);
+                    if(sender != null && sender.isOnline()){
+                        PacketSender.sendPacket(sender, pk);
+                    }
+                }
+            });
+
             GoalSelectMenu goalSelectMenu = new GoalSelectMenu();
             goalSelectMenu.sendMenu(player);
 
@@ -268,17 +279,6 @@ public class Game {
             player.setGameMode(GameMode.ADVENTURE);
             gameStatesManager.getPlayerJobs().get(uuid).chargeUltimateSkill(player, gameStatesManager);
             updateScoreboardDisplay(player);
-
-            PacketContainer container = PacketData.create(player);
-            PacketContainer pk = PacketProcess.hideNameTag(player, container);
-            gameStatesManager.getAlivePlayers().forEach(other -> {
-                if(!other.equals(uuid)){
-                    Player sender = Bukkit.getPlayer(other);
-                    if(sender != null && sender.isOnline()){
-                        PacketSender.sendPacket(sender, pk);
-                    }
-                }
-            });
 
             SkillScheduler scheduler = new SkillScheduler(this, player);
             scheduler.runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
