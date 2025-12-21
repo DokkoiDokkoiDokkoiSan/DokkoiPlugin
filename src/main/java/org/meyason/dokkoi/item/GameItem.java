@@ -17,6 +17,7 @@ import org.meyason.dokkoi.item.gunitem.*;
 import org.meyason.dokkoi.item.jobitem.gacha.*;
 import org.meyason.dokkoi.item.goalitem.*;
 import org.meyason.dokkoi.item.jobitem.*;
+import org.meyason.dokkoi.item.matching.*;
 import org.meyason.dokkoi.item.utilitem.*;
 import org.meyason.dokkoi.item.weapon.*;
 import org.meyason.dokkoi.item.battleitem.*;
@@ -98,6 +99,8 @@ public class GameItem {
         items.put(FortuneBall.id, new FortuneBall());
         items.put(FragGrenade.id, new FragGrenade());
         items.put(EdenChime.id, new EdenChime());
+        items.put(JoinQueueItem.id, new JoinQueueItem());
+        items.put(QuitQueueItem.id, new QuitQueueItem());
     }
 
     public static CustomItem getItem(String id){

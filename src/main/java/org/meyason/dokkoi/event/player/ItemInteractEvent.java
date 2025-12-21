@@ -38,6 +38,8 @@ import org.meyason.dokkoi.item.gunitem.HGMagazine;
 import org.meyason.dokkoi.item.gunitem.SMGMagazine;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
+import org.meyason.dokkoi.item.matching.JoinQueueItem;
+import org.meyason.dokkoi.item.matching.QuitQueueItem;
 import org.meyason.dokkoi.item.utilitem.FortuneBall;
 import org.meyason.dokkoi.item.utilitem.IdiotDetector;
 import org.meyason.dokkoi.menu.fortuneballmenu.FortuneBallMenu;
@@ -52,7 +54,18 @@ public class ItemInteractEvent{
         Game game = Game.getInstance();
         Player player = event.getPlayer();
 
-        if(game.getGameStatesManager().getGameState() == GameState.PREP){
+        if(game.getGameStatesManager().getGameState() == GameState.WAITING || game.getGameStatesManager().getGameState() == GameState.MATCHING){
+
+            if(itemID.equals(JoinQueueItem.id)){
+                event.setCancelled(true);
+                Game.getInstance().addToMatchQueue(player);
+            }else if(itemID.equals(QuitQueueItem.id)){
+                event.setCancelled(true);
+                Game.getInstance().removeFromMatchQueue(player);
+            }
+
+
+        }else if(game.getGameStatesManager().getGameState() == GameState.PREP){
 
             if(itemID.equals(GoalSelectMenuItem.id)) {
                 if (game.getGameStatesManager().getPlayerGoals().get(player.getUniqueId()) != null) {

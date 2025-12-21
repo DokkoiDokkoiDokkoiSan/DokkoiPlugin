@@ -33,9 +33,24 @@ public class Scheduler extends BukkitRunnable {
 
         switch (game.getGameStatesManager().getGameState()) {
             case WAITING:
+                if(game.getMatchQueueSize() >= game.minimumGameStartPlayers){
+                    Bukkit.getServer().broadcast(Component.text("§a参加者が最低人数に達したため、マッチングフェーズに移行します。"));
+                    game.matching();
+                }
+                game.updateScoreboardDisplay();
                 break;
             case MATCHING:
                 game.setNowTime(game.getNowTime() - 1);
+                if(game.getMatchQueueSize() < game.minimumGameStartPlayers){
+                    Bukkit.getServer().broadcast(Component.text("§c参加者が最低人数を下回ったため、待機フェーズに戻ります。"));
+                    new Game();
+                    return;
+                }
+                if(game.getMatchQueueSize() == game.maximumGamePlayers){
+                    Bukkit.getServer().broadcast(Component.text("§aマッチング完了。準備フェーズに移行します。"));
+                    game.prepPhase();
+                    return;
+                }
                 if(game.getNowTime() < 0){
                     Bukkit.getServer().broadcast(Component.text("§aマッチング完了。準備フェーズに移行します。"));
                     game.prepPhase();
