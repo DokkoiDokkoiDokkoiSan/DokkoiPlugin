@@ -33,7 +33,8 @@ public class ChestScheduler extends BukkitRunnable {
             return;
         }
 
-        for(Location loc : GameLocation.chestLocations) {
+        for(Vector vector : GameLocation.chestLocations) {
+            Location loc = new Location(world, vector.getX(), vector.getY(), vector.getZ());
             Block block = world.getBlockAt(loc);
             if(block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST){
                 Chest chest = (Chest) block.getState();
