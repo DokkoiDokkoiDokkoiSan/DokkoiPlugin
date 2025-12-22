@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameEntityList;
 import org.meyason.dokkoi.constants.GameEntityKeyString;
@@ -47,9 +48,17 @@ public class GameEntityManager {
         }
 
         for (int i = 0; i < GameLocation.clerkLocations.size(); i++) {
-            GameEntity gameEntity = GameEntity.getGameEntityFromId(GameEntity.CLERK);
+            Location location = GameLocation.clerkLocations.get(i).toLocation(world);
+            GameEntity gameEntity;
+            // TODO: 位置ベタ書き直す できれば全部違うキャラにしてmapで管理する
+            if(location.toVector().equals(new Vector(144.5, 1, -139.5))){
+                gameEntity = GameEntity.getGameEntityFromId(GameEntity.SUSURU);
+            }else if(location.toVector().equals(new Vector(-142.5, 1, 140.5))) {
+                gameEntity = GameEntity.getGameEntityFromId(GameEntity.INMU);
+            }else {
+                gameEntity = GameEntity.getGameEntityFromId(GameEntity.CLERK);
+            }
             if (gameEntity instanceof Clerk clerk) {
-                Location location = GameLocation.clerkLocations.get(i).toLocation(world);
                 spawnClerk(location, clerk);
             }
         }

@@ -72,8 +72,11 @@ public class EntityInteractEvent implements Listener {
                     if(container.has(itemKey, PersistentDataType.STRING)){
                         String itemName = container.get(itemKey, PersistentDataType.STRING);
                         if(itemName != null && itemName.equals(PotionBottleEmpty.id)){
-                            PotionBottleEmpty.activate(player, item);
-                            return;
+                            if(!clerk.isAlreadyRefilled(player)){
+                                PotionBottleEmpty.activate(player, item);
+                                clerk.addRefilledPlayer(player);
+                                return;
+                            }
                         }
                     }
                 }
