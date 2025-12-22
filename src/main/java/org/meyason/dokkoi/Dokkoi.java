@@ -1,5 +1,6 @@
 package org.meyason.dokkoi;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -45,9 +46,8 @@ public final class Dokkoi extends JavaPlugin {
         new EventManager(this);
         new CommandManager(this);
         new GameItem();
+        new PacketScheduler().runTaskTimer(this, 0, 1);
         new Game();
-        Bukkit.getLogger().info("oKOKOKOKOKOKOKOOK");
-        new PacketScheduler().runTaskTimer(this, 0, 20L);
         // PacketListener for debugging, developing;
         // new DebugPacketListener().register();
     }
