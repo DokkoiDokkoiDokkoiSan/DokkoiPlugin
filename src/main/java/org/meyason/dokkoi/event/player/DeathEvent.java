@@ -2,10 +2,7 @@ package org.meyason.dokkoi.event.player;
 
 import com.comphenix.protocol.events.PacketContainer;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,6 +14,7 @@ import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.game.GameLocation;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.LPManager;
 import org.meyason.dokkoi.goal.GangStar;
@@ -34,6 +32,7 @@ import org.meyason.dokkoi.network.PacketSender;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -66,8 +65,9 @@ public class DeathEvent {
                 !manager.getPlayerGoals().get(deadUUID).isRevived){
             manager.getPlayerGoals().get(deadUUID).isRevived = true;
             dead.sendMessage("§aあなたはティア3勝利条件なので，§l§4復活§r§aしました");
-            // いったん2mうしろにテレポート TODO: マップ内にランダムテレポート
-            dead.teleport(dead.getLocation().subtract(dead.getLocation().getDirection().setY(0).normalize().multiply(1)));
+            World world = dead.getWorld();
+            Location location = GameLocation.respawnLocations.get(new Random().nextInt(GameLocation.respawnLocations.size())).toLocation(world);
+            dead.teleport(location);
             dead.setHealth(dead.getMaxHealth());
             return;
         }

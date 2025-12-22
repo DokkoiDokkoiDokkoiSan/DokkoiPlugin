@@ -22,6 +22,7 @@ import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.battleitem.EdenChime;
 import org.meyason.dokkoi.item.battleitem.HealingCrystal;
 import org.meyason.dokkoi.item.battleitem.PotionBottleFull;
 import org.meyason.dokkoi.item.dealeritem.Hayakunaru;
@@ -37,6 +38,8 @@ import org.meyason.dokkoi.item.gunitem.HGMagazine;
 import org.meyason.dokkoi.item.gunitem.SMGMagazine;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
+import org.meyason.dokkoi.item.matching.JoinQueueItem;
+import org.meyason.dokkoi.item.matching.QuitQueueItem;
 import org.meyason.dokkoi.item.utilitem.FortuneBall;
 import org.meyason.dokkoi.item.utilitem.IdiotDetector;
 import org.meyason.dokkoi.menu.fortuneballmenu.FortuneBallMenu;
@@ -51,7 +54,18 @@ public class ItemInteractEvent{
         Game game = Game.getInstance();
         Player player = event.getPlayer();
 
-        if(game.getGameStatesManager().getGameState() == GameState.PREP){
+        if(game.getGameStatesManager().getGameState() == GameState.WAITING || game.getGameStatesManager().getGameState() == GameState.MATCHING){
+
+            if(itemID.equals(JoinQueueItem.id)){
+                event.setCancelled(true);
+                Game.getInstance().addToMatchQueue(player);
+            }else if(itemID.equals(QuitQueueItem.id)){
+                event.setCancelled(true);
+                Game.getInstance().removeFromMatchQueue(player);
+            }
+
+
+        }else if(game.getGameStatesManager().getGameState() == GameState.PREP){
 
             if(itemID.equals(GoalSelectMenuItem.id)) {
                 if (game.getGameStatesManager().getPlayerGoals().get(player.getUniqueId()) != null) {
@@ -197,6 +211,13 @@ public class ItemInteractEvent{
                     event.setCancelled(true);
                     FortuneBallMenu fortuneBallMenu = new FortuneBallMenu();
                     fortuneBallMenu.sendMenu(itemStack, player);
+                }
+                case EdenChime.id -> {
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    EdenChime.activate(player, itemStack);
                 }
             }
         }

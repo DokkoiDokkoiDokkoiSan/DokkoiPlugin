@@ -8,6 +8,8 @@ import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
+
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.exception.FailChestRandomItemException;
 import org.meyason.dokkoi.exception.NoGameItemException;
@@ -22,6 +24,7 @@ import org.meyason.dokkoi.scheduler.ChestScheduler;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class ChestProvider {
@@ -55,37 +58,39 @@ public class ChestProvider {
 
     public static final HashMap<String, List<String>> rarityEffectMap = new HashMap<>(){{
         put(R, List.of(
-                BakedPotato.id,
-                Arrow.id,
-                Cod.id,
-                Bread.id,
-                HealingCrystal.id,
-                Salmon.id,
                 CookedChicken.id,
+                Cod.id,
+                Salmon.id,
+                Bread.id,
+                BakedPotato.id,
                 GoldenCarrot.id,
-                CookedPorkchop.id,
-                CookedBeef.id,
                 GlisteringMelonSlice.id,
+                CookedBeef.id,
+                CookedPorkchop.id,
                 PumpkinPie.id
         ));
         put(SR, List.of(
                 HealingCrystal.id,
                 ArcherArmor.id,
+                IdiotDetector.id,
+                InstantDevour.id,
                 MamiyaPhone.id,
                 TakashimaPhone.id,
-                InstantDevour.id
+                FragGrenade.id
         ));
         put(SSR, List.of(
-                LongSword.id,
+                NormalBow.id,
                 HGMagazine.id,
                 SMGMagazine.id,
                 ARMagazine.id,
                 Pistol.id,
-                NormalBow.id
+                LongSword.id,
+                FortuneBall.id,
+                EdenChime.id
         ));
         put(UR, List.of(
-                ThunderJavelin.id,
-                RailGun.id
+                RailGun.id,
+                ThunderJavelin.id
         ));
     }};
 
@@ -166,8 +171,14 @@ public class ChestProvider {
     }
 
     public static void removeAllChests() {
-        for(Location loc : GameLocation.chestLocations) {
-            Block block = Bukkit.getWorld("world").getBlockAt(loc);
+        for(Vector vector : GameLocation.chestLocations) {
+            Location loc = new Location(
+                    Bukkit.getWorld("world"),
+                    vector.getX(),
+                    vector.getY(),
+                    vector.getZ()
+            );
+            Block block = Objects.requireNonNull(Bukkit.getWorld("world")).getBlockAt(loc);
             if(block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST){
                 Chest chest = (Chest) block.getState();
                 Inventory inventory = chest.getInventory();

@@ -6,8 +6,8 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.event.player.damage.DamageCalculator;
+import org.meyason.dokkoi.item.battleitem.FragGrenade;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
@@ -111,6 +111,14 @@ public class ProjectileHitBlockEvent implements Listener {
                     return;
                 }
                 manager.removeProjectileData(arrow);
+            }
+            case Egg egg ->{
+                ProjectileData projectileData = manager.getProjectileDataMap().get(egg);
+                if (projectileData == null) {
+                    return;
+                }
+                event.setCancelled(true);
+                FragGrenade.onHit(projectileData);
             }
             default -> {
             }

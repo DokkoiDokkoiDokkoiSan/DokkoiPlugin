@@ -57,7 +57,7 @@ public class SummonersBrave extends CustomItem {
     public void setPlayer(Game game, Player player){
         this.game = game;
         this.player = player;
-        player.sendMessage(Component.text("§aレイピア§bを手に入れた！"));
+        player.sendMessage(Component.text("§a儀礼剣§bを手に入れた！"));
     }
 
 }

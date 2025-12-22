@@ -59,7 +59,7 @@ public class DamageValidator {
     /**
      * Prayerの「もっと最強のたまたま」チェック
      */
-    public static ValidationResult checkStrongestBall(Player player, GameStatesManager gsm) {
+    public static ValidationResult checkStrongestStrongestBall(Player player, GameStatesManager gsm) {
         if (gsm.getPlayerJobs().get(player.getUniqueId()) instanceof Prayer prayer) {
             if (prayer.getHasStrongestStrongestBall()) {
                 return ValidationResult.cancel("§aもっと最強のたまたま§bが攻撃を許さない！");

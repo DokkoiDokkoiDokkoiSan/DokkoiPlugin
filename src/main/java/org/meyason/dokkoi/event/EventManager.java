@@ -33,5 +33,25 @@ public class EventManager {
         pm.registerEvents(new CraftProtect(), core);
         pm.registerEvents(new ChairInteractEvent(), core);
         pm.registerEvents(new ShiftEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new PlayerInteractManager(), core);
+        core.getServer().getPluginManager().registerEvents(new DamageEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new ProjectileHitBlockEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new LaunchEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new DespawnEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new LogoutEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new PickEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new PotionEffectEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new EntityInteractEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new LoginEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new ChatEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new ItemFrameProtect(), core);
+        core.getServer().getPluginManager().registerEvents(new MobCombustProtect(), core);
+        core.getServer().getPluginManager().registerEvents(new EntityDeathEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new ChickenSpawnProtect(), core);
+        core.getServer().getPluginManager().registerEvents(new ChestInteractEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new GunSwapEvent(), core);
+        core.getServer().getPluginManager().registerEvents(new FlowerProtect(), core);
+        core.getServer().getPluginManager().registerEvents(new CraftProtect(), core);
+        core.getServer().getPluginManager().registerEvents(new ChairInteractEvent(), core);
     }
 }
