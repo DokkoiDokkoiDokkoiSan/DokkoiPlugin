@@ -1,7 +1,10 @@
 package org.meyason.dokkoi;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 import org.meyason.dokkoi.database.DatabaseConnector;
 import org.meyason.dokkoi.event.EventManager;
 import org.meyason.dokkoi.command.CommandManager;
@@ -43,7 +46,8 @@ public final class Dokkoi extends JavaPlugin {
         new CommandManager(this);
         new GameItem();
         new Game();
-        new PacketScheduler().runTaskTimer(this, 30*20L, 1L);
+        Bukkit.getLogger().info("oKOKOKOKOKOKOKOOK");
+        new PacketScheduler().runTaskTimer(this, 0, 20L);
         // PacketListener for debugging, developing;
         // new DebugPacketListener().register();
     }

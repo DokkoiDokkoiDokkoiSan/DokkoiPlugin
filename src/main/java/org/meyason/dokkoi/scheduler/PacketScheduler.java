@@ -14,13 +14,16 @@ public class PacketScheduler extends BukkitRunnable {
 
     @Override
     public void run() {
+        Bukkit.getLogger().info("test");
         for( Player player : Bukkit.getOnlinePlayers()){
             PacketContainer pk;
+            boolean b = false;
             if(
                     Game.getInstance().getGameStatesManager().getGameState().equals(GameState.WAITING)
                     || Game.getInstance().getGameStatesManager().getGameState().equals(GameState.END)
             ){
                 pk = PacketProcess.showNameTag(player, null);
+                b = true;
             }else if(
                     (Game.getInstance().getGameStatesManager().getGameState().equals(GameState.PREP)
                     || Game.getInstance().getGameStatesManager().getGameState().equals(GameState.MATCHING)
@@ -29,11 +32,13 @@ public class PacketScheduler extends BukkitRunnable {
             ){
                 pk = PacketProcess.hideNameTag(player, null);
             }else{
-                throw new GameStateException("GameStateが予期されていないまたは無効な状態です。");
+                pk = PacketProcess.showNameTag(player, null);
             }
+            boolean finalB = b;
             Bukkit.getOnlinePlayers().forEach(p -> {
+                Bukkit.getLogger().info("own:" + player.getName() + ",send: " + p.getName() + ", hide: " + (finalB ? "hide" : "show"));
                 if(p.getUniqueId().equals(player.getUniqueId())) return;
-                PacketSender.sendPacket(p, pk);
+                PacketSender.sendPacket(p, pk.deepClone());
             });
         }
     }
