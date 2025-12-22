@@ -10,6 +10,7 @@ import org.meyason.dokkoi.file.Config;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.LPManager;
 import org.meyason.dokkoi.item.GameItem;
+import org.meyason.dokkoi.scheduler.PacketScheduler;
 
 public final class Dokkoi extends JavaPlugin {
 
@@ -42,6 +43,7 @@ public final class Dokkoi extends JavaPlugin {
         new CommandManager(this);
         new GameItem();
         new Game();
+        new PacketScheduler().runTaskTimer(this, 30*20L, 1L);
         // PacketListener for debugging, developing;
         // new DebugPacketListener().register();
     }
