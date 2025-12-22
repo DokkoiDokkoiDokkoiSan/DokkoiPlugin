@@ -43,7 +43,7 @@ public class Scheduler extends BukkitRunnable {
                 game.setNowTime(game.getNowTime() - 1);
                 if(game.getMatchQueueSize() < game.minimumGameStartPlayers){
                     Bukkit.getServer().broadcast(Component.text("§c参加者が最低人数を下回ったため、待機フェーズに戻ります。"));
-                    new Game();
+                    game.resetGame();
                     return;
                 }
                 if(game.getMatchQueueSize() == game.maximumGamePlayers){

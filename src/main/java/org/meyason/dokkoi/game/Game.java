@@ -424,24 +424,24 @@ public class Game {
         scheduler.cancel();
         ChestProvider.removeAllChests();
         ChestProvider.getInstance().cancelTask();
-        for(UUID uuid : gameStatesManager.getJoinedPlayers()){
-            if(gameStatesManager.getCoolDownScheduler().containsKey(uuid)){
-                gameStatesManager.getCoolDownScheduler().get(uuid).cancel();
-            }
-        }
         gameStatesManager.setGameState(GameState.WAITING);
-        for(UUID uuid : gameStatesManager.getJoinedPlayers()){
-            Player player = Bukkit.getPlayer(uuid);
-            if(player == null || !player.isOnline()){
-                continue;
+        if(!gameStatesManager.getJoinedPlayers().isEmpty()) {
+            for (UUID uuid : gameStatesManager.getJoinedPlayers()) {
+                Player player = Bukkit.getPlayer(uuid);
+                if (player == null || !player.isOnline()) {
+                    continue;
+                }
+                if (gameStatesManager.getCoolDownScheduler().containsKey(uuid)) {
+                    gameStatesManager.getCoolDownScheduler().get(uuid).cancel();
+                }
+                player.getInventory().clear();
+                player.getInventory().setHelmet(null);
+                player.setMaxHealth(20.0);
+                player.setHealth(player.getMaxHealth());
+                player.setFoodLevel(20);
+                player.setCustomNameVisible(true);
+                player.setGameMode(GameMode.CREATIVE);
             }
-            player.getInventory().clear();
-            player.getInventory().setHelmet(null);
-            player.setMaxHealth(20.0);
-            player.setHealth(player.getMaxHealth());
-            player.setFoodLevel(20);
-            player.setCustomNameVisible(true);
-            player.setGameMode(GameMode.CREATIVE);
         }
         matchQueue.clear();
         gameStatesManager.clearAll();
