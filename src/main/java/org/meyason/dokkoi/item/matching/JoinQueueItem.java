@@ -13,6 +13,7 @@ public class JoinQueueItem extends CustomItem {
                 org.bukkit.inventory.ItemStack.of(org.bukkit.Material.EMERALD),
                 1
         );
+        isUnique = true;
     }
 
     @Override

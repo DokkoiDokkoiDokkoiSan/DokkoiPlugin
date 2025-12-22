@@ -20,6 +20,7 @@ public class GoalSelectMenuItem extends CustomItem {
                 ItemStack.of(Material.PAPER),
                 1
         );
+        isUnique = true;
         List<Component> lore = List.of(
                 Component.text("§5右クリックで勝利条件を選択")
         );

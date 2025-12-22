@@ -8,12 +8,15 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.event.player.damage.DamageCalculator;
 import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.exception.NoGameItemException;
+import org.meyason.dokkoi.game.GameLocation;
+import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.item.food.*;
 import org.meyason.dokkoi.item.gunitem.*;
@@ -327,11 +330,17 @@ public class Prayer extends Job {
         if(target == null){
             return;
         }
-        // TODO: 異空間
+        List<Vector> locations = GameLocation.prayerUltimateLocations;
+        World world = target.getWorld();
+        player.teleport(locations.getFirst().toLocation(world));
+        target.teleport(locations.getLast().toLocation(world));
         player.sendMessage("§a" + target.getName() + "§aと異空間に転移しました。どちらかが死ぬまで戻れません。");
         target.sendMessage("§a" + player.getName() + "§aと異空間に転移しました。どちらかが死ぬまで戻れません。");
         player.sendMessage("§a抽選中...");
         target.sendMessage("§a抽選中...");
+        GameStatesManager manager = game.getGameStatesManager();
+        manager.addDamageCutPercent(player.getUniqueId(), 100);
+        manager.addDamageCutPercent(target.getUniqueId(), 100);
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -340,10 +349,12 @@ public class Prayer extends Job {
                     DeathEvent.kill(target, player);
                     player.sendMessage("§aあなたの勝利です。");
                     target.sendMessage("§cあなたは敗北しました。");
+                    manager.addDamageCutPercent(player.getUniqueId(), 0);
                 } else {
                     DeathEvent.kill(player, target);
                     target.sendMessage("§aあなたの勝利です。");
                     player.sendMessage("§cあなたは敗北しました。");
+                    manager.addDamageCutPercent(target.getUniqueId(), 0);
                 }
             }
         }.runTaskLater(Dokkoi.getInstance(), 20 * 5);

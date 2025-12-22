@@ -7,7 +7,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -20,7 +19,6 @@ import org.meyason.dokkoi.event.player.damage.ProjectileDamageHandler;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.game.ProjectileData;
-import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.battleitem.FragGrenade;
 import org.meyason.dokkoi.item.weapon.DrainBrade;
 
@@ -58,15 +56,15 @@ public class DamageEvent implements Listener {
             return;
         }
 
-        // 最強のたまたまチェック（攻撃者・被ダメージ者両方）
-        DamageValidator.ValidationResult attackerCheck = DamageValidator.checkStrongestBall(attacker, gsm);
+        // もっと最強のたまたまチェック（攻撃者・被ダメージ者両方）
+        DamageValidator.ValidationResult attackerCheck = DamageValidator.checkStrongestStrongestBall(attacker, gsm);
         if (attackerCheck.shouldCancel()) {
             event.setCancelled(true);
             attacker.sendActionBar(Component.text(attackerCheck.message()));
             return;
         }
 
-        DamageValidator.ValidationResult damagedCheck = DamageValidator.checkStrongestBall(damaged, gsm);
+        DamageValidator.ValidationResult damagedCheck = DamageValidator.checkStrongestStrongestBall(damaged, gsm);
         if (damagedCheck.shouldCancel()) {
             event.setCancelled(true);
             damaged.sendActionBar(Component.text(damagedCheck.message()));
@@ -84,6 +82,11 @@ public class DamageEvent implements Listener {
 
         // 最強のたまたまによるダメージ軽減
         if (DamageValidator.checkStrongestBallDamageReduction(damaged, gsm)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        if(gsm.getAdditionalDamage().get(attacker.getUniqueId()) <= -300){
             event.setCancelled(true);
             return;
         }
@@ -139,7 +142,7 @@ public class DamageEvent implements Listener {
                 return;
             }
 
-            DamageValidator.ValidationResult check = DamageValidator.checkStrongestBall(damagedPlayer, gsm);
+            DamageValidator.ValidationResult check = DamageValidator.checkStrongestStrongestBall(damagedPlayer, gsm);
             if (check.shouldCancel()) {
                 event.setCancelled(true);
                 damagedPlayer.sendActionBar(Component.text(check.message()));
@@ -223,7 +226,7 @@ public class DamageEvent implements Listener {
             return;
         }
 
-        DamageValidator.ValidationResult check = DamageValidator.checkStrongestBall(damaged, gsm);
+        DamageValidator.ValidationResult check = DamageValidator.checkStrongestStrongestBall(damaged, gsm);
         if (check.shouldCancel()) {
             event.setCancelled(true);
             damaged.sendActionBar(Component.text(check.message()));

@@ -1,12 +1,16 @@
 package org.meyason.dokkoi.event.player;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.DokkoiDatabaseAPI;
 import org.meyason.dokkoi.constants.GameState;
@@ -18,6 +22,7 @@ import org.meyason.dokkoi.exception.MoneyNotFoundException;
 import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.exception.UserNotFoundException;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.game.GameLocation;
 import org.meyason.dokkoi.game.LPManager;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
@@ -31,11 +36,12 @@ import java.util.UUID;
 public class LoginEvent implements Listener {
 
     @EventHandler
-    public void onLogin(PlayerLoginEvent event){
+    public void onLogin(PlayerJoinEvent event){
         Player player = event.getPlayer();
         String name = player.getName();
         UUID uuid = player.getUniqueId();
         Game game = Game.getInstance();
+        player.getInventory().clear();
         if(game.getGameStatesManager().getGameState() == GameState.IN_GAME){
             player.kick(Component.text("§c[エラー] ゲーム進行中のため、参加できません。"));
             return;
@@ -87,5 +93,7 @@ public class LoginEvent implements Listener {
 
         user.setUpdated_at(new Date());
         userRepository.updateUser(user);
+        Vector lobby = GameLocation.LobbyLocation;
+        player.teleport(new Location(Bukkit.getWorld("world"), lobby.getX(), lobby.getY(), lobby.getZ()));
     }
 }

@@ -14,6 +14,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.*;
 
+import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.*;
 import org.meyason.dokkoi.entity.GameEntityManager;
@@ -72,6 +73,9 @@ public class Game {
     }
     public int getMatchQueueSize(){ return matchQueue.size(); }
 
+    private Vector heliLocation;
+    public Vector getHeliLocation() { return heliLocation; }
+
     private int nowTime;
     public final int matchingPhaseTime = 5;
     public final int prepPhaseTime = 60;
@@ -113,6 +117,9 @@ public class Game {
         gameStatesManager.setGameState(GameState.WAITING);
         setNowTime(matchingPhaseTime);
         matchQueue.clear();
+        GameLocation.revertAllHeliPort();
+        heliLocation = new Vector();
+        heliLocation = GameLocation.cloneHeli();
         for(Player player : Bukkit.getOnlinePlayers()){
             CustomItem joinItem;
             CustomItem quitItem;
@@ -127,6 +134,9 @@ public class Game {
             ItemStack quitItemStack = quitItem.getItem();
             player.getInventory().addItem(joinItemStack);
             player.getInventory().addItem(quitItemStack);
+
+            Vector lobby = GameLocation.LobbyLocation;
+            player.teleport(new Location(Bukkit.getWorld("world"), lobby.getX(), lobby.getY(), lobby.getZ()));
         }
     }
 
@@ -221,11 +231,17 @@ public class Game {
         int tier1Count = 0;
         int tier2Count = 0;
         int tier3Count = 0;
+        List<Vector> availableSpawnLocations = new ArrayList<>(GameLocation.respawnLocations);
+
         for (UUID uuid : gameStatesManager.getJoinedPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
             if(player == null || !player.isOnline()){
                 continue;
             }
+            int randomIndex = (int) (Math.random() * availableSpawnLocations.size());
+            Vector spawnLocation = availableSpawnLocations.get(randomIndex);
+            availableSpawnLocations.remove(randomIndex);
+            player.teleport(new Location(Bukkit.getWorld("world"), spawnLocation.getX(), spawnLocation.getY(), spawnLocation.getZ()));
             player.playSound(player, Sound.ITEM_GOAT_HORN_SOUND_0, 1.0F, 1.0F);
             player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
             player.getInventory().clear();
@@ -429,6 +445,7 @@ public class Game {
         }
         matchQueue.clear();
         gameStatesManager.clearAll();
+        GameLocation.revertHeliPort(heliLocation);
         new Game();
     }
 

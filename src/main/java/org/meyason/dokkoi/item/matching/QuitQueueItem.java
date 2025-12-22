@@ -15,6 +15,7 @@ public class QuitQueueItem extends CustomItem {
                 ItemStack.of(Material.BARRIER),
                 1
         );
+        isUnique = true;
     }
 
     @Override

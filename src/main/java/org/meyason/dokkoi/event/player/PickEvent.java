@@ -30,6 +30,8 @@ import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.jobitem.*;
 import org.meyason.dokkoi.item.jobitem.gacha.*;
+import org.meyason.dokkoi.item.matching.JoinQueueItem;
+import org.meyason.dokkoi.item.matching.QuitQueueItem;
 import org.meyason.dokkoi.item.utilitem.*;
 import org.meyason.dokkoi.item.weapon.DragonBrade;
 import org.meyason.dokkoi.item.weapon.DrainBrade;
