@@ -13,6 +13,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.game.GameLocation;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.job.Sniper;
 
@@ -35,6 +36,10 @@ public class ChairInteractEvent implements Listener {
         }
 
         if (!block.getType().toString().contains("STAIRS")) {
+            return;
+        }
+
+        if(!GameLocation.isInHeliChair(game.getHeliLocation(), block.getLocation().toVector())){
             return;
         }
 

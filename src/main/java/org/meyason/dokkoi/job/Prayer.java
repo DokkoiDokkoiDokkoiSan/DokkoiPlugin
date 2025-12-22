@@ -8,16 +8,21 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.event.player.damage.DamageCalculator;
 import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.exception.NoGameItemException;
+import org.meyason.dokkoi.game.GameLocation;
+import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.item.food.*;
 import org.meyason.dokkoi.item.gunitem.*;
 import org.meyason.dokkoi.item.jobitem.gacha.*;
+import org.meyason.dokkoi.item.utilitem.FortuneBall;
+import org.meyason.dokkoi.item.utilitem.IdiotDetector;
 import org.meyason.dokkoi.item.utilitem.Monei;
 import org.meyason.dokkoi.item.weapon.*;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
@@ -64,40 +69,45 @@ public class Prayer extends Job {
 
     public static final HashMap<String, List<String>> rarityEffectMap = new HashMap<>(){{
         put(R, List.of(
+                CookedChicken.id,
+                Cod.id,
+                Salmon.id,
+                Bread.id,
                 BakedPotato.id,
                 Arrow.id,
-                Cod.id,
-                Bread.id,
-                HealingCrystal.id,
-                Salmon.id,
-                CookedChicken.id
+                HealingCrystal.id
         ));
         put(SR, List.of(
+                FortuneBall.id,
                 NormalBow.id,
-                ArcherArmor.id,
                 GoldenCarrot.id,
-                CookedPorkchop.id,
-                CookedBeef.id,
                 GlisteringMelonSlice.id,
-                LongSword.id,
+                CookedBeef.id,
+                CookedPorkchop.id,
                 PumpkinPie.id,
                 Pistol.id,
+                LongSword.id,
+                ArcherArmor.id,
+                HGMagazine.id,
                 SMGMagazine.id,
                 ARMagazine.id,
-                InstantDevour.id
+                EdenChime.id,
+                IdiotDetector.id,
+                InstantDevour.id,
+                FragGrenade.id
         ));
         put(UR, List.of(
                 RedBow.id,
                 BlueBow.id,
                 Stinger.id,
-                Monei.id,
                 DragonBrade.id,
-                DrainBrade.id
+                DrainBrade.id,
+                Monei.id
         ));
         put(LR, List.of(
-                ThunderJavelin.id,
                 RailGun.id,
-                DrH.id
+                DrH.id,
+                ThunderJavelin.id
         ));
         put(KETSU, List.of(StrongestBall.id));
         put(KETSUGE, List.of(StrongestStrongestBall.id));
@@ -320,11 +330,17 @@ public class Prayer extends Job {
         if(target == null){
             return;
         }
-        // TODO: 異空間
+        List<Vector> locations = GameLocation.prayerUltimateLocations;
+        World world = target.getWorld();
+        player.teleport(locations.getFirst().toLocation(world));
+        target.teleport(locations.getLast().toLocation(world));
         player.sendMessage("§a" + target.getName() + "§aと異空間に転移しました。どちらかが死ぬまで戻れません。");
         target.sendMessage("§a" + player.getName() + "§aと異空間に転移しました。どちらかが死ぬまで戻れません。");
         player.sendMessage("§a抽選中...");
         target.sendMessage("§a抽選中...");
+        GameStatesManager manager = game.getGameStatesManager();
+        manager.addDamageCutPercent(player.getUniqueId(), 100);
+        manager.addDamageCutPercent(target.getUniqueId(), 100);
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -333,10 +349,12 @@ public class Prayer extends Job {
                     DeathEvent.kill(target, player);
                     player.sendMessage("§aあなたの勝利です。");
                     target.sendMessage("§cあなたは敗北しました。");
+                    manager.addDamageCutPercent(player.getUniqueId(), 0);
                 } else {
                     DeathEvent.kill(player, target);
                     target.sendMessage("§aあなたの勝利です。");
                     player.sendMessage("§cあなたは敗北しました。");
+                    manager.addDamageCutPercent(target.getUniqueId(), 0);
                 }
             }
         }.runTaskLater(Dokkoi.getInstance(), 20 * 5);

@@ -14,6 +14,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.*;
 
+import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.*;
 import org.meyason.dokkoi.entity.GameEntityManager;
@@ -24,6 +25,8 @@ import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.jobitem.Passive;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
+import org.meyason.dokkoi.item.matching.JoinQueueItem;
+import org.meyason.dokkoi.item.matching.QuitQueueItem;
 import org.meyason.dokkoi.item.utilitem.Monei;
 import org.meyason.dokkoi.job.*;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenu;
@@ -49,9 +52,29 @@ public class Game {
 
     public final int maximumGamePlayers = JobList.getAllJobs().size();
 
-    private Queue<UUID> matchQueue = new LinkedList<>();
-    public void addToMatchQueue(UUID uuid){ matchQueue.add(uuid); }
-    public void removeFromMatchQueue(UUID uuid){ matchQueue.remove(uuid); }
+    private final Queue<UUID> matchQueue = new LinkedList<>();
+    public void addToMatchQueue(Player player){
+        if(matchQueue.contains(player.getUniqueId())){
+            player.sendMessage(Component.text("§c既にマッチングキューに参加しています。"));
+            return;
+        }
+        matchQueue.add(player.getUniqueId());
+        player.sendMessage(Component.text("§aマッチングキューに参加しました。"));
+        updateScoreboardDisplay();
+    }
+    public void removeFromMatchQueue(Player player){
+        if(!matchQueue.contains(player.getUniqueId())){
+            player.sendMessage(Component.text("§cマッチングキューに参加していません。"));
+            return;
+        }
+        matchQueue.remove(player.getUniqueId());
+        player.sendMessage(Component.text("§cマッチングキューから退出しました。"));
+        updateScoreboardDisplay();
+    }
+    public int getMatchQueueSize(){ return matchQueue.size(); }
+
+    private Vector heliLocation;
+    public Vector getHeliLocation() { return heliLocation; }
 
     private int nowTime;
     public final int matchingPhaseTime = 5;
@@ -88,24 +111,40 @@ public class Game {
     }
 
     public void init(){
-        clearScoreboardDisplay();
+        scheduler = new Scheduler().runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
+        updateScoreboardDisplay();
         gameStatesManager.init();
+        gameStatesManager.setGameState(GameState.WAITING);
         setNowTime(matchingPhaseTime);
         matchQueue.clear();
+        GameLocation.revertAllHeliPort();
+        heliLocation = new Vector();
+        heliLocation = GameLocation.cloneHeli();
+        for(Player player : Bukkit.getOnlinePlayers()){
+            CustomItem joinItem;
+            CustomItem quitItem;
+            try{
+                joinItem = GameItem.getItem(JoinQueueItem.id);
+                quitItem = GameItem.getItem(QuitQueueItem.id);
+            } catch (NoGameItemException e) {
+                player.sendMessage("§4エラーが発生しました．管理者に連絡してください：マッチング参加/退出アイテム取得失敗");
+                return;
+            }
+            ItemStack joinItemStack = joinItem.getItem();
+            ItemStack quitItemStack = quitItem.getItem();
+            player.getInventory().addItem(joinItemStack);
+            player.getInventory().addItem(quitItemStack);
+
+            Vector lobby = GameLocation.LobbyLocation;
+            player.teleport(new Location(Bukkit.getWorld("world"), lobby.getX(), lobby.getY(), lobby.getZ()));
+        }
     }
 
     public void matching(){
-        if(Bukkit.getOnlinePlayers().size() < minimumGameStartPlayers){
-            Component message = Component.text("§c参加者が最低人数(" + minimumGameStartPlayers + "人)に達していないため、ゲームを開始できません。");
-            Bukkit.getServer().broadcast(message);
-            gameStatesManager.setGameState(GameState.WAITING);
-            return;
-        }
         Component message = Component.text("§aマッチングを開始。" + matchingPhaseTime + "秒後に目標が決定する。");
         Bukkit.getServer().broadcast(message);
 
         gameStatesManager.setGameState(GameState.MATCHING);
-        scheduler = new Scheduler().runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
@@ -114,20 +153,14 @@ public class Game {
             team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
             team.addEntry(player.getName());
             player.setScoreboard(scoreboard);
-            matchQueue.add(player.getUniqueId());
         }
 
         updateScoreboardDisplay();
     }
 
     public void prepPhase(){
-        int participantCount = 0;
-        while(!matchQueue.isEmpty() && participantCount < maximumGamePlayers){
-            UUID uuid = matchQueue.poll();
-            Player player = Bukkit.getPlayer(uuid);
-            if(player == null || !player.isOnline()){
-                continue;
-            }
+        for(Player player : Bukkit.getOnlinePlayers()){
+            UUID uuid = player.getUniqueId();
             gameStatesManager.addAlivePlayer(uuid);
             gameStatesManager.addJoinedPlayer(uuid);
             player.getInventory().clear();
@@ -136,15 +169,6 @@ public class Game {
             player.setHealth(40.0);
             player.setFoodLevel(20);
             player.setCustomNameVisible(false);
-            participantCount++;
-        }
-
-        while(!matchQueue.isEmpty()){
-            UUID uuid = matchQueue.poll();
-            Player player = Bukkit.getPlayer(uuid);
-            if(player != null && player.isOnline()){
-                player.sendMessage("§c参加者が最大人数(" + maximumGamePlayers + "人)に達したため、ゲームに参加できませんでした。");
-            }
         }
 
         onGame = true;
@@ -207,11 +231,17 @@ public class Game {
         int tier1Count = 0;
         int tier2Count = 0;
         int tier3Count = 0;
+        List<Vector> availableSpawnLocations = new ArrayList<>(GameLocation.respawnLocations);
+
         for (UUID uuid : gameStatesManager.getJoinedPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
             if(player == null || !player.isOnline()){
                 continue;
             }
+            int randomIndex = (int) (Math.random() * availableSpawnLocations.size());
+            Vector spawnLocation = availableSpawnLocations.get(randomIndex);
+            availableSpawnLocations.remove(randomIndex);
+            player.teleport(new Location(Bukkit.getWorld("world"), spawnLocation.getX(), spawnLocation.getY(), spawnLocation.getZ()));
             player.playSound(player, Sound.ITEM_GOAT_HORN_SOUND_0, 1.0F, 1.0F);
             player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
             player.getInventory().clear();
@@ -394,26 +424,28 @@ public class Game {
         scheduler.cancel();
         ChestProvider.removeAllChests();
         ChestProvider.getInstance().cancelTask();
-        for(UUID uuid : gameStatesManager.getJoinedPlayers()){
-            if(gameStatesManager.getCoolDownScheduler().containsKey(uuid)){
-                gameStatesManager.getCoolDownScheduler().get(uuid).cancel();
-            }
-        }
         gameStatesManager.setGameState(GameState.WAITING);
-        for(UUID uuid : gameStatesManager.getJoinedPlayers()){
-            Player player = Bukkit.getPlayer(uuid);
-            if(player == null || !player.isOnline()){
-                continue;
+        if(!gameStatesManager.getJoinedPlayers().isEmpty()) {
+            for (UUID uuid : gameStatesManager.getJoinedPlayers()) {
+                Player player = Bukkit.getPlayer(uuid);
+                if (player == null || !player.isOnline()) {
+                    continue;
+                }
+                if (gameStatesManager.getCoolDownScheduler().containsKey(uuid)) {
+                    gameStatesManager.getCoolDownScheduler().get(uuid).cancel();
+                }
+                player.getInventory().clear();
+                player.getInventory().setHelmet(null);
+                player.setMaxHealth(20.0);
+                player.setHealth(player.getMaxHealth());
+                player.setFoodLevel(20);
+                player.setCustomNameVisible(true);
+                player.setGameMode(GameMode.CREATIVE);
             }
-            player.getInventory().clear();
-            player.getInventory().setHelmet(null);
-            player.setMaxHealth(20.0);
-            player.setHealth(player.getMaxHealth());
-            player.setFoodLevel(20);
-            player.setCustomNameVisible(true);
-            player.setGameMode(GameMode.CREATIVE);
         }
+        matchQueue.clear();
         gameStatesManager.clearAll();
+        GameLocation.revertHeliPort(heliLocation);
         new Game();
     }
 
@@ -493,10 +525,11 @@ public class Game {
         if(gameStatesManager.getGameState() == GameState.WAITING){
             objective.getScore("§b所持金: §f" + lpManager.getLP(uuid) + "LP").setScore(--i);
             objective.getScore("§a参加人数: §f" + Bukkit.getOnlinePlayers().size() + "人").setScore(--i);
+            objective.getScore("§aキュー人数: §f" + getMatchQueueSize() + "人").setScore(--i);
         }else if(gameStatesManager.getGameState() == GameState.MATCHING){
             objective.getScore("§b所持金: §f" + lpManager.getLP(uuid) + "LP").setScore(--i);
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
-            objective.getScore("§a参加人数: §f" + Bukkit.getOnlinePlayers().size() + "人").setScore(--i);
+            objective.getScore("§aキュー人数: §f" + getMatchQueueSize() + "人").setScore(--i);
         }else if(gameStatesManager.getGameState() == GameState.PREP) {
             objective.getScore("§b所持金: §f" + lpManager.getLP(uuid) + "LP").setScore(--i);
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);

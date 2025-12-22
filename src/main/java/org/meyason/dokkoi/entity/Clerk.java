@@ -15,28 +15,39 @@ import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.item.gunitem.*;
-import org.meyason.dokkoi.item.utilitem.Monei;
+import org.meyason.dokkoi.item.utilitem.*;
 import org.meyason.dokkoi.item.weapon.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class Clerk extends GameEntity {
 
+    private String type;
+
+    private List<UUID> bottlePlayers;
+
     public static final HashMap<String, Integer> itemPrices = new HashMap<>() {{
+        put(IdiotDetector.id, 2);
+        put(FortuneBall.id, 5);
         put(PotionBottleFull.id, 3);
         put(InstantDevour.id, 3);
 
         put(HealingCrystal.id, 1);
         put(ArcherArmor.id, 2);
+        put(EdenChime.id, 5);
+        put(FragGrenade.id, 3);
 
         put(LongSword.id, 5);
         put(DrainBrade.id, 10);
         put(DragonBrade.id, 10);
+
         put(NormalBow.id, 4);
         put(RedBow.id, 9);
         put(BlueBow.id, 14);
         put(Arrow.id, 1);
+
         put(Pistol.id, 11);
         put(Stinger.id, 17);
         put(DrH.id, 23);
@@ -46,17 +57,25 @@ public class Clerk extends GameEntity {
     }};
 
     public static final List<String> availableItems = List.of(
+            IdiotDetector.id,
+            FortuneBall.id,
             PotionBottleFull.id,
             InstantDevour.id,
+
             HealingCrystal.id,
             ArcherArmor.id,
+            EdenChime.id,
+            FragGrenade.id,
+
             LongSword.id,
             DrainBrade.id,
             DragonBrade.id,
+
             NormalBow.id,
             RedBow.id,
             BlueBow.id,
             Arrow.id,
+
             Pistol.id,
             Stinger.id,
             DrH.id,
@@ -65,12 +84,13 @@ public class Clerk extends GameEntity {
             ARMagazine.id
     );
 
-    public Clerk() {
+    public Clerk(String type) {
         super(GameEntity.CLERK);
+        this.type = type;
     }
 
     public void talk(Player player) {
-        player.sendMessage(Component.text("§bショップおじいちゃん「入って、どうぞ。ゆっくり見てけよ見てけよ～」"));
+        player.sendMessage(Component.text(GameEntity.talkMessageMap.get(type)));
     }
 
     public int getItemPrice(String itemId) {
@@ -95,14 +115,14 @@ public class Clerk extends GameEntity {
             }
         }
         if(moneyCount < price){
-            player.sendMessage("§cショップおじいちゃん「そちら、14万3000円になっております。」");
+            player.sendMessage(Component.text(GameEntity.notEnoughMoneyMessageMap.get(type)));
             return false;
         }else{
             CustomItem customItem;
             try{
                 customItem = GameItem.getItem(itemId);
             }catch(NoGameItemException e){
-                player.sendMessage("§cショップおじいちゃん「(商品が)ないです。」");
+                player.sendMessage(Component.text(GameEntity.getGameItemFailedMessageMap.get(type)));
                 return false;
             }
             ItemStack itemStack = customItem.getItem();
@@ -112,7 +132,7 @@ public class Clerk extends GameEntity {
             // インベントリに空きがあるか判定
             int emptySlot = player.getInventory().firstEmpty();
             if(emptySlot == -1) {
-                player.sendMessage("§cショップおじいちゃん「あっおい待てい、インベントリに空きがないゾ」");
+                player.sendMessage(Component.text(GameEntity.notEnoughInventoryMessageMap.get(type)));
                 return false;
             }
             // モネイを減らす
@@ -140,8 +160,17 @@ public class Clerk extends GameEntity {
             }
 
             player.getInventory().addItem(itemStack);
-            player.sendMessage("§bショップおじいちゃん「ありがとナス！またいいよ！こいよ！」");
+            player.sendMessage(Component.text(GameEntity.buyItemMessageMap.get(type)));
             return true;
         }
+    }
+
+    public boolean isAlreadyRefilled(Player player){
+        player.sendMessage(Component.text(GameEntity.getGameItemFailedMessageMap.get(type)));
+        return bottlePlayers.contains(player.getUniqueId());
+    }
+
+    public void addRefilledPlayer(Player player){
+        bottlePlayers.add(player.getUniqueId());
     }
 }

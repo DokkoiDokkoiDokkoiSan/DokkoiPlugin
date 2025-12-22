@@ -68,8 +68,8 @@ public class LogoutEvent implements Listener {
                 Objects.requireNonNull(defender).setTargetPlayer();
                 defenderPlayer.sendMessage(Component.text("§6あなたの守護対象がログアウトしたため、新たに守護対象を選定しました。"));
             }
-        }else if(gameStatesManager.getGameState() == GameState.MATCHING){
-            game.removeFromMatchQueue(playerUniqueId);
+        }else if(gameStatesManager.getGameState() == GameState.WAITING || gameStatesManager.getGameState() == GameState.MATCHING){
+            game.removeFromMatchQueue(player);
 
         }
     }

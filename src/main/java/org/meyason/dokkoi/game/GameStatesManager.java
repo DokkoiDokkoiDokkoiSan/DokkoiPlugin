@@ -1,5 +1,6 @@
 package org.meyason.dokkoi.game;
 
+import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Trident;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -60,6 +61,8 @@ public class GameStatesManager {
     private HashMap<UUID, BukkitRunnable> coolDownScheduler;
     private HashMap<UUID, BukkitRunnable> itemCoolDownScheduler;
     private HashMap<Trident, BukkitRunnable> tridentDespawnWatchDogs;
+    private HashMap<Egg, BukkitRunnable> fragGrenadeScheduler;
+    private HashMap<UUID, BukkitRunnable> EdenChimeTasks;
 
     private HashMap<String, GameEntity> spawnedEntities;
 
@@ -107,6 +110,8 @@ public class GameStatesManager {
         coolDownScheduler = new HashMap<>();
         itemCoolDownScheduler = new HashMap<>();
         tridentDespawnWatchDogs = new HashMap<>();
+        fragGrenadeScheduler = new HashMap<>();
+        EdenChimeTasks = new HashMap<>();
         spawnedEntities = new HashMap<>();
     }
 
@@ -139,6 +144,8 @@ public class GameStatesManager {
         coolDownScheduler.clear();
         itemCoolDownScheduler.clear();
         tridentDespawnWatchDogs.clear();
+        fragGrenadeScheduler.clear();
+        EdenChimeTasks.clear();
         spawnedEntities.clear();
     }
 
@@ -161,6 +168,7 @@ public class GameStatesManager {
         removeUltimateSkillCoolDownTask(uuid);
         removeCoolDownScheduler(uuid);
         removeItemCoolDownScheduler(uuid);
+        removeEdenChimeTask(uuid);
     }
 
     public GameState getGameState() {
@@ -469,6 +477,23 @@ public class GameStatesManager {
     public void removeTridentDespawnWatchDog(Trident trident) {
         if(!this.tridentDespawnWatchDogs.containsKey(trident)) {return;}
         this.tridentDespawnWatchDogs.remove(trident);
+    }
+
+    public HashMap<Egg, BukkitRunnable> getFragGrenadeScheduler() {return fragGrenadeScheduler;}
+    public void setFragGrenadeScheduler(HashMap<Egg, BukkitRunnable> fragGrenadeScheduler) {this.fragGrenadeScheduler = fragGrenadeScheduler;}
+    public void addFragGrenadeScheduler(Egg egg, BukkitRunnable task) {this.fragGrenadeScheduler.put(egg, task);}
+    public void removeFragGrenadeScheduler(Egg egg) {
+        if(!this.fragGrenadeScheduler.containsKey(egg)) {return;}
+        this.fragGrenadeScheduler.remove(egg);
+    }
+
+    public HashMap<UUID, BukkitRunnable> getEdenChimeTasks() {return EdenChimeTasks;}
+    public void setEdenChimeTasks(HashMap<UUID, BukkitRunnable> edenChimeTasks) {EdenChimeTasks = edenChimeTasks;}
+    public void addEdenChimeTask(UUID player, BukkitRunnable task) {this.EdenChimeTasks.put(player, task);}
+    public boolean isExistEdenChimeTask(UUID player) {return this.EdenChimeTasks.containsKey(player);}
+    public void removeEdenChimeTask(UUID player) {
+        if(!this.EdenChimeTasks.containsKey(player)) {return;}
+        this.EdenChimeTasks.remove(player);
     }
 
     public GameEntity getSpawnedEntitiesFromUUID(String uuid) {return spawnedEntities.get(uuid);}
