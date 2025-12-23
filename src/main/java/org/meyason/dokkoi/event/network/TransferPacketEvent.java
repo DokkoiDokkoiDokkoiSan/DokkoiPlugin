@@ -16,6 +16,7 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.network.PacketProcess;
 
 public class TransferPacketEvent extends PacketAdapter implements Listener {
+
     public TransferPacketEvent(Plugin plugin) {
         super(plugin, PacketType.Play.Server.ENTITY_METADATA);
     }
