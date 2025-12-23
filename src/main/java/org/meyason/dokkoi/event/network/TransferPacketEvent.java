@@ -42,7 +42,7 @@ public class TransferPacketEvent extends PacketAdapter implements Listener {
         }else{
             pk = PacketProcess.showNameTag(player, null);
             Dokkoi.getInstance().getLogger().warning("未知のゲームステートにより、名前表示処理が正常に行われませんでした。処理は継続されます。");
-            Dokkoi.getInstance().getLogger().warning("現在のゲームステート: " + Game.getInstance().getGameStatesManager().getGameState());
+            Dokkoi.getInstance().getLogger().warning("現在のゲームステート: " + Game.getInstance().getGameStatesManager().getGameState().getDisplayName());
             Dokkoi.getInstance().getLogger().warning("org.meyason.dokkoi.event.network.TransferPacketEvent::onPacketSending [line 43]");
         }
         event.setPacket(pk);
