@@ -12,15 +12,16 @@ import java.util.Random;
 public class GameLocation {
 
     public static List<Vector> chestLocations = List.of(
-//            new Vector(-517, 73, -16),
-//            new Vector(-517, 73, -14),
-//            new Vector(-517, 73, -12),
-//            new Vector(-517, 73, -10),
-//            new Vector(-518, 73, -9),
-//            new Vector(-520, 73, -9),
-//            new Vector(-522, 73, -9),
-//            new Vector(-524, 73, -9),
-            new Vector(-526, 73, -9)
+//            89,5,132
+//91,1,107
+//128,1,107
+//110,1,145
+//150,1,150
+            new Vector(89,5,132),
+            new Vector(91,1,107),
+            new Vector(128,1,107),
+            new Vector(110,1,145),
+            new Vector(150,1,150)
     );
 
     public static List<Vector> originalHelicopterLocations = List.of(
@@ -227,6 +228,38 @@ public class GameLocation {
 //72,2,-127
 //68,1,-96
 //127,16,-105
+//            地下駐車場＆1F
+//50,-9,43
+//71,-9,-2
+//50,-9,-43
+//7,-9,-2
+//68,1,2
+//31,1,17
+//-31,1,-35
+//-44,1,4
+//-21,1,29
+//            4F
+//50,28,36
+//53,28,1
+//2,28,6
+//29,28,-21
+//3F
+//-7,19,32
+//-35,31,32
+//-42,19,6
+//-7,19,3
+//-35,31,3
+//-23,19,-36
+//1,19,-2
+//17,19,-27
+//54,19,-2
+//35,19,37
+//            67,38,-3
+//57,38,38
+//31,38,36
+//29,38,11
+//31,38,-13
+//48,38,-24
             new Vector(149.5,1,74.5),
             new Vector(149.5,1,0.5),
             new Vector(149.5,1,-73.5),
@@ -290,7 +323,36 @@ public class GameLocation {
             new Vector(90.5,7,-145.5),
             new Vector(72.5,2,-126.5),
             new Vector(68.5,1,-95.5),
-            new Vector(127.5,16,-104.5)
+            new Vector(127.5,16,-104.5),
+            new Vector(50.5,-9,43.5),
+            new Vector(71.5,-9,-1.5),
+            new Vector(50.5,-9,-42.5),
+            new Vector(7.5,-9,-1.5),
+            new Vector(68.5,1,2.5),
+            new Vector(31.5,1,17.5),
+            new Vector(-30.5,1,-34.5),
+            new Vector(-43.5,1,4.5),
+            new Vector(-20.5,1,29.5),
+            new Vector(50.5,28,36.5),
+            new Vector(53.5,28,1.5),
+            new Vector(2.5,28,6.5),
+            new Vector(29.5,28,-20.5),
+            new Vector(-6.5,19,32.5),
+            new Vector(-34.5,31,32.5),
+            new Vector(-41.5,19,6.5),
+            new Vector(-6.5,19,3.5),
+            new Vector(-34.5,31,3.5),
+            new Vector(-22.5,19,-35.5),
+            new Vector(1.5,19,-1.5),
+            new Vector(17.5,19,-26.5),
+            new Vector(54.5,19,-1.5),
+            new Vector(35.5,19,37.5),
+            new Vector(67.5, 38,-2.5),
+            new Vector(57.5, 38,38.5),
+            new Vector(31.5, 38,36.5),
+            new Vector(29.5, 38,11.5),
+            new Vector(31.5, 38,-12.5),
+            new Vector(48.5, 38,-23.5)
     );
 
 }
