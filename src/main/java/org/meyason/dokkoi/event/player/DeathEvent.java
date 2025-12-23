@@ -1,5 +1,6 @@
 package org.meyason.dokkoi.event.player;
 
+import com.comphenix.protocol.events.PacketContainer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -26,6 +27,8 @@ import org.meyason.dokkoi.job.Bomber;
 import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.job.Prayer;
 import org.meyason.dokkoi.job.Summoner;
+import org.meyason.dokkoi.network.PacketProcess;
+import org.meyason.dokkoi.network.PacketSender;
 
 import java.util.HashMap;
 import java.util.List;
@@ -153,6 +156,14 @@ public class DeathEvent {
 
         dead.setGameMode(GameMode.SPECTATOR);
         dead.setHealth(dead.getMaxHealth());
+
+        Game.getInstance().getGameStatesManager().getJoinedPlayers().forEach(p -> {
+            Player joinedPlayer = Bukkit.getPlayer(p);
+            if(joinedPlayer != null && joinedPlayer.isOnline()){
+                PacketContainer pk = PacketProcess.showNameTag(joinedPlayer, null);
+                PacketSender.sendPacket(dead, pk);
+            }
+        });
 
         lpManager.addLP(killerUUID, 10L);
 
