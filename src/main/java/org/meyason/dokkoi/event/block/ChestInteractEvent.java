@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
+import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.job.Prayer;
@@ -26,7 +27,9 @@ public class ChestInteractEvent implements Listener {
         if(!(block.getState() instanceof InventoryHolder chest)) return;
 
         if(game.getGameStatesManager().getGameState() == GameState.PREP){
-            event.setCancelled(true);
+            if(!Dokkoi.getInstance().isEditModePlayer(player.getUniqueId())) {
+                event.setCancelled(true);
+            }
 
         }else if(game.getGameStatesManager().getGameState() == GameState.IN_GAME){
             if(game.getGameStatesManager().isNaito(player.getUniqueId())){

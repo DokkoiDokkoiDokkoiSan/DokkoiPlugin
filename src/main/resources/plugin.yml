@@ -25,3 +25,7 @@ commands:
     description: LPを追加します．
     usage: /addLP <player> <amount>
     default: op
+  edit:
+    description: ワールドを編集します．
+    usage: /edit
+    default: op
