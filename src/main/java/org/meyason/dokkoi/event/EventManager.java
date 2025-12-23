@@ -1,9 +1,11 @@
 package org.meyason.dokkoi.event;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import org.bukkit.plugin.PluginManager;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.event.block.*;
 import org.meyason.dokkoi.event.entity.*;
+import org.meyason.dokkoi.event.network.TransferPacketEvent;
 import org.meyason.dokkoi.event.player.*;
 
 public class EventManager {
@@ -32,5 +34,7 @@ public class EventManager {
         pm.registerEvents(new FlowerProtect(), core);
         pm.registerEvents(new CraftProtect(), core);
         pm.registerEvents(new ChairInteractEvent(), core);
+
+        ProtocolLibrary.getProtocolManager().addPacketListener(new TransferPacketEvent(core));
     }
 }

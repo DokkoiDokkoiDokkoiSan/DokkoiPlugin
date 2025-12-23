@@ -1,20 +1,14 @@
 package org.meyason.dokkoi;
 
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 import org.meyason.dokkoi.database.DatabaseConnector;
 import org.meyason.dokkoi.event.EventManager;
 import org.meyason.dokkoi.command.CommandManager;
-import org.meyason.dokkoi.event.network.DebugPacketListener;
 import org.meyason.dokkoi.file.Config;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.LPManager;
 import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.scheduler.PacketScheduler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +58,6 @@ public final class Dokkoi extends JavaPlugin {
         new EventManager(this);
         new CommandManager(this);
         new GameItem();
-        new PacketScheduler().runTaskTimer(this, 0, 1);
         new Game();
         // PacketListener for debugging, developing;
         // new DebugPacketListener().register();
