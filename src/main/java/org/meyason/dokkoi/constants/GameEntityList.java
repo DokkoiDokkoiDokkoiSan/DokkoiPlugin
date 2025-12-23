@@ -8,6 +8,8 @@ public enum GameEntityList {
     OOKI("ooki", GameEntityKeyString.COMEDIAN),
     DEALER("dealer", GameEntityKeyString.NPC),
     CLERK("clerk", GameEntityKeyString.NPC),
+    SUSURU("susuru", GameEntityKeyString.NPC),
+    INMU("inmu", GameEntityKeyString.NPC),
     SKELETON("skeleton", GameEntityKeyString.ENEMY);
 
     private final String id;
