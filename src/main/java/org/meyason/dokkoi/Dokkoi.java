@@ -16,6 +16,10 @@ import org.meyason.dokkoi.game.LPManager;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.scheduler.PacketScheduler;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 public final class Dokkoi extends JavaPlugin {
 
     private static Dokkoi instance;
@@ -30,6 +34,19 @@ public final class Dokkoi extends JavaPlugin {
 
     public LPManager getLPManager() {return lpManager;}
 
+    private List<UUID> editModePlayers;
+    public void addEditModePlayer(UUID uuid) {
+        if(!editModePlayers.contains(uuid)){
+            editModePlayers.add(uuid);
+        }
+    }
+    public void removeEditModePlayer(UUID uuid) {
+        editModePlayers.remove(uuid);
+    }
+    public boolean isEditModePlayer(UUID uuid) {
+        return editModePlayers.contains(uuid);
+    }
+
     @Override
     public void onEnable() {
         instance = this;
@@ -41,6 +58,7 @@ public final class Dokkoi extends JavaPlugin {
                 config.getDBUserName(),
                 config.getDBUserPassword()
         );
+        this.editModePlayers = new ArrayList<>();
         new DokkoiDatabaseAPI(databaseConnector);
         this.lpManager = new LPManager();
         new EventManager(this);
