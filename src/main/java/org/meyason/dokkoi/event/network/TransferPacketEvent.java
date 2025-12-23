@@ -31,16 +31,16 @@ public class TransferPacketEvent extends PacketAdapter implements Listener {
                 Game.getInstance().getGameStatesManager().getGameState().equals(GameState.WAITING)
                 || Game.getInstance().getGameStatesManager().getGameState().equals(GameState.END)
         ){
-            pk = PacketProcess.showNameTag(player, null);
+            pk = PacketProcess.showNameTag(player, pk);
         }else if(
                 (Game.getInstance().getGameStatesManager().getGameState().equals(GameState.PREP)
                 || Game.getInstance().getGameStatesManager().getGameState().equals(GameState.MATCHING)
                 || Game.getInstance().getGameStatesManager().getGameState().equals(GameState.IN_GAME)
                 || Game.getInstance().getGameStatesManager().getGameState().equals(GameState.PRE_END))
         ){
-            pk = PacketProcess.hideNameTag(player, null);
+            pk = PacketProcess.hideNameTag(player, pk);
         }else{
-            pk = PacketProcess.showNameTag(player, null);
+            pk = PacketProcess.showNameTag(player, pk);
             Dokkoi.getInstance().getLogger().warning("未知のゲームステートにより、名前表示処理が正常に行われませんでした。処理は継続されます。");
             Dokkoi.getInstance().getLogger().warning("現在のゲームステート: " + Game.getInstance().getGameStatesManager().getGameState().getDisplayName());
             Dokkoi.getInstance().getLogger().warning("org.meyason.dokkoi.event.network.TransferPacketEvent::onPacketSending [line 43]");
