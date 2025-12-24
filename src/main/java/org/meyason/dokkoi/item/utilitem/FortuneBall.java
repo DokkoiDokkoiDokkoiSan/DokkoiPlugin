@@ -1,6 +1,8 @@
 package org.meyason.dokkoi.item.utilitem;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -46,6 +48,7 @@ public class FortuneBall extends CustomItem {
         Goal goal = manager.getPlayerGoals().get(targetPlayer.getUniqueId());
         boolean isLie = Math.random() < 0.25;
         String goalName;
+        String goalDescription;
         if(isLie){
             List<Goal> allGoals = GoalList.getAllGoals();
             Goal fakeGoal;
@@ -54,9 +57,18 @@ public class FortuneBall extends CustomItem {
                 fakeGoal = allGoals.get(randomIndex);
             } while (fakeGoal == goal);
             goalName = fakeGoal.getName();
+            goalDescription = fakeGoal.getDescription();
         } else {
             goalName = goal.getName();
+            goalDescription = goal.getDescription();
         }
-        player.sendMessage(Component.text("§d" + targetPlayer.getName() + "§aの勝利条件って§e" + goalName + "§aらしいで～ｗ"));
+        Component component = Component.text("§d" + targetPlayer.getName() + "§aの勝利条件って§e§l§n" + goalName + "§r§aらしいで～ｗ")
+                .clickEvent(ClickEvent.callback((audience) -> {
+                    player.sendMessage("§b--------------勝利条件--------------");
+                    player.sendMessage(goalDescription);
+                    player.sendMessage("§b--------------勝利条件--------------");
+                }))
+                .hoverEvent(HoverEvent.showText(Component.text("§eクリックで勝利条件詳細を見る")));
+        player.sendMessage(component);
     }
 }
