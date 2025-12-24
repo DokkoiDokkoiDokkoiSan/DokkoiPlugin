@@ -65,6 +65,8 @@ public class GameStatesManager {
     private HashMap<Egg, BukkitRunnable> fragGrenadeScheduler;
     private HashMap<UUID, BukkitRunnable> EdenChimeTasks;
 
+    private HashMap<UUID, BukkitRunnable> damageableTasks;
+
     private HashMap<String, GameEntity> spawnedEntities;
 
     private boolean isEnableKillerList = false;
@@ -114,6 +116,7 @@ public class GameStatesManager {
         tridentDespawnWatchDogs = new HashMap<>();
         fragGrenadeScheduler = new HashMap<>();
         EdenChimeTasks = new HashMap<>();
+        damageableTasks = new HashMap<>();
         spawnedEntities = new HashMap<>();
     }
 
@@ -149,6 +152,7 @@ public class GameStatesManager {
         tridentDespawnWatchDogs.clear();
         fragGrenadeScheduler.clear();
         EdenChimeTasks.clear();
+        damageableTasks.clear();
         spawnedEntities.clear();
     }
 
@@ -172,6 +176,7 @@ public class GameStatesManager {
         removeUltimateSkillCoolDownTask(uuid);
         removeCoolDownScheduler(uuid);
         removeItemCoolDownScheduler(uuid);
+        removeDamageableTask(uuid);
         removeEdenChimeTask(uuid);
     }
 
@@ -511,6 +516,13 @@ public class GameStatesManager {
     public void removeEdenChimeTask(UUID player) {
         if(!this.EdenChimeTasks.containsKey(player)) {return;}
         this.EdenChimeTasks.remove(player);
+    }
+
+    public HashMap<UUID, BukkitRunnable> getDamageableTasks() {return damageableTasks;}
+    public void setDamageableTasks(UUID player, BukkitRunnable task) {this.damageableTasks.put(player, task);}
+    public void removeDamageableTask(UUID player) {
+        if(!this.damageableTasks.containsKey(player)) {return;}
+        this.damageableTasks.remove(player);
     }
 
     public GameEntity getSpawnedEntitiesFromUUID(String uuid) {return spawnedEntities.get(uuid);}

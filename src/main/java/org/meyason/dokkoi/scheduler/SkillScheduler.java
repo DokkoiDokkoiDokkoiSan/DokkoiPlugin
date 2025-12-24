@@ -20,7 +20,6 @@ public class SkillScheduler extends BukkitRunnable {
     }
 
     public void run() {
-        Game game = Game.getInstance();
         GameStatesManager gameStatesManager = game.getGameStatesManager();
         UUID playerUUID = player.getUniqueId();
         if(!gameStatesManager.getAlivePlayers().contains(playerUUID)){

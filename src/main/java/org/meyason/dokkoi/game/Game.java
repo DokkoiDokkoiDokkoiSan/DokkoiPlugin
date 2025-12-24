@@ -35,6 +35,7 @@ import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
 import org.meyason.dokkoi.network.PacketData;
 import org.meyason.dokkoi.network.PacketProcess;
 import org.meyason.dokkoi.network.PacketSender;
+import org.meyason.dokkoi.scheduler.DamageableScheduler;
 import org.meyason.dokkoi.scheduler.Scheduler;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
 
@@ -320,6 +321,10 @@ public class Game {
             SkillScheduler scheduler = new SkillScheduler(this, player);
             scheduler.runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
             gameStatesManager.addCoolDownScheduler(uuid, scheduler);
+
+            DamageableScheduler damageableScheduler = new DamageableScheduler(this, player);
+            damageableScheduler.runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
+            gameStatesManager.setDamageableTasks(uuid, damageableScheduler);
 
             Job job = gameStatesManager.getPlayerJobs().get(uuid);
             job.ready();
