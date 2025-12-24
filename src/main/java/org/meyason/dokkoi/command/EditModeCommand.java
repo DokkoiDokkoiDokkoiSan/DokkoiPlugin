@@ -32,7 +32,7 @@ public class EditModeCommand implements CommandExecutor {
             player.setGameMode(GameMode.CREATIVE);
         }
 
-        player.getInventory().clear();
+//        player.getInventory().clear();
 
         return true;
     }
