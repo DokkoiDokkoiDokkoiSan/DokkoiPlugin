@@ -20,7 +20,9 @@ public class PacketProcess {
         }else{
             wrappedDataValues = packet.getDataValueCollectionModifier().read(0);
         }
-        wrappedDataValues.add(new WrappedDataValue(0, WrappedDataWatcher.Registry.get(Byte.class), (byte)0x02));
+        byte flags = getCurrentEntityFlags(wrappedDataValues);
+        flags |= 0x02;
+        wrappedDataValues.add(new WrappedDataValue(0, WrappedDataWatcher.Registry.get(Byte.class), flags));
         if(entity instanceof Player){
             wrappedDataValues.add(new WrappedDataValue(6, WrappedDataWatcher.Registry.get(Pose.class), Pose.CROUCHING));
         }
@@ -36,8 +38,19 @@ public class PacketProcess {
         }else{
             wrappedDataValues = packet.getDataValueCollectionModifier().read(0);
         }
-        wrappedDataValues.add(new WrappedDataValue(0, WrappedDataWatcher.Registry.get(Byte.class), (byte)0x00));
+        byte flags = getCurrentEntityFlags(wrappedDataValues);
+        flags &= ~0x02;
+        wrappedDataValues.add(new WrappedDataValue(0, WrappedDataWatcher.Registry.get(Byte.class), flags));
         packet.getDataValueCollectionModifier().write(0, wrappedDataValues);
         return packet;
+    }
+
+    private static byte getCurrentEntityFlags(List<WrappedDataValue> values) {
+        for (WrappedDataValue v : values) {
+            if (v.getIndex() == 0 && v.getValue() instanceof Byte b) {
+                return b;
+            }
+        }
+        return 0;
     }
 }
