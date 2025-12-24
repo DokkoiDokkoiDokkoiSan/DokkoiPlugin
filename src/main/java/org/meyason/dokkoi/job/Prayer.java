@@ -262,7 +262,7 @@ public class Prayer extends Job {
         }else if(Objects.equals(selectedRarity, UR)) {
             List<Player> targets = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 20);
             for(Player target : targets){
-                game.getGameStatesManager().addAdditionalDamage(target.getUniqueId(), -500);
+                game.getGameStatesManager().setIsEnableAttack(target.getUniqueId(), false);
             }
             new BukkitRunnable() {
                 @Override
@@ -271,7 +271,7 @@ public class Prayer extends Job {
                         if(!target.isOnline()){
                             continue;
                         }
-                        game.getGameStatesManager().addAdditionalDamage(target.getUniqueId(), 500);
+                        game.getGameStatesManager().setIsEnableAttack(target.getUniqueId(), true);
                     }
                 }
             }.runTaskLater(Dokkoi.getInstance(), 20 * 10);

@@ -125,8 +125,6 @@ public class Game {
         setNowTime(matchingPhaseTime);
         matchQueue.clear();
         gameLocation.revertAllHeliPort();
-        heliLocation = new Vector();
-        heliLocation = gameLocation.cloneHeli();
         for(Player player : Bukkit.getOnlinePlayers()){
             CustomItem joinItem;
             CustomItem quitItem;
@@ -166,8 +164,13 @@ public class Game {
     }
 
     public void prepPhase(){
-        for(Player player : Bukkit.getOnlinePlayers()){
-            UUID uuid = player.getUniqueId();
+        heliLocation = new Vector();
+        heliLocation = gameLocation.cloneHeli();
+        for(UUID uuid : matchQueue){
+            Player player = Bukkit.getPlayer(uuid);
+            if(player == null || !player.isOnline()){
+                continue;
+            }
             gameStatesManager.addAlivePlayer(uuid);
             gameStatesManager.addJoinedPlayer(uuid);
             player.getInventory().clear();
@@ -256,6 +259,7 @@ public class Game {
             if(player == null || !player.isOnline()){
                 continue;
             }
+            gameStatesManager.setIsEnableAttack(uuid, true);
             int randomIndex = (int) (Math.random() * availableSpawnLocations.size());
             Vector spawnLocation = availableSpawnLocations.get(randomIndex);
             availableSpawnLocations.remove(randomIndex);
@@ -438,7 +442,7 @@ public class Game {
     }
 
     public void resetGame(){
-        if(!onGame) return;
+//        if(!onGame) return;
         scheduler.cancel();
         ChestProvider.removeAllChests();
         ChestProvider.getInstance().cancelTask();

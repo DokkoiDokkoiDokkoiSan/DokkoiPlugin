@@ -17,7 +17,7 @@ public class TotemoKizukieru extends CustomItem {
     public static final String id = "totemo_kizukieru";
 
     public TotemoKizukieru() {
-        super(id, "§6トテモツヨクナール", ItemStack.of(Material.FROGSPAWN), 16);
+        super(id, "§6トテモキズキエール", ItemStack.of(Material.FROGSPAWN), 16);
         List<Component> lore = List.of(
                 Component.text("§5かなり傷が治る気がする薬。"),
                 Component.text(""),

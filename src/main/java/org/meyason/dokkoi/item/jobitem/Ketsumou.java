@@ -56,7 +56,7 @@ public class Ketsumou extends CustomItem {
             picker.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, Integer.MAX_VALUE));
             picker.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, Integer.MAX_VALUE));
             picker.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));
-            gameStatesManager.addAdditionalDamage(picker.getUniqueId(), -500);
+            gameStatesManager.setIsEnableAttack(picker.getUniqueId(), false);
             picker.sendActionBar(Component.text("§cこれはお前の§9§lけつ毛§r§cではない。"));
             return;
         }else{
@@ -72,7 +72,7 @@ public class Ketsumou extends CustomItem {
             picker.removePotionEffect(PotionEffectType.BLINDNESS);
             picker.removePotionEffect(PotionEffectType.SLOWNESS);
             picker.removePotionEffect(PotionEffectType.GLOWING);
-            gameStatesManager.addAdditionalDamage(picker.getUniqueId(), 500);
+            gameStatesManager.setIsEnableAttack(picker.getUniqueId(), true);
             return;
         }else {
             explorer.passive(ketsumouCount(picker) - 1);

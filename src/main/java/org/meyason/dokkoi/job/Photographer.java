@@ -112,7 +112,7 @@ public class Photographer extends Job {
     @Override
     public void ready() {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 1));
-        game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), -500);
+        game.getGameStatesManager().setIsEnableAttack(player.getUniqueId(), false);
     }
 
     private void updatePassive(){

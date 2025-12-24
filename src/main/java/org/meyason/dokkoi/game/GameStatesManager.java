@@ -36,6 +36,7 @@ public class GameStatesManager {
     private HashMap<UUID, Integer> damageCutPercent;
     private HashMap<UUID, Boolean> isDeactivateDamageOnce;
     private List<UUID> onDisablePotionEffectPlayers;
+    private HashMap<UUID, Boolean> isEnableAttack;
 
     private boolean isSniperSkillActive;
     private boolean existSummoner;
@@ -93,6 +94,7 @@ public class GameStatesManager {
         damageCutPercent = new HashMap<>();
         isDeactivateDamageOnce = new HashMap<>();
         onDisablePotionEffectPlayers = new ArrayList<>();
+        isEnableAttack = new HashMap<>();
         whoHasMamiyaPhone = new HashMap<>();
         whoHasMamiyaPhone.put(false, null);
         whoHasTakashimaPhone = new HashMap<>();
@@ -130,6 +132,7 @@ public class GameStatesManager {
         damageCutPercent.clear();
         isDeactivateDamageOnce.clear();
         onDisablePotionEffectPlayers.clear();
+        isEnableAttack.clear();
         whoHasMamiyaPhone.clear();
         whoHasTakashimaPhone.clear();
         serialCustomItemMap.clear();
@@ -158,6 +161,7 @@ public class GameStatesManager {
         removeKillCount(uuid);
         removeAttackedPlayer(uuid);
         removeDamagedPlayer(uuid);
+        removeIsEnableAttack(uuid);
         removeNaito(uuid);
         removeAdditionalDamage(uuid);
         removeDamageCutPercent(uuid);
@@ -334,6 +338,19 @@ public class GameStatesManager {
         if(!this.onDisablePotionEffectPlayers.contains(player)) return;
         this.onDisablePotionEffectPlayers.remove(player);
     }
+
+    public HashMap<UUID, Boolean> getIsEnableAttack() {return isEnableAttack;}
+    public boolean isEnableAttackPlayer(UUID player) {
+        return isEnableAttack.getOrDefault(player, true);
+    }
+    public void setIsEnableAttack(UUID player, boolean isEnable) {
+        this.isEnableAttack.put(player, isEnable);
+    }
+    public void removeIsEnableAttack(UUID player) {
+        if(!this.isEnableAttack.containsKey(player)) {return;}
+        this.isEnableAttack.remove(player);
+    }
+
 
     public boolean hasTakashimaPhone() {return whoHasTakashimaPhone.containsKey(true);}
     public UUID getPlayerWithTakashimaPhone() {return whoHasTakashimaPhone.get(true);}

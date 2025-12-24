@@ -96,7 +96,7 @@ public class Explorer extends Job {
     public void ready(){
         passive(0);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 1));
-        game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), -500);
+        game.getGameStatesManager().setIsEnableAttack(player.getUniqueId(), false);
     }
 
     public void passive(int nowCount){
@@ -156,7 +156,7 @@ public class Explorer extends Job {
         // 1から0に、4から3に、7から6に、9から8に減ったとき効果を変化
         if(haveKetsumouCount == 0){
             player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 1));
-            game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), -500);
+            game.getGameStatesManager().setIsEnableAttack(player.getUniqueId(), false);
         }else if(haveKetsumouCount == 3){
             player.removePotionEffect(PotionEffectType.SLOWNESS);
             game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), -2);
@@ -176,7 +176,7 @@ public class Explorer extends Job {
         // 0から1に、3から4に、6から7に、8から9に増えたとき効果を変化
         if(haveKetsumouCount == 1){
             player.removePotionEffect(PotionEffectType.SLOWNESS);
-            game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), 500);
+            game.getGameStatesManager().setIsEnableAttack(player.getUniqueId(), true);
         }else if(haveKetsumouCount == 4){
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
             game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), 2);

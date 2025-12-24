@@ -73,7 +73,7 @@ public class LPManager {
     }
 
     public boolean reduceLP(UUID player, Long value){
-        if(!this.LPMap.containsKey(player)) {return false;}
+        if(player == null || !this.LPMap.containsKey(player)) {return false;}
         Long currentLP = this.LPMap.get(player);
         Long newLP = currentLP - value;
         if(newLP < 0) {return false;}
