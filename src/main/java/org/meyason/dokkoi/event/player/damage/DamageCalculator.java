@@ -111,6 +111,10 @@ public class DamageCalculator {
         // ダメージカット適用
         damage = applyDamageCut(damage, damaged, gsm);
 
+        if(!gsm.isEnableAttackPlayer(attacker.getUniqueId())){
+            damage = 0.0;
+        }
+
         if (damage < 0) return;
 
         // ダメージ適用
@@ -174,6 +178,10 @@ public class DamageCalculator {
 
         // ダメージカット適用
         damage = applyDamageCut(damage, damaged, gsm);
+
+        if(!gsm.isEnableAttackPlayer(attacker.getUniqueId())){
+            damage = 0.0;
+        }
 
         if (damage < 0) return;
 

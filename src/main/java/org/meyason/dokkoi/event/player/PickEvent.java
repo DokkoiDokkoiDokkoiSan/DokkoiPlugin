@@ -9,8 +9,11 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -106,9 +109,40 @@ public class PickEvent implements Listener {
         boolean clickedIsBottom = event.getClickedInventory() != null
                 && event.getClickedInventory().equals(player.getOpenInventory().getBottomInventory());
 
+        // 胸装備スロットかどうかの判定 (スロット番号38がチェストプレート、装備スロットとしては6)
+        boolean isChestSlot = event.getSlot() == 38 ||
+                             (event.getSlotType() == InventoryType.SlotType.ARMOR && event.getRawSlot() == 6);
+
         NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
 
         Job job = manager.getPlayerJobs().get(player.getUniqueId());
+
+        // 数字キー（スワップ操作）のブロック
+        if(event.getClick() == ClickType.NUMBER_KEY || event.getClick() == ClickType.SWAP_OFFHAND){
+            event.setCancelled(true);
+            return;
+        }
+
+        InventoryView view = event.getView();
+        Inventory topInventory = view.getTopInventory();
+        if(topInventory.getType() == InventoryType.PLAYER){
+            ItemMeta cursorMeta = cursorItem.getItemMeta();
+            if(cursorMeta == null){return;}
+            PersistentDataContainer container = cursorMeta.getPersistentDataContainer();
+            if(!container.has(itemKey, PersistentDataType.STRING)){return;}
+            String cursorItemName = container.get(itemKey, PersistentDataType.STRING);
+            if(cursorItemName == null){return;}
+            if(cursorItemName.equals(ArcherArmor.id)){
+                if(isChestSlot){
+                    manager.addIsDeactivateDamageOnce(player.getUniqueId(), false);
+                } else {
+                    manager.addIsDeactivateDamageOnce(player.getUniqueId(), true);
+                }
+                return;
+            }
+            event.setCancelled(true);
+            return;
+        }
 
         // シフトクリックのとき
         if(event.getClick().isShiftClick()){
@@ -328,25 +362,29 @@ public class PickEvent implements Listener {
             }
 
         }else{
-            // チェストをクリックしたとき
+//             チェストをクリックしたとき
 
-            // カーソルに指定アイテムがあって置いたとき
-//            if(cursorItem != null && !cursorItem.getType().isAir()) {
-//                ItemMeta meta = cursorItem.getItemMeta();
-//                if (meta != null) {
-//                    CustomItem cursorCustomItem = CustomItem.getItem(cursorItem);
-//                    if (cursorCustomItem instanceof Ketsumou) {
-//                        Ketsumou.deactivate(player);
-//                    }
-//                }
-//            }
+//             カーソルに指定アイテムがあって置いたとき
+            if(cursorItem != null && !cursorItem.getType().isAir()) {
+                ItemMeta meta = cursorItem.getItemMeta();
+                if (meta != null) {
+                    CustomItem cursorCustomItem = CustomItem.getItem(cursorItem);
+                    if(cursorCustomItem == null){return;}
+                    if(cursorCustomItem.isUnique){
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
+            }
 
-            // スロットが指定アイテムのとき
-//            if(slotItem != null){
-//                ItemMeta meta = slotItem.getItemMeta();
-//                if(meta == null){return;}
-//
-//            }
+//             スロットが指定アイテムのとき
+            if(slotItem != null){
+                ItemMeta meta = slotItem.getItemMeta();
+                if(meta == null){return;}
+                PersistentDataContainer container = meta.getPersistentDataContainer();
+                if(!container.has(itemKey, PersistentDataType.STRING)){return;}
+
+            }
         }
     }
 

@@ -39,7 +39,7 @@ public class ChairInteractEvent implements Listener {
             return;
         }
 
-        if(!GameLocation.isInHeliChair(game.getHeliLocation(), block.getLocation().toVector())){
+        if(!GameLocation.getInstance().isInHeliChair(game.getHeliLocation(), block.getLocation().toVector())){
             return;
         }
 

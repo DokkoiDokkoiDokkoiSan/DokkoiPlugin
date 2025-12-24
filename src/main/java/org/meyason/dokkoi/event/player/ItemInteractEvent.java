@@ -25,10 +25,7 @@ import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.battleitem.EdenChime;
 import org.meyason.dokkoi.item.battleitem.HealingCrystal;
 import org.meyason.dokkoi.item.battleitem.PotionBottleFull;
-import org.meyason.dokkoi.item.dealeritem.Hayakunaru;
-import org.meyason.dokkoi.item.dealeritem.Katakunaru;
-import org.meyason.dokkoi.item.dealeritem.Kizukieru;
-import org.meyason.dokkoi.item.dealeritem.Tsuyokunaru;
+import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.debug.Debug;
 import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
@@ -150,6 +147,34 @@ public class ItemInteractEvent{
                     }
                     event.setCancelled(true);
                     Katakunaru.activate(player, itemStack);
+                }
+                case TotemoKizukieru.id -> {
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    TotemoKizukieru.activate(player, itemStack);
+                }
+                case TotemoKatakunaru.id -> {
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    TotemoKatakunaru.activate(player, itemStack);
+                }
+                case TotemoTsuyokunaru.id -> {
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    TotemoTsuyokunaru.activate(player, itemStack);
+                }
+                case TotemoHayakunaru.id -> {
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    TotemoHayakunaru.activate(player, itemStack);
                 }
                 case HealingCrystal.id -> {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {

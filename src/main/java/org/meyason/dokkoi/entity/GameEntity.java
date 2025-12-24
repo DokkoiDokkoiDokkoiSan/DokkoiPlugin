@@ -1,5 +1,6 @@
 package org.meyason.dokkoi.entity;
 
+import org.bukkit.entity.Entity;
 import org.meyason.dokkoi.constants.GameEntityKeyString;
 import org.meyason.dokkoi.constants.GameEntityList;
 import org.meyason.dokkoi.exception.GameEntityIDNotFoundException;
@@ -41,6 +42,12 @@ public abstract class GameEntity {
         put(OOKI, "ビビる大木「ぎゃあああああああああああああああああああ！！！！！！！！！！！！！！！！！！！！！！！！！！！」");
     }};
 
+    public static HashMap<String, String> clerkNameMap = new HashMap<>(){{
+        put(CLERK, "ショップおじいちゃん");
+        put(INMU, "一般店主爺");
+        put(SUSURU, "ヤバいラーメン店主のSUSURU");
+    }};
+
     public static HashMap<String, String> notEnoughMoneyMessageMap = new HashMap<>(){{
         put(CLERK, "§cショップおじいちゃん「お金が足りんのじゃよ・・・。」");
         put(INMU, "§c一般店主爺「そちら、14万3000円になっております。」");
@@ -60,7 +67,7 @@ public abstract class GameEntity {
     }};
 
     public static HashMap<String, String> talkMessageMap = new HashMap<>(){{
-        put(CLERK, "§cbショップおじいちゃん「いらっしゃい！」");
+        put(CLERK, "§bショップおじいちゃん「いらっしゃい！」");
         put(INMU, "§b一般店主爺「入って、どうぞ。ゆっくり見てけよ見てけよ～」");
         put(SUSURU, "§bヤバいラーメン店主のSUSURU「§6§lこちらが濃厚とんこつ豚無双さんの濃厚無双ラーメン　海苔トッピングです§r§6」");
     }};
@@ -75,8 +82,9 @@ public abstract class GameEntity {
 
     protected String id;
     protected String name;
+    protected Entity baseEntity;
 
-    public GameEntity(String id){
+    public GameEntity(String id) {
         this.id = id;
         this.name = nameMap.get(id);
     }
@@ -87,6 +95,15 @@ public abstract class GameEntity {
 
     public String getName() {
         return name;
+    }
+
+    public void registerBaseEntity(Entity entity){
+        this.baseEntity = entity;
+    }
+
+    public void remove(){
+        if(this.baseEntity==null) { return; }
+        this.baseEntity.remove();
     }
 
     public static GameEntity getGameEntityFromId(String id){

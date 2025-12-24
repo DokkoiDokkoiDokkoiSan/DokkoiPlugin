@@ -190,6 +190,10 @@ public class DamageEvent implements Listener {
             event.setCancelled(true);
             return;
         }
+        if(!gsm.isEnableAttackPlayer(attacker.getUniqueId())){
+            event.setCancelled(true);
+            return;
+        }
 
         DamageValidator.updateLonelyTimestamp(attacker, gsm, true);
 
@@ -233,13 +237,13 @@ public class DamageEvent implements Listener {
             return;
         }
 
-        gsm.addDamagedPlayer(damaged.getUniqueId());
-        DamageValidator.updateLonelyTimestamp(damaged, gsm, false);
-
         if (DamageValidator.checkDisableDamageOnce(damaged, gsm)) {
             event.setCancelled(true);
             return;
         }
+
+        gsm.addDamagedPlayer(damaged.getUniqueId());
+        DamageValidator.updateLonelyTimestamp(damaged, gsm, false);
 
         event.setCancelled(true);
         DamageContext context = DamageContext.builder()

@@ -18,6 +18,7 @@ import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.item.food.*;
 import org.meyason.dokkoi.item.gunitem.*;
+import org.meyason.dokkoi.item.jobitem.Ketsumou;
 import org.meyason.dokkoi.item.utilitem.*;
 import org.meyason.dokkoi.item.weapon.*;
 import org.meyason.dokkoi.scheduler.ChestScheduler;
@@ -47,6 +48,10 @@ public class ChestProvider {
     private boolean isPopThunderJavelin = false;
     private boolean isPopRailGun = false;
 
+    private int maxKetsumouCount = 9;
+
+    private int currentKetsumouCount = 0;
+
     private BukkitTask task;
 
     public static HashMap<String, Double> rateMap = new HashMap<>(){{
@@ -67,7 +72,8 @@ public class ChestProvider {
                 GlisteringMelonSlice.id,
                 CookedBeef.id,
                 CookedPorkchop.id,
-                PumpkinPie.id
+                PumpkinPie.id,
+                Ketsumou.id
         ));
         put(SR, List.of(
                 HealingCrystal.id,
@@ -151,6 +157,12 @@ public class ChestProvider {
             }else{
                 isPopRailGun = true;
             }
+        }else if (customItem instanceof Ketsumou){
+            if(currentKetsumouCount >= maxKetsumouCount){
+                return getRandomItem();
+            }else {
+                currentKetsumouCount += 1;
+            }
         }
         ItemStack itemStack = customItem.getItem();
         return itemStack;
@@ -171,7 +183,7 @@ public class ChestProvider {
     }
 
     public static void removeAllChests() {
-        for(Vector vector : GameLocation.chestLocations) {
+        for(Vector vector : GameLocation.getInstance().chestLocations) {
             Location loc = new Location(
                     Bukkit.getWorld("world"),
                     vector.getX(),

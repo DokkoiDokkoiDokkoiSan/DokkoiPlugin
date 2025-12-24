@@ -63,17 +63,17 @@ public class EdenChime extends CustomItem {
                 if(oldTask != null){
                     oldTask.cancel();
                 }
-                manager.addAdditionalDamage(targetUUID, 500);
+                manager.setIsEnableAttack(targetUUID, true);
             }
 
             targetPlayer.sendMessage(Component.text("§cEdEn chimeが流れ始めた..."));
-            manager.addAdditionalDamage(targetUUID, -500);
+            manager.setIsEnableAttack(targetUUID, false);
 
             BukkitRunnable task = new BukkitRunnable() {
                 @Override
                 public void run() {
                     targetPlayer.sendMessage(Component.text("§aEdEn chimeの効果が切れた！"));
-                    manager.addAdditionalDamage(targetUUID, 500);
+                    manager.setIsEnableAttack(targetUUID, true);
                     manager.removeEdenChimeTask(targetUUID);
                 }
             };
