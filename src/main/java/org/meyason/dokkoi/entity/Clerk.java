@@ -25,6 +25,9 @@ import java.util.UUID;
 public class Clerk extends GameEntity {
 
     private String type;
+    public String getType() {
+        return type;
+    }
 
     private List<UUID> bottlePlayers;
 

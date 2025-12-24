@@ -163,7 +163,7 @@ public class GameEntityManager {
     }
 
     public static void spawnClerk(Location location, Clerk clerk){
-        String name = clerk.getName();
+        String name = GameEntity.clerkNameMap.get(clerk.getType());
         World world = location.getWorld();
         Villager villager = (Villager) world.spawnEntity(location, EntityType.VILLAGER);
         villager.setCustomName(name);

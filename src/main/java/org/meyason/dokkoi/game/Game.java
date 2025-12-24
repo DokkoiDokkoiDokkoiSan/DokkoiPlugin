@@ -440,7 +440,7 @@ public class Game {
                 player.setHealth(player.getMaxHealth());
                 player.setFoodLevel(20);
                 player.setCustomNameVisible(true);
-                player.setGameMode(GameMode.CREATIVE);
+                player.setGameMode(GameMode.ADVENTURE);
             }
         }
         matchQueue.clear();
