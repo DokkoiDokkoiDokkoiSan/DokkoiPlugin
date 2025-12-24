@@ -8,6 +8,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.meyason.dokkoi.Dokkoi;
@@ -26,6 +27,7 @@ public class TransferPacketEvent extends PacketAdapter implements Listener {
         PacketContainer pk = event.getPacket().deepClone();
         Entity entity = pk.getEntityModifier(event).read(0);
         if(event.getPlayer().getUniqueId().equals(entity.getUniqueId())) return;
+        if(entity instanceof Villager) return;
         if(entity instanceof Player player){
             if(player.getGameMode().equals(GameMode.CREATIVE)) return;
         }
