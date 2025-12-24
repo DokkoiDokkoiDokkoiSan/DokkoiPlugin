@@ -61,7 +61,7 @@ public final class Dokkoi extends JavaPlugin {
         new GameItem();
         new Game();
         // PacketListener for debugging, developing;
-        new DebugPacketListener().register();
+        //new DebugPacketListener().register();
     }
 
     @Override
