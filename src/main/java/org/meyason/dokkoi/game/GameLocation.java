@@ -177,7 +177,8 @@ public class GameLocation {
             new Vector(-46,38,45),
             new Vector(18,38,45),
             new Vector(74,38,5),
-            new Vector(18,38,-45)
+            new Vector(18,38,-45),
+            new Vector(77,1,-12)
     );
 
     public List<Vector> originalHelicopterLocations = List.of(

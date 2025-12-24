@@ -22,9 +22,7 @@ import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
-import org.meyason.dokkoi.item.battleitem.EdenChime;
-import org.meyason.dokkoi.item.battleitem.HealingCrystal;
-import org.meyason.dokkoi.item.battleitem.PotionBottleFull;
+import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.debug.Debug;
 import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
@@ -243,6 +241,19 @@ public class ItemInteractEvent{
                     }
                     event.setCancelled(true);
                     EdenChime.activate(player, itemStack);
+                }
+                case ArcherArmor.id -> {
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    manager.setIsEnableAttack(player.getUniqueId(), true);
+                }
+                case InstantDevour.id -> {
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    InstantDevour.activate(player, itemStack);
                 }
             }
         }

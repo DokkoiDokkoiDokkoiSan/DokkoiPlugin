@@ -86,8 +86,6 @@ public class PickEvent implements Listener {
                     case TakashimaPhone.id -> manager.clearWhoHasTakashimaPhone();
 
                     case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
-
-                    case InstantDevour.id -> InstantDevour.changeHP(player, -amount);
                 }
             }
         }
@@ -192,8 +190,6 @@ public class PickEvent implements Listener {
                     case TakashimaPhone.id -> manager.updatePlayerhasTakashimaPhone(player.getUniqueId());
 
                     case MamiyaPhone.id -> manager.updatePlayerhasMamiyaPhone(player.getUniqueId());
-
-                    case InstantDevour.id -> InstantDevour.changeHP(player, amount);
                 }
                 return;
 
@@ -217,8 +213,6 @@ public class PickEvent implements Listener {
                     case TakashimaPhone.id -> manager.clearWhoHasTakashimaPhone();
 
                     case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
-
-                    case InstantDevour.id -> InstantDevour.changeHP(player, -amount);
                 }
                 return;
             }
@@ -259,8 +253,6 @@ public class PickEvent implements Listener {
                 case TakashimaPhone.id -> manager.clearWhoHasTakashimaPhone();
 
                 case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
-
-                case InstantDevour.id -> InstantDevour.changeHP(player, -amount);
             }
             return;
         }
@@ -315,8 +307,6 @@ public class PickEvent implements Listener {
                     case TakashimaPhone.id -> manager.updatePlayerhasTakashimaPhone(player.getUniqueId());
 
                     case MamiyaPhone.id -> manager.updatePlayerhasMamiyaPhone(player.getUniqueId());
-
-                    case InstantDevour.id -> InstantDevour.changeHP(player, amount);
                 }
                 return;
             }
@@ -355,8 +345,6 @@ public class PickEvent implements Listener {
                     case TakashimaPhone.id -> manager.clearWhoHasTakashimaPhone();
 
                     case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
-
-                    case InstantDevour.id -> InstantDevour.changeHP(player, -amount);
                 }
                 return;
             }
@@ -410,6 +398,8 @@ public class PickEvent implements Listener {
                 }
             }
         }
+
+        Ketsumou.updateKetsumou(player);
 
         Game.getInstance().getGameStatesManager().addIsDeactivateDamageOnce(player.getUniqueId(), isArcherArmorEquipped);
 
@@ -474,8 +464,6 @@ public class PickEvent implements Listener {
                     case MamiyaPhone.id -> manager.updatePlayerhasMamiyaPhone(player.getUniqueId());
 
                     case TakashimaPhone.id -> manager.updatePlayerhasTakashimaPhone(player.getUniqueId());
-
-                    case InstantDevour.id -> InstantDevour.changeHP(player, item.getAmount());
                 }
             }
         }
