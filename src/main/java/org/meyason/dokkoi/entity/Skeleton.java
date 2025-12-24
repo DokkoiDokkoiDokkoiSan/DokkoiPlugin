@@ -49,9 +49,7 @@ public class Skeleton extends GameEntity {
     }
 
     public void knockback(Entity entity, Player player) {
-        //もしほぼ同じ位置にいたらy軸に吹き飛ばす
         if(entity.getLocation().toVector().isInSphere(player.getLocation().toVector(), 0.5)) {
-            player.setVelocity(new Vector(0, 1, 0).multiply(2));
             return;
         }
         Vector fromSkeletonToPlayer = player.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize();

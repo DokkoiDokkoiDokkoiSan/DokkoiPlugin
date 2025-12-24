@@ -362,25 +362,29 @@ public class PickEvent implements Listener {
             }
 
         }else{
-            // チェストをクリックしたとき
+//             チェストをクリックしたとき
 
-            // カーソルに指定アイテムがあって置いたとき
-//            if(cursorItem != null && !cursorItem.getType().isAir()) {
-//                ItemMeta meta = cursorItem.getItemMeta();
-//                if (meta != null) {
-//                    CustomItem cursorCustomItem = CustomItem.getItem(cursorItem);
-//                    if (cursorCustomItem instanceof Ketsumou) {
-//                        Ketsumou.deactivate(player);
-//                    }
-//                }
-//            }
+//             カーソルに指定アイテムがあって置いたとき
+            if(cursorItem != null && !cursorItem.getType().isAir()) {
+                ItemMeta meta = cursorItem.getItemMeta();
+                if (meta != null) {
+                    CustomItem cursorCustomItem = CustomItem.getItem(cursorItem);
+                    if(cursorCustomItem == null){return;}
+                    if(cursorCustomItem.isUnique){
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
+            }
 
-            // スロットが指定アイテムのとき
-//            if(slotItem != null){
-//                ItemMeta meta = slotItem.getItemMeta();
-//                if(meta == null){return;}
-//
-//            }
+//             スロットが指定アイテムのとき
+            if(slotItem != null){
+                ItemMeta meta = slotItem.getItemMeta();
+                if(meta == null){return;}
+                PersistentDataContainer container = meta.getPersistentDataContainer();
+                if(!container.has(itemKey, PersistentDataType.STRING)){return;}
+
+            }
         }
     }
 

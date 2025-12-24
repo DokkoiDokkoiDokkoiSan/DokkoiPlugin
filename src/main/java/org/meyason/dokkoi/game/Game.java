@@ -556,82 +556,86 @@ public class Game {
             objective.getScore("§b所持金: §f" + lpManager.getLP(uuid) + "LP").setScore(--i);
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
             objective.getScore("§a参加人数: §f" + gameStatesManager.getJoinedPlayers().size() + "人").setScore(--i);
-            objective.getScore("§e役職: §f" + gameStatesManager.getPlayerJobs().get(uuid).getName()).setScore(--i);
+            if(gameStatesManager.getJoinedPlayers().contains(player.getUniqueId())) {
+                objective.getScore("§e役職: §f" + gameStatesManager.getPlayerJobs().get(uuid).getName()).setScore(--i);
+            }
         }else if(gameStatesManager.getGameState() == GameState.IN_GAME){
             objective.getScore("§b残り時間: §f" + getNowTime() + "秒").setScore(--i);
             objective.getScore("§a生存者数: §f" + gameStatesManager.getAlivePlayers().size() + "人").setScore(--i);
-            objective.getScore("§e役職: §f" + gameStatesManager.getPlayerJobs().get(uuid).getName()).setScore(--i);
-            objective.getScore("§e目標: §f" + gameStatesManager.getPlayerGoals().get(uuid).getName()).setScore(--i);
-            objective.getScore("§aスキル: " + gameStatesManager.getPlayerJobs().get(uuid).getCoolTimeSkillViewer()).setScore(--i);
-            objective.getScore("§aULT: " + gameStatesManager.getPlayerJobs().get(uuid).getCoolTimeSkillUltimateViewer()).setScore(--i);
+            if(gameStatesManager.getJoinedPlayers().contains(player.getUniqueId())) {
+                objective.getScore("§e役職: §f" + gameStatesManager.getPlayerJobs().get(uuid).getName()).setScore(--i);
+                objective.getScore("§e目標: §f" + gameStatesManager.getPlayerGoals().get(uuid).getName()).setScore(--i);
+                objective.getScore("§aスキル: " + gameStatesManager.getPlayerJobs().get(uuid).getCoolTimeSkillViewer()).setScore(--i);
+                objective.getScore("§aULT: " + gameStatesManager.getPlayerJobs().get(uuid).getCoolTimeSkillUltimateViewer()).setScore(--i);
 
-            Job job = gameStatesManager.getPlayerJobs().get(uuid);
-            Goal goal = gameStatesManager.getPlayerGoals().get(uuid);
-            String achievedColor = "6";
+                Job job = gameStatesManager.getPlayerJobs().get(uuid);
+                Goal goal = gameStatesManager.getPlayerGoals().get(uuid);
+                String achievedColor = "6";
 
-            if(goal instanceof MaidenGazer maidenGazer){
-                objective.getScore("§e視線誘導した時間: §f" + maidenGazer.getPoint() + "秒").setScore(--i);
-            }else if(goal instanceof CarpetBombing carpetBombing){
-                String color = "c";
-                if(carpetBombing.getKillCount() >= carpetBombing.goalNumber){
-                    color = achievedColor;
-                }
-                objective.getScore("§e目標人数: §f" + carpetBombing.goalNumber + "人").setScore(--i);
-                objective.getScore("§e自爆による殺害人数: §" + color + carpetBombing.getKillCount() + "人").setScore(--i);
-            }else if(goal instanceof Defender defender){
-                objective.getScore("§e護衛対象: §f" + defender.getTargetPlayer().getName()).setScore(--i);
-            }else if(goal instanceof Killer || goal instanceof LastMan){
-                objective.getScore("§e残り生存者: §f" + gameStatesManager.getAlivePlayers().size()).setScore(--i);
-            }else if(goal instanceof MassTierKiller massTierKiller){
-                objective.getScore("§eターゲットのTier: §f" + massTierKiller.getTargetTier().name()).setScore(--i);
-            }else if(goal instanceof DrugEnforcementAdministration dea){
-                Executor executor = (Executor) job;
-                String color = "c";
-                if(executor.getArrestCount() >= 3){
-                    color = achievedColor;
-                }
-                objective.getScore("§e現在の逮捕数: §" + color + executor.getArrestCount() + "人").setScore(--i);
-            }else if(goal instanceof SugiYakkyoku){
-                String color = "c";
-                DrugStore drugStore = (DrugStore) job;
-                if(drugStore.getSellCount() >= 10){
-                    color = achievedColor;
-                }
-                objective.getScore("§e現在の販売数: §" + color + drugStore.getSellCount() + "個").setScore(--i);
-            }else if(goal instanceof MatsumotoKiyoshi){
-                String color = "c";
-                DrugStore drugStore = (DrugStore) job;
-                if(drugStore.getPickCount() >= 3){
-                    color = achievedColor;
-                }
-                objective.getScore("§e現在の回数: §" + color + drugStore.getPickCount() + "回").setScore(--i);
-            }else if(goal instanceof FiftyPercent){
-                objective.getScore("§a参加者数: §f" + gameStatesManager.getJoinedPlayers().size() + "人").setScore(--i);
-            }else if(goal instanceof SkeletonSlayer skeletonSlayer){
-                String color = "c";
-                if(skeletonSlayer.getSkeletonsKilled() >= 50){
-                    color = achievedColor;
-                }
-                objective.getScore("§e目標殺害数: §f" + 50 + "体").setScore(--i);
-                objective.getScore("§e現在の殺害数: §" + color + skeletonSlayer.getSkeletonsKilled() + "体").setScore(--i);
-            }
-
-            if(job instanceof Explorer explorer){
-                if(goal instanceof KetsumouHunter ketsumouHunter){
+                if (goal instanceof MaidenGazer maidenGazer) {
+                    objective.getScore("§e視線誘導した時間: §f" + maidenGazer.getPoint() + "秒").setScore(--i);
+                } else if (goal instanceof CarpetBombing carpetBombing) {
                     String color = "c";
-                    if(ketsumouHunter.getTargetKetsumouCount() <= explorer.getHaveKetsumouCount()) {
+                    if (carpetBombing.getKillCount() >= carpetBombing.goalNumber) {
                         color = achievedColor;
                     }
-                    objective.getScore("§e目標の§9§lけつ毛§r§e: §" + color + ketsumouHunter.getTargetKetsumouCount() + "個").setScore(--i);
+                    objective.getScore("§e目標人数: §f" + carpetBombing.goalNumber + "人").setScore(--i);
+                    objective.getScore("§e自爆による殺害人数: §" + color + carpetBombing.getKillCount() + "人").setScore(--i);
+                } else if (goal instanceof Defender defender) {
+                    objective.getScore("§e護衛対象: §f" + defender.getTargetPlayer().getName()).setScore(--i);
+                } else if (goal instanceof Killer || goal instanceof LastMan) {
+                    objective.getScore("§e残り生存者: §f" + gameStatesManager.getAlivePlayers().size()).setScore(--i);
+                } else if (goal instanceof MassTierKiller massTierKiller) {
+                    objective.getScore("§eターゲットのTier: §f" + massTierKiller.getTargetTier().name()).setScore(--i);
+                } else if (goal instanceof DrugEnforcementAdministration dea) {
+                    Executor executor = (Executor) job;
+                    String color = "c";
+                    if (executor.getArrestCount() >= 3) {
+                        color = achievedColor;
+                    }
+                    objective.getScore("§e現在の逮捕数: §" + color + executor.getArrestCount() + "人").setScore(--i);
+                } else if (goal instanceof SugiYakkyoku) {
+                    String color = "c";
+                    DrugStore drugStore = (DrugStore) job;
+                    if (drugStore.getSellCount() >= 10) {
+                        color = achievedColor;
+                    }
+                    objective.getScore("§e現在の販売数: §" + color + drugStore.getSellCount() + "個").setScore(--i);
+                } else if (goal instanceof MatsumotoKiyoshi) {
+                    String color = "c";
+                    DrugStore drugStore = (DrugStore) job;
+                    if (drugStore.getPickCount() >= 3) {
+                        color = achievedColor;
+                    }
+                    objective.getScore("§e現在の回数: §" + color + drugStore.getPickCount() + "回").setScore(--i);
+                } else if (goal instanceof FiftyPercent) {
+                    objective.getScore("§a参加者数: §f" + gameStatesManager.getJoinedPlayers().size() + "人").setScore(--i);
+                } else if (goal instanceof SkeletonSlayer skeletonSlayer) {
+                    String color = "c";
+                    if (skeletonSlayer.getSkeletonsKilled() >= 50) {
+                        color = achievedColor;
+                    }
+                    objective.getScore("§e目標殺害数: §f" + 50 + "体").setScore(--i);
+                    objective.getScore("§e現在の殺害数: §" + color + skeletonSlayer.getSkeletonsKilled() + "体").setScore(--i);
                 }
-                objective.getScore("§e発見した§9§lけつ毛§r§e: §f" + explorer.getHaveKetsumouCount() + "個").setScore(--i);
-            }else if(job instanceof Prayer prayer){
-                objective.getScore("§eガチャポイント: §f" + prayer.getGachaPoint()).setScore(--i);
-                objective.getScore("§eガチャ回数: §f" + prayer.getGachaCount() + "回").setScore(--i);
-            }else if(job instanceof Summoner){
-                objective.getScore("§e召喚体数: §f" + gameStatesManager.getNaito().size() + "体").setScore(--i);
-            }else if(job instanceof Photographer photographer){
-                objective.getScore("§e撮影人数: §f" + photographer.getTakenPhotoPlayersCount() + "人").setScore(--i);
+
+                if (job instanceof Explorer explorer) {
+                    if (goal instanceof KetsumouHunter ketsumouHunter) {
+                        String color = "c";
+                        if (ketsumouHunter.getTargetKetsumouCount() <= explorer.getHaveKetsumouCount()) {
+                            color = achievedColor;
+                        }
+                        objective.getScore("§e目標の§9§lけつ毛§r§e: §" + color + ketsumouHunter.getTargetKetsumouCount() + "個").setScore(--i);
+                    }
+                    objective.getScore("§e発見した§9§lけつ毛§r§e: §f" + explorer.getHaveKetsumouCount() + "個").setScore(--i);
+                } else if (job instanceof Prayer prayer) {
+                    objective.getScore("§eガチャポイント: §f" + prayer.getGachaPoint()).setScore(--i);
+                    objective.getScore("§eガチャ回数: §f" + prayer.getGachaCount() + "回").setScore(--i);
+                } else if (job instanceof Summoner) {
+                    objective.getScore("§e召喚体数: §f" + gameStatesManager.getNaito().size() + "体").setScore(--i);
+                } else if (job instanceof Photographer photographer) {
+                    objective.getScore("§e撮影人数: §f" + photographer.getTakenPhotoPlayersCount() + "人").setScore(--i);
+                }
             }
         }
         player.setScoreboard(scoreboard);
