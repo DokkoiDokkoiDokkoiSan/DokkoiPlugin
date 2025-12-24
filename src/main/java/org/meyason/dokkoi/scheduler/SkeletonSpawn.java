@@ -13,7 +13,7 @@ import java.util.List;
 public class SkeletonSpawn {
 
     public static void spawnSkeletons() {
-        List<Vector> spawnPoints = GameLocation.skeletonSpawnLocations;
+        List<Vector> spawnPoints = GameLocation.getInstance().skeletonSpawnLocations;
 
         for (Vector point : spawnPoints) {
             Location spawnLocation = new Location(

@@ -93,7 +93,7 @@ public class LoginEvent implements Listener {
 
         user.setUpdated_at(new Date());
         userRepository.updateUser(user);
-        Vector lobby = GameLocation.LobbyLocation;
+        Vector lobby = GameLocation.getInstance().LobbyLocation;
         player.teleport(new Location(Bukkit.getWorld("world"), lobby.getX(), lobby.getY(), lobby.getZ()));
     }
 }

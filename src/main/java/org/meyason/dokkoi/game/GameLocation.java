@@ -11,20 +11,176 @@ import java.util.Random;
 
 public class GameLocation {
 
-    public static List<Vector> chestLocations = List.of(
-//            89,5,132
-//91,1,107
-//128,1,107
-//110,1,145
-//150,1,150
+    private static GameLocation instance;
+    public static GameLocation getInstance() {
+        if (instance == null) {
+            instance = new GameLocation();
+        }
+        return instance;
+    }
+
+    public GameLocation(){
+        instance = this;
+    }
+
+    public List<Vector> chestLocations = List.of(
             new Vector(89,5,132),
             new Vector(91,1,107),
             new Vector(128,1,107),
             new Vector(110,1,145),
-            new Vector(150,1,150)
+            new Vector(150,1,150),
+            new Vector(7,1,88),
+            new Vector(14,1,102),
+            new Vector(14,1,118),
+            new Vector(4,1,150),
+            new Vector(37,1,145),
+            new Vector(38,1,114),
+            new Vector(37,1,88),
+            new Vector(-74,3,101),
+            new Vector(-47,3,101),
+            new Vector(-20,3,101),
+            new Vector(-18,1,141),
+            new Vector(-30,2,133),
+            new Vector(-62,1,133),
+            new Vector(-44,3,155),
+            new Vector(-70,1,136),
+            new Vector(-68,1,150),
+            new Vector(-108,5,131),
+            new Vector(-104,2,130),
+            new Vector(-93,2,125),
+            new Vector(-87,1,103),
+            new Vector(-122,0,124),
+            new Vector(-145,0,124),
+            new Vector(-145,0,101),
+            new Vector(-122,0,102),
+            new Vector(-112,13,112),
+            new Vector(-123,1,149),
+            new Vector(-146,1,149),
+            new Vector(-99,-15,51),
+            new Vector(-99,-7,31),
+            new Vector(-141,-15,51),
+            new Vector(-120,1,26),
+            new Vector(-120,1,56),
+            new Vector(-141,-7,31),
+            new Vector(-120,-13,19),
+            new Vector(-124,-2,12),
+            new Vector(-122,-2,-7),
+            new Vector(-90,-2,-7),
+            new Vector(-92,-2,12),
+            new Vector(-120,1,-30),
+            new Vector(-145,2,-48),
+            new Vector(-110,1,-88),
+            new Vector(-135,5,-103),
+            new Vector(-88,1,-110),
+            new Vector(-103,5,-135),
+            new Vector(-48,2,-145),
+            new Vector(-99,1,-91),
+            new Vector(-91,1,-99),
+            new Vector(-12,1,-109),
+            new Vector(-47,1,-93),
+            new Vector(-13,1,-123),
+            new Vector(-26,1,-137),
+            new Vector(-35,1,-132),
+            new Vector(2,1,-128),
+            new Vector(21,1,-147),
+            new Vector(40,1,-128),
+            new Vector(-6,1,-128),
+            new Vector(48,1,-128),
+            new Vector(41,1,-150),
+            new Vector(86,7,-148),
+            new Vector(98,5,-150),
+            new Vector(109,5,-121),
+            new Vector(79,6,-126),
+            new Vector(91,2,-99),
+            new Vector(75,2,-92),
+            new Vector(143,13,-101),
+            new Vector(136,1,-140),
+            new Vector(128,1,-90),
+            new Vector(110,1,-42),
+            new Vector(102,1,-12),
+            new Vector(110,1,9),
+            new Vector(79,1,37),
+            new Vector(125,1,44),
+            new Vector(125,1,12),
+            new Vector(125,1,-26),
+            new Vector(28,1,85),
+            new Vector(-79,1,70),
+            new Vector(-79,1,49),
+            new Vector(-45,3,64),
+            new Vector(-61,3,13),
+            new Vector(-69,2,-68),
+            new Vector(-40,1,-50),
+            new Vector(39,1,-85),
+            new Vector(3,1,-85),
+            new Vector(66,1,-50),
+            new Vector(123,1,-50),
+            new Vector(-1,-9,30),
+            new Vector(15,-9,10),
+            new Vector(-1,-9,-30),
+            new Vector(36,-9,-26),
+            new Vector(57,-9,34),
+            new Vector(42,-9,-14),
+            new Vector(78,-9,18),
+            new Vector(79,-9,2),
+            new Vector(74,1,43),
+            new Vector(61,1,32),
+            new Vector(19,1,47),
+            new Vector(28,1,38),
+            new Vector(48,2,-30),
+            new Vector(8,2,-22),
+            new Vector(-48,1,2),
+            new Vector(-12,1,-20),
+            new Vector(-13,1,11),
+            new Vector(-26,1,35),
+            new Vector(-36,1,41),
+            new Vector(-4,1,38),
+            new Vector(-47,1,-37),
+            new Vector(-5,1,-35),
+            new Vector(69,20,30),
+            new Vector(51,19,-47),
+            new Vector(76,20,10),
+            new Vector(61,20,-8),
+            new Vector(34,19,27),
+            new Vector(29,19,45),
+            new Vector(70,19,47),
+            new Vector(60,22,41),
+            new Vector(34,20,-24),
+            new Vector(21,24,-19),
+            new Vector(46,19,-43),
+            new Vector(42,22,-34),
+            new Vector(-26,19,-45),
+            new Vector(-14,20,-20),
+            new Vector(-35,20,-20),
+            new Vector(-41,19,45),
+            new Vector(-5,19,31),
+            new Vector(-36,32,31),
+            new Vector(-5,19,2),
+            new Vector(-36,32,2),
+            new Vector(-2,19,47),
+            new Vector(-2,28,45),
+            new Vector(9,28,-19),
+            new Vector(25,28,-45),
+            new Vector(42,28,-44),
+            new Vector(2,28,-45),
+            new Vector(51,28,-45),
+            new Vector(74,28,1),
+            new Vector(66,28,45),
+            new Vector(38,28,45),
+            new Vector(31,28,36),
+            new Vector(38,28,17),
+            new Vector(19,28,22),
+            new Vector(23,28,45),
+            new Vector(-44,38,-43),
+            new Vector(6,38,-32),
+            new Vector(-46,38,-4),
+            new Vector(6,38,32),
+            new Vector(-46,38,45),
+            new Vector(18,38,45),
+            new Vector(74,38,5),
+            new Vector(18,38,-45)
     );
 
-    public static List<Vector> originalHelicopterLocations = List.of(
+    public List<Vector> originalHelicopterLocations = List.of(
 //            コピー元ヘリコプター元座標
 //-11,-6,-225(右下)
 //-23,1,-237(左上)
@@ -32,22 +188,15 @@ public class GameLocation {
             new Vector(-23, 1, -237)
     );
 
-    public static List<Vector> originalHeliPortLocations = List.of(
+    public List<Vector> originalHeliPortLocations = List.of(
 //            コピー元ヘリポート元座標
-//            -27,-6,-225
-//                    -39,1,-237
             new Vector(-27, -6, -225),
             new Vector(-39, 1, -237)
     );
 
 
-    public static List<Vector> heliPortLocations = List.of(
+    public List<Vector> heliPortLocations = List.of(
 //            ヘリポート座標(右下)
-//1　6,1,-91
-//2　52,38,6
-//3　-14,38,6
-//4　-88,1,-24
-//5　10,1,147
             new Vector(6,1,-91),
             new Vector(52,38,6),
             new Vector(-14,38,6),
@@ -55,23 +204,23 @@ public class GameLocation {
             new Vector(10,1,147)
     );
 
-    public static Vector cloneHeli(){
+    public Vector cloneHeli(){
         Vector cloneLocation = heliPortLocations.get(new Random().nextInt(heliPortLocations.size()));
         BlockCopyUtil.copyAndPaste(originalHelicopterLocations, cloneLocation);
         return cloneLocation;
     }
 
-    public static void revertHeliPort(Vector heliPortLocation){
+    public void revertHeliPort(Vector heliPortLocation){
         BlockCopyUtil.copyAndPaste(originalHeliPortLocations, heliPortLocation);
     }
 
-    public static void revertAllHeliPort(){
+    public void revertAllHeliPort(){
         for(Vector heliPortLocation : heliPortLocations){
             BlockCopyUtil.copyAndPaste(originalHeliPortLocations, heliPortLocation);
         }
     }
 
-    public static boolean isInHeliChair(Vector heliPortLocation, Vector chairLocation){
+    public boolean isInHeliChair(Vector heliPortLocation, Vector chairLocation){
         // chairがheli座標の空間内にあるかどうか
         Vector topCorner = heliPortLocation.clone().add(new Vector(-12, 7, -12));
         Vector bottomCorner = heliPortLocation.clone();
@@ -80,14 +229,8 @@ public class GameLocation {
                 && chairLocation.getZ() <= bottomCorner.getZ() && chairLocation.getZ() >= topCorner.getZ();
     }
 
-    public static List<Vector> clerkLocations = List.of(
+    public List<Vector> clerkLocations = List.of(
 //            ショップおじいちゃん座標
-//1(fuck food):46,1,151
-//2(シキ・イエークス教):-143,1,140
-//3(Lawson):-30,1,-144
-//4(濃厚豚骨豚無双):144,1,-140
-//5(fuck cafe):55,19,30
-//6(デパート美容院):29,11,-30
             new Vector(46.5, 1, 151.5),
             new Vector(-142.5, 1, 140.5),
             new Vector(-29.5, 1, -143.5),
@@ -96,13 +239,8 @@ public class GameLocation {
             new Vector(-28.5, 11, -29.5)
     );
 
-    public static List<Vector> dealerLocations = List.of(
+    public List<Vector> dealerLocations = List.of(
 //密売人座標
-//1(Fuck depart 屋上):72,38,-12
-//2(裁判所横):-2,1,-147
-//3(Fuck depart 地下駐車場):80,-9,-14
-//4(Fuck food横):56,1,148
-//5(Ascent ヘブン下):-94,2,130
             new Vector(72.5, 38, -11.5),
             new Vector(-1.5, 1, -146.5),
             new Vector(80.5, -9, -13.5),
@@ -111,12 +249,7 @@ public class GameLocation {
     );
 
 //    芸人拘束場所座標
-//1(パンサー尾形 デパート女子トイレ個室):36,1,38
-//2(ビビる大木 Fuck Game 従業員室):25,28,43
-//3(ハリウッドザコシショウ 罰罰病家 裏):-85,1,141
-//4(オードリー若林 濃厚豚骨豚無双 裏):153,1,-149
-//5(小島よしお Mineall死ね神殿):-120,-6,58
-    public static HashMap<String, Vector> comedianLocations = new HashMap<>(){
+    public HashMap<String, Vector> comedianLocations = new HashMap<>(){
     {
         put(GameEntity.OGATA, new Vector(36.5, 1, 38.5));
         put(GameEntity.OOKI, new Vector(25.5, 28, 43.5));
@@ -125,141 +258,28 @@ public class GameLocation {
         put(GameEntity.YOSHIO, new Vector(-119.5, -6, 58.5));
     }};
 
-    public static List<Vector> respawnLocations = List.of(
+    public List<Vector> respawnLocations = List.of(
 //            プレイヤーリスポーン地点座標
-//1　90,6,-145
-//2　21,2,-128
-//3　-142,5,-142
-//4　-120,-14,22
-//5　-133,13,112
-//6　-47,14,133
-//7　111,1,126
-//8　69,28,1
-//9　29,-9,2
-//10　デパートの二階のどこかの予定、まだ制作中だから待って
-            new Vector(90, 6, -145),
-            new Vector(21, 2, -128),
-            new Vector(-142, 5, -142),
-            new Vector(-120,-14,22),
-            new Vector(-133,13,112),
-            new Vector(-47,14,133),
-            new Vector(111,1,126),
-            new Vector(69,28,1),
-            new Vector(29,-9,2)
+            new Vector(91.5, 6, -144.5),
+            new Vector(21.5, 2, -127.5),
+            new Vector(-141.5, 5, -141.5),
+            new Vector(-119.5,-14,22.5),
+            new Vector(-132.5,13,112.5),
+            new Vector(-46.5,14,133.5),
+            new Vector(111.5,1,126.5),
+            new Vector(69.5,28,1.5),
+            new Vector(29.5,-9,2.5),
+            new Vector(29.5,3,-0.5)
     );
 
-    public static Vector LobbyLocation = new Vector(187.5,-59,67.5);
+    public Vector LobbyLocation = new Vector(187.5,-59,67.5);
 
-    public static List<Vector> prayerUltimateLocations = List.of(
+    public List<Vector> prayerUltimateLocations = List.of(
             new Vector(-138.5,9,161.5),
             new Vector(-131.5,9,161.5)
     );
 
-    public static List<Vector> skeletonSpawnLocations = List.of(
-//        ・道路エリア
-//149,1,74
-//149,1,0
-//149,1,-74
-//36,1,-74
-//-75,1,-74
-//-75,1,0
-//-75,1,74
-//37,1,74
-//104,1,29
-//100,1,-26
-//・MARUHAN
-//72,1,98
-//145,1,98
-//152,1,148
-//109,1,144
-//72,1,142
-//・地都ルイン
-//54,1,130
-//45,1,91
-//34,1,118
-//24,1,115
-//13,1,92
-//1,1,108
-//16,1,143
-//kotoma — 22:07
-//金玉＆Ascent Asite
-//-47,1,133
-//-18,1,145
-//-20,3,98
-//-47,3,98
-//-74,3,98
-//-93,2,116
-//-108,2,120
-//-100,5,130
-//            -119,1,98
-//                    -150,1,98
-//                    -149,1,129
-//                    -120,1,129
-//                    -113,13,112
-//                    -92,1,41
-//                    -147,1,41
-//                    -120,-17,37
-//                    -108,-15,53
-//                    -132,-15,53
-//            イエークス美術館＆LAWSON
-//-120,1,-29
-//-142,4,-84
-//-99,10,-99
-//-127,5,-126
-//-84,4,-142
-//-81,1,-116
-//-44,1,-102
-//-15,1,-102
-//-45,1,-134
-//-14,1,-134
-//            ハンナ死ぬなあああああああああああああ！！！！！！！！
-//9,1,-128
-//21,1,-140
-//33,1,-128
-//21,2,-116
-//47,1,-92
-//47,1,-144
-//-5,1,-146
-//            トンネルは丸みを帯びたほうがいいのか。ほーん...＆濃厚豚骨豚無双
-//144,1,-108
-//102,2,-113
-//100,1,-103
-//90,7,-146
-//72,2,-127
-//68,1,-96
-//127,16,-105
-//            地下駐車場＆1F
-//50,-9,43
-//71,-9,-2
-//50,-9,-43
-//7,-9,-2
-//68,1,2
-//31,1,17
-//-31,1,-35
-//-44,1,4
-//-21,1,29
-//            4F
-//50,28,36
-//53,28,1
-//2,28,6
-//29,28,-21
-//3F
-//-7,19,32
-//-35,31,32
-//-42,19,6
-//-7,19,3
-//-35,31,3
-//-23,19,-36
-//1,19,-2
-//17,19,-27
-//54,19,-2
-//35,19,37
-//            67,38,-3
-//57,38,38
-//31,38,36
-//29,38,11
-//31,38,-13
-//48,38,-24
+    public List<Vector> skeletonSpawnLocations = List.of(
             new Vector(149.5,1,74.5),
             new Vector(149.5,1,0.5),
             new Vector(149.5,1,-73.5),

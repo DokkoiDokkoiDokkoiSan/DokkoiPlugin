@@ -1,5 +1,6 @@
 package org.meyason.dokkoi.entity;
 
+import org.bukkit.entity.Entity;
 import org.meyason.dokkoi.constants.GameEntityKeyString;
 import org.meyason.dokkoi.constants.GameEntityList;
 import org.meyason.dokkoi.exception.GameEntityIDNotFoundException;
@@ -81,8 +82,9 @@ public abstract class GameEntity {
 
     protected String id;
     protected String name;
+    protected Entity baseEntity;
 
-    public GameEntity(String id){
+    public GameEntity(String id) {
         this.id = id;
         this.name = nameMap.get(id);
     }
@@ -93,6 +95,15 @@ public abstract class GameEntity {
 
     public String getName() {
         return name;
+    }
+
+    public void registerBaseEntity(Entity entity){
+        this.baseEntity = entity;
+    }
+
+    public void remove(){
+        if(this.baseEntity==null) { return; }
+        this.baseEntity.remove();
     }
 
     public static GameEntity getGameEntityFromId(String id){

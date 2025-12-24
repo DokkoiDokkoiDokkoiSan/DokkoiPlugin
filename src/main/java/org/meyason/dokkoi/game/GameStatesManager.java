@@ -505,4 +505,5 @@ public class GameStatesManager {
         }
         this.spawnedEntities.remove(uuid);
     }
+    public HashMap<String, GameEntity> getSpawnedEntities() {return spawnedEntities;}
 }

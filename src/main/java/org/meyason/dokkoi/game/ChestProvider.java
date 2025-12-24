@@ -171,7 +171,7 @@ public class ChestProvider {
     }
 
     public static void removeAllChests() {
-        for(Vector vector : GameLocation.chestLocations) {
+        for(Vector vector : GameLocation.getInstance().chestLocations) {
             Location loc = new Location(
                     Bukkit.getWorld("world"),
                     vector.getX(),

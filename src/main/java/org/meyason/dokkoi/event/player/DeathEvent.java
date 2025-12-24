@@ -66,7 +66,7 @@ public class DeathEvent {
             manager.getPlayerGoals().get(deadUUID).isRevived = true;
             dead.sendMessage("§aあなたはティア3勝利条件なので，§l§4復活§r§aしました");
             World world = dead.getWorld();
-            Location location = GameLocation.respawnLocations.get(new Random().nextInt(GameLocation.respawnLocations.size())).toLocation(world);
+            Location location = GameLocation.getInstance().respawnLocations.get(new Random().nextInt(GameLocation.getInstance().respawnLocations.size())).toLocation(world);
             dead.teleport(location);
             dead.setHealth(dead.getMaxHealth());
             return;

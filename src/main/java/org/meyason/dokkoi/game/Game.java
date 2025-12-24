@@ -103,6 +103,8 @@ public class Game {
 
     private GameEntityManager gameEntityManager;
 
+    private GameLocation gameLocation;
+
     private LPManager lpManager;
     public LPManager getLPManager(){ return lpManager; }
 
@@ -117,13 +119,14 @@ public class Game {
     public void init(){
         scheduler = new Scheduler().runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
         updateScoreboardDisplay();
+        gameLocation = new GameLocation();
         gameStatesManager.init();
         gameStatesManager.setGameState(GameState.WAITING);
         setNowTime(matchingPhaseTime);
         matchQueue.clear();
-        GameLocation.revertAllHeliPort();
+        gameLocation.revertAllHeliPort();
         heliLocation = new Vector();
-        heliLocation = GameLocation.cloneHeli();
+        heliLocation = gameLocation.cloneHeli();
         for(Player player : Bukkit.getOnlinePlayers()){
             CustomItem joinItem;
             CustomItem quitItem;
@@ -139,7 +142,7 @@ public class Game {
             player.getInventory().addItem(joinItemStack);
             player.getInventory().addItem(quitItemStack);
 
-            Vector lobby = GameLocation.LobbyLocation;
+            Vector lobby = gameLocation.LobbyLocation;
             player.teleport(new Location(Bukkit.getWorld("world"), lobby.getX(), lobby.getY(), lobby.getZ()));
         }
     }
@@ -246,7 +249,7 @@ public class Game {
         int tier1Count = 0;
         int tier2Count = 0;
         int tier3Count = 0;
-        List<Vector> availableSpawnLocations = new ArrayList<>(GameLocation.respawnLocations);
+        List<Vector> availableSpawnLocations = new ArrayList<>(gameLocation.respawnLocations);
 
         for (UUID uuid : gameStatesManager.getJoinedPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
@@ -460,7 +463,7 @@ public class Game {
         }
         matchQueue.clear();
         gameStatesManager.clearAll();
-        GameLocation.revertHeliPort(heliLocation);
+        gameLocation.revertHeliPort(heliLocation);
         new Game();
     }
 

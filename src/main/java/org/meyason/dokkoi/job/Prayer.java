@@ -330,7 +330,7 @@ public class Prayer extends Job {
         if(target == null){
             return;
         }
-        List<Vector> locations = GameLocation.prayerUltimateLocations;
+        List<Vector> locations = GameLocation.getInstance().prayerUltimateLocations;
         World world = target.getWorld();
         player.teleport(locations.getFirst().toLocation(world));
         target.teleport(locations.getLast().toLocation(world));

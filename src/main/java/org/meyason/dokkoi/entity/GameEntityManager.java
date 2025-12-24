@@ -16,6 +16,7 @@ import org.meyason.dokkoi.constants.GameEntityList;
 import org.meyason.dokkoi.constants.GameEntityKeyString;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameLocation;
+import org.meyason.dokkoi.game.GameStatesManager;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -34,21 +35,21 @@ public class GameEntityManager {
         for (String comedianID : Comedian.comedianIDLIST){
             GameEntity gameEntity = GameEntity.getGameEntityFromId(comedianID);
             if(gameEntity instanceof Comedian comedian){
-                Location location = GameLocation.comedianLocations.get(comedianID).toLocation(world);
+                Location location = GameLocation.getInstance().comedianLocations.get(comedianID).toLocation(world);
                 spawnComedian(location, comedian);
             }
         }
 
-        for (int i = 0; i < GameLocation.dealerLocations.size(); i++){
+        for (int i = 0; i < GameLocation.getInstance().dealerLocations.size(); i++){
             GameEntity gameEntity = GameEntity.getGameEntityFromId(GameEntity.DEALER);
             if(gameEntity instanceof Dealer dealer){
-                Location location = GameLocation.dealerLocations.get(i).toLocation(world);
+                Location location = GameLocation.getInstance().dealerLocations.get(i).toLocation(world);
                 spawnDealer(location, dealer);
             }
         }
 
-        for (int i = 0; i < GameLocation.clerkLocations.size(); i++) {
-            Location location = GameLocation.clerkLocations.get(i).toLocation(world);
+        for (int i = 0; i < GameLocation.getInstance().clerkLocations.size(); i++) {
+            Location location = GameLocation.getInstance().clerkLocations.get(i).toLocation(world);
             GameEntity gameEntity;
             // TODO: 位置ベタ書き直す できれば全部違うキャラにしてmapで管理する
             if(location.toVector().equals(new Vector(144.5, 1, -139.5))){
@@ -69,22 +70,11 @@ public class GameEntityManager {
         World world = Bukkit.getWorld("world");
         if(world == null) return;
 
-        Location loc1 = new Location(world, -151, 51, -151);
-        Location loc2 = new Location(world, 151, 151, 151);
-
-        for(org.bukkit.entity.Entity entity : world.getEntities()){
-            if(entity instanceof Villager villager){
-                String uuid = getEntityUUID(villager);
-                if(uuid != null && Game.getInstance().getGameStatesManager().isExistsSpawnedEntityFromUUID(uuid)){
-                    killVillager(villager);
-                }
-            } else if(entity instanceof org.bukkit.entity.Skeleton skeleton){
-                String uuid = getEntityUUID(skeleton);
-                if(uuid != null && Game.getInstance().getGameStatesManager().isExistsSpawnedEntityFromUUID(uuid)){
-                    killSkeleton(skeleton);
-                }
-            }
+        GameStatesManager manager = Game.getInstance().getGameStatesManager();
+        for(GameEntity gameEntity : manager.getSpawnedEntities().values()){
+            gameEntity.remove();
         }
+        manager.getSpawnedEntities().clear();
     }
 
     public static boolean spawnEntityByID(Player player, String entityIDString){
@@ -134,6 +124,7 @@ public class GameEntityManager {
         villager.setInvulnerable(true);
         String uuid = UUID.randomUUID().toString();
         villager.getPersistentDataContainer().set(new NamespacedKey(Dokkoi.getInstance(), GameEntityKeyString.COMEDIAN), PersistentDataType.STRING, uuid);
+        comedian.registerBaseEntity(villager);
         Game.getInstance().getGameStatesManager().addSpawnedEntity(uuid, comedian);
     }
 
@@ -159,6 +150,7 @@ public class GameEntityManager {
 //        villager.setInvulnerable(true);
         String uuid = UUID.randomUUID().toString();
         villager.getPersistentDataContainer().set(new NamespacedKey(Dokkoi.getInstance(), GameEntityKeyString.NPC), PersistentDataType.STRING, uuid);
+        dealer.registerBaseEntity(villager);
         Game.getInstance().getGameStatesManager().addSpawnedEntity(uuid, dealer);
     }
 
@@ -180,6 +172,7 @@ public class GameEntityManager {
         villager.setInvulnerable(true);
         String uuid = UUID.randomUUID().toString();
         villager.getPersistentDataContainer().set(new NamespacedKey(Dokkoi.getInstance(), GameEntityKeyString.NPC), PersistentDataType.STRING, uuid);
+        clerk.registerBaseEntity(villager);
         Game.getInstance().getGameStatesManager().addSpawnedEntity(uuid, clerk);
     }
 
@@ -203,6 +196,7 @@ public class GameEntityManager {
         bukkitSkeleton.setAggressive(true);
         String uuid = UUID.randomUUID().toString();
         bukkitSkeleton.getPersistentDataContainer().set(new NamespacedKey(Dokkoi.getInstance(), GameEntityKeyString.ENEMY), PersistentDataType.STRING, uuid);
+        skeleton.registerBaseEntity(bukkitSkeleton);
         Game.getInstance().getGameStatesManager().addSpawnedEntity(uuid, skeleton);
     }
 
