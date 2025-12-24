@@ -41,6 +41,12 @@ public abstract class GameEntity {
         put(OOKI, "ビビる大木「ぎゃあああああああああああああああああああ！！！！！！！！！！！！！！！！！！！！！！！！！！！」");
     }};
 
+    public static HashMap<String, String> clerkNameMap = new HashMap<>(){{
+        put(CLERK, "ショップおじいちゃん");
+        put(INMU, "一般店主爺");
+        put(SUSURU, "ヤバいラーメン店主のSUSURU");
+    }};
+
     public static HashMap<String, String> notEnoughMoneyMessageMap = new HashMap<>(){{
         put(CLERK, "§cショップおじいちゃん「お金が足りんのじゃよ・・・。」");
         put(INMU, "§c一般店主爺「そちら、14万3000円になっております。」");
@@ -60,7 +66,7 @@ public abstract class GameEntity {
     }};
 
     public static HashMap<String, String> talkMessageMap = new HashMap<>(){{
-        put(CLERK, "§cbショップおじいちゃん「いらっしゃい！」");
+        put(CLERK, "§bショップおじいちゃん「いらっしゃい！」");
         put(INMU, "§b一般店主爺「入って、どうぞ。ゆっくり見てけよ見てけよ～」");
         put(SUSURU, "§bヤバいラーメン店主のSUSURU「§6§lこちらが濃厚とんこつ豚無双さんの濃厚無双ラーメン　海苔トッピングです§r§6」");
     }};

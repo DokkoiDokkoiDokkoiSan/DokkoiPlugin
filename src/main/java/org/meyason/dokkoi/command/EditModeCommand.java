@@ -1,5 +1,6 @@
 package org.meyason.dokkoi.command;
 
+import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -28,7 +29,10 @@ public class EditModeCommand implements CommandExecutor {
         } else {
             Dokkoi.getInstance().addEditModePlayer(player.getUniqueId());
             player.sendMessage("§aワールド編集モードに入りました。");
+            player.setGameMode(GameMode.CREATIVE);
         }
+
+//        player.getInventory().clear();
 
         return true;
     }
