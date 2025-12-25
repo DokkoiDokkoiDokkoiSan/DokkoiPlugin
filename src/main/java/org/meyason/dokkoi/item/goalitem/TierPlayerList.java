@@ -7,9 +7,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
+import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 
@@ -38,7 +44,7 @@ public class TierPlayerList extends CustomItem {
                 Component.text("§b効果"),
                 Component.text("§5一番選択された数が多いtierの勝利条件を選んだプレイヤーの名前が記入されている。"),
                 Component.text("§5本を開くとその勝利条件を選んだプレイヤーの名前が記入されている。"),
-                Component.text("§bこれらのプレイヤーをすべて殺害せよ。")
+                Component.text("§b本を左クリックで使用すると記入されているプレイヤーに発光を10秒間付与する。捨てることが出来ない。")
         );
         bookMeta.lore(lore);
         setDescription(lore);
@@ -86,5 +92,34 @@ public class TierPlayerList extends CustomItem {
 
     public List<Player> getTargetPlayers(){
         return targetPlayers;
+    }
+
+    public void skill(GameStatesManager gameStatesManager, Player owner){
+        UUID uuid = owner.getUniqueId();
+        if(gameStatesManager.getItemCoolDownScheduler().containsKey(uuid)){
+            owner.sendMessage("§cクールタイム中です");
+            return;
+        }
+        for(Player p : this.targetPlayers){
+            p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 10 * 20, 1));
+        }
+        owner.sendMessage("§a魔女たちの身体が光りだした！");
+        BukkitRunnable itemInitTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if(gameStatesManager.getGameState() != GameState.IN_GAME) {
+                    cancel();
+                    return;
+                }
+                if (!owner.isOnline() || !gameStatesManager.getItemCoolDownScheduler().containsKey(uuid)) {
+                    gameStatesManager.removeItemCoolDownScheduler(uuid);
+                    cancel();
+                    return;
+                }
+                gameStatesManager.removeItemCoolDownScheduler(uuid);
+            }
+        };
+        itemInitTask.runTaskLater(Dokkoi.getInstance(), 30 * 20L);
+        gameStatesManager.addItemCoolDownScheduler(uuid, itemInitTask);
     }
 }

@@ -308,6 +308,34 @@ public class PickEvent implements Listener {
 
                     case MamiyaPhone.id -> manager.updatePlayerhasMamiyaPhone(player.getUniqueId());
                 }
+                // かつスロットが指定アイテムのとき(クリックでカーソルアイテムと入れ替えたとき)
+                if(slotItem != null && !slotItem.getType().isAir()){
+                    ItemMeta slotMeta = slotItem.getItemMeta();
+                    if(slotMeta == null){return;}
+                    PersistentDataContainer slotContainer = slotMeta.getPersistentDataContainer();
+                    String slotItemName = slotContainer.get(itemKey, PersistentDataType.STRING);
+                    if(slotItemName == null){return;}
+
+                    if(isUniqueItem(slotItem)){
+                        event.setCancelled(true);
+                    }
+
+                    switch (slotItemName) {
+
+                        case Korehamaru.id -> {
+                            if (!(job instanceof DrugStore)) {
+                                player.sendMessage(Component.text("§cこれはすてたくない"));
+                                event.setCancelled(true);
+                            }
+                        }
+
+                        case Ketsumou.id -> Ketsumou.deactivate(player);
+
+                        case TakashimaPhone.id -> manager.clearWhoHasTakashimaPhone();
+
+                        case MamiyaPhone.id -> manager.clearWhoHasMamiyaPhone();
+                    }
+                }
                 return;
             }
 

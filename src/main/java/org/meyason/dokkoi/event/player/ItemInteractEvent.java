@@ -27,6 +27,7 @@ import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.debug.Debug;
 import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
 import org.meyason.dokkoi.item.goalitem.KillerList;
+import org.meyason.dokkoi.item.goalitem.TierPlayerList;
 import org.meyason.dokkoi.item.goalitem.UnkillerList;
 import org.meyason.dokkoi.item.gunitem.ARMagazine;
 import org.meyason.dokkoi.item.gunitem.HGMagazine;
@@ -246,7 +247,7 @@ public class ItemInteractEvent{
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
                     }
-                    manager.setIsEnableAttack(player.getUniqueId(), true);
+                    manager.addIsDeactivateDamageOnce(player.getUniqueId(), true);
                 }
                 case InstantDevour.id -> {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
@@ -254,6 +255,19 @@ public class ItemInteractEvent{
                     }
                     event.setCancelled(true);
                     InstantDevour.activate(player, itemStack);
+                }
+                case TierPlayerList.id -> {
+                    if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
+                        return;
+                    }
+                    if (customItem instanceof TierPlayerList && itemSerial != null) {
+                        CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
+                        if (!(serialItem instanceof TierPlayerList tierPlayerList)) {
+                            return;
+                        }
+                        event.setCancelled(true);
+                        tierPlayerList.skill(manager, player);
+                    }
                 }
             }
         }

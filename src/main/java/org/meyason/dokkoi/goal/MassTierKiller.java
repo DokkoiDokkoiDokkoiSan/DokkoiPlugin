@@ -2,9 +2,15 @@ package org.meyason.dokkoi.goal;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.meyason.dokkoi.Dokkoi;
+import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
@@ -71,11 +77,16 @@ public class MassTierKiller extends Goal {
         try {
             CustomItem item = GameItem.getItem(TierPlayerList.id);
             ItemStack tierListItem = item.getItem();
-            PlayerInventory inventory = player.getInventory();
+            ItemMeta meta = tierListItem.getItemMeta();
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
+            String serialUUID = container.get(serialKey, PersistentDataType.STRING);
             if (item instanceof TierPlayerList list) {
                 this.tierPlayerList = list;
                 this.tierPlayerList.setPlayer(game, player);
+                game.getGameStatesManager().addCustomItemToSerialMap(serialUUID, list);
             }
+            PlayerInventory inventory = player.getInventory();
             inventory.addItem(tierListItem);
         } catch (NoGameItemException e) {
             this.player.sendMessage("§4エラーが発生しました．管理者に連絡してください：TierPlayerList取得失敗");

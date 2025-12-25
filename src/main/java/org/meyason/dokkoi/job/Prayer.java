@@ -116,6 +116,10 @@ public class Prayer extends Job {
 
     private List<Location> alreadyOpenedChests = new ArrayList<>();
     public boolean addLocationToAlreadyOpenedChests(Location loc){
+        if(gachaPoint >= maxGachaPoint){
+            player.sendMessage("§cガチャポイントが最大値に達しているため、これ以上チェストを開けてもガチャポイントは貰えません。");
+            return false;
+        }
         if(alreadyOpenedChests.contains(loc)){return false;}
         alreadyOpenedChests.add(loc);
         return true;
@@ -128,6 +132,7 @@ public class Prayer extends Job {
     public void addGachaPoint(int amount){
         gachaPoint += amount;
     }
+    private int maxGachaPoint = 2;
 
     private int gachaCount = 0;
     public int getGachaCount(){

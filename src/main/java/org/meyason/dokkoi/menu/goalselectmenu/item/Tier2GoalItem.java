@@ -66,6 +66,11 @@ public class Tier2GoalItem extends AbstractItem {
             return;
         }
         Game game = Game.getInstance();
+        if(goal.getPlayer() != null){
+            // 二重目標設定防止
+            player.sendMessage("§c既に勝利条件が設定されています。");
+            return;
+        }
         goal.setGoal(game, player);
         game.getGameStatesManager().getPlayerGoals().put(player.getUniqueId(), goal);
         job.attachGoal(goal);

@@ -40,6 +40,8 @@ public abstract class Goal implements Cloneable {
 
     public String getDescription() {return this.description;}
 
+    public Player getPlayer() {return this.player;}
+
     public abstract void setGoal(Game game, Player player);
 
     public abstract void addItem();
