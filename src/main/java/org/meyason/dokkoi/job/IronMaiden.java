@@ -137,7 +137,7 @@ public class IronMaiden extends Job {
                         }
                     }
                     if (target instanceof Player targetPlayer) {
-                        if(targetPlayer.getGameMode() != GameMode.SPECTATOR) {
+                        if(targetPlayer.getGameMode() != GameMode.SPECTATOR || targetPlayer.getGameMode() != GameMode.CREATIVE) {
                             Vector toTargetVec = targetPlayer.getEyeLocation().toVector().subtract(player.getEyeLocation().toVector());
 
                             // ゼロベクトルの場合はスキップ（同じ位置にいる場合）
