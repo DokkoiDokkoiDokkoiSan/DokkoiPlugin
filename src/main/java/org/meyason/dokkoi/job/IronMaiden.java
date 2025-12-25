@@ -138,22 +138,34 @@ public class IronMaiden extends Job {
                     }
                     if (target instanceof Player targetPlayer) {
                         if(targetPlayer.getGameMode() != GameMode.SPECTATOR) {
-                            Vector toTargetVec = targetPlayer.getEyeLocation().toVector().subtract(player.getEyeLocation().toVector()).normalize();
+                            Vector toTargetVec = targetPlayer.getEyeLocation().toVector().subtract(player.getEyeLocation().toVector());
+
+                            // ゼロベクトルの場合はスキップ（同じ位置にいる場合）
+                            if (toTargetVec.lengthSquared() < 0.0001) {
+                                return;
+                            }
+
+                            toTargetVec.normalize();
                             if (!isUsingSkill) {
                                 toTargetVec.multiply(-1);
                             }
+
                             Location targetLookAt = targetPlayer.getEyeLocation().setDirection(toTargetVec);
                             targetLookAt.setX(targetPlayer.getLocation().getX());
                             targetLookAt.setY(targetPlayer.getLocation().getY());
                             targetLookAt.setZ(targetPlayer.getLocation().getZ());
-                            targetPlayer.teleport(targetLookAt);
-                            targetPlayer.playSound(targetPlayer, Sound.ENTITY_VILLAGER_NO, 0.2f, 1.0f);
-                            if (isUsingSkill) {
-                                targetPlayer.sendActionBar(Component.text("§c[鉄処女]あっち見ろ！あほ！"));
-                            } else {
-                                targetPlayer.sendActionBar(Component.text("§c[鉄処女]こっち見ろ！ばか！"));
+
+                            // pitch/yawが有限値かチェック
+                            if (Double.isFinite(targetLookAt.getYaw()) && Double.isFinite(targetLookAt.getPitch())) {
+                                targetPlayer.teleport(targetLookAt);
+                                targetPlayer.playSound(targetPlayer, Sound.ENTITY_VILLAGER_NO, 0.2f, 1.0f);
+                                if (isUsingSkill) {
+                                    targetPlayer.sendActionBar(Component.text("§c[鉄処女]あっち見ろ！あほ！"));
+                                } else {
+                                    targetPlayer.sendActionBar(Component.text("§c[鉄処女]こっち見ろ！ばか！"));
+                                }
+                                count += 1;
                             }
-                            count += 1;
                         }
                     }
                 }

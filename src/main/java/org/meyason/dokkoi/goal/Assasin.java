@@ -17,7 +17,7 @@ public class Assasin extends Goal {
     public Player getTargetPlayer() {return targetPlayer;}
 
     public Assasin() {
-        super("§bDefender", "指定されたプレイヤーを殺せ", Tier.TIER_2);
+        super("§bAssasin", "指定されたプレイヤーを殺せ", Tier.TIER_2);
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.meyason.dokkoi.scheduler;
 
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
@@ -14,9 +15,12 @@ public class SkillScheduler extends BukkitRunnable {
     private Game game;
     private Player player;
 
+    private BukkitRunnable runnable;
+
     public SkillScheduler(Game game, Player player) {
         this.game = game;
         this.player = player;
+        runnable = this;
     }
 
     public void run() {
@@ -26,6 +30,11 @@ public class SkillScheduler extends BukkitRunnable {
             cancel();
             return;
         }
+        if(!gameStatesManager.getCoolDownScheduler().get(playerUUID).equals(this)){
+            this.cancel();
+            return;
+        }
+
 
         Job job = gameStatesManager.getPlayerJobs().get(playerUUID);
         if(gameStatesManager.getSkillCoolDownTasks().containsKey(playerUUID)){

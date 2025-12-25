@@ -50,6 +50,7 @@ public class TierPlayerList extends CustomItem {
         setDescription(lore);
         baseItem.setItemMeta(bookMeta);
         isUnique = true;
+        hasSerialNumber = true;
     }
 
     @Override
@@ -78,6 +79,7 @@ public class TierPlayerList extends CustomItem {
         for(UUID uuid : playerUUID){
             Player p = Bukkit.getPlayer(uuid);
             if(p == null) continue;
+            if(p == player) continue;
             if(game.getGameStatesManager().getPlayerGoals().get(p.getUniqueId()).tier == targetTier) {
                 names.append("§2- ").append(p.getName()).append("\n");
                 targetPlayers.add(p);

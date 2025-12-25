@@ -238,7 +238,7 @@ public class GameLocation {
             new Vector(-29.5, 1, -143.5),
             new Vector(144.5, 1, -139.5),
             new Vector(55.5, 19, 30.5),
-            new Vector(-28.5, 1, -29.5)
+            new Vector(29.5, 1, -29.5)
     );
 
     public List<Vector> dealerLocations = List.of(

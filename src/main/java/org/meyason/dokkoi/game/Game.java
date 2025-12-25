@@ -127,6 +127,9 @@ public class Game {
         matchQueue.clear();
         gameLocation.revertAllHeliPort();
         for(Player player : Bukkit.getOnlinePlayers()){
+            if(Dokkoi.getInstance().isEditModePlayer(player.getUniqueId())){
+                continue;
+            }
             CustomItem joinItem;
             CustomItem quitItem;
             try{
@@ -182,6 +185,9 @@ public class Game {
             player.setCustomNameVisible(false);
         }
         for(Player player : Bukkit.getOnlinePlayers()){
+            if(Dokkoi.getInstance().isEditModePlayer(player.getUniqueId())){
+                continue;
+            }
             if(!matchQueue.contains(player.getUniqueId())){
                 player.setGameMode(GameMode.SPECTATOR);
             }
@@ -461,6 +467,9 @@ public class Game {
         gameStatesManager.setGameState(GameState.WAITING);
         if(!gameStatesManager.getJoinedPlayers().isEmpty()) {
             for (Player player : Bukkit.getOnlinePlayers()) {
+                if(Dokkoi.getInstance().isEditModePlayer(player.getUniqueId())){
+                    continue;
+                }
                 UUID uuid = player.getUniqueId();
                 if (gameStatesManager.getCoolDownScheduler().containsKey(uuid)) {
                     gameStatesManager.getCoolDownScheduler().get(uuid).cancel();

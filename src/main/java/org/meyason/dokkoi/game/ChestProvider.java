@@ -48,9 +48,9 @@ public class ChestProvider {
     private boolean isPopThunderJavelin = false;
     private boolean isPopRailGun = false;
 
-    private int maxKetsumouCount = 9;
-
-    private int currentKetsumouCount = 0;
+//    private int maxKetsumouCount = 9;
+//
+//    private int currentKetsumouCount = 0;
 
     private BukkitTask task;
 
@@ -72,8 +72,7 @@ public class ChestProvider {
                 GlisteringMelonSlice.id,
                 CookedBeef.id,
                 CookedPorkchop.id,
-                PumpkinPie.id,
-                Ketsumou.id
+                PumpkinPie.id
         ));
         put(SR, List.of(
                 HealingCrystal.id,
@@ -92,7 +91,8 @@ public class ChestProvider {
                 Pistol.id,
                 LongSword.id,
                 FortuneBall.id,
-                EdenChime.id
+                EdenChime.id,
+                Ketsumou.id
         ));
         put(UR, List.of(
                 RailGun.id,
@@ -157,13 +157,14 @@ public class ChestProvider {
             }else{
                 isPopRailGun = true;
             }
-        }else if (customItem instanceof Ketsumou){
-            if(currentKetsumouCount >= maxKetsumouCount){
-                return getRandomItem();
-            }else {
-                currentKetsumouCount += 1;
-            }
         }
+//        else if (customItem instanceof Ketsumou){
+//            if(currentKetsumouCount >= maxKetsumouCount){
+//                return getRandomItem();
+//            }else {
+//                currentKetsumouCount += 1;
+//            }
+//        }
         ItemStack itemStack = customItem.getItem();
         return itemStack;
     }
