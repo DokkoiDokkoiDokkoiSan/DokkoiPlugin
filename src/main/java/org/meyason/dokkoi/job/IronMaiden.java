@@ -155,17 +155,14 @@ public class IronMaiden extends Job {
                             targetLookAt.setY(targetPlayer.getLocation().getY());
                             targetLookAt.setZ(targetPlayer.getLocation().getZ());
 
-                            // pitch/yawが有限値かチェック
-                            if (Double.isFinite(targetLookAt.getYaw()) && Double.isFinite(targetLookAt.getPitch())) {
-                                targetPlayer.teleport(targetLookAt);
-                                targetPlayer.playSound(targetPlayer, Sound.ENTITY_VILLAGER_NO, 0.2f, 1.0f);
-                                if (isUsingSkill) {
-                                    targetPlayer.sendActionBar(Component.text("§c[鉄処女]あっち見ろ！あほ！"));
-                                } else {
-                                    targetPlayer.sendActionBar(Component.text("§c[鉄処女]こっち見ろ！ばか！"));
-                                }
-                                count += 1;
+                            targetPlayer.teleport(targetLookAt);
+                            targetPlayer.playSound(targetPlayer, Sound.ENTITY_VILLAGER_NO, 0.2f, 1.0f);
+                            if (isUsingSkill) {
+                                targetPlayer.sendActionBar(Component.text("§c[鉄処女]あっち見ろ！あほ！"));
+                            } else {
+                                targetPlayer.sendActionBar(Component.text("§c[鉄処女]こっち見ろ！ばか！"));
                             }
+                            count += 1;
                         }
                     }
                 }

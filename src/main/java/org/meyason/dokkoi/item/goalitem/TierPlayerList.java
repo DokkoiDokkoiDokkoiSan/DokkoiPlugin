@@ -79,7 +79,7 @@ public class TierPlayerList extends CustomItem {
         for(UUID uuid : playerUUID){
             Player p = Bukkit.getPlayer(uuid);
             if(p == null) continue;
-            if(p == player) continue;
+            if(p.getUniqueId() == player.getUniqueId()) continue;
             if(game.getGameStatesManager().getPlayerGoals().get(p.getUniqueId()).tier == targetTier) {
                 names.append("§2- ").append(p.getName()).append("\n");
                 targetPlayers.add(p);
