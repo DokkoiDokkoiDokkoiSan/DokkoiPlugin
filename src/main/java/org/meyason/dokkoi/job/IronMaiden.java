@@ -137,15 +137,24 @@ public class IronMaiden extends Job {
                         }
                     }
                     if (target instanceof Player targetPlayer) {
-                        if(!(targetPlayer.getGameMode() == GameMode.SPECTATOR || targetPlayer.getGameMode() == GameMode.CREATIVE)) {
-                            Vector toTargetVec = targetPlayer.getEyeLocation().toVector().subtract(player.getEyeLocation().toVector()).normalize();
+                        if(targetPlayer.getGameMode() != GameMode.SPECTATOR || targetPlayer.getGameMode() != GameMode.CREATIVE) {
+                            Vector toTargetVec = targetPlayer.getEyeLocation().toVector().subtract(player.getEyeLocation().toVector());
+
+                            // ゼロベクトルの場合はスキップ（同じ位置にいる場合）
+                            if (toTargetVec.lengthSquared() < 0.0001) {
+                                return;
+                            }
+
+                            toTargetVec.normalize();
                             if (!isUsingSkill) {
                                 toTargetVec.multiply(-1);
                             }
+
                             Location targetLookAt = targetPlayer.getEyeLocation().setDirection(toTargetVec);
                             targetLookAt.setX(targetPlayer.getLocation().getX());
                             targetLookAt.setY(targetPlayer.getLocation().getY());
                             targetLookAt.setZ(targetPlayer.getLocation().getZ());
+
                             targetPlayer.teleport(targetLookAt);
                             targetPlayer.playSound(targetPlayer, Sound.ENTITY_VILLAGER_NO, 0.2f, 1.0f);
                             if (isUsingSkill) {

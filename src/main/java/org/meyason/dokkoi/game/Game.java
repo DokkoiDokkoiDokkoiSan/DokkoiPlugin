@@ -35,6 +35,7 @@ import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
 import org.meyason.dokkoi.network.PacketData;
 import org.meyason.dokkoi.network.PacketProcess;
 import org.meyason.dokkoi.network.PacketSender;
+import org.meyason.dokkoi.scheduler.DamageableScheduler;
 import org.meyason.dokkoi.scheduler.Scheduler;
 import org.meyason.dokkoi.scheduler.SkillScheduler;
 
@@ -126,6 +127,9 @@ public class Game {
         matchQueue.clear();
         gameLocation.revertAllHeliPort();
         for(Player player : Bukkit.getOnlinePlayers()){
+            if(Dokkoi.getInstance().isEditModePlayer(player.getUniqueId())){
+                continue;
+            }
             CustomItem joinItem;
             CustomItem quitItem;
             try{
@@ -180,11 +184,19 @@ public class Game {
             player.setFoodLevel(20);
             player.setCustomNameVisible(false);
         }
+        for(Player player : Bukkit.getOnlinePlayers()){
+            if(Dokkoi.getInstance().isEditModePlayer(player.getUniqueId())){
+                continue;
+            }
+            if(!matchQueue.contains(player.getUniqueId())){
+                player.setGameMode(GameMode.SPECTATOR);
+            }
+        }
 
         onGame = true;
         gameStatesManager.setGameState(GameState.PREP);
         setNowTime(prepPhaseTime);
-        // TODO:プレイヤーのテレポート
+
         Component message = Component.text("§a準備フェーズが開始。各自準備せよ！");
         message.append(Component.text("\n§e" + prepPhaseTime + "秒後にゲームが開始"));
         Bukkit.getServer().broadcast(message);
@@ -239,12 +251,10 @@ public class Game {
             } catch (NoGameItemException e) {
                 player.sendMessage("§4エラーが発生しました．管理者に連絡してください：目標選択メニューアイテム取得失敗");
                 e.printStackTrace();
-                return;
+                continue;
             }
             ItemStack itemStack = item.getItem();
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            itemStack.setItemMeta(itemMeta);
-            player.getInventory().setItem(1, itemStack);
+            player.getInventory().addItem(itemStack);
         }
     }
 
@@ -267,10 +277,12 @@ public class Game {
             player.playSound(player, Sound.ITEM_GOAT_HORN_SOUND_0, 1.0F, 1.0F);
             player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
             player.getInventory().clear();
+
             gameStatesManager.addKillCount(uuid);
             gameStatesManager.addAdditionalDamage(uuid, 0);
             gameStatesManager.addDamageCutPercent(uuid, 0);
             gameStatesManager.addIsDeactivateDamageOnce(uuid, false);
+
             Goal goal = gameStatesManager.getPlayerGoals().get(uuid);
             if(goal == null){
                 Job job = gameStatesManager.getPlayerJobs().get(uuid);
@@ -288,6 +300,8 @@ public class Game {
                 tier3Count++;
             }
             playerGoalNoticer(uuid);
+        }
+        for(Player player : Bukkit.getOnlinePlayers()){
             player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, Integer.MAX_VALUE, false, false, false));
         }
         List<Component> goalInstructions = List.of(
@@ -320,6 +334,10 @@ public class Game {
             SkillScheduler scheduler = new SkillScheduler(this, player);
             scheduler.runTaskTimer(Dokkoi.getInstance(), 0L, 20L);
             gameStatesManager.addCoolDownScheduler(uuid, scheduler);
+
+            DamageableScheduler damageableScheduler = new DamageableScheduler(this, player);
+            damageableScheduler.runTaskTimer(Dokkoi.getInstance(), 0L, 10L);
+            gameStatesManager.setDamageableTasks(uuid, damageableScheduler);
 
             Job job = gameStatesManager.getPlayerJobs().get(uuid);
             job.ready();
@@ -448,11 +466,11 @@ public class Game {
         ChestProvider.getInstance().cancelTask();
         gameStatesManager.setGameState(GameState.WAITING);
         if(!gameStatesManager.getJoinedPlayers().isEmpty()) {
-            for (UUID uuid : gameStatesManager.getJoinedPlayers()) {
-                Player player = Bukkit.getPlayer(uuid);
-                if (player == null || !player.isOnline()) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if(Dokkoi.getInstance().isEditModePlayer(player.getUniqueId())){
                     continue;
                 }
+                UUID uuid = player.getUniqueId();
                 if (gameStatesManager.getCoolDownScheduler().containsKey(uuid)) {
                     gameStatesManager.getCoolDownScheduler().get(uuid).cancel();
                 }

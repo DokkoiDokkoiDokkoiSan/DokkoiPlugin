@@ -42,24 +42,6 @@ public class LoginEvent implements Listener {
         UUID uuid = player.getUniqueId();
         Game game = Game.getInstance();
         player.getInventory().clear();
-        if(game.getGameStatesManager().getGameState() == GameState.IN_GAME){
-            player.kick(Component.text("§c[エラー] ゲーム進行中のため、参加できません。"));
-            return;
-        }else if(game.getGameStatesManager().getGameState() == GameState.WAITING || game.getGameStatesManager().getGameState() == GameState.MATCHING){
-            CustomItem joinItem;
-            CustomItem quitItem;
-            try{
-                joinItem = GameItem.getItem(JoinQueueItem.id);
-                quitItem = GameItem.getItem(QuitQueueItem.id);
-            } catch (NoGameItemException e) {
-                player.sendMessage("§4エラーが発生しました．管理者に連絡してください：マッチング参加/退出アイテム取得失敗");
-                return;
-            }
-            ItemStack joinItemStack = joinItem.getItem();
-            ItemStack quitItemStack = quitItem.getItem();
-            player.getInventory().addItem(joinItemStack);
-            player.getInventory().addItem(quitItemStack);
-        }
 
         LPManager lpManager = Dokkoi.getInstance().getLPManager();
 
@@ -90,6 +72,25 @@ public class LoginEvent implements Listener {
         }
 
         lpManager.putLP(uuid, lpManager.getLPFromDB(player));
+
+        if(game.getGameStatesManager().getGameState() == GameState.IN_GAME){
+            player.kick(Component.text("§c[エラー] ゲーム進行中のため、参加できません。"));
+            return;
+        }else if(game.getGameStatesManager().getGameState() == GameState.WAITING || game.getGameStatesManager().getGameState() == GameState.MATCHING){
+            CustomItem joinItem;
+            CustomItem quitItem;
+            try{
+                joinItem = GameItem.getItem(JoinQueueItem.id);
+                quitItem = GameItem.getItem(QuitQueueItem.id);
+            } catch (NoGameItemException e) {
+                player.sendMessage("§4エラーが発生しました．管理者に連絡してください：マッチング参加/退出アイテム取得失敗");
+                return;
+            }
+            ItemStack joinItemStack = joinItem.getItem();
+            ItemStack quitItemStack = quitItem.getItem();
+            player.getInventory().addItem(joinItemStack);
+            player.getInventory().addItem(quitItemStack);
+        }
 
         user.setUpdated_at(new Date());
         userRepository.updateUser(user);

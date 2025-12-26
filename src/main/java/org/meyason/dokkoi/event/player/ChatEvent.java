@@ -17,6 +17,7 @@ import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.utilitem.MamiyaPhone;
 import org.meyason.dokkoi.item.utilitem.TakashimaPhone;
 import org.meyason.dokkoi.job.Summoner;
+import org.meyason.dokkoi.util.CalculateAreaPlayers;
 
 import java.util.List;
 import java.util.UUID;
@@ -68,6 +69,10 @@ public class ChatEvent implements Listener {
                         }
                     }
                 }
+            }
+            for(Player p : CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, player.getLocation(), 5)){
+                Component message = Component.text("§7[近くの声]<< §6 ");
+                p.sendMessage(message.append(event.message()));
             }
             return;
         }

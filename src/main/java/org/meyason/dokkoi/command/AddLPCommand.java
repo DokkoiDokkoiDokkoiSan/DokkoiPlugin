@@ -14,7 +14,7 @@ public class AddLPCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if(!(sender instanceof Player player)){
             sender.sendMessage("このコマンドはプレイヤーのみ実行可能です。");
-            return true;
+            return false;
         }
         if(!player.hasPermission("addLP")){
             player.sendMessage("§cあなたにはこのコマンドを実行する権限がありません。");

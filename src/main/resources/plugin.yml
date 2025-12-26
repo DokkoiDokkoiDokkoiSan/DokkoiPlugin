@@ -29,3 +29,6 @@ commands:
     description: ワールドを編集します．
     usage: /edit
     default: op
+  itemInfo:
+    description: 手に持ったアイテムの情報を表示します．
+    usage: /info

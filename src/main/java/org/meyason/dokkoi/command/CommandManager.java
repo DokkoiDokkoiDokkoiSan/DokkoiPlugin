@@ -18,5 +18,6 @@ public class CommandManager {
         core.getCommand("getitem").setExecutor(new GetItemCommand());
         core.getCommand("addLP").setExecutor(new AddLPCommand());
         core.getCommand("edit").setExecutor(new EditModeCommand());
+        core.getCommand("itemInfo").setExecutor(new InfoCommand());
     }
 }

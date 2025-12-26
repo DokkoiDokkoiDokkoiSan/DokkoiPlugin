@@ -43,52 +43,12 @@ public class InstantDevour extends CustomItem {
         };
     }
 
-    public static void activate(Player player, int amount) {
-        player.setMaxHealth(player.getMaxHealth() + 4 * amount);
+    public static void activate(Player player, ItemStack itemStack) {
+        if(player.getMaxHealth() >= 100){
+            return;
+        }
+        itemStack.setAmount(itemStack.getAmount() - 1);
+        player.setMaxHealth(player.getMaxHealth() + 4);
     }
 
-    public static void deactivate(Player player, int amount) {
-        if(player.getMaxHealth() <= 4 * amount){
-            DeathEvent.kill(null, player);
-        }
-        if(player.getHealth() > player.getMaxHealth() - 4 * amount){
-            player.setHealth(player.getMaxHealth() - 4 * amount);
-        }
-        player.setMaxHealth(player.getMaxHealth() - 4 * amount);
-    }
-
-    public static boolean changeHP(Player player, int changedAmount) {
-        // インベントリ内の個数に応じて最大15個まで効果を付与
-        int currentAmount = 0;
-        NamespacedKey key = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
-        for (ItemStack itemStack : player.getInventory().getContents()) {
-            if (itemStack != null && itemStack.getType() == Material.AMETHYST_CLUSTER) {
-                ItemMeta meta = itemStack.getItemMeta();
-                if (meta != null && meta.getPersistentDataContainer().has(key) &&
-                        meta.getPersistentDataContainer().get(key, org.bukkit.persistence.PersistentDataType.STRING).equals(id)) {
-                    currentAmount += itemStack.getAmount();
-                }
-            }
-        }
-
-        if(changedAmount > 0) {
-            int newAmount = Math.min(currentAmount + changedAmount, 15);
-            int effectiveChange = newAmount - currentAmount;
-            if (effectiveChange > 0) {
-                activate(player, effectiveChange);
-                return true;
-            }
-        } else{
-            int newAmount = Math.max(currentAmount + changedAmount, 0);
-            int effectiveChange = currentAmount - newAmount;
-            if(currentAmount > 15){
-                effectiveChange = 15 - newAmount;
-            }
-            if (effectiveChange > 0) {
-                deactivate(player, effectiveChange);
-                return true;
-            }
-        }
-        return false;
-    }
 }
