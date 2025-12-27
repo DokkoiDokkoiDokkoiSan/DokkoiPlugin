@@ -50,7 +50,7 @@ public class MassTierKiller extends Goal {
             if(targetPlayer == null){
                 continue;
             }
-            if(targetPlayer.equals(this.player)){
+            if(targetPlayer.getUniqueId().equals(this.player.getUniqueId())){
                 continue;
             }
             Goal goal = game.getGameStatesManager().getPlayerGoals().get(targetPlayer.getUniqueId());
