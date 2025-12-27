@@ -11,7 +11,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
@@ -30,7 +29,7 @@ public class TierPlayerList extends CustomItem {
     private Player player;
     private Game game;
 
-    private List<Player> targetPlayers = new ArrayList<>();
+    private List<UUID> targetPlayers = new ArrayList<>();
 
     public TierPlayerList() {
         super(id, "§a魔女図鑑", ItemStack.of(Material.PAPER), 1);
@@ -82,7 +81,7 @@ public class TierPlayerList extends CustomItem {
             if(p.getUniqueId() == player.getUniqueId()) continue;
             if(game.getGameStatesManager().getPlayerGoals().get(p.getUniqueId()).tier == targetTier) {
                 names.append("§2- ").append(p.getName()).append("\n");
-                targetPlayers.add(p);
+                targetPlayers.add(p.getUniqueId());
             }
         }
         bookMeta.setPages(names.toString());
@@ -92,7 +91,7 @@ public class TierPlayerList extends CustomItem {
         this.player.getInventory().addItem(book);
     }
 
-    public List<Player> getTargetPlayers(){
+    public List<UUID> getTargetPlayers(){
         return targetPlayers;
     }
 
@@ -102,7 +101,9 @@ public class TierPlayerList extends CustomItem {
             owner.sendMessage("§cクールタイム中です");
             return;
         }
-        for(Player p : this.targetPlayers){
+        for(UUID targetuuid : this.targetPlayers){
+            Player p = Bukkit.getPlayer(targetuuid);
+            if(p == null) continue;
             p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 10 * 20, 1));
         }
         owner.sendMessage("§a魔女たちの身体が光りだした！");

@@ -118,7 +118,7 @@ public class MassTierKiller extends Goal {
             if(targetPlayer == null){
                 continue;
             }
-            if(tierPlayerList.getTargetPlayers().contains(targetPlayer)){
+            if(tierPlayerList.getTargetPlayers().contains(targetPlayer.getUniqueId())){
                 if(notify)this.player.sendMessage("§c全ての" + this.tierString + "プレイヤーを殺害できなかった。");
                 return false;
             }
@@ -129,6 +129,6 @@ public class MassTierKiller extends Goal {
 
     @Override
     public boolean isKillable(Player targetPlayer){
-        return tierPlayerList.getTargetPlayers().contains(targetPlayer);
+        return tierPlayerList.getTargetPlayers().contains(targetPlayer.getUniqueId());
     }
 }

@@ -23,6 +23,7 @@ import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.goal.*;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
+import org.meyason.dokkoi.item.goalitem.GoalMemo;
 import org.meyason.dokkoi.item.jobitem.Passive;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
@@ -498,6 +499,16 @@ public class Game {
 
         PlayerInventory inventory = player.getInventory();
         inventory.clear();
+        CustomItem goalMemo;
+        try{
+            goalMemo = GameItem.getItem(GoalMemo.id);
+        } catch (NoGameItemException e){
+            player.sendMessage("§4エラーが発生しました．管理者に連絡してください：目標メモアイテム取得失敗");
+            return;
+        }
+        ItemStack goalMemoItem = goalMemo.getItem();
+        inventory.addItem(goalMemoItem);
+
         CustomItem passive;
         try{
             passive = GameItem.getItem(Passive.id);

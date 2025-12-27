@@ -21,14 +21,12 @@ import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
+import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.debug.Debug;
-import org.meyason.dokkoi.item.goalitem.BuriBuriGuard;
-import org.meyason.dokkoi.item.goalitem.KillerList;
-import org.meyason.dokkoi.item.goalitem.TierPlayerList;
-import org.meyason.dokkoi.item.goalitem.UnkillerList;
+import org.meyason.dokkoi.item.goalitem.*;
 import org.meyason.dokkoi.item.gunitem.ARMagazine;
 import org.meyason.dokkoi.item.gunitem.HGMagazine;
 import org.meyason.dokkoi.item.gunitem.SMGMagazine;
@@ -77,8 +75,20 @@ public class ItemInteractEvent{
         }else if(game.getGameStatesManager().getGameState() == GameState.IN_GAME) {
             GameStatesManager manager = game.getGameStatesManager();
 
-
             switch (itemID) {
+                case GoalMemo.id -> {
+                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+                    event.setCancelled(true);
+                    Goal goal = manager.getPlayerGoals().get(player.getUniqueId());
+                    if(goal == null){
+                        player.sendMessage(Component.text("§cまだ勝利条件が選択されていません。"));
+                        return;
+                    }
+                    player.sendMessage(Component.text("§a===== §e§l勝利条件メモ§r§a ====="));
+                    player.sendMessage(Component.text("§b勝利条件： §e" + goal.getDescription()));
+                }
                 case KillerList.id -> {
                     if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
                         return;
