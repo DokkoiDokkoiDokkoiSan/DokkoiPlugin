@@ -17,7 +17,9 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.utilitem.Monei;
+import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.job.Lonely;
+import org.meyason.dokkoi.job.Photographer;
 
 import java.util.UUID;
 

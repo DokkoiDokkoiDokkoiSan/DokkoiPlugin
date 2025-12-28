@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class Photographer extends Job {
 
-    private final ArrayList<UUID> takenPhotoPlayersUUID;
+    private ArrayList<UUID> takenPhotoPlayersUUID;
     private boolean isTwoShotPhotoTaken;
 
     public Photographer() {
@@ -38,7 +38,6 @@ public class Photographer extends Job {
 
         setRemainCoolTimeSkillUltimate(200);
 
-        this.takenPhotoPlayersUUID = new ArrayList<>();
         this.isTwoShotPhotoTaken = false;
     }
 
@@ -76,6 +75,7 @@ public class Photographer extends Job {
     public void setPlayer(Game game, Player player) {
         this.game = game;
         this.player = player;
+        this.takenPhotoPlayersUUID = new ArrayList<>();
         this.goals = List.of(
                 GoalList.DEFENDER,
                 GoalList.PHOTOALLPLAYER,
