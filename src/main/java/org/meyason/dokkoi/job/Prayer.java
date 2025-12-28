@@ -163,6 +163,7 @@ public class Prayer extends Job {
 
     public void setPlayer(Game game, Player player){
         this.game = game;
+        this.alreadyOpenedChests = new ArrayList<>();
         this.player = player;
         this.goals = List.of(
                 GoalList.GACHABEGINNER,
@@ -290,7 +291,6 @@ public class Prayer extends Job {
                         cancel();
                         return;
                     }
-                    game.getGameStatesManager().removeAdditionalDamage(player.getUniqueId());
                     game.getGameStatesManager().addDamageCutPercent(player.getUniqueId(), -100);
                 }
             }.runTaskTimer(Dokkoi.getInstance(), 0, 10 * 20);
