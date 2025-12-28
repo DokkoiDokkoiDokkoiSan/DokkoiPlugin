@@ -179,7 +179,22 @@ public class GameLocation {
             new Vector(74,38,5),
             new Vector(18,38,-45),
             new Vector(77,1,-12),
-            new Vector(130,15,-111)
+            new Vector(130,15,-111),
+            new Vector(51, 10, -46),
+            new Vector(76, 10, -7),
+            new Vector(62, 10, 18),
+            new Vector(41, 10, 27),
+            new Vector(19, 10, 45),
+            new Vector(48, 10, -15),
+            new Vector(44, 10, -44),
+            new Vector(9, 10, -43),
+            new Vector(5, 10, -46),
+            new Vector(-30, 10, -33),
+            new Vector(-30, 10, -13),
+            new Vector(-10, 10, -10),
+            new Vector(-20, 10, 1),
+            new Vector(-10, 10, 22),
+            new Vector(-20, 10, 33)
     );
 
     public List<Vector> originalHelicopterLocations = List.of(
@@ -374,7 +389,15 @@ public class GameLocation {
             new Vector(31.5, 38,36.5),
             new Vector(29.5, 38,11.5),
             new Vector(31.5, 38,-12.5),
-            new Vector(48.5, 38,-23.5)
+            new Vector(48.5, 38,-23.5),
+            new Vector(46.5, 10, -5.5),
+            new Vector(61.5, 10, 40.5),
+            new Vector(41.5, 10, 18.5),
+            new Vector(39.5, 10, -35.5),
+            new Vector(12.5, 10, -16.5),
+            new Vector(-23.5, 10, -24.5),
+            new Vector(-14.5, 10, -5.5),
+            new Vector(-24.5, 10, 11.5)
     );
 
 }

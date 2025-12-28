@@ -37,6 +37,7 @@ public class GameItem {
         items.put(Skill.id, new Skill());
         items.put(Ultimate.id, new Ultimate());
         items.put(Passive.id, new Passive());
+        items.put(GoalMemo.id, new GoalMemo());
         items.put(KillerList.id, new KillerList());
         items.put(UnkillerList.id, new UnkillerList());
         items.put(Rapier.id, new Rapier());
