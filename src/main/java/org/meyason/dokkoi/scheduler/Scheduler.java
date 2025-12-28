@@ -141,9 +141,9 @@ public class Scheduler extends BukkitRunnable {
                         }
                     }
                 }
-//                if(game.getNowTime() > 0 && game.getNowTime() <= 500 && game.getNowTime() % 50 == 0){
-//                    SkeletonSpawn.spawnSkeletons();
-//                }
+                if(game.getNowTime() > 0 && game.getNowTime() <= 500 && game.getNowTime() % 50 == 0){
+                    SkeletonSpawn.spawnSkeletons();
+                }
                 game.updateScoreboardDisplay();
                 break;
 

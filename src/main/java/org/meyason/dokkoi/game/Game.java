@@ -83,7 +83,7 @@ public class Game {
     public Vector getHeliLocation() { return heliLocation; }
 
     private int nowTime;
-    public final int matchingPhaseTime = 5;
+    public final int matchingPhaseTime = 30;
     public final int prepPhaseTime = 60;
     public final int gamePhaseTime = 600;
     public final int preEndPhaseTime = 10;
