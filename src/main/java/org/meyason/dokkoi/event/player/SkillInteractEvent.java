@@ -191,7 +191,12 @@ public class SkillInteractEvent{
                     }
                     drugStore.ultimate(drugList);
                 } else if (job instanceof Photographer photographer) {
-                    photographer.skill();
+                    if(photographer.canUseUltimate()){
+                        photographer.ultimate();
+                    }else{
+                        player.sendActionBar(Component.text("§cアルティメットを使用するには一人以上を撮影する必要があります。"));
+                        return;
+                    }
 
                 } else if (job instanceof Summoner summoner) {
                     List<UUID> targetPlayers = manager.getVictims();
@@ -204,7 +209,9 @@ public class SkillInteractEvent{
                     sniper.ultimate();
                 }
 
-                job.setRemainCoolTimeSkillUltimate(-1);
+                //FIXME: 仮で1000にしてるけど要調整
+                job.setRemainCoolTimeSkillUltimate(1000);
+                job.chargeUltimateSkill(player, manager);
 
             }
         }
