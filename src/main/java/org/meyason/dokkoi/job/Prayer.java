@@ -351,12 +351,12 @@ public class Prayer extends Job {
             public void run() {
                 double result = Math.random();
                 if (result < 0.5) {
-                    DeathEvent.kill(target, player);
+                    DeathEvent.kill(null, player);
                     player.sendMessage("§aあなたの勝利です。");
                     target.sendMessage("§cあなたは敗北しました。");
                     manager.addDamageCutPercent(player.getUniqueId(), 0);
                 } else {
-                    DeathEvent.kill(player, target);
+                    DeathEvent.kill(null, target);
                     target.sendMessage("§aあなたの勝利です。");
                     player.sendMessage("§cあなたは敗北しました。");
                     manager.addDamageCutPercent(target.getUniqueId(), 0);
