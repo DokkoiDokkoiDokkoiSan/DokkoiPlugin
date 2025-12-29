@@ -486,7 +486,9 @@ public class Game {
         }
         matchQueue.clear();
         gameStatesManager.clearAll();
-        gameLocation.revertHeliPort(heliLocation);
+        if(heliLocation != null){
+            gameLocation.revertHeliPort(heliLocation);
+        }
         new Game();
     }
 

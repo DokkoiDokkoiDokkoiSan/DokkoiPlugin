@@ -346,6 +346,8 @@ public class Prayer extends Job {
         GameStatesManager manager = game.getGameStatesManager();
         manager.addDamageCutPercent(player.getUniqueId(), 100);
         manager.addDamageCutPercent(target.getUniqueId(), 100);
+        List<Vector> respawnLocations = GameLocation.getInstance().respawnLocations;
+        Location playerRespawnLocation = respawnLocations.get(new Random().nextInt(respawnLocations.size())).toLocation(world);
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -355,11 +357,13 @@ public class Prayer extends Job {
                     player.sendMessage("§aあなたの勝利です。");
                     target.sendMessage("§cあなたは敗北しました。");
                     manager.addDamageCutPercent(player.getUniqueId(), 0);
+                    player.teleport(playerRespawnLocation);
                 } else {
                     DeathEvent.kill(null, target);
                     target.sendMessage("§aあなたの勝利です。");
                     player.sendMessage("§cあなたは敗北しました。");
                     manager.addDamageCutPercent(target.getUniqueId(), 0);
+                    target.teleport(playerRespawnLocation);
                 }
             }
         }.runTaskLater(Dokkoi.getInstance(), 20 * 5);
