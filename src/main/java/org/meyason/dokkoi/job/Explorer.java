@@ -58,9 +58,9 @@ public class Explorer extends Job {
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.KETSUMOUHUNTER,
-                GoalList.KETSUMOUPIRATE,
-                GoalList.DEFENDER
+                GoalList.createKetsumouHunter(),
+                GoalList.createKetsumouPirate(),
+                GoalList.createDefender()
         );
     }
 

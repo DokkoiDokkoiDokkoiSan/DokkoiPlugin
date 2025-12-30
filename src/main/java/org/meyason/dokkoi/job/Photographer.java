@@ -77,9 +77,9 @@ public class Photographer extends Job {
         this.player = player;
         this.takenPhotoPlayersUUID = new ArrayList<>();
         this.goals = List.of(
-                GoalList.DEFENDER,
-                GoalList.PHOTOALLPLAYER,
-                GoalList.TAKETWOSHORT
+                GoalList.createDefender(),
+                GoalList.createPhotoAllPlayer(),
+                GoalList.createTakeTwoShot()
         );
     }
 

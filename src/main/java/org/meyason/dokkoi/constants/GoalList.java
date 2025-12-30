@@ -75,4 +75,32 @@ public class GoalList {
     public static Goal getGoalByName(String goalName){
         return goalMap.get(goalName);
     }
+
+    /**
+     * 各Goal型の新しいインスタンスを生成するファクトリーメソッド
+     */
+    public static LastMan createLastMan(){ return new LastMan(); }
+    public static Shadow createShadow(){ return new Shadow(); }
+    public static Police createPolice(){ return new Police(); }
+    public static Killer createKiller(){ return new Killer(); }
+    public static CarpetBombing createCarpetBombing(){ return new CarpetBombing(); }
+    public static MassTierKiller createMassTierKiller(){ return new MassTierKiller(); }
+    public static MaidenGazer createMaidenGazer(){ return new MaidenGazer(); }
+    public static ComedianKiller createComedianKiller(){ return new ComedianKiller(); }
+    public static KetsumouHunter createKetsumouHunter(){ return new KetsumouHunter(); }
+    public static KetsumouPirate createKetsumouPirate(){ return new KetsumouPirate(); }
+    public static Defender createDefender(){ return new Defender(); }
+    public static GachaBeginner createGachaBeginner(){ return new GachaBeginner(); }
+    public static Pachikasu createPachikasu(){ return new Pachikasu(); }
+    public static GamblerMaster createGamblerMaster(){ return new GamblerMaster(); }
+    public static DrugEnforcementAdministration createDrugEnforcementAdministration(){ return new DrugEnforcementAdministration(); }
+    public static PhotoAllPlayer createPhotoAllPlayer(){ return new PhotoAllPlayer(); }
+    public static TakeTwoShot createTakeTwoShot(){ return new TakeTwoShot(); }
+    public static SugiYakkyoku createSugiYakkyoku(){ return new SugiYakkyoku(); }
+    public static MatsumotoKiyoshi createMatsumotoKiyoshi(){ return new MatsumotoKiyoshi(); }
+    public static GangStar createGangStar(){ return new GangStar(); }
+    public static FiftyPercent createFiftyPercent(){ return new FiftyPercent(); }
+    public static SkeletonSlayer createSkeletonSlayer(){ return new SkeletonSlayer(); }
+    public static Assasin createAssasin(){ return new Assasin(); }
+    public static EscapeFromUnkov createEscapeFromUnkov(){ return new EscapeFromUnkov(); }
 }

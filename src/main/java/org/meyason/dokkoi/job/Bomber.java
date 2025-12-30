@@ -53,9 +53,9 @@ public class Bomber extends Job {
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.KILLER,
-                GoalList.CARPETBOMBING,
-                GoalList.COMEDIANKILLER
+                GoalList.createKiller(),
+                GoalList.createCarpetBombing(),
+                GoalList.createComedianKiller()
         );
     }
 

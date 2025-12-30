@@ -69,7 +69,7 @@ public class BuriBuriGuard extends CustomItem {
             return;
         }
         targetPlayer.getWorld().spawnParticle(Particle.CLOUD, targetPlayer.getLocation().add(0,0,0), 100);
-        gameStatesManager.addDamageCutPercent(targetPlayer.getUniqueId(), 100);
+        gameStatesManager.setDamageCutPercent(targetPlayer.getUniqueId(), 100);
         BukkitRunnable itemInitTask = new BukkitRunnable() {
             @Override
             public void run() {
