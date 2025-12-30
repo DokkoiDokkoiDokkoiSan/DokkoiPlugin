@@ -1,5 +1,6 @@
 package org.meyason.dokkoi.event.block;
 
+import io.papermc.paper.event.player.PlayerItemFrameChangeEvent;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Player;
@@ -13,37 +14,23 @@ import org.meyason.dokkoi.Dokkoi;
 public class ItemFrameProtect implements Listener {
 
     @EventHandler
-    public void onItemFrameBreak(HangingBreakByEntityEvent event) {
-        // 額縁や絵画が壊されるのを防ぐ
-        Hanging hanging = event.getEntity();
-        if(Dokkoi.getInstance().isEditModePlayer(event.getRemover().getUniqueId())){
+    public void onItemFrameBreak(PlayerItemFrameChangeEvent event) {
+        Player player = event.getPlayer();
+        if(Dokkoi.getInstance().isEditModePlayer(player.getUniqueId())){
             return;
         }
-        if (hanging.getType() == EntityType.ITEM_FRAME || hanging.getType() == EntityType.PAINTING) {
-            event.setCancelled(true);
-        }
+        event.setCancelled(true);
 
     }
 
     @EventHandler
     public void onItemFrameDamage(EntityDamageByEntityEvent event) {
-        // 額縁の中身が左クリックで飛び出すのを防ぐ
+        // 飛び道具系で破壊されるのを防止
         if (event.getEntityType() == EntityType.ITEM_FRAME || event.getEntityType() == EntityType.PAINTING) {
             if (event.getDamager() instanceof Player) {
                 if (Dokkoi.getInstance().isEditModePlayer(event.getDamager().getUniqueId())) {
                     return;
                 }
-            }
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onItemFrameInteract(PlayerInteractEntityEvent event) {
-        // 額縁の中身を右クリックで回転させたり変更するのを防ぐ
-        if (event.getRightClicked().getType() == EntityType.ITEM_FRAME) {
-            if (Dokkoi.getInstance().isEditModePlayer(event.getPlayer().getUniqueId())) {
-                return;
             }
             event.setCancelled(true);
         }

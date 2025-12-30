@@ -2,7 +2,6 @@ package org.meyason.dokkoi.game;
 
 import com.comphenix.protocol.events.PacketContainer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -33,7 +32,6 @@ import org.meyason.dokkoi.item.utilitem.Monei;
 import org.meyason.dokkoi.job.*;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenu;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
-import org.meyason.dokkoi.network.PacketData;
 import org.meyason.dokkoi.network.PacketProcess;
 import org.meyason.dokkoi.network.PacketSender;
 import org.meyason.dokkoi.scheduler.DamageableScheduler;
@@ -281,7 +279,7 @@ public class Game {
 
             gameStatesManager.addKillCount(uuid);
             gameStatesManager.addAdditionalDamage(uuid, 0);
-            gameStatesManager.addDamageCutPercent(uuid, 0);
+            gameStatesManager.setDamageCutPercent(uuid, 0);
             gameStatesManager.addIsDeactivateDamageOnce(uuid, false);
 
             Goal goal = gameStatesManager.getPlayerGoals().get(uuid);

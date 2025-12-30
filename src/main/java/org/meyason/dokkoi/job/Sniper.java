@@ -79,7 +79,7 @@ public class Sniper extends Job {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20 * 20, Integer.MAX_VALUE));
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 20 * 20, Integer.MAX_VALUE));
 
-        game.getGameStatesManager().addDamageCutPercent(player.getUniqueId(), 100);
+        game.getGameStatesManager().setDamageCutPercent(player.getUniqueId(), 100);
 
         new BukkitRunnable(){
             @Override

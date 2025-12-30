@@ -282,7 +282,7 @@ public class Prayer extends Job {
                 }
             }.runTaskLater(Dokkoi.getInstance(), 20 * 10);
         }else if(Objects.equals(selectedRarity, LR)) {
-            game.getGameStatesManager().addDamageCutPercent(player.getUniqueId(), 100);
+            game.getGameStatesManager().setDamageCutPercent(player.getUniqueId(), 100);
             game.getGameStatesManager().addOnDisablePotionEffectPlayer(player.getUniqueId());
             new BukkitRunnable() {
                 @Override
@@ -291,7 +291,7 @@ public class Prayer extends Job {
                         cancel();
                         return;
                     }
-                    game.getGameStatesManager().addDamageCutPercent(player.getUniqueId(), -100);
+                    game.getGameStatesManager().setDamageCutPercent(player.getUniqueId(), -100);
                 }
             }.runTaskTimer(Dokkoi.getInstance(), 0, 10 * 20);
         }else if(Objects.equals(selectedRarity, KETSU)) {
@@ -344,8 +344,8 @@ public class Prayer extends Job {
         player.sendMessage("§a抽選中...");
         target.sendMessage("§a抽選中...");
         GameStatesManager manager = game.getGameStatesManager();
-        manager.addDamageCutPercent(player.getUniqueId(), 100);
-        manager.addDamageCutPercent(target.getUniqueId(), 100);
+        manager.setDamageCutPercent(player.getUniqueId(), 100);
+        manager.setDamageCutPercent(target.getUniqueId(), 100);
         List<Vector> respawnLocations = GameLocation.getInstance().respawnLocations;
         Location playerRespawnLocation = respawnLocations.get(new Random().nextInt(respawnLocations.size())).toLocation(world);
         new BukkitRunnable() {
@@ -356,13 +356,13 @@ public class Prayer extends Job {
                     DeathEvent.kill(null, player);
                     player.sendMessage("§aあなたの勝利です。");
                     target.sendMessage("§cあなたは敗北しました。");
-                    manager.addDamageCutPercent(player.getUniqueId(), 0);
+                    manager.setDamageCutPercent(player.getUniqueId(), 0);
                     player.teleport(playerRespawnLocation);
                 } else {
                     DeathEvent.kill(null, target);
                     target.sendMessage("§aあなたの勝利です。");
                     player.sendMessage("§cあなたは敗北しました。");
-                    manager.addDamageCutPercent(target.getUniqueId(), 0);
+                    manager.setDamageCutPercent(target.getUniqueId(), 0);
                     target.teleport(playerRespawnLocation);
                 }
             }
