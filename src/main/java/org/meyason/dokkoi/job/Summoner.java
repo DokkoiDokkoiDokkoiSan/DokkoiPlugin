@@ -54,9 +54,9 @@ public class Summoner extends Job{
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.LASTMAN,
-                GoalList.FIFTYPERCENT,
-                GoalList.SKELETONSLAYER
+                GoalList.createLastMan(),
+                GoalList.createFiftyPercent(),
+                GoalList.createSkeletonSlayer()
         );
         game.getGameStatesManager().setExistSummoner(true);
     }

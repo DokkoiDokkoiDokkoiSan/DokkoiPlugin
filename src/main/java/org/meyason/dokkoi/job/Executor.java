@@ -51,9 +51,9 @@ public class Executor extends Job{
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.POLICE,
-                GoalList.DEFENDER,
-                GoalList.DRUGENFORCEMENTADMINISTRATION
+                GoalList.createPolice(),
+                GoalList.createDefender(),
+                GoalList.createDrugEnforcementAdministration()
         );
     }
 

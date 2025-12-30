@@ -35,4 +35,16 @@ public class ItemFrameProtect implements Listener {
             event.setCancelled(true);
         }
     }
+
+    @EventHandler
+    public void onItemFrameBreak(HangingBreakByEntityEvent event) {
+        // 額縁や絵画が壊されるのを防ぐ
+        Hanging hanging = event.getEntity();
+        if(Dokkoi.getInstance().isEditModePlayer(event.getRemover().getUniqueId())){
+            return;
+        }
+        if (hanging.getType() == EntityType.ITEM_FRAME || hanging.getType() == EntityType.PAINTING) {
+            event.setCancelled(true);
+        }
+    }
 }

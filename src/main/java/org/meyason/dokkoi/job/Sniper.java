@@ -40,9 +40,9 @@ public class Sniper extends Job {
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.KILLER,
-                GoalList.ASSASIN,
-                GoalList.ESCAPEFROMUNKOV
+                GoalList.createKiller(),
+                GoalList.createAssasin(),
+                GoalList.createEscapeFromUnkov()
         );
     }
 

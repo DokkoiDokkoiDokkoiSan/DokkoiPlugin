@@ -166,9 +166,9 @@ public class Prayer extends Job {
         this.alreadyOpenedChests = new ArrayList<>();
         this.player = player;
         this.goals = List.of(
-                GoalList.GACHABEGINNER,
-                GoalList.PACHIASU,
-                GoalList.GAMBLERMASTER
+                GoalList.createGachaBeginner(),
+                GoalList.createPachikasu(),
+                GoalList.createGamblerMaster()
         );
     }
 

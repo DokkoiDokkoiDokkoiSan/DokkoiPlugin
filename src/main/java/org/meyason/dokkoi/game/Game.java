@@ -167,6 +167,7 @@ public class Game {
     }
 
     public void prepPhase(){
+        ChestProvider.removeAllChests();
         heliLocation = new Vector();
         heliLocation = gameLocation.cloneHeli();
         for(UUID uuid : matchQueue){
@@ -207,7 +208,8 @@ public class Game {
             return;
         }
 
-        List<Job> jobList = new ArrayList<>(JobList.getAllJobs());
+        // ゲームごとに新しいJobインスタンスを生成
+        List<Job> jobList = JobList.createNewJobInstances();
 
         // jobの割り当て
         for(UUID uuid : gameStatesManager.getJoinedPlayers()) {
@@ -216,7 +218,7 @@ public class Game {
                 continue;
             }
             int randomIndex = (int) (Math.random() * jobList.size());
-            Job job = jobList.get(randomIndex).clone();
+            Job job = jobList.get(randomIndex);
             jobList.remove(randomIndex);
             job.setPlayer(this, player);
             gameStatesManager.getPlayerJobs().put(uuid, job);
@@ -286,7 +288,7 @@ public class Game {
             if(goal == null){
                 Job job = gameStatesManager.getPlayerJobs().get(uuid);
                 int randomGoalIndex = (int) (Math.random() * job.getGoals().size());
-                goal = job.getGoals().get(randomGoalIndex).clone();
+                goal = job.getGoals().get(randomGoalIndex);
                 goal.setGoal(this, player);
                 gameStatesManager.getPlayerGoals().put(uuid, goal);
                 job.attachGoal(goal);
