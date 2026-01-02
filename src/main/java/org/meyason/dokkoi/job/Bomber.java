@@ -21,7 +21,7 @@ import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.job.context.PassiveContext;
 import org.meyason.dokkoi.job.context.SkillContext;
 import org.meyason.dokkoi.job.context.UltimateContext;
-import org.meyason.dokkoi.job.context.data.LocationData;
+import org.meyason.dokkoi.job.context.key.Keys;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
@@ -43,9 +43,9 @@ public class Bomber extends Job {
         super("爆弾魔", "爆弾のプロ", 20, 100,
                 PassiveContext.create(),
                 SkillContext.create()
-                        .with(LocationData.KEY, null),
+                        .with(Keys.LOCATION, null),
                 UltimateContext.create()
-                        .with(LocationData.KEY, null)
+                        .with(Keys.LOCATION, null)
         );
         passive_skill_name += "§7無敵の人";
         normal_skill_name += "§3ブラストパック";
@@ -150,10 +150,7 @@ public class Bomber extends Job {
         if(!this.getSkillContext().isSatisfiedBy(ctx)){
             throw new IllegalArgumentException("Invalid SkillContext for Bomber skill");
         }
-        Location location = ctx.get(LocationData.KEY);
-        if(location == null){
-            throw new IllegalArgumentException("LocationData is required for Bomber skill");
-        }
+        Location location = ctx.require(Keys.LOCATION);
         location.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, location, 2);
         location.getWorld().playSound(location, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 10.0f, 1.0f);
         List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(game, null, location, 1);
@@ -169,7 +166,7 @@ public class Bomber extends Job {
         if(!this.getSkillContext().isSatisfiedBy(ctx)){
             throw new IllegalArgumentException("Invalid SkillContext for Bomber skill");
         }
-        Location impactLocation = ctx.get(LocationData.KEY);
+        Location impactLocation = ctx.require(Keys.LOCATION);
         if(impactLocation == null){
             throw new IllegalArgumentException("LocationData is required for Bomber skill");
         }

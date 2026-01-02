@@ -1,27 +1,42 @@
 package org.meyason.dokkoi.job.context;
 
-import org.jspecify.annotations.Nullable;
-import org.meyason.dokkoi.job.context.data.Data;
+import org.meyason.dokkoi.job.context.key.Key;
+
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Set;
 
-public abstract class Context<T extends Context<T>> {
+public abstract class Context<SELF extends Context<SELF>> {
 
-    private final HashMap<Data<?>, Object> data = new HashMap<>();
+    /**
+     * Dataが格納されてるマップ
+     * Key<?>という事になってるけど、with()のみによって媒介されるので型安全性は保たれる
+     * このカプセル化は絶対に破らない（破った瞬間地獄入ります）
+     */
+    private final HashMap<Key<?>, Object> data = new HashMap<>();
 
     @SuppressWarnings("unchecked")
-    public <V> T with(Data<V> key, V value) {
-        data.put(key, value);
-        return (T) this;
+    public <T> SELF with(Key<T> key, T value) {
+        this.data.put(key, value);
+        return (SELF) this;
     }
 
     @SuppressWarnings("unchecked")
-    public <V> @Nullable V get(Data<V> key) {
-        return (V) data.get(key);
+    public <T> Optional<T> find(Key<T> key) {
+        return Optional.ofNullable((T) this.data.get(key));
     }
 
-    protected Set<Data<?>> getAllKeys() {
-        return data.keySet();
+    @SuppressWarnings("unchecked")
+    public <T> T require(Key<T> key) {
+        T value = (T) this.data.get(key);
+        if (value == null) {
+            throw new IllegalArgumentException("Missing key: " + key.name());
+        }
+        return value;
+    }
+
+    protected Set<Key<?>> getAllKeys() {
+        return this.data.keySet();
     }
 
     public abstract boolean isSatisfiedBy(Context<?> given);

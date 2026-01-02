@@ -1,7 +1,6 @@
 package org.meyason.dokkoi.job.context;
 
-import org.meyason.dokkoi.job.context.data.Data;
-import org.meyason.dokkoi.job.context.data.LocationData;
+import org.meyason.dokkoi.job.context.key.Key;
 
 import java.util.Set;
 
@@ -19,8 +18,8 @@ public final class SkillContext extends Context<SkillContext> {
     @Override
     public boolean isSatisfiedBy(Context<?> given) {
         if(!(given instanceof SkillContext)) return false;
-        Set<Data<?>> data = this.getAllKeys();
-        Set<Data<?>> givenData = given.getAllKeys();
+        Set<Key<?>> data = this.getAllKeys();
+        Set<Key<?>> givenData = given.getAllKeys();
         return !givenData.containsAll(data);
     }
 }

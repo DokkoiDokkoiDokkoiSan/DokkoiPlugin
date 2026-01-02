@@ -21,7 +21,7 @@ import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.job.context.PassiveContext;
 import org.meyason.dokkoi.job.context.SkillContext;
 import org.meyason.dokkoi.job.context.UltimateContext;
-import org.meyason.dokkoi.job.context.data.StringListData;
+import org.meyason.dokkoi.job.context.key.Keys;
 import org.meyason.dokkoi.menu.drugrecipemenu.DrugRecipeMenu;
 
 import java.util.HashMap;
@@ -58,7 +58,7 @@ public class DrugStore extends Job {
                 PassiveContext.create(),
                 SkillContext.create(),
                 UltimateContext.create()
-                        .with(StringListData.KEY, null)
+                        .with(Keys.LIST_STRING, null)
         );
         passive_skill_name += "§7レイノブーツ";
         normal_skill_name += "§3ヤクツクール";
@@ -132,7 +132,7 @@ public class DrugStore extends Job {
         if(!this.getUltimateContext().isSatisfiedBy(ctx)){
             throw new IllegalArgumentException("Invalid SkillContext for DrugStore skill");
         }
-        List<String> drugList = ctx.get(StringListData.KEY);
+        List<String> drugList = ctx.require(Keys.LIST_STRING);
         if(drugList == null){
             throw new IllegalArgumentException("List<String> is required for DrugStore skill");
         }
