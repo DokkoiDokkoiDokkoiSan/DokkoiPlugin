@@ -17,8 +17,11 @@ import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.entity.Comedian;
-import org.meyason.dokkoi.entity.GameEntity;
 import org.meyason.dokkoi.event.player.DeathEvent;
+import org.meyason.dokkoi.job.context.PassiveContext;
+import org.meyason.dokkoi.job.context.SkillContext;
+import org.meyason.dokkoi.job.context.UltimateContext;
+import org.meyason.dokkoi.job.context.data.LocationData;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
@@ -32,10 +35,18 @@ public class Bomber extends Job {
 
     private int killComedian = 0;
 
+    private boolean isPassiveActive;
+
     private BukkitTask smokeTask;
 
     public Bomber() {
-        super("爆弾魔", "爆弾のプロ", 20, 100);
+        super("爆弾魔", "爆弾のプロ", 20, 100,
+                PassiveContext.create(),
+                SkillContext.create()
+                        .with(LocationData.KEY, null),
+                UltimateContext.create()
+                        .with(LocationData.KEY, null)
+        );
         passive_skill_name += "§7無敵の人";
         normal_skill_name += "§3ブラストパック";
         ultimate_skill_name += "§6割と臭いガス爆弾";
@@ -46,6 +57,7 @@ public class Bomber extends Job {
         ultimateSkillSound = Sound.ENTITY_GENERIC_EXPLODE;
         ultimateSkillVolume = 10.0f;
         ultimateSkillPitch = 1.0f;
+        this.isPassiveActive = false;
         setRemainCoolTimeSkillUltimate(100);
     }
 
@@ -85,10 +97,15 @@ public class Bomber extends Job {
         );
     }
 
+    public boolean isPassiveActive(){
+        return this.isPassiveActive;
+    }
+
     public void ready() {
     }
 
-    public boolean passive(){
+    public void passive(PassiveContext ctx){
+        this.isPassiveActive = false;
         this.player.spawnParticle(Particle.EXPLOSION_EMITTER, this.player.getLocation(), 1);
         this.player.getWorld().playSound(this.player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 3.0f, 1.0f);
         List<Player> hitPlayer = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 5);
@@ -114,7 +131,7 @@ public class Bomber extends Job {
 
         if(hitPlayer.isEmpty() && !isKilledComedian){
             this.player.sendMessage("§cあなたは独りで§l§4自爆§r§cしました");
-            return false;
+            return;
         }
 
         for(Player p : hitPlayer){
@@ -126,22 +143,36 @@ public class Bomber extends Job {
         if(!isKilledComedian){
             this.player.sendMessage("§bあなたは§l§4自爆§r§bしましたが、プレイヤーを巻き込んだため復活しました");
         }
-        return true;
+        this.isPassiveActive = true;
     }
 
-    public void skill(Location location, List<Player> effectedPlayers){
+    public void skill(SkillContext ctx){
+        if(!this.getSkillContext().isSatisfiedBy(ctx)){
+            throw new IllegalArgumentException("Invalid SkillContext for Bomber skill");
+        }
+        Location location = ctx.get(LocationData.KEY);
+        if(location == null){
+            throw new IllegalArgumentException("LocationData is required for Bomber skill");
+        }
         location.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, location, 2);
         location.getWorld().playSound(location, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 10.0f, 1.0f);
+        List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(game, null, location, 1);
         for(Player p : effectedPlayers){
             Vector knockBack = p.getLocation().toVector().subtract(location.toVector()).normalize().multiply(3);
             // Yは抑制
             knockBack.setY(0.1);
             p.setVelocity(knockBack);
         }
-        return;
     }
 
-    public void ultimate(Location impactLocation) {
+    public void ultimate(UltimateContext ctx) {
+        if(!this.getSkillContext().isSatisfiedBy(ctx)){
+            throw new IllegalArgumentException("Invalid SkillContext for Bomber skill");
+        }
+        Location impactLocation = ctx.get(LocationData.KEY);
+        if(impactLocation == null){
+            throw new IllegalArgumentException("LocationData is required for Bomber skill");
+        }
         // パーティクルとサウンド（着弾時だけ一度）
         impactLocation.getWorld().spawnParticle(
                 Particle.CAMPFIRE_SIGNAL_SMOKE,

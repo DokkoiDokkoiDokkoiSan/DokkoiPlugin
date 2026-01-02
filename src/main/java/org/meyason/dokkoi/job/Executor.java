@@ -21,6 +21,11 @@ import org.meyason.dokkoi.event.player.damage.DamageCalculator;
 import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.item.jobitem.Passive;
+import org.meyason.dokkoi.job.context.PassiveContext;
+import org.meyason.dokkoi.job.context.SkillContext;
+import org.meyason.dokkoi.job.context.UltimateContext;
+import org.meyason.dokkoi.job.context.data.EntityData;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +38,12 @@ public class Executor extends Job{
     }
 
     public Executor() {
-        super("執行者", "執行者", 30, 200);
+        super("執行者", "執行者", 30, 200,
+                PassiveContext.create(),
+                SkillContext.create()
+                                .with(EntityData.KEY, null),
+                UltimateContext.create()
+        );
         passive_skill_name += "§7プロトペナルティ";
         normal_skill_name += "§3ギルトペナルティ";
         ultimate_skill_name += "§6ニクトペナルティ";
@@ -82,7 +92,18 @@ public class Executor extends Job{
 
     public void ready(){}
 
-    public void skill(Entity target){
+    public void passive(PassiveContext ctx){
+        //NOOP
+    }
+
+    public void skill(SkillContext ctx){
+        if(!this.getSkillContext().isSatisfiedBy(ctx)) {
+            throw new IllegalArgumentException("Invalid SkillContext for Executor skill");
+        }
+        Entity target = ctx.get(EntityData.KEY);
+        if(target == null){
+            throw new IllegalArgumentException("Entity is required for DrugStore skill");
+        }
         if(target instanceof Player targetPlayer) {
             int killCount = game.getGameStatesManager().getKillCounts().get(player.getUniqueId());
             int damage;
@@ -132,7 +153,7 @@ public class Executor extends Job{
         }
     }
 
-    public void ultimate(){
+    public void ultimate(UltimateContext ctx){
         if(!game.getGameStatesManager().getAttackedPlayers().isEmpty()){
             for(UUID uuid : game.getGameStatesManager().getAttackedPlayers()){
                 Player target = Bukkit.getPlayer(uuid);
