@@ -43,7 +43,8 @@ public class DeathEvent {
     public static void kill(Player killer, Player dead){
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
         LPManager lpManager = Game.getInstance().getLPManager();
-        UUID killerUUID = killer.getUniqueId();
+        UUID killerUUID = null;
+        if(killer != null) killerUUID = killer.getUniqueId();
         UUID deadUUID = dead.getUniqueId();
 
         // 生き返らせるならこの辺
