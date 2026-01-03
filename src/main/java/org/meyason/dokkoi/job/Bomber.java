@@ -43,7 +43,8 @@ public class Bomber extends Job {
         super("爆弾魔", "爆弾のプロ", 20, 100,
                 PassiveContext.create(),
                 SkillContext.create()
-                        .with(Keys.LOCATION, null),
+                        .with(Keys.LOCATION, null)
+                        .with(Keys.LIST_PLAYER, null),
                 UltimateContext.create()
                         .with(Keys.LOCATION, null)
         );
@@ -151,9 +152,9 @@ public class Bomber extends Job {
             throw new IllegalArgumentException("Invalid SkillContext for Bomber skill");
         }
         Location location = ctx.require(Keys.LOCATION);
+        List<Player> effectedPlayers = ctx.require(Keys.LIST_PLAYER);
         location.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, location, 2);
         location.getWorld().playSound(location, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 10.0f, 1.0f);
-        List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(game, null, location, 1);
         for(Player p : effectedPlayers){
             Vector knockBack = p.getLocation().toVector().subtract(location.toVector()).normalize().multiply(3);
             // Yは抑制

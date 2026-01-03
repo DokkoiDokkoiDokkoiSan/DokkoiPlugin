@@ -23,6 +23,10 @@ import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.jobitem.Hikakin;
 import org.meyason.dokkoi.item.jobitem.SummonersBrave;
+import org.meyason.dokkoi.job.context.PassiveContext;
+import org.meyason.dokkoi.job.context.SkillContext;
+import org.meyason.dokkoi.job.context.UltimateContext;
+import org.meyason.dokkoi.job.context.key.Keys;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 
 import java.util.List;
@@ -35,7 +39,12 @@ public class Summoner extends Job{
             "交霊師",
             "§d死者を蘇生する。",
             40,
-            300
+            300,
+                PassiveContext.create()
+                        .with(Keys.PLAYER, null),
+                SkillContext.create(),
+                UltimateContext.create()
+                        .with(Keys.LIST_UUID, null)
         );
         passive_skill_name += "§7死者との交流";
         normal_skill_name += "§3死者の呪術";
@@ -99,7 +108,8 @@ public class Summoner extends Job{
     }
 
 
-    public void passive(Player targetPlayer) {
+    public void passive(PassiveContext ctx) {
+        Player targetPlayer = ctx.require(Keys.PLAYER);
         if(game.getGameStatesManager().isNaito(targetPlayer.getUniqueId())){
             return;
         }
@@ -107,7 +117,7 @@ public class Summoner extends Job{
         player.sendMessage(Component.text("§b死霊の力により与ダメージが1増加した！"));
     }
 
-    public void skill(){
+    public void skill(SkillContext ctx){
         int deadCount = game.getGameStatesManager().getKillerList().size();
         int freezeTime = deadCount * 20;
         List<Player> players = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 10);
@@ -117,7 +127,8 @@ public class Summoner extends Job{
         }
     }
 
-    public void ultimate(List<UUID> targetPlayers){
+    public void ultimate(UltimateContext ctx){
+        List<UUID> targetPlayers = ctx.require(Keys.LIST_UUID);
         NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
         for(UUID uuid : targetPlayers){
             Player targetPlayer = Bukkit.getPlayer(uuid);

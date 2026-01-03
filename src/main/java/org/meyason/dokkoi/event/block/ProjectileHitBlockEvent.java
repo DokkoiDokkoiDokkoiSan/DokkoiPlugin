@@ -62,9 +62,11 @@ public class ProjectileHitBlockEvent implements Listener {
                 Job job = manager.getPlayerJobs().get(attacker.getUniqueId());
                 if (job instanceof Bomber bomber) {
                     if (attackItem.equals(Skill.id)) {
+                        List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, event.getHitBlock().getLocation(), 1);
                         bomber.skill(
                                 SkillContext.create()
                                         .with(Keys.LOCATION, event.getHitBlock().getLocation())
+                                        .with(Keys.LIST_PLAYER, effectedPlayers)
                         );
                     } else if (attackItem.equals(Ultimate.id)) {
                         bomber.ultimate(
@@ -74,7 +76,10 @@ public class ProjectileHitBlockEvent implements Listener {
                     }
                 } else if (job instanceof Explorer explorer) {
                     if (attackItem.equals(Skill.id)) {
-                        explorer.skill(snowball);
+                        SkillContext ctx =
+                                SkillContext.create()
+                                        .with(Keys.ENTITY, snowball);
+                        explorer.skill(ctx);
                     }
                 }
                 manager.removeProjectileData(snowball);
