@@ -25,6 +25,10 @@ import org.meyason.dokkoi.item.utilitem.FortuneBall;
 import org.meyason.dokkoi.item.utilitem.IdiotDetector;
 import org.meyason.dokkoi.item.utilitem.Monei;
 import org.meyason.dokkoi.item.weapon.*;
+import org.meyason.dokkoi.job.context.PassiveContext;
+import org.meyason.dokkoi.job.context.SkillContext;
+import org.meyason.dokkoi.job.context.UltimateContext;
+import org.meyason.dokkoi.job.context.key.Keys;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
@@ -145,7 +149,11 @@ public class Prayer extends Job {
     }
 
     public Prayer() {
-        super("§9信仰者", "パチカス", 5, 300);
+        super("§9信仰者", "パチカス", 5, 300,
+                PassiveContext.create(),
+                SkillContext.create(),
+                UltimateContext.create()
+        );
 
         passive_skill_name += "§7パチンカス";
         normal_skill_name += "§3全回転";
@@ -203,11 +211,11 @@ public class Prayer extends Job {
         );
     }
 
-    public void addGachaCount(Game game, Player player){
+    public void passive(PassiveContext ctx){
         gachaCount++;
         if(gachaCount % 20 == 0){
-            game.getGameStatesManager().addAdditionalDamage(player.getUniqueId(), 1);
-            player.sendMessage("§bガチャ回転数が20回溜まったので、与ダメージが1増加しました。");
+            this.game.getGameStatesManager().addAdditionalDamage(this.player.getUniqueId(), 1);
+            this.player.sendMessage("§bガチャ回転数が20回溜まったので、与ダメージが1増加しました。");
         }
     }
 
@@ -215,7 +223,7 @@ public class Prayer extends Job {
         this.player.sendMessage("§b右クリックでガチャを回す");
     }
 
-    public void skill(){
+    public void skill(SkillContext ctx){
         //まずレアリティを決定
         double result = Math.random();
         String selectedRarity = R;
@@ -252,7 +260,7 @@ public class Prayer extends Job {
         if(Objects.equals(selectedRarity, LR) || Objects.equals(selectedRarity, KETSU) || Objects.equals(selectedRarity, KETSUGE) || Objects.equals(selectedRarity, KETSUMOU)){
             Bukkit.getServer().broadcast((Component.text("§6§l[ガチャ速報] §e" + player.getName() + "§aがガチャで" +selectedRarity+ " " + item.getName() + "§aを引き当てた！")));
         }
-        addGachaCount(game, player);
+        passive(PassiveContext.create());
 
         //レアリティに応じた効果を発動
         if(Objects.equals(selectedRarity, R)) {
@@ -323,7 +331,7 @@ public class Prayer extends Job {
         }
     }
 
-    public void ultimate(){
+    public void ultimate(UltimateContext ctx){
         List<UUID> alivePlayerUUID = new ArrayList<>(game.getGameStatesManager().getAlivePlayers());
         alivePlayerUUID.remove(player.getUniqueId());
         if(alivePlayerUUID.isEmpty()){

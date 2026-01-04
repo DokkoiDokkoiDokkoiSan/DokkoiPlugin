@@ -8,6 +8,9 @@ import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.job.context.PassiveContext;
+import org.meyason.dokkoi.job.context.SkillContext;
+import org.meyason.dokkoi.job.context.UltimateContext;
 
 import java.util.List;
 import java.util.UUID;
@@ -55,11 +58,18 @@ public abstract class Job implements Cloneable {
     public float chargeUltimateSkillVolume = 5.0f;
     public float chargeUltimateSkillPitch = 1.5f;
 
-    public Job(String name, String description, int coolTimeSkill, int coolTimeSkillUltimate) {
+    public final PassiveContext passiveContext;
+    public final SkillContext skillContext;
+    public final UltimateContext ultimateContext;
+
+    public Job(String name, String description, int coolTimeSkill, int coolTimeSkillUltimate, PassiveContext pCtx, SkillContext sCtx, UltimateContext uCtx) {
         this.name = name;
         this.description = description;
         this.coolTimeSkill = coolTimeSkill;
         this.coolTimeSkillUltimate = coolTimeSkillUltimate;
+        this.passiveContext = pCtx;
+        this.skillContext = sCtx;
+        this.ultimateContext = uCtx;
     }
 
     public abstract void setPlayer(Game game, Player player);
@@ -67,6 +77,12 @@ public abstract class Job implements Cloneable {
     public abstract void attachGoal(Goal goal);
 
     public abstract void ready();
+
+    public abstract void passive(PassiveContext ctx);
+
+    public abstract void skill(SkillContext ctx);
+
+    public abstract void ultimate(UltimateContext ctx);
 
     public String getName() {return this.name;}
     public String getDescription() {return this.description;}
@@ -83,6 +99,9 @@ public abstract class Job implements Cloneable {
     public void setCoolTimeSkillViewer(String viewer) {this.coolTimeSkillViewer = viewer;}
     public String getCoolTimeSkillUltimateViewer() {return this.coolTimeSkillUltimateViewer;}
     public void setCoolTimeSkillUltimateViewer(String viewer) {this.coolTimeSkillUltimateViewer = viewer;}
+    public PassiveContext getPassiveContext(){ return this.passiveContext; }
+    public SkillContext getSkillContext(){ return this.skillContext; }
+    public UltimateContext getUltimateContext(){ return this.ultimateContext; }
 
     public Job clone(){
         try {

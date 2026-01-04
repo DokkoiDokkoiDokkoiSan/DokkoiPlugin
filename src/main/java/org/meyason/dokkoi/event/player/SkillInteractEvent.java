@@ -31,6 +31,9 @@ import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.jobitem.*;
 import org.meyason.dokkoi.job.*;
+import org.meyason.dokkoi.job.context.SkillContext;
+import org.meyason.dokkoi.job.context.UltimateContext;
+import org.meyason.dokkoi.job.context.key.Keys;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +70,7 @@ public class SkillInteractEvent{
                     manager.addProjectileData(projectile, new ProjectileData(player, projectile, Skill.id));
 
                 } else if (job instanceof Lonely lonely) {
-                    lonely.skill();
+                    lonely.skill(SkillContext.create());
 
                 } else if (job instanceof Bomber) {
                     Vector direction = player.getEyeLocation().getDirection().normalize();
@@ -76,7 +79,7 @@ public class SkillInteractEvent{
                     manager.addProjectileData(projectile, new ProjectileData(player, projectile, Skill.id));
 
                 } else if (job instanceof IronMaiden ironMaiden) {
-                    ironMaiden.skill();
+                    ironMaiden.skill(SkillContext.create());
 
                 } else if (job instanceof Explorer explorer) {
                     if (explorer.getHaveKetsumouCount() <= 0) {
@@ -114,16 +117,16 @@ public class SkillInteractEvent{
                         player.sendActionBar(Component.text("§cインベントリに空きがありません。"));
                         return;
                     }
-                    prayer.skill();
+                    prayer.skill(SkillContext.create());
 
                 } else if (job instanceof DrugStore drugStore) {
-                    drugStore.skill();
+                    drugStore.skill(SkillContext.create());
                 } else if (job instanceof Photographer photographer) {
-                    photographer.skill();
+                    photographer.skill(SkillContext.create());
                 } else if (job instanceof Summoner summoner) {
-                    summoner.skill();
+                    summoner.skill(SkillContext.create());
                 } else if (job instanceof Sniper sniper){
-                        sniper.skill();
+                        sniper.skill(SkillContext.create());
                 }
                 job.playSoundEffectSkill(player);
 
@@ -142,10 +145,10 @@ public class SkillInteractEvent{
                 }
                 job.playSoundEffectUltimateSkill(player);
                 if (job instanceof Executor executor) {
-                    executor.ultimate();
+                    executor.ultimate(UltimateContext.create());
 
                 } else if (job instanceof Lonely lonely) {
-                    lonely.ultimate();
+                    lonely.ultimate(UltimateContext.create());
 
                 } else if (job instanceof Bomber bomber) {
                     Vector direction = player.getEyeLocation().getDirection().normalize();
@@ -154,13 +157,13 @@ public class SkillInteractEvent{
                     manager.addProjectileData(projectile, new ProjectileData(player, projectile, Ultimate.id));
 
                 } else if (job instanceof IronMaiden ironMaiden) {
-                    ironMaiden.ultimate();
+                    ironMaiden.ultimate(UltimateContext.create());
 
                 } else if (job instanceof Explorer explorer) {
-                    explorer.ultimate();
+                    explorer.ultimate(UltimateContext.create());
 
                 } else if (job instanceof Prayer prayer) {
-                    prayer.ultimate();
+                    prayer.ultimate(UltimateContext.create());
 
                 } else if (job instanceof DrugStore drugStore) {
                     NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
@@ -189,10 +192,13 @@ public class SkillInteractEvent{
                         player.sendActionBar(Component.text("§c強化できる薬を所持していない。"));
                         return;
                     }
-                    drugStore.ultimate(drugList);
+                    UltimateContext ctx =
+                            UltimateContext.create()
+                                            .with(Keys.LIST_STRING, drugList);
+                    drugStore.ultimate(ctx);
                 } else if (job instanceof Photographer photographer) {
                     if(photographer.canUseUltimate()){
-                        photographer.ultimate();
+                        photographer.ultimate(UltimateContext.create());
                     }else{
                         player.sendActionBar(Component.text("§cアルティメットを使用するには一人以上を撮影する必要があります。"));
                         return;
@@ -204,9 +210,12 @@ public class SkillInteractEvent{
                         player.sendActionBar(Component.text("§c召喚できる対象がいない。"));
                         return;
                     }
-                    summoner.ultimate(targetPlayers);
+                    UltimateContext ctx =
+                            UltimateContext.create()
+                                    .with(Keys.LIST_UUID, targetPlayers);
+                    summoner.ultimate(ctx);
                 } else if (job instanceof Sniper sniper){
-                    sniper.ultimate();
+                    sniper.ultimate(UltimateContext.create());
                 }
 
                 //FIXME: 仮で1000にしてるけど要調整

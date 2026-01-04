@@ -12,6 +12,8 @@ import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.job.Explorer;
 import org.meyason.dokkoi.job.Job;
+import org.meyason.dokkoi.job.context.PassiveContext;
+import org.meyason.dokkoi.job.context.key.Keys;
 
 import java.util.List;
 
@@ -60,7 +62,9 @@ public class Ketsumou extends CustomItem {
             picker.sendActionBar(Component.text("§cこれはお前の§9§lけつ毛§r§cではない。"));
             return;
         }else{
-            explorer.passive(ketsumouCount(picker) + 1);
+            PassiveContext ctx = PassiveContext.create()
+                    .with(Keys.INTEGER, ketsumouCount(picker) + 1);
+            explorer.passive(ctx);
         }
     }
 
@@ -75,7 +79,9 @@ public class Ketsumou extends CustomItem {
             gameStatesManager.setIsEnableAttack(picker.getUniqueId(), true);
             return;
         }else {
-            explorer.passive(ketsumouCount(picker) - 1);
+            PassiveContext ctx = PassiveContext.create()
+                    .with(Keys.INTEGER, ketsumouCount(picker) - 1);
+            explorer.passive(ctx);
         }
     }
 
@@ -100,8 +106,10 @@ public class Ketsumou extends CustomItem {
             if(ketsumouCount(picker) > 0){
                 activate(picker);
             }
-        }else {
-            explorer.passive(ketsumouCount(picker));
+        }else{
+            PassiveContext ctx = PassiveContext.create()
+                    .with(Keys.INTEGER, ketsumouCount(picker));
+            explorer.passive(ctx);
         }
     }
 }

@@ -22,6 +22,9 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
+import org.meyason.dokkoi.job.context.PassiveContext;
+import org.meyason.dokkoi.job.context.SkillContext;
+import org.meyason.dokkoi.job.context.UltimateContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +40,11 @@ public class Lonely extends Job {
     public long lastDamagedTime = 0L;
 
     public Lonely() {
-        super("孤独者", "ぼっち", 50, 5);
+        super("孤独者", "ぼっち", 50, 5,
+                PassiveContext.create(),
+                SkillContext.create(),
+                UltimateContext.create()
+        );
 
         passive_skill_name += "§730歳独身";
         normal_skill_name += "§3人、発見！退却～！ｗ";
@@ -88,10 +95,10 @@ public class Lonely extends Job {
     public void ready(){
         lastAttackedTime = System.currentTimeMillis();
         lastDamagedTime = System.currentTimeMillis();
-        passive();
+        passive(PassiveContext.create());
     }
 
-    public void skill(){
+    public void skill(SkillContext ctx){
         List<Player> targetPlayers = new ArrayList<>();
         Vector center = player.getLocation().toVector();
         for(UUID uuid : game.getGameStatesManager().getAlivePlayers()){
@@ -114,11 +121,11 @@ public class Lonely extends Job {
         }
     }
 
-    public void ultimate(){
+    public void ultimate(UltimateContext ctx){
         this.isUltimateActive = true;
     }
 
-    public void passive(){
+    public void passive(PassiveContext ctx){
         BukkitRunnable passiveTask = new BukkitRunnable(){
             boolean isHide = false;
             @Override

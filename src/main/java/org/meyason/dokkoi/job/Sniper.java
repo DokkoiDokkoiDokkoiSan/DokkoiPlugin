@@ -11,6 +11,9 @@ import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.job.context.PassiveContext;
+import org.meyason.dokkoi.job.context.SkillContext;
+import org.meyason.dokkoi.job.context.UltimateContext;
 
 import java.util.List;
 
@@ -21,7 +24,10 @@ public class Sniper extends Job {
                 "狙撃手",
                 "§d遠距離攻撃のスペシャリスト。",
                 30,
-                200
+                200,
+                PassiveContext.create(),
+                SkillContext.create(),
+                UltimateContext.create()
         );
         passive_skill_name += "§7日本製武器";
         normal_skill_name += "§3私の魂への狙い澄ました一撃";
@@ -71,11 +77,15 @@ public class Sniper extends Job {
     public void ready(){
     }
 
-    public void skill(){
+    public void passive(PassiveContext ctx){
+        //NOOP
+    }
+
+    public void skill(SkillContext ctx){
         game.getGameStatesManager().setSniperSkillActive(true);
     }
 
-    public void ultimate(){
+    public void ultimate(UltimateContext ctx){
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20 * 20, Integer.MAX_VALUE));
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 20 * 20, Integer.MAX_VALUE));
 

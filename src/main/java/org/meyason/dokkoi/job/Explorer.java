@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.inventory.ItemStack;
@@ -14,6 +15,10 @@ import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.exception.NoGameItemException;
+import org.meyason.dokkoi.job.context.PassiveContext;
+import org.meyason.dokkoi.job.context.SkillContext;
+import org.meyason.dokkoi.job.context.UltimateContext;
+import org.meyason.dokkoi.job.context.key.Keys;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
@@ -30,7 +35,13 @@ public class Explorer extends Job {
     private boolean ketsumouMode = false;
 
     public Explorer() {
-        super("冒険者", "冒険者", 5, 200);
+        super("冒険者", "冒険者", 5, 200,
+                PassiveContext.create()
+                        .with(Keys.INTEGER, null),
+                SkillContext.create()
+                        .with(Keys.ENTITY, null),
+                UltimateContext.create()
+        );
         passive_skill_name += "§9§lけつ毛(けつもう)§r§7の力";
         normal_skill_name += "§9§lけつ毛§r§3、投げつけてみた！§d【けつ】§b【KETSU】§a【おしり】§e【山吹権蔵】";
         ultimate_skill_name += "§6爆発するタイプの§9§lけつ毛(けつもう)";
@@ -94,12 +105,16 @@ public class Explorer extends Job {
     }
 
     public void ready(){
-        passive(0);
+        passive(
+                PassiveContext.create()
+                        .with(Keys.INTEGER, 0)
+        );
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Integer.MAX_VALUE, 1));
         game.getGameStatesManager().setIsEnableAttack(player.getUniqueId(), false);
     }
 
-    public void passive(int nowCount){
+    public void passive(PassiveContext ctx){
+        int nowCount = ctx.require(Keys.INTEGER);
         if(haveKetsumouCount == nowCount){return;}
         if(haveKetsumouCount < nowCount){
             this.haveKetsumouCount = nowCount;
@@ -110,7 +125,11 @@ public class Explorer extends Job {
         }
     }
 
-    public void skill(Snowball snowball){
+    public void skill(SkillContext ctx){
+        Entity entity = ctx.require(Keys.ENTITY);
+        if(!(entity instanceof Snowball snowball)){
+            throw new IllegalArgumentException("SnowBall is required for Explorer skill");
+        }
         // 着弾後の処理
         Location location = snowball.getLocation();
         spawnAreaParticles(location);
@@ -145,7 +164,7 @@ public class Explorer extends Job {
         }.runTaskLater(Dokkoi.getInstance(), 3 * 20L);
     }
 
-    public void ultimate(){
+    public void ultimate(UltimateContext ctx){
         int buffLevel = haveKetsumouCount;
         if(buffLevel == 0) return;
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 20, buffLevel));

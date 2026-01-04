@@ -18,7 +18,10 @@ import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.dealeritem.*;
-import org.meyason.dokkoi.item.jobitem.Ketsumou;
+import org.meyason.dokkoi.job.context.PassiveContext;
+import org.meyason.dokkoi.job.context.SkillContext;
+import org.meyason.dokkoi.job.context.UltimateContext;
+import org.meyason.dokkoi.job.context.key.Keys;
 import org.meyason.dokkoi.menu.drugrecipemenu.DrugRecipeMenu;
 
 import java.util.HashMap;
@@ -51,7 +54,12 @@ public class DrugStore extends Job {
     }};
 
     public DrugStore() {
-        super("薬売師", "drag_store", 1, 100);
+        super("薬売師", "drag_store", 1, 100,
+                PassiveContext.create(),
+                SkillContext.create(),
+                UltimateContext.create()
+                        .with(Keys.LIST_STRING, null)
+        );
         passive_skill_name += "§7レイノブーツ";
         normal_skill_name += "§3ヤクツクール";
         ultimate_skill_name += "§6キョウカスール";
@@ -111,12 +119,20 @@ public class DrugStore extends Job {
     public void ready(){
     }
 
-    public void skill(){
+    public void passive(PassiveContext ctx){
+        //NOOP
+    }
+
+    public void skill(SkillContext ctx){
         DrugRecipeMenu drugRecipeMenu = new DrugRecipeMenu();
         drugRecipeMenu.sendMenu(player);
     }
 
-    public void ultimate(List<String> drugList){
+    public void ultimate(UltimateContext ctx){
+        if(!this.getUltimateContext().isSatisfiedBy(ctx)){
+            throw new IllegalArgumentException("Invalid SkillContext for DrugStore skill");
+        }
+        List<String> drugList = ctx.require(Keys.LIST_STRING);
         // ランダムに選出
         String drugName = drugList.get((int)(Math.random() * drugList.size()));
         PlayerInventory inventory = player.getInventory();

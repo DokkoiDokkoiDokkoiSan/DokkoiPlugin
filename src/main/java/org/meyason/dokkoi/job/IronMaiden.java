@@ -25,6 +25,9 @@ import org.meyason.dokkoi.goal.MassTierKiller;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.jobitem.Rapier;
+import org.meyason.dokkoi.job.context.PassiveContext;
+import org.meyason.dokkoi.job.context.SkillContext;
+import org.meyason.dokkoi.job.context.UltimateContext;
 
 import java.util.List;
 
@@ -37,7 +40,11 @@ public class IronMaiden extends Job {
     private int count = 0;
 
     public IronMaiden() {
-        super("鉄処女", "鉄処女", 30, 200);
+        super("鉄処女", "鉄処女", 30, 200,
+                PassiveContext.create(),
+                SkillContext.create(),
+                UltimateContext.create()
+        );
         passive_skill_name += "§7こっち見ろ！ばか！";
         normal_skill_name += "§3あっち見ろ！あほ！";
         ultimate_skill_name += "§6あれ見てみろ！かす！";
@@ -96,10 +103,10 @@ public class IronMaiden extends Job {
         if(goal instanceof MassTierKiller massTierKiller){
             massTierKiller.updateList();
         }
-        passive();
+        passive(PassiveContext.create());
     }
 
-    public void passive(){
+    public void passive(PassiveContext ctx){
         BukkitRunnable passiveTask = new BukkitRunnable(){
             @Override
             public void run(){
@@ -171,7 +178,7 @@ public class IronMaiden extends Job {
         passiveTask.runTaskTimer(Dokkoi.getInstance(), 0L, 10L);
     }
 
-    public void skill(){
+    public void skill(SkillContext ctx){
         isUsingSkill = true;
         new BukkitRunnable(){
             @Override
@@ -181,7 +188,7 @@ public class IronMaiden extends Job {
         }.runTaskLater(Dokkoi.getInstance(), 10 * 20L);
     }
 
-    public void ultimate(){
+    public void ultimate(UltimateContext ctx){
         try {
             CustomItem rapier = GameItem.getItem(Rapier.id);
             ItemStack itemStack = rapier.getItem();

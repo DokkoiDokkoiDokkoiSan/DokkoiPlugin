@@ -27,6 +27,8 @@ import org.meyason.dokkoi.job.Bomber;
 import org.meyason.dokkoi.job.Job;
 import org.meyason.dokkoi.job.Prayer;
 import org.meyason.dokkoi.job.Summoner;
+import org.meyason.dokkoi.job.context.PassiveContext;
+import org.meyason.dokkoi.job.context.key.Keys;
 import org.meyason.dokkoi.network.PacketProcess;
 import org.meyason.dokkoi.network.PacketSender;
 
@@ -48,9 +50,8 @@ public class DeathEvent {
         // 生き返らせるならこの辺
 
         if(manager.getPlayerJobs().get(deadUUID) instanceof Bomber bomber){
-            if(bomber.passive()){
-                return;
-            }
+            bomber.passive(PassiveContext.create());
+            if(bomber.isPassiveActive()) return;
         }
 
         if(manager.getPlayerJobs().get(deadUUID) instanceof Prayer prayer){
@@ -170,7 +171,10 @@ public class DeathEvent {
         if(manager.getExistSummoner()){
             for(Job job : manager.getPlayerJobs().values()){
                 if(job instanceof Summoner summoner){
-                    summoner.passive(dead);
+                    PassiveContext ctx =
+                            PassiveContext.create()
+                                    .with(Keys.PLAYER, dead);
+                    summoner.passive(ctx);
                 }
             }
         }

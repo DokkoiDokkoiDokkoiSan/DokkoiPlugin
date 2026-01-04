@@ -14,6 +14,9 @@ import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
 import org.meyason.dokkoi.item.weapon.BlueBow;
 import org.meyason.dokkoi.job.*;
+import org.meyason.dokkoi.job.context.SkillContext;
+import org.meyason.dokkoi.job.context.UltimateContext;
+import org.meyason.dokkoi.job.context.key.Keys;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 
 import java.util.List;
@@ -68,7 +71,10 @@ public class ProjectileDamageHandler {
         // Explorer処理
         if (job instanceof Explorer explorer) {
             if (attackItem.equals(Skill.id)) {
-                explorer.skill(snowball);
+                SkillContext ctx =
+                        SkillContext.create()
+                                .with(Keys.ENTITY, snowball);
+                explorer.skill(ctx);
             }
             gsm.removeProjectileData(snowball);
             return HandleResult.handled();
@@ -76,7 +82,10 @@ public class ProjectileDamageHandler {
 
         // Executor処理
         if (job instanceof Executor executor) {
-            executor.skill(damagedEntity);
+            SkillContext ctx =
+                    SkillContext.create()
+                            .with(Keys.ENTITY, damagedEntity);
+            executor.skill(ctx);
             gsm.removeProjectileData(snowball);
             return HandleResult.handled();
         }
@@ -101,9 +110,16 @@ public class ProjectileDamageHandler {
         if (attackItem.equals(Skill.id)) {
             List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(
                     Game.getInstance(), null, snowball.getLocation(), 10);
-            bomber.skill(snowball.getLocation(), effectedPlayers);
+            SkillContext ctx =
+                    SkillContext.create()
+                            .with(Keys.LOCATION, snowball.getLocation())
+                            .with(Keys.LIST_PLAYER, effectedPlayers);
+            bomber.skill(ctx);
         } else if (attackItem.equals(Ultimate.id)) {
-            bomber.ultimate(snowball.getLocation());
+            UltimateContext ctx =
+                    UltimateContext.create()
+                            .with(Keys.LOCATION, snowball.getLocation());
+            bomber.ultimate(ctx);
         }
         gsm.removeProjectileData(snowball);
     }

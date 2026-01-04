@@ -10,6 +10,9 @@ import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.job.context.PassiveContext;
+import org.meyason.dokkoi.job.context.SkillContext;
+import org.meyason.dokkoi.job.context.UltimateContext;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 
 import java.util.ArrayList;
@@ -23,7 +26,11 @@ public class Photographer extends Job {
     private boolean isTwoShotPhotoTaken;
 
     public Photographer() {
-        super("写真家", "写真家", 3, 200);
+        super("写真家", "写真家", 3, 200,
+                PassiveContext.create(),
+                SkillContext.create(),
+                UltimateContext.create()
+        );
         passive_skill_name = "§9§l戦場§r§7カメラマン";
         normal_skill_name = "§9§l渡部陽一 §r§cf§6e§ea§at§r.§l§b西§d野§9カ§1ナ";
         ultimate_skill_name = "§6一旦全員晒してみた";
@@ -65,10 +72,6 @@ public class Photographer extends Job {
 
     public boolean isTwoShotPhotoTaken(){
         return this.isTwoShotPhotoTaken;
-    }
-
-    public void passive(){
-
     }
 
     @Override
@@ -115,7 +118,7 @@ public class Photographer extends Job {
         game.getGameStatesManager().setIsEnableAttack(player.getUniqueId(), false);
     }
 
-    private void updatePassive(){
+    public void passive(PassiveContext ctx){
         if(takenPhotoPlayersUUID.isEmpty()) return;
         if(this.takenPhotoPlayersUUID.size() == 1){
             this.player.removePotionEffect(PotionEffectType.SLOWNESS);
@@ -139,7 +142,7 @@ public class Photographer extends Job {
         }
     }
 
-    public void skill(){
+    public void skill(SkillContext ctx){
         if(this.player.isSneaking()){
             ArrayList<UUID> targets = new ArrayList<>();
             this.player.sendMessage(Component.text("§a=====写真を撮影していないプレイヤー一覧====="));
@@ -169,7 +172,7 @@ public class Photographer extends Job {
             for(Player p : playerInSight){
                 if(this.canAddTakenPhotoPlayerNewly(p.getUniqueId())){
                     this.addTakenPhotoPlayer(p.getUniqueId());
-                    this.updatePassive();
+                    this.passive(PassiveContext.create());
                 }else{
                     this.addTakenPhotoPlayer(p.getUniqueId());
                 }
@@ -183,7 +186,7 @@ public class Photographer extends Job {
         return !this.takenPhotoPlayersUUID.isEmpty();
     }
 
-    public void ultimate(){
+    public void ultimate(UltimateContext ctx){
         int affectedSeconds = this.takenPhotoPlayersUUID.size() * 2;
         if(affectedSeconds == 0){
             this.player.sendActionBar(Component.text("§c写真に写っているプレイヤーがいない..."));
