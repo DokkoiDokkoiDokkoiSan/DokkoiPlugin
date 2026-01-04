@@ -119,15 +119,11 @@ public class Explorer extends Job implements ProjectileHitHooker {
     }
 
     public boolean onSkillTrigger(){
-        return true;
-    }
-
-    public void skill(){
         GameStatesManager manager = game.getGameStatesManager();
 
         if (getHaveKetsumouCount() <= 0) {
             player.sendActionBar(Component.text("§c投擲できる§9§lけつ毛§r§cがない。"));
-            return;
+            return false;
         }
         Vector direction = player.getEyeLocation().getDirection().normalize();
         Vector velocity = direction.multiply(2.0);
@@ -151,6 +147,8 @@ public class Explorer extends Job implements ProjectileHitHooker {
         }
 
         manager.addProjectileData(projectile, new ProjectileData(player, projectile, Skill.id));
+
+        return true;
     }
 
     public boolean onSkillUltimateTrigger(){
