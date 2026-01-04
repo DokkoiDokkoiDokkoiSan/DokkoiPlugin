@@ -99,9 +99,6 @@ public class Executor extends Job{
             throw new IllegalArgumentException("Invalid SkillContext for Executor skill");
         }
         Entity target = ctx.require(Keys.ENTITY);
-        if(target == null){
-            throw new IllegalArgumentException("Entity is required for DrugStore skill");
-        }
         if(target instanceof Player targetPlayer) {
             int killCount = game.getGameStatesManager().getKillCounts().get(player.getUniqueId());
             int damage;

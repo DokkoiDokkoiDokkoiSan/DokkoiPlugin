@@ -168,9 +168,6 @@ public class Bomber extends Job {
             throw new IllegalArgumentException("Invalid SkillContext for Bomber skill");
         }
         Location impactLocation = ctx.require(Keys.LOCATION);
-        if(impactLocation == null){
-            throw new IllegalArgumentException("LocationData is required for Bomber skill");
-        }
         // パーティクルとサウンド（着弾時だけ一度）
         impactLocation.getWorld().spawnParticle(
                 Particle.CAMPFIRE_SIGNAL_SMOKE,

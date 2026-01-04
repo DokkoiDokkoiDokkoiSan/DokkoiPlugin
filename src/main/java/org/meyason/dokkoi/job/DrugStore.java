@@ -133,9 +133,6 @@ public class DrugStore extends Job {
             throw new IllegalArgumentException("Invalid SkillContext for DrugStore skill");
         }
         List<String> drugList = ctx.require(Keys.LIST_STRING);
-        if(drugList == null){
-            throw new IllegalArgumentException("List<String> is required for DrugStore skill");
-        }
         // ランダムに選出
         String drugName = drugList.get((int)(Math.random() * drugList.size()));
         PlayerInventory inventory = player.getInventory();

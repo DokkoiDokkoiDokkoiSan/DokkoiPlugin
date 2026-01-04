@@ -63,22 +63,19 @@ public class ProjectileHitBlockEvent implements Listener {
                 if (job instanceof Bomber bomber) {
                     if (attackItem.equals(Skill.id)) {
                         List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, event.getHitBlock().getLocation(), 1);
-                        bomber.skill(
-                                SkillContext.create()
-                                        .with(Keys.LOCATION, event.getHitBlock().getLocation())
-                                        .with(Keys.LIST_PLAYER, effectedPlayers)
-                        );
+                        SkillContext ctx = SkillContext.create()
+                                .with(Keys.LOCATION, event.getHitBlock().getLocation())
+                                .with(Keys.LIST_PLAYER, effectedPlayers);
+                        bomber.skill(ctx);
                     } else if (attackItem.equals(Ultimate.id)) {
-                        bomber.ultimate(
-                                UltimateContext.create()
-                                        .with(Keys.LOCATION, event.getHitBlock().getLocation())
-                        );
+                        UltimateContext ctx = UltimateContext.create()
+                                .with(Keys.LOCATION, event.getHitBlock().getLocation());
+                        bomber.ultimate(ctx);
                     }
                 } else if (job instanceof Explorer explorer) {
                     if (attackItem.equals(Skill.id)) {
-                        SkillContext ctx =
-                                SkillContext.create()
-                                        .with(Keys.ENTITY, snowball);
+                        SkillContext ctx = SkillContext.create()
+                                .with(Keys.ENTITY, snowball);
                         explorer.skill(ctx);
                     }
                 }
