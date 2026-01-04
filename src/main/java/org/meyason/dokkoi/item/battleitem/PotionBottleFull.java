@@ -3,6 +3,7 @@ package org.meyason.dokkoi.item.battleitem;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -10,10 +11,11 @@ import org.bukkit.potion.PotionType;
 import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
 
 import java.util.List;
 
-public class PotionBottleFull extends CustomItem {
+public class PotionBottleFull extends CustomItem implements InteractHooker {
 
     public static final String id = "potion_bottle_full";
 
@@ -42,7 +44,11 @@ public class PotionBottleFull extends CustomItem {
         };
     }
 
-    public static void activate(Player player, ItemStack itemStack) {
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+
         if(player.getHealth() == player.getMaxHealth()){
             player.sendActionBar(Component.text("§c既に最大体力です。"));
             return;
@@ -50,7 +56,7 @@ public class PotionBottleFull extends CustomItem {
         player.setHealth(player.getMaxHealth());
         player.sendMessage(Component.text("§a詰め替えポーションを使用した！"));
 
-        itemStack.setAmount(0);
+        item.setAmount(0);
         CustomItem emptyPotionBottle;
         try{
             emptyPotionBottle = GameItem.getItem(PotionBottleEmpty.id);

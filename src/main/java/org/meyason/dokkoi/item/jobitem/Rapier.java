@@ -56,12 +56,10 @@ public class Rapier extends CustomItem {
         player.sendMessage(Component.text("§aレイピア§bを手に入れた！"));
     }
 
-    public void activate(Trident trident, Location loc){
-        if (loc == null || loc.getWorld() == null) {
-            return;
-        }
+    public void activate(Trident trident){
+        final Location hitLocation = trident.getLocation().clone();
+        if (hitLocation.getWorld() == null) return;
 
-        final Location hitLocation = loc.clone();
         final World world = hitLocation.getWorld();
         final double radius = 10.0;
 

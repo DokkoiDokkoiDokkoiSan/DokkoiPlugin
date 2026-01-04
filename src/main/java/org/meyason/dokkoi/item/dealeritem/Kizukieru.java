@@ -3,13 +3,15 @@ package org.meyason.dokkoi.item.dealeritem;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
 
 import java.util.List;
 
-public class Kizukieru extends CustomItem {
+public class Kizukieru extends CustomItem implements InteractHooker {
 
     public static final String id = "kizukieru";
 
@@ -35,7 +37,10 @@ public class Kizukieru extends CustomItem {
         };
     }
 
-    public static void activate(Player player, ItemStack item) {
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
 
         double nowHealth = player.getHealth();
         if(nowHealth == player.getMaxHealth()){

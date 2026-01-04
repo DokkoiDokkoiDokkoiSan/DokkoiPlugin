@@ -3,14 +3,16 @@ package org.meyason.dokkoi.item.battleitem;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
 
 import java.util.List;
 
-public class ArcherArmor extends CustomItem {
+public class ArcherArmor extends CustomItem implements InteractHooker {
 
     public static final String id = "archer_armor";
 
@@ -46,4 +48,8 @@ public class ArcherArmor extends CustomItem {
         player.sendMessage(Component.text("§a弓使いの鎧§bを手に入れた！"));
     }
 
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+        Game.getInstance().getGameStatesManager().addIsDeactivateDamageOnce(event.getPlayer().getUniqueId(), true);
+    }
 }

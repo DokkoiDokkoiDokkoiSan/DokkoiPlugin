@@ -5,6 +5,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.meyason.dokkoi.constants.GoalList;
@@ -12,10 +13,12 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
+import org.meyason.dokkoi.menu.fortuneballmenu.FortuneBallMenu;
 
 import java.util.List;
 
-public class FortuneBall extends CustomItem {
+public class FortuneBall extends CustomItem implements InteractHooker {
 
     public static final String id = "fortune_ball";
 
@@ -70,5 +73,14 @@ public class FortuneBall extends CustomItem {
                 }))
                 .hoverEvent(HoverEvent.showText(Component.text("§eクリックで勝利条件詳細を見る")));
         player.sendMessage(component);
+    }
+
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+
+        FortuneBallMenu fortuneBallMenu = new FortuneBallMenu();
+        fortuneBallMenu.sendMenu(item, player);
     }
 }
