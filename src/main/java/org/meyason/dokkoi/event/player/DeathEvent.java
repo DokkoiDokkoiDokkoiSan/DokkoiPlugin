@@ -9,7 +9,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.DokkoiDatabaseAPI;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.exception.NoGameItemException;
@@ -48,7 +47,9 @@ public class DeathEvent {
         // 生き返らせるならこの辺
 
         if(manager.getPlayerJobs().get(deadUUID) instanceof Bomber bomber){
-            if(bomber.passive()){
+            bomber.passive();
+
+            if(dead.getHealth() > 0){
                 return;
             }
         }

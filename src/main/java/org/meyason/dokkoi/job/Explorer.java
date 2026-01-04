@@ -2,18 +2,26 @@ package org.meyason.dokkoi.job;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.exception.NoGameItemException;
+import org.meyason.dokkoi.game.GameStatesManager;
+import org.meyason.dokkoi.game.ProjectileData;
+import org.meyason.dokkoi.item.jobitem.Skill;
+import org.meyason.dokkoi.job.type.ProjectileHitHooker;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
@@ -23,7 +31,7 @@ import org.meyason.dokkoi.item.jobitem.Ketsumou;
 
 import java.util.List;
 
-public class Explorer extends Job {
+public class Explorer extends Job implements ProjectileHitHooker {
 
     private int haveKetsumouCount = 0;
 
@@ -110,45 +118,47 @@ public class Explorer extends Job {
         }
     }
 
-    public void skill(Snowball snowball){
-        // 着弾後の処理
-        Location location = snowball.getLocation();
-        spawnAreaParticles(location);
-        new BukkitRunnable(){
-            @Override
-            public void run(){
-                // 着弾位置から半径3m以内にいるプレイヤーに行動不能を5秒間付与
-                List<Player> players = CalculateAreaPlayers.getPlayersInArea(game, player, snowball.getLocation(), 3.0);
-                for(Player target : players){
-                    if(target.equals(player)) continue;
-                    target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 5 * 20, 1000));
-                    target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 5 * 20, 1000));
-                }
-                // けつ毛をアイテム化
-                Location location = snowball.getLocation();
-                location.setY(location.getY() + 0.1f);
-                snowball.remove();
-
-                CustomItem item;
-                try{
-                    item = GameItem.getItem(Ketsumou.id);
-                }catch (NoGameItemException e){
-                    e.printStackTrace();
-                    cancel();
-                    return;
-                }
-                if(item != null){
-                    ItemStack itemStack = item.getItem();
-                    location.getWorld().dropItemNaturally(location, itemStack);
-                }
-            }
-        }.runTaskLater(Dokkoi.getInstance(), 3 * 20L);
+    public boolean onSkillTrigger(){
+        return true;
     }
 
-    public void ultimate(){
+    public void skill(){
+        GameStatesManager manager = game.getGameStatesManager();
+
+        if (getHaveKetsumouCount() <= 0) {
+            player.sendActionBar(Component.text("§c投擲できる§9§lけつ毛§r§cがない。"));
+            return;
+        }
+        Vector direction = player.getEyeLocation().getDirection().normalize();
+        Vector velocity = direction.multiply(2.0);
+        Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+        ItemStack itemStack = new ItemStack(Material.PALE_HANGING_MOSS);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta != null) {
+            itemStack.setItemMeta(itemMeta);
+        }
+        projectile.setItem(itemStack);
+
+        for (ItemStack iS : player.getInventory().getContents()) {
+            if (iS == null) continue;
+            if (iS.getItemMeta() != null) {
+                CustomItem cI = CustomItem.getItem(iS);
+                if (cI instanceof Ketsumou) {
+                    player.getInventory().removeItem(iS);
+                    break;
+                }
+            }
+        }
+
+        manager.addProjectileData(projectile, new ProjectileData(player, projectile, Skill.id));
+    }
+
+    public boolean onSkillUltimateTrigger(){
         int buffLevel = haveKetsumouCount;
-        if(buffLevel == 0) return;
+        if(buffLevel == 0) return false;
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 20, buffLevel));
+
+        return true;
     }
 
     public void decrementKetsumouEffect(){
@@ -218,5 +228,43 @@ public class Explorer extends Job {
                 );
             }
         }.runTaskTimer(Dokkoi.getInstance(), 0L, intervalTick);
+    }
+
+    @Override
+    public void onProjectileHit(ProjectileHitEvent event) {
+        if (!(event.getEntity() instanceof Snowball snowball)) return;
+
+        // 着弾後の処理
+        Location location = snowball.getLocation();
+        spawnAreaParticles(location);
+        new BukkitRunnable(){
+            @Override
+            public void run(){
+                // 着弾位置から半径3m以内にいるプレイヤーに行動不能を5秒間付与
+                List<Player> players = CalculateAreaPlayers.getPlayersInArea(game, player, snowball.getLocation(), 3.0);
+                for(Player target : players){
+                    if(target.equals(player)) continue;
+                    target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 5 * 20, 1000));
+                    target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 5 * 20, 1000));
+                }
+                // けつ毛をアイテム化
+                Location location = snowball.getLocation();
+                location.setY(location.getY() + 0.1f);
+                snowball.remove();
+
+                CustomItem item;
+                try{
+                    item = GameItem.getItem(Ketsumou.id);
+                }catch (NoGameItemException e){
+                    e.printStackTrace();
+                    cancel();
+                    return;
+                }
+                if(item != null){
+                    ItemStack itemStack = item.getItem();
+                    location.getWorld().dropItemNaturally(location, itemStack);
+                }
+            }
+        }.runTaskLater(Dokkoi.getInstance(), 3 * 20L);
     }
 }

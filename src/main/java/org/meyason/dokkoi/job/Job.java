@@ -68,6 +68,39 @@ public abstract class Job implements Cloneable {
 
     public abstract void ready();
 
+    public void executeSkill(){
+        if (isSkillCoolDown(player)) {
+            player.sendActionBar(Component.text("§cスキルはクールダウン中です。"));
+            return;
+        }
+
+        if (onSkillTrigger()){
+            playSoundEffectSkill(player);
+            setRemainCoolTimeSkill(getCoolTimeSkill());
+            chargeSkill(player, Game.getInstance().getGameStatesManager());
+        }
+    }
+
+    public abstract boolean onSkillTrigger();
+
+    public void executeUltimateSkill(){
+        if (isUltimateSkillCoolDown(player)) {
+            player.sendActionBar(Component.text("§cアルティメットスキルはクールダウン中です。"));
+            return;
+        } else if (getRemainCoolTimeSkill() == -1) {
+            player.sendActionBar(Component.text("§cアルティメットスキルは既に使用しています。"));
+            return;
+        }
+
+        if (onSkillUltimateTrigger()){
+            playSoundEffectUltimateSkill(player);
+            setRemainCoolTimeSkillUltimate(1000); // 要調整らしい
+            chargeUltimateSkill(player, Game.getInstance().getGameStatesManager());
+        }
+    }
+
+    public abstract boolean onSkillUltimateTrigger();
+
     public String getName() {return this.name;}
     public String getDescription() {return this.description;}
     public List<Goal> getGoals() {return this.goals;}

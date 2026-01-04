@@ -28,7 +28,7 @@ import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import java.util.List;
 import java.util.UUID;
 
-public class Summoner extends Job{
+public class Summoner extends Job {
 
     public Summoner() {
         super(
@@ -107,7 +107,7 @@ public class Summoner extends Job{
         player.sendMessage(Component.text("§b死霊の力により与ダメージが1増加した！"));
     }
 
-    public void skill(){
+    public boolean onSkillTrigger(){
         int deadCount = game.getGameStatesManager().getKillerList().size();
         int freezeTime = deadCount * 20;
         List<Player> players = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 10);
@@ -115,9 +115,17 @@ public class Summoner extends Job{
             p.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, freezeTime, 255));
             p.sendActionBar(Component.text("§c交霊師の呪術により移動不能になった！"));
         }
+
+        return true;
     }
 
-    public void ultimate(List<UUID> targetPlayers){
+    public boolean onSkillUltimateTrigger(){
+        List<UUID> targetPlayers = game.getGameStatesManager().getVictims();
+        if (targetPlayers.isEmpty()) {
+            player.sendActionBar(Component.text("§c召喚できる対象がいない。"));
+            return false;
+        }
+
         NamespacedKey serialKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.UNIQUE_ITEM);
         for(UUID uuid : targetPlayers){
             Player targetPlayer = Bukkit.getPlayer(uuid);
@@ -150,5 +158,7 @@ public class Summoner extends Job{
 
             targetPlayer.sendMessage(Component.text("§a交霊師によって§l§6内藤§r§aとして復活させられた！"));
         }
+
+        return true;
     }
 }

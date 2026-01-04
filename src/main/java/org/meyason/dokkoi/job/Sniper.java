@@ -71,11 +71,13 @@ public class Sniper extends Job {
     public void ready(){
     }
 
-    public void skill(){
+    public boolean onSkillTrigger(){
         game.getGameStatesManager().setSniperSkillActive(true);
+
+        return true;
     }
 
-    public void ultimate(){
+    public boolean onSkillUltimateTrigger(){
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20 * 20, Integer.MAX_VALUE));
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 20 * 20, Integer.MAX_VALUE));
 
@@ -90,5 +92,7 @@ public class Sniper extends Job {
                 game.getGameStatesManager().removeDamageCutPercent(player.getUniqueId());
             }
         }.runTaskLater(Dokkoi.getInstance(), 20 * 20);
+
+        return true;
     }
 }

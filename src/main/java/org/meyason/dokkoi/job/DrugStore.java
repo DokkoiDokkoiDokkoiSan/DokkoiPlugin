@@ -18,9 +18,9 @@ import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.dealeritem.*;
-import org.meyason.dokkoi.item.jobitem.Ketsumou;
 import org.meyason.dokkoi.menu.drugrecipemenu.DrugRecipeMenu;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class DrugStore extends Job {
         this.pickCount++;
     }
 
-    private HashMap<String, String> ultimateMap = new HashMap<>() {{
+    private final HashMap<String, String> ultimateMap = new HashMap<>() {{
         put(Tsuyokunaru.id, TotemoTsuyokunaru.id);
         put(Katakunaru.id, TotemoKatakunaru.id);
         put(Hayakunaru.id, TotemoHayakunaru.id);
@@ -111,15 +111,43 @@ public class DrugStore extends Job {
     public void ready(){
     }
 
-    public void skill(){
+    public boolean onSkillTrigger(){
         DrugRecipeMenu drugRecipeMenu = new DrugRecipeMenu();
         drugRecipeMenu.sendMenu(player);
+
+        return true;
     }
 
-    public void ultimate(List<String> drugList){
+    public boolean onSkillUltimateTrigger(){
+        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+        List<String> drugList = new ArrayList<>();
+        PlayerInventory inventory = player.getInventory();
+        for (ItemStack i : inventory.getContents()) {
+            if (i == null) continue;
+            ItemMeta m = i.getItemMeta();
+            if (m == null) continue;
+            if (m.getPersistentDataContainer().has(itemKey)) {
+                CustomItem c = CustomItem.getItem(i);
+                if (c instanceof Katakunaru) {
+                    drugList.add(Katakunaru.id);
+                } else if (c instanceof Kizukieru) {
+                    drugList.add(Kizukieru.id);
+                } else if (c instanceof Hayakunaru) {
+                    drugList.add(Hayakunaru.id);
+                } else if (c instanceof Tsuyokunaru) {
+                    drugList.add(Tsuyokunaru.id);
+                } else if (c instanceof Korehamaru) {
+                    drugList.add(Korehamaru.id);
+                }
+            }
+        }
+        if (drugList.isEmpty()) {
+            player.sendActionBar(Component.text("§c強化できる薬を所持していない。"));
+            return false;
+        }
+
         // ランダムに選出
         String drugName = drugList.get((int)(Math.random() * drugList.size()));
-        PlayerInventory inventory = player.getInventory();
         NamespacedKey key = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
         for (ItemStack iS : player.getInventory().getContents()) {
             if (iS == null) continue;
@@ -135,7 +163,7 @@ public class DrugStore extends Job {
                         ultimateItem = GameItem.getItem(ultimateDrugName);
                     } catch (NoGameItemException e){
                         player.sendMessage(Component.text("§4エラー:薬が見つかりません。運営にお問い合わせください。" + ultimateDrugName));
-                        return;
+                        return false;
                     }
                     ItemStack itemStack = ultimateItem.getItem();
 
@@ -144,10 +172,10 @@ public class DrugStore extends Job {
                     }
                     inventory.addItem(itemStack);
                     player.sendMessage(Component.text("§a調合完了！§e" + ultimateItem.getName() + "§aを手に入れた！"));
-                    return;
                 }
             }
         }
-    }
 
+        return true;
+    }
 }
