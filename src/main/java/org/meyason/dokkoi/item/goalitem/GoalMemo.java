@@ -2,13 +2,18 @@ package org.meyason.dokkoi.item.goalitem;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
 
 import java.util.List;
 
-public class GoalMemo extends CustomItem {
+public class GoalMemo extends CustomItem implements InteractHooker {
 
     public static final String id = "goal_memo";
 
@@ -30,5 +35,17 @@ public class GoalMemo extends CustomItem {
             }
             return item;
         };
+    }
+
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        Goal goal = Game.getInstance().getGameStatesManager().getPlayerGoals().get(player.getUniqueId());
+        if(goal == null){
+            player.sendMessage(Component.text("§cまだ勝利条件が選択されていません。"));
+            return;
+        }
+        player.sendMessage(Component.text("§a===== §e§l勝利条件メモ§r§a ====="));
+        player.sendMessage(Component.text("§b勝利条件： §e" + goal.getDescription()));
     }
 }

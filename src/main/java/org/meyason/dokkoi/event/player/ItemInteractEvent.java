@@ -23,6 +23,7 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.battleitem.*;
 import org.meyason.dokkoi.item.dealeritem.*;
 import org.meyason.dokkoi.item.debug.Debug;
@@ -30,6 +31,7 @@ import org.meyason.dokkoi.item.goalitem.*;
 import org.meyason.dokkoi.item.gunitem.ARMagazine;
 import org.meyason.dokkoi.item.gunitem.HGMagazine;
 import org.meyason.dokkoi.item.gunitem.SMGMagazine;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
 import org.meyason.dokkoi.item.jobitem.Skill;
 import org.meyason.dokkoi.item.jobitem.Ultimate;
 import org.meyason.dokkoi.item.matching.JoinQueueItem;
@@ -74,21 +76,16 @@ public class ItemInteractEvent{
 
         }else if(game.getGameStatesManager().getGameState() == GameState.IN_GAME) {
             GameStatesManager manager = game.getGameStatesManager();
+            if(GameItem.getItem(itemID) instanceof InteractHooker hooker){
+                if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                    return;
+                }
+                event.setCancelled(true);
+                hooker.onInteract(event);
+            }
 
             switch (itemID) {
-                case GoalMemo.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    Goal goal = manager.getPlayerGoals().get(player.getUniqueId());
-                    if(goal == null){
-                        player.sendMessage(Component.text("§cまだ勝利条件が選択されていません。"));
-                        return;
-                    }
-                    player.sendMessage(Component.text("§a===== §e§l勝利条件メモ§r§a ====="));
-                    player.sendMessage(Component.text("§b勝利条件： §e" + goal.getDescription()));
-                }
+                //FIXME: 誰か助けて死にます
                 case KillerList.id -> {
                     if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
                         return;
@@ -103,6 +100,7 @@ public class ItemInteractEvent{
                     }
 
                 }
+                //FIXME: 誰か助けて死にます
                 case UnkillerList.id -> {
                     if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
                         return;
@@ -117,6 +115,7 @@ public class ItemInteractEvent{
                     }
 
                 }
+                //FIXME: 誰か助けて死にます
                 case BuriBuriGuard.id -> {
                     if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                         return;
@@ -128,144 +127,7 @@ public class ItemInteractEvent{
                         buriburiguard.skill();
                     }
                 }
-                case Tsuyokunaru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    game.getGameStatesManager().addIsDeactivateDamageOnce(player.getUniqueId(), true);
-                    Tsuyokunaru.activate(player, itemStack);
-                }
-                case Kizukieru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    Kizukieru.activate(player, itemStack);
-                }
-                case Hayakunaru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    Hayakunaru.activate(player, itemStack);
-                }
-                case Katakunaru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    Katakunaru.activate(player, itemStack);
-                }
-                case TotemoKizukieru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    TotemoKizukieru.activate(player, itemStack);
-                }
-                case TotemoKatakunaru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    TotemoKatakunaru.activate(player, itemStack);
-                }
-                case TotemoTsuyokunaru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    TotemoTsuyokunaru.activate(player, itemStack);
-                }
-                case TotemoHayakunaru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    TotemoHayakunaru.activate(player, itemStack);
-                }
-                case HealingCrystal.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    HealingCrystal.activate(player, itemStack);
-                }
-                case Debug.id -> {
-                    if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                        Location location = Objects.requireNonNull(event.getClickedBlock()).getLocation();
-                        player.sendMessage(Component.text("§aクリックしたブロックの座標"));
-                        player.sendMessage(Component.text(location.getX() + ", " + location.getY() + ", " + location.getZ()));
-                    }
-                }
-                case PotionBottleFull.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    PotionBottleFull.activate(player, itemStack);
-                }
-                case HGMagazine.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    HGMagazine.activate(player);
-                }
-                case SMGMagazine.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    SMGMagazine.activate(player);
-                }
-                case ARMagazine.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    ARMagazine.activate(player);
-                }
-                case IdiotDetector.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    IdiotDetector.activate(player, itemStack);
-                }
-                case FortuneBall.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    FortuneBallMenu fortuneBallMenu = new FortuneBallMenu();
-                    fortuneBallMenu.sendMenu(itemStack, player);
-                }
-                case EdenChime.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    EdenChime.activate(player, itemStack);
-                }
-                case ArcherArmor.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    manager.addIsDeactivateDamageOnce(player.getUniqueId(), true);
-                }
-                case InstantDevour.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    InstantDevour.activate(player, itemStack);
-                }
+                //FIXME: 誰か助けて死にます
                 case TierPlayerList.id -> {
                     if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
                         return;

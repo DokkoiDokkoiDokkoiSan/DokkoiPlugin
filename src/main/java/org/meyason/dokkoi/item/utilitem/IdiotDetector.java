@@ -4,16 +4,18 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
 
 import java.util.List;
 import java.util.UUID;
 
-public class IdiotDetector extends CustomItem {
+public class IdiotDetector extends CustomItem implements InteractHooker {
 
     public static final String id = "idiot_detector";
 
@@ -40,7 +42,11 @@ public class IdiotDetector extends CustomItem {
         };
     }
 
-    public static void activate(Player player, ItemStack itemStack){
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+
         Game game = Game.getInstance();
         GameStatesManager manager = game.getGameStatesManager();
         List<UUID> deadPlayers = manager.getKillerList().values().stream().toList();
@@ -55,6 +61,6 @@ public class IdiotDetector extends CustomItem {
                 }
             }
         }
-        itemStack.setAmount(0);
+        item.setAmount(0);
     }
 }
