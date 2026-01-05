@@ -1,12 +1,9 @@
 package org.meyason.dokkoi.job;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.*;
+import org.bukkit.entity.*;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
@@ -14,21 +11,24 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.game.GameStatesManager;
+import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.goal.MassTierKiller;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.jobitem.Rapier;
+import org.meyason.dokkoi.item.weapon.ThunderJavelin;
+import org.meyason.dokkoi.job.type.ProjectileHitHooker;
 
 import java.util.List;
 
-public class IronMaiden extends Job {
+public class IronMaiden extends Job implements ProjectileHitHooker {
 
     public boolean isUsingSkill = false;
 
@@ -171,7 +171,8 @@ public class IronMaiden extends Job {
         passiveTask.runTaskTimer(Dokkoi.getInstance(), 0L, 10L);
     }
 
-    public void skill(){
+    @Override
+    public boolean onSkillTrigger(){
         isUsingSkill = true;
         new BukkitRunnable(){
             @Override
@@ -179,9 +180,11 @@ public class IronMaiden extends Job {
                 isUsingSkill = false;
             }
         }.runTaskLater(Dokkoi.getInstance(), 10 * 20L);
+
+        return true;
     }
 
-    public void ultimate(){
+    public boolean onSkillUltimateTrigger(){
         try {
             CustomItem rapier = GameItem.getItem(Rapier.id);
             ItemStack itemStack = rapier.getItem();
@@ -190,7 +193,7 @@ public class IronMaiden extends Job {
             if (hadRapier != null) {
                 if (inv.contains(hadRapier.getItem())) {
                     this.player.sendMessage("§6レイピアを先に投擲してください。");
-                    return;
+                    return false;
                 }
             }
 
@@ -203,6 +206,27 @@ public class IronMaiden extends Job {
         } catch (NoGameItemException e) {
             player.sendMessage(Component.text("§cレイピアの取得に失敗しました。運営に報告してください。"));
             e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onProjectileHit(ProjectileHitEvent event) {
+        GameStatesManager manager = Game.getInstance().getGameStatesManager();
+        Entity entity = event.getEntity();
+
+        if (entity instanceof Trident trident) {
+            ProjectileData projectileData = manager.getProjectileDataMap().get(trident);
+            if (projectileData == null) {
+                return;
+            }
+            trident.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
+            if (projectileData.getCustomItemName().equals(Rapier.id)) {
+                getRapier().activate(trident, trident.getLocation());
+            } else if (projectileData.getCustomItemName().equals(ThunderJavelin.id)) {
+                ThunderJavelin.activate(trident);
+            }
         }
     }
 }

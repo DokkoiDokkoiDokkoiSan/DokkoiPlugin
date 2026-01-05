@@ -43,7 +43,7 @@ public class ProjectileDamageHandler {
     /**
      * スノーボールによるダメージ処理
      */
-    public static HandleResult handleSnowball(Snowball snowball, EntityDamageByEntityEvent event, 
+    public static HandleResult handleSnowball(Snowball snowball, EntityDamageByEntityEvent event,
                                                GameStatesManager gsm, Entity damagedEntity, LivingEntity livingEntity) {
         ProjectileData projectileData = gsm.getProjectileDataMap().get(snowball);
         if (projectileData == null) {
@@ -59,27 +59,27 @@ public class ProjectileDamageHandler {
             return HandleResult.handled();
         }
 
-        // Bomber処理
-        if (job instanceof Bomber bomber) {
-            handleBomberProjectile(bomber, snowball, attackItem, gsm);
-            return HandleResult.handled();
-        }
-
-        // Explorer処理
-        if (job instanceof Explorer explorer) {
-            if (attackItem.equals(Skill.id)) {
-                explorer.skill(snowball);
-            }
-            gsm.removeProjectileData(snowball);
-            return HandleResult.handled();
-        }
-
-        // Executor処理
-        if (job instanceof Executor executor) {
-            executor.skill(damagedEntity);
-            gsm.removeProjectileData(snowball);
-            return HandleResult.handled();
-        }
+//        // Bomber処理
+//        if (job instanceof Bomber bomber) {
+//            handleBomberProjectile(bomber, snowball, attackItem, gsm);
+//            return HandleResult.handled();
+//        }
+//
+//        // Explorer処理
+//        if (job instanceof Explorer explorer) {
+//            if (attackItem.equals(Skill.id)) {
+//                explorer.skill(snowball);
+//            }
+//            gsm.removeProjectileData(snowball);
+//            return HandleResult.handled();
+//        }
+//
+//        // Executor処理
+//        if (job instanceof Executor executor) {
+//            executor.skill(damagedEntity);
+//            gsm.removeProjectileData(snowball);
+//            return HandleResult.handled();
+//        }
 
         // プレイヤーへのダメージ処理が必要な場合
         if (damagedEntity instanceof Player damaged) {
@@ -96,16 +96,16 @@ public class ProjectileDamageHandler {
     /**
      * Bomberの発射物処理
      */
-    private static void handleBomberProjectile(Bomber bomber, Snowball snowball, 
+    private static void handleBomberProjectile(Bomber bomber, Snowball snowball,
                                                 String attackItem, GameStatesManager gsm) {
-        if (attackItem.equals(Skill.id)) {
-            List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(
-                    Game.getInstance(), null, snowball.getLocation(), 10);
-            bomber.skill(snowball.getLocation(), effectedPlayers);
-        } else if (attackItem.equals(Ultimate.id)) {
-            bomber.ultimate(snowball.getLocation());
-        }
-        gsm.removeProjectileData(snowball);
+//        if (attackItem.equals(Skill.id)) {
+//            List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(
+//                    Game.getInstance(), null, snowball.getLocation(), 10);
+//            bomber.(snowball.getLocation(), effectedPlayers);
+//        } else if (attackItem.equals(Ultimate.id)) {
+//            bomber.ultimate(snowball.getLocation());
+//        }
+//        gsm.removeProjectileData(snowball);
     }
 
     /**

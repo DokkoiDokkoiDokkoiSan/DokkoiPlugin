@@ -139,7 +139,7 @@ public class Photographer extends Job {
         }
     }
 
-    public void skill(){
+    public boolean onSkillTrigger(){
         if(this.player.isSneaking()){
             ArrayList<UUID> targets = new ArrayList<>();
             this.player.sendMessage(Component.text("§a=====写真を撮影していないプレイヤー一覧====="));
@@ -150,7 +150,7 @@ public class Photographer extends Job {
             }
             if(targets.size() == this.game.getGameStatesManager().getJoinedPlayers().size()){
                 this.player.sendActionBar(Component.text("§a全員の写真を撮影済みだ！"));
-                return;
+                return false;
             }
             for(UUID uuid : targets){
                 this.player.sendMessage(Component.text("§d" + Objects.requireNonNull(Bukkit.getPlayer(uuid)).getName()));
@@ -160,7 +160,7 @@ public class Photographer extends Job {
             int quantityPlayers = playerInSight.size();
             if(quantityPlayers == 0){
                 this.player.sendActionBar(Component.text("§c写真に誰も写っていない..."));
-                return;
+                return false;
             }
             if(quantityPlayers >= 2 && !this.isTwoShotPhotoTaken){
                 this.isTwoShotPhotoTaken = true;
@@ -177,17 +177,24 @@ public class Photographer extends Job {
                 this.player.sendMessage(Component.text("§6" + p.getName() + "§r§aの写真を撮影した！"));
             }
         }
+
+        return true;
     }
 
     public boolean canUseUltimate(){
         return !this.takenPhotoPlayersUUID.isEmpty();
     }
 
-    public void ultimate(){
+    public boolean onSkillUltimateTrigger(){
+        if(!canUseUltimate()){
+            player.sendActionBar(Component.text("§cアルティメットを使用するには一人以上を撮影する必要があります。"));
+            return false;
+        }
+
         int affectedSeconds = this.takenPhotoPlayersUUID.size() * 2;
         if(affectedSeconds == 0){
             this.player.sendActionBar(Component.text("§c写真に写っているプレイヤーがいない..."));
-            return;
+            return false;
         }
         for(UUID uuid : this.takenPhotoPlayersUUID){
             Player targetPlayer = Bukkit.getPlayer(uuid);
@@ -196,5 +203,7 @@ public class Photographer extends Job {
             targetPlayer.sendMessage(Component.text("§c写真が晒され、移動不能になった！"));
         }
         this.player.sendMessage(Component.text("§a写真に写っているプレイヤー全員に移動不能を" + affectedSeconds + "秒間付与した！"));
+
+        return true;
     }
 }

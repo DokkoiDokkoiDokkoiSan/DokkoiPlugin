@@ -2,7 +2,10 @@ package org.meyason.dokkoi.event.player;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -18,17 +21,15 @@ import org.meyason.dokkoi.event.player.damage.DamageValidator;
 import org.meyason.dokkoi.event.player.damage.ProjectileDamageHandler;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
-import org.meyason.dokkoi.game.ProjectileData;
-import org.meyason.dokkoi.item.battleitem.FragGrenade;
 import org.meyason.dokkoi.item.weapon.DrainBrade;
 
 /**
  * ダメージイベントのリスナー
- * 
+ * <p>
  * 責務:
  * - イベントの振り分けと事前検証
  * - 各種ダメージ処理クラスへの委譲
- * 
+ *
  * @see DamageCalculator ダメージ計算
  * @see DamageValidator 事前検証
  * @see ProjectileDamageHandler 発射物処理
@@ -86,18 +87,18 @@ public class DamageEvent implements Listener {
             return;
         }
 
-        if(gsm.getAdditionalDamage().get(attacker.getUniqueId()) <= -300){
+        if (gsm.getAdditionalDamage().get(attacker.getUniqueId()) <= -300) {
             event.setCancelled(true);
             return;
         }
 
         ItemMeta weaponMeta = attacker.getInventory().getItemInMainHand().getItemMeta();
-        if(weaponMeta != null){
+        if (weaponMeta != null) {
             NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
             PersistentDataContainer container = weaponMeta.getPersistentDataContainer();
             String weaponID = container.get(itemKey, PersistentDataType.STRING);
-            if(weaponID != null){
-                switch (weaponID){
+            if (weaponID != null) {
+                switch (weaponID) {
                     case DrainBrade.id -> DrainBrade.activate(attacker);
                 }
             }
@@ -151,27 +152,27 @@ public class DamageEvent implements Listener {
         }
 
         // 発射物の種類別処理
-        ProjectileDamageHandler.HandleResult result;
-
-        if (event.getDamager() instanceof Snowball snowball) {
-            result = ProjectileDamageHandler.handleSnowball(snowball, event, gsm, damagedEntity, livingEntity);
-        } else if (event.getDamager() instanceof Trident trident) {
-            result = ProjectileDamageHandler.handleTrident(trident, event, gsm);
-        } else if (event.getDamager() instanceof Arrow arrow) {
-            result = ProjectileDamageHandler.handleArrow(arrow, event, gsm, damagedEntity, damage);
-        } else if (event.getDamager() instanceof Egg egg) {
-            ProjectileData projectileData = gsm.getProjectileDataMap().get(egg);
-            if(projectileData != null){
-                FragGrenade.onHit(projectileData);
-            }
-            return;
-        } else {
-            return;
-        }
-
-        if (result.isHandled()) {
-            return;
-        }
+//        ProjectileDamageHandler.HandleResult result;
+//
+//        if (event.getDamager() instanceof Snowball snowball) {
+//            result = ProjectileDamageHandler.handleSnowball(snowball, event, gsm, damagedEntity, livingEntity);
+//        } else if (event.getDamager() instanceof Trident trident) {
+//            result = ProjectileDamageHandler.handleTrident(trident, event, gsm);
+//        } else if (event.getDamager() instanceof Arrow arrow) {
+//            result = ProjectileDamageHandler.handleArrow(arrow, event, gsm, damagedEntity, damage);
+//        } else if (event.getDamager() instanceof Egg egg) {
+//            ProjectileData projectileData = gsm.getProjectileDataMap().get(egg);
+//            if(projectileData != null){
+//                FragGrenade.onHit(projectileData);
+//            }
+//            return;
+//        } else {
+//            return;
+//        }
+//
+//        if (result.isHandled()) {
+//            return;
+//        }
     }
 
     // ================================
@@ -190,7 +191,7 @@ public class DamageEvent implements Listener {
             event.setCancelled(true);
             return;
         }
-        if(!gsm.isEnableAttackPlayer(attacker.getUniqueId())){
+        if (!gsm.isEnableAttackPlayer(attacker.getUniqueId())) {
             event.setCancelled(true);
             return;
         }
@@ -270,8 +271,8 @@ public class DamageEvent implements Listener {
         }
 
         EntityDamageEvent.DamageCause cause = event.getCause();
-        if (cause == EntityDamageEvent.DamageCause.FALL || 
-            cause == EntityDamageEvent.DamageCause.VOID) {
+        if (cause == EntityDamageEvent.DamageCause.FALL ||
+                cause == EntityDamageEvent.DamageCause.VOID) {
             event.setCancelled(true);
         }
     }

@@ -4,7 +4,9 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Villager;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -17,16 +19,20 @@ import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.entity.Comedian;
-import org.meyason.dokkoi.entity.GameEntity;
 import org.meyason.dokkoi.event.player.DeathEvent;
-import org.meyason.dokkoi.util.CalculateAreaPlayers;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.game.GameStatesManager;
+import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.item.jobitem.Skill;
+import org.meyason.dokkoi.item.jobitem.Ultimate;
+import org.meyason.dokkoi.job.type.ProjectileHitHooker;
+import org.meyason.dokkoi.util.CalculateAreaPlayers;
 
 import java.util.List;
 import java.util.UUID;
 
-public class Bomber extends Job {
+public class Bomber extends Job implements ProjectileHitHooker {
 
     public int killCount = 0;
 
@@ -49,7 +55,7 @@ public class Bomber extends Job {
         setRemainCoolTimeSkillUltimate(100);
     }
 
-    public void setPlayer(Game game, Player player){
+    public void setPlayer(Game game, Player player) {
         this.game = game;
         this.player = player;
         this.goals = List.of(
@@ -59,13 +65,13 @@ public class Bomber extends Job {
         );
     }
 
-    public int getKillComedian(){
+    public int getKillComedian() {
         return killComedian;
     }
 
-    public void attachGoal(Goal goal){
+    public void attachGoal(Goal goal) {
         this.goal = goal;
-        if(goal.tier == Tier.TIER_1){
+        if (goal.tier == Tier.TIER_1) {
             twiceCoolTimeSkill();
         }
         passive_skill_description = List.of(
@@ -88,18 +94,18 @@ public class Bomber extends Job {
     public void ready() {
     }
 
-    public boolean passive(){
+    public void passive() {
         this.player.spawnParticle(Particle.EXPLOSION_EMITTER, this.player.getLocation(), 1);
         this.player.getWorld().playSound(this.player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 3.0f, 1.0f);
         List<Player> hitPlayer = CalculateAreaPlayers.getPlayersInArea(game, player, player.getLocation(), 5);
 
         boolean isKilledComedian = false;
 
-        for(Entity entity : player.getNearbyEntities(5, 5, 5)){
-            if(entity instanceof Villager villager){
-                if(villager.getPersistentDataContainer().isEmpty()) continue;
+        for (Entity entity : player.getNearbyEntities(5, 5, 5)) {
+            if (entity instanceof Villager villager) {
+                if (villager.getPersistentDataContainer().isEmpty()) continue;
                 String villagerUUID = villager.getPersistentDataContainer().get(new NamespacedKey(Dokkoi.getInstance(), GameEntityKeyString.COMEDIAN), PersistentDataType.STRING);
-                if(villagerUUID != null){
+                if (villagerUUID != null) {
                     Comedian comedian = (Comedian) game.getGameStatesManager().getSpawnedEntitiesFromUUID(villagerUUID);
                     game.getGameStatesManager().removeSpawnedEntity(villagerUUID);
                     villager.setHealth(0.0);
@@ -112,120 +118,42 @@ public class Bomber extends Job {
             }
         }
 
-        if(hitPlayer.isEmpty() && !isKilledComedian){
+        if (hitPlayer.isEmpty() && !isKilledComedian) {
             this.player.sendMessage("§cあなたは独りで§l§4自爆§r§cしました");
-            return false;
+            return;
         }
 
-        for(Player p : hitPlayer){
+        for (Player p : hitPlayer) {
             DeathEvent.kill(this.player, p);
             killCount++;
         }
 
         this.player.setHealth(this.player.getMaxHealth());
-        if(!isKilledComedian){
+        if (!isKilledComedian) {
             this.player.sendMessage("§bあなたは§l§4自爆§r§bしましたが、プレイヤーを巻き込んだため復活しました");
         }
+    }
+
+    public boolean onSkillTrigger() {
+        GameStatesManager manager = game.getGameStatesManager();
+
+        Vector direction = player.getEyeLocation().getDirection().normalize();
+        Vector velocity = direction.multiply(2.0);
+        Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+        manager.addProjectileData(projectile, new ProjectileData(player, projectile, Skill.id));
+
         return true;
     }
 
-    public void skill(Location location, List<Player> effectedPlayers){
-        location.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, location, 2);
-        location.getWorld().playSound(location, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 10.0f, 1.0f);
-        for(Player p : effectedPlayers){
-            Vector knockBack = p.getLocation().toVector().subtract(location.toVector()).normalize().multiply(3);
-            // Yは抑制
-            knockBack.setY(0.1);
-            p.setVelocity(knockBack);
-        }
-        return;
-    }
+    public boolean onSkillUltimateTrigger() {
+        GameStatesManager manager = game.getGameStatesManager();
 
-    public void ultimate(Location impactLocation) {
-        // パーティクルとサウンド（着弾時だけ一度）
-        impactLocation.getWorld().spawnParticle(
-                Particle.CAMPFIRE_SIGNAL_SMOKE,
-                impactLocation,
-                200,
-                10, 5, 10, 0.01
-        );
-        impactLocation.getWorld().playSound(
-                impactLocation,
-                ultimateSkillSound,
-                ultimateSkillVolume,
-                ultimateSkillPitch
-        );
+        Vector direction = player.getEyeLocation().getDirection().normalize();
+        Vector velocity = direction.multiply(2.0);
+        Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+        manager.addProjectileData(projectile, new ProjectileData(player, projectile, Ultimate.id));
 
-        // 既存の煙幕タスクがあれば停止
-        if (smokeTask != null && !smokeTask.isCancelled()) {
-            smokeTask.cancel();
-        }
-
-        spawnAreaParticles(impactLocation);
-
-        final double radius = 20.0;
-        final long durationTick = 20L * 30; // 30秒
-        final long intervalTick = 10L;      // 0.5秒ごとに判定
-
-        long startTick = Bukkit.getCurrentTick();
-
-        // 煙幕タスク開始
-        smokeTask = Bukkit.getScheduler().runTaskTimer(
-                Dokkoi.getInstance(),       // Game からプラグインインスタンスを取得するメソッドを用意しておく
-                () -> {
-                    long now = Bukkit.getCurrentTick();
-                    if (now - startTick >= durationTick) {
-                        // 30秒経過でタスク終了
-                        smokeTask.cancel();
-                        return;
-                    }
-                    if(game.getGameStatesManager().getGameState() != GameState.IN_GAME){
-                        smokeTask.cancel();
-                        return;
-                    }
-
-                    List<UUID> targets = game.getGameStatesManager().getAlivePlayers();
-                    for (UUID uuid : targets) {
-                        Player p = Bukkit.getPlayer(uuid);
-                        if (p == null) {
-                            continue;
-                        }
-                        if (!p.getWorld().equals(impactLocation.getWorld())) {
-                            continue;
-                        }
-                        if (p.getLocation().distanceSquared(impactLocation) > radius * radius) {
-                            continue;
-                        }
-
-                        // 常に短い時間で上書きし続ける（ここでは1.5秒）
-                        int effectDuration = 30; // tick
-
-                        if (p.getUniqueId().equals(player.getUniqueId())) {
-                            // 自分: 移動速度上昇Lv2
-                            p.addPotionEffect(new PotionEffect(
-                                    PotionEffectType.SPEED,
-                                    effectDuration,
-                                    1,
-                                    false,
-                                    false,
-                                    true
-                            ));
-                        } else {
-                            // 相手: 移動速度低下Lv1
-                            p.addPotionEffect(new PotionEffect(
-                                    PotionEffectType.SLOWNESS,
-                                    effectDuration,
-                                    0,
-                                    false,
-                                    false,
-                                    true
-                            ));
-                        }
-                    }
-                },
-                0L,
-                intervalTick
-        );
+        return true;
     }
 
     private void spawnAreaParticles(Location impactLocation) {
@@ -248,11 +176,132 @@ public class Bomber extends Job {
                         Particle.CAMPFIRE_SIGNAL_SMOKE,
                         impactLocation,
                         100,              // 個数を抑える
-                        8, 4, 8,         // x,y,zオフセットで広げる
-                        0.01             // extra（0付近でランダム感）
+                        8, 4, 8,  // x,y,zオフセットで広げる
+                        0.01                   // extra（0付近でランダム感）
                 );
             }
         }.runTaskTimer(Dokkoi.getInstance(), 0L, intervalTick);
     }
 
+    @Override
+    public void onProjectileHit(ProjectileHitEvent event) {
+        GameStatesManager manager = Game.getInstance().getGameStatesManager();
+        Entity entity = event.getEntity();
+
+        if (entity instanceof Snowball snowball) {
+            ProjectileData projectileData = manager.getProjectileDataMap().get(snowball);
+            if (projectileData == null) return;
+
+            String attackItem = projectileData.getCustomItemName();
+
+            if (manager.isExistGunFromSerial(attackItem)) {
+                if (event.getHitBlock().getType().toString().contains("GLASS")) {
+                    snowball.getWorld().playSound(snowball.getLocation(), Sound.BLOCK_GLASS_BREAK, 2.0F, 1.0F);
+                }
+                manager.removeProjectileData(snowball);
+                return;
+            }
+
+            if (attackItem.equals(Skill.id)) {
+                Location location = event.getHitBlock().getLocation();
+                List<Player> effectedPlayers = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, event.getHitBlock().getLocation(), 1);
+                location.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, location, 2);
+                location.getWorld().playSound(location, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 10.0f, 1.0f);
+                for (Player p : effectedPlayers) {
+                    Vector knockBack = p.getLocation().toVector().subtract(location.toVector()).normalize().multiply(3);
+                    // Yは抑制
+                    knockBack.setY(0.1);
+                    p.setVelocity(knockBack);
+                }
+            } else if (attackItem.equals(Ultimate.id)) {
+                Location impactLocation = event.getHitBlock().getLocation();
+
+                // パーティクルとサウンド（着弾時だけ一度）
+                impactLocation.getWorld().spawnParticle(
+                        Particle.CAMPFIRE_SIGNAL_SMOKE,
+                        impactLocation,
+                        200,
+                        10, 5, 10, 0.01
+                );
+                impactLocation.getWorld().playSound(
+                        impactLocation,
+                        ultimateSkillSound,
+                        ultimateSkillVolume,
+                        ultimateSkillPitch
+                );
+
+                // 既存の煙幕タスクがあれば停止
+                if (smokeTask != null && !smokeTask.isCancelled()) {
+                    smokeTask.cancel();
+                }
+
+                spawnAreaParticles(impactLocation);
+
+                final double radius = 20.0;
+                final long durationTick = 20L * 30; // 30秒
+                final long intervalTick = 10L;      // 0.5秒ごとに判定
+
+                long startTick = Bukkit.getCurrentTick();
+
+                // 煙幕タスク開始
+                smokeTask = Bukkit.getScheduler().runTaskTimer(
+                        Dokkoi.getInstance(),       // Game からプラグインインスタンスを取得するメソッドを用意しておく
+                        () -> {
+                            long now = Bukkit.getCurrentTick();
+                            if (now - startTick >= durationTick) {
+                                // 30秒経過でタスク終了
+                                smokeTask.cancel();
+                                return;
+                            }
+                            if (game.getGameStatesManager().getGameState() != GameState.IN_GAME) {
+                                smokeTask.cancel();
+                                return;
+                            }
+
+                            List<UUID> targets = game.getGameStatesManager().getAlivePlayers();
+                            for (UUID uuid : targets) {
+                                Player p = Bukkit.getPlayer(uuid);
+                                if (p == null) {
+                                    continue;
+                                }
+                                if (!p.getWorld().equals(impactLocation.getWorld())) {
+                                    continue;
+                                }
+                                if (p.getLocation().distanceSquared(impactLocation) > radius * radius) {
+                                    continue;
+                                }
+
+                                // 常に短い時間で上書きし続ける（ここでは1.5秒）
+                                int effectDuration = 30; // tick
+
+                                if (p.getUniqueId().equals(player.getUniqueId())) {
+                                    // 自分: 移動速度上昇Lv2
+                                    p.addPotionEffect(new PotionEffect(
+                                            PotionEffectType.SPEED,
+                                            effectDuration,
+                                            1,
+                                            false,
+                                            false,
+                                            true
+                                    ));
+                                } else {
+                                    // 相手: 移動速度低下Lv1
+                                    p.addPotionEffect(new PotionEffect(
+                                            PotionEffectType.SLOWNESS,
+                                            effectDuration,
+                                            0,
+                                            false,
+                                            false,
+                                            true
+                                    ));
+                                }
+                            }
+                        },
+                        0L,
+                        intervalTick
+                );
+            }
+            manager.removeProjectileData(snowball);
+        }
+    }
 }

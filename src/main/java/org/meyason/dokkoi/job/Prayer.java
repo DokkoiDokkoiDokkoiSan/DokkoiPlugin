@@ -132,7 +132,7 @@ public class Prayer extends Job {
     public void addGachaPoint(int amount){
         gachaPoint += amount;
     }
-    private int maxGachaPoint = 2;
+    private final int maxGachaPoint = 2;
 
     private int gachaCount = 0;
     public int getGachaCount(){
@@ -215,7 +215,16 @@ public class Prayer extends Job {
         this.player.sendMessage("§b右クリックでガチャを回す");
     }
 
-    public void skill(){
+    public boolean onSkillTrigger(){
+        if (getGachaPoint() <= 0) {
+            player.sendActionBar(Component.text("§cガチャポイントが足りません。"));
+            return false;
+        }
+        if (player.getInventory().firstEmpty() == -1) {
+            player.sendActionBar(Component.text("§cインベントリに空きがありません。"));
+            return false;
+        }
+
         //まずレアリティを決定
         double result = Math.random();
         String selectedRarity = R;
@@ -233,7 +242,7 @@ public class Prayer extends Job {
         List<String> itemList = rarityEffectMap.get(selectedRarity);
         if(itemList == null){
             player.sendMessage("§6エラーが発生しました．管理者に連絡してください：ガチャアイテムリスト取得失敗");
-            return;
+            return false;
         }
         String itemName = itemList.get(new Random().nextInt(itemList.size()));
         CustomItem item = null;
@@ -242,7 +251,7 @@ public class Prayer extends Job {
         } catch (NoGameItemException e){
             player.sendMessage("§6エラーが発生しました．管理者に連絡してください：ガチャアイテム取得失敗");
             e.printStackTrace();
-            return;
+            return false;
         }
         gachaPoint -= 1;
         ItemStack rewardItem = item.getItem();
@@ -321,19 +330,21 @@ public class Prayer extends Job {
                 DeathEvent.kill(player, target);
             }
         }
+
+        return true;
     }
 
-    public void ultimate(){
+    public boolean onSkillUltimateTrigger(){
         List<UUID> alivePlayerUUID = new ArrayList<>(game.getGameStatesManager().getAlivePlayers());
         alivePlayerUUID.remove(player.getUniqueId());
         if(alivePlayerUUID.isEmpty()){
             player.sendMessage("§c他に生存者がいないため、異空間に転移できませんでした。");
-            return;
+            return false;
         }
         UUID uuid = alivePlayerUUID.get(new Random().nextInt(alivePlayerUUID.size()));
         Player target = Bukkit.getPlayer(uuid);
         if(target == null){
-            return;
+            return false;
         }
         List<Vector> locations = GameLocation.getInstance().prayerUltimateLocations;
         World world = target.getWorld();
@@ -363,5 +374,7 @@ public class Prayer extends Job {
                 }
             }
         }.runTaskLater(Dokkoi.getInstance(), 20 * 5);
+
+        return true;
     }
 }

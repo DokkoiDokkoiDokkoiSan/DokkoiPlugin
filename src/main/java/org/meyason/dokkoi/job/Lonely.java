@@ -2,36 +2,28 @@ package org.meyason.dokkoi.job;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.constants.GoalList;
 import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.goal.Goal;
-import org.meyason.dokkoi.item.GameItem;
-import org.meyason.dokkoi.item.jobitem.Ultimate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class Lonely extends Job {
 
     public boolean isUltimateActive = false;
-    public void setUltimateActive(boolean isUltimateActive) {return;}
+    public void setUltimateActive(boolean isUltimateActive) {
+    }
 
     public long lastAttackedTime = 0L;
     public long lastDamagedTime = 0L;
@@ -91,7 +83,7 @@ public class Lonely extends Job {
         passive();
     }
 
-    public void skill(){
+    public boolean onSkillTrigger(){
         List<Player> targetPlayers = new ArrayList<>();
         Vector center = player.getLocation().toVector();
         for(UUID uuid : game.getGameStatesManager().getAlivePlayers()){
@@ -112,10 +104,14 @@ public class Lonely extends Job {
             target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 1));
             target.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 10 * 20, 1));
         }
+
+        return true;
     }
 
-    public void ultimate(){
+    public boolean onSkillUltimateTrigger(){
         this.isUltimateActive = true;
+
+        return true;
     }
 
     public void passive(){

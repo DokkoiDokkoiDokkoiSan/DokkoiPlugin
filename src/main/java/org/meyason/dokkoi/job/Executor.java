@@ -6,11 +6,14 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Villager;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameEntityKeyString;
 import org.meyason.dokkoi.constants.GoalList;
@@ -18,14 +21,17 @@ import org.meyason.dokkoi.constants.Tier;
 import org.meyason.dokkoi.entity.Dealer;
 import org.meyason.dokkoi.entity.GameEntity;
 import org.meyason.dokkoi.event.player.damage.DamageCalculator;
-import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.game.Game;
+import org.meyason.dokkoi.game.GameStatesManager;
+import org.meyason.dokkoi.game.ProjectileData;
 import org.meyason.dokkoi.goal.Goal;
+import org.meyason.dokkoi.item.jobitem.Skill;
+import org.meyason.dokkoi.job.type.ProjectileHitHooker;
 
 import java.util.List;
 import java.util.UUID;
 
-public class Executor extends Job{
+public class Executor extends Job implements ProjectileHitHooker {
 
     private int arrestCount = 0;
     public int getArrestCount() {
@@ -82,7 +88,41 @@ public class Executor extends Job{
 
     public void ready(){}
 
-    public void skill(Entity target){
+    public boolean onSkillTrigger(){
+        GameStatesManager manager = game.getGameStatesManager();
+
+        Vector direction = player.getEyeLocation().getDirection().normalize();
+        Vector velocity = direction.multiply(3.0);
+        Snowball projectile = player.launchProjectile(Snowball.class, velocity);
+        manager.addProjectileData(projectile, new ProjectileData(player, projectile, Skill.id));
+
+        return true;
+    }
+
+    public boolean onSkillUltimateTrigger(){
+        if(!game.getGameStatesManager().getAttackedPlayers().isEmpty()){
+            for(UUID uuid : game.getGameStatesManager().getAttackedPlayers()){
+                Player target = Bukkit.getPlayer(uuid);
+                if(target == null) continue;
+                target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 10 * 20, 3));
+                target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 3));
+            }
+        }
+        this.player.setWalkSpeed(0.8f);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                player.setWalkSpeed(0.2f);
+            }
+        }.runTaskLater(Dokkoi.getInstance(), 20L * 10L);
+
+        return true;
+    }
+
+    @Override
+    public void onProjectileHit(ProjectileHitEvent event) {
+        Entity target = event.getHitEntity();
+
         if(target instanceof Player targetPlayer) {
             int killCount = game.getGameStatesManager().getKillCounts().get(player.getUniqueId());
             int damage;
@@ -130,23 +170,5 @@ public class Executor extends Job{
                 }
             }
         }
-    }
-
-    public void ultimate(){
-        if(!game.getGameStatesManager().getAttackedPlayers().isEmpty()){
-            for(UUID uuid : game.getGameStatesManager().getAttackedPlayers()){
-                Player target = Bukkit.getPlayer(uuid);
-                if(target == null) continue;
-                target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 10 * 20, 3));
-                target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 3));
-            }
-        }
-        this.player.setWalkSpeed(0.8f);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                player.setWalkSpeed(0.2f);
-            }
-        }.runTaskLater(Dokkoi.getInstance(), 20L * 10L);
     }
 }
