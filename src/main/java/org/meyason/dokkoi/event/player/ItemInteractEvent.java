@@ -1,50 +1,22 @@
 package org.meyason.dokkoi.event.player;
 
-import net.kyori.adventure.text.Component;
-import net.minecraft.network.chat.ClickEvent;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.meyason.dokkoi.Dokkoi;
-import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.constants.GameState;
-import org.meyason.dokkoi.exception.NoGameItemException;
 import org.meyason.dokkoi.game.Game;
-import org.meyason.dokkoi.game.GameStatesManager;
-import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
-import org.meyason.dokkoi.item.battleitem.*;
-import org.meyason.dokkoi.item.dealeritem.*;
-import org.meyason.dokkoi.item.debug.Debug;
+import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.goalitem.*;
-import org.meyason.dokkoi.item.gunitem.ARMagazine;
-import org.meyason.dokkoi.item.gunitem.HGMagazine;
-import org.meyason.dokkoi.item.gunitem.SMGMagazine;
-import org.meyason.dokkoi.item.jobitem.Skill;
-import org.meyason.dokkoi.item.jobitem.Ultimate;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
 import org.meyason.dokkoi.item.matching.JoinQueueItem;
 import org.meyason.dokkoi.item.matching.QuitQueueItem;
-import org.meyason.dokkoi.item.utilitem.FortuneBall;
-import org.meyason.dokkoi.item.utilitem.IdiotDetector;
-import org.meyason.dokkoi.menu.fortuneballmenu.FortuneBallMenu;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenu;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
 
-import java.util.Objects;
-
 public class ItemInteractEvent{
 
-    public static void onItemInteract(PlayerInteractEvent event, String itemID, String itemSerial, CustomItem customItem, ItemStack itemStack){
+    public static void onItemInteract(PlayerInteractEvent event, String itemID, String itemSerial, CustomItem customItem){
         Game game = Game.getInstance();
         Player player = event.getPlayer();
 
@@ -73,212 +45,18 @@ public class ItemInteractEvent{
             }
 
         }else if(game.getGameStatesManager().getGameState() == GameState.IN_GAME) {
-            GameStatesManager manager = game.getGameStatesManager();
-
-            switch (itemID) {
-                case GoalMemo.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    Goal goal = manager.getPlayerGoals().get(player.getUniqueId());
-                    if(goal == null){
-                        player.sendMessage(Component.text("§cまだ勝利条件が選択されていません。"));
-                        return;
-                    }
-                    player.sendMessage(Component.text("§a===== §e§l勝利条件メモ§r§a ====="));
-                    player.sendMessage(Component.text("§b勝利条件： §e" + goal.getDescription()));
+            if(GameItem.getItem(itemID) instanceof InteractHooker hooker){
+                if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                    return;
                 }
-                case KillerList.id -> {
-                    if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
+                if (!customItem.hasSerialNumber() && itemSerial != null){
+                    CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
+                    if (!(serialItem.hasSerialNumber())) {
                         return;
-                    }
-                    if (customItem instanceof KillerList && itemSerial != null) {
-                        CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
-                        if (!(serialItem instanceof KillerList killerList)) {
-                            return;
-                        }
-                        event.setCancelled(true);
-                        killerList.skill(manager, player);
-                    }
-
-                }
-                case UnkillerList.id -> {
-                    if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
-                        return;
-                    }
-                    if (customItem instanceof UnkillerList && itemSerial != null) {
-                        CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
-                        if (!(serialItem instanceof UnkillerList unkillerList)) {
-                            return;
-                        }
-                        event.setCancelled(true);
-                        unkillerList.skill(manager, player);
-                    }
-
-                }
-                case BuriBuriGuard.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    if (customItem instanceof BuriBuriGuard) {
-                        event.setCancelled(true);
-                        CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
-                        BuriBuriGuard buriburiguard = (BuriBuriGuard) serialItem;
-                        buriburiguard.skill();
                     }
                 }
-                case Tsuyokunaru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    game.getGameStatesManager().addIsDeactivateDamageOnce(player.getUniqueId(), true);
-                    Tsuyokunaru.activate(player, itemStack);
-                }
-                case Kizukieru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    Kizukieru.activate(player, itemStack);
-                }
-                case Hayakunaru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    Hayakunaru.activate(player, itemStack);
-                }
-                case Katakunaru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    Katakunaru.activate(player, itemStack);
-                }
-                case TotemoKizukieru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    TotemoKizukieru.activate(player, itemStack);
-                }
-                case TotemoKatakunaru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    TotemoKatakunaru.activate(player, itemStack);
-                }
-                case TotemoTsuyokunaru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    TotemoTsuyokunaru.activate(player, itemStack);
-                }
-                case TotemoHayakunaru.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    TotemoHayakunaru.activate(player, itemStack);
-                }
-                case HealingCrystal.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    HealingCrystal.activate(player, itemStack);
-                }
-                case Debug.id -> {
-                    if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                        Location location = Objects.requireNonNull(event.getClickedBlock()).getLocation();
-                        player.sendMessage(Component.text("§aクリックしたブロックの座標"));
-                        player.sendMessage(Component.text(location.getX() + ", " + location.getY() + ", " + location.getZ()));
-                    }
-                }
-                case PotionBottleFull.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    PotionBottleFull.activate(player, itemStack);
-                }
-                case HGMagazine.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    HGMagazine.activate(player);
-                }
-                case SMGMagazine.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    SMGMagazine.activate(player);
-                }
-                case ARMagazine.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    ARMagazine.activate(player);
-                }
-                case IdiotDetector.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    IdiotDetector.activate(player, itemStack);
-                }
-                case FortuneBall.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    FortuneBallMenu fortuneBallMenu = new FortuneBallMenu();
-                    fortuneBallMenu.sendMenu(itemStack, player);
-                }
-                case EdenChime.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    EdenChime.activate(player, itemStack);
-                }
-                case ArcherArmor.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    manager.addIsDeactivateDamageOnce(player.getUniqueId(), true);
-                }
-                case InstantDevour.id -> {
-                    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                        return;
-                    }
-                    event.setCancelled(true);
-                    InstantDevour.activate(player, itemStack);
-                }
-                case TierPlayerList.id -> {
-                    if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) {
-                        return;
-                    }
-                    if (customItem instanceof TierPlayerList && itemSerial != null) {
-                        CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
-                        if (!(serialItem instanceof TierPlayerList tierPlayerList)) {
-                            return;
-                        }
-                        event.setCancelled(true);
-                        tierPlayerList.skill(manager, player);
-                    }
-                }
+                event.setCancelled(true);
+                hooker.onInteract(event);
             }
         }
     }

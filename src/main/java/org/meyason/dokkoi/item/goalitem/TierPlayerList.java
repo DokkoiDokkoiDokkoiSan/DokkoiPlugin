@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,12 +18,13 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class TierPlayerList extends CustomItem {
+public class TierPlayerList extends CustomItem implements InteractHooker {
 
     public static final String id = "tier_player_list";
 
@@ -95,7 +97,11 @@ public class TierPlayerList extends CustomItem {
         return targetPlayers;
     }
 
-    public void skill(GameStatesManager gameStatesManager, Player owner){
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+        Player owner = event.getPlayer();
+        GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
+
         UUID uuid = owner.getUniqueId();
         if(gameStatesManager.getItemCoolDownScheduler().containsKey(uuid)){
             owner.sendMessage("§cクールタイム中です");

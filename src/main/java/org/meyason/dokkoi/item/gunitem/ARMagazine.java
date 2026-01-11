@@ -3,15 +3,17 @@ package org.meyason.dokkoi.item.gunitem;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
 
 import java.util.List;
 
-public class ARMagazine extends CustomItem {
+public class ARMagazine extends CustomItem implements InteractHooker {
 
     public static final String id = "ar_magazine";
 
@@ -37,7 +39,10 @@ public class ARMagazine extends CustomItem {
         };
     }
 
-    public static void activate(Player player){
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
         long nowAmmo = manager.getHGInventoryAmmo(player.getUniqueId());
         manager.setARInventoryAmmo(player.getUniqueId(), nowAmmo + 50);

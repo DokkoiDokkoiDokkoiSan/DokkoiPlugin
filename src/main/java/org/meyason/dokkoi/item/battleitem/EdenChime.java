@@ -5,6 +5,8 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -13,12 +15,14 @@ import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
+import org.meyason.dokkoi.item.itemhooker.InventoryHooker;
 import org.meyason.dokkoi.util.CalculateAreaPlayers;
 
 import java.util.List;
 import java.util.UUID;
 
-public class EdenChime extends CustomItem {
+public class EdenChime extends CustomItem implements InteractHooker {
 
     public static final String id = "eden_chime";
 
@@ -46,8 +50,12 @@ public class EdenChime extends CustomItem {
         };
     }
 
-    public static void activate(Player player, ItemStack itemStack) {
-        itemStack.setAmount(itemStack.getAmount() - 1);
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+
+        item.setAmount(item.getAmount() - 1);
         List<Player> players = CalculateAreaPlayers.getPlayersInArea(Game.getInstance(), null, player.getLocation(), 10);
         GameStatesManager manager = Game.getInstance().getGameStatesManager();
 
@@ -83,5 +91,4 @@ public class EdenChime extends CustomItem {
             manager.addEdenChimeTask(targetUUID, task);
         }
     }
-
 }

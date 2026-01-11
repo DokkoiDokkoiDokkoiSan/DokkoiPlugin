@@ -3,15 +3,17 @@ package org.meyason.dokkoi.item.dealeritem;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
 
 import java.util.List;
 
-public class TotemoKatakunaru extends CustomItem {
+public class TotemoKatakunaru extends CustomItem implements InteractHooker {
 
     public static final String id = "totemo_katakunaru";
 
@@ -38,7 +40,11 @@ public class TotemoKatakunaru extends CustomItem {
         };
     }
 
-    public static void activate(Player player, ItemStack item) {
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+
         Game.getInstance().getGameStatesManager().addOnDisablePotionEffectPlayer(player.getUniqueId());
 
         item.setAmount(item.getAmount() - 1);

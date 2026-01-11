@@ -5,16 +5,18 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.meyason.dokkoi.Dokkoi;
 import org.meyason.dokkoi.constants.GameItemKeyString;
 import org.meyason.dokkoi.event.player.DeathEvent;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
 
 import java.util.List;
 
-public class InstantDevour extends CustomItem {
+public class InstantDevour extends CustomItem implements InteractHooker {
 
     public static final String id = "instant_devour";
 
@@ -43,12 +45,15 @@ public class InstantDevour extends CustomItem {
         };
     }
 
-    public static void activate(Player player, ItemStack itemStack) {
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+
         if(player.getMaxHealth() >= 100){
             return;
         }
-        itemStack.setAmount(itemStack.getAmount() - 1);
+        item.setAmount(item.getAmount() - 1);
         player.setMaxHealth(player.getMaxHealth() + 4);
     }
-
 }
