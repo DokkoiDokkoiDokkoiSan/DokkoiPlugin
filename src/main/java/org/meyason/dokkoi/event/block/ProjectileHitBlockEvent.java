@@ -22,6 +22,7 @@ import java.util.List;
 
 public class ProjectileHitBlockEvent implements Listener {
 
+    //TODO: これもswitch文をどうにか消す。どうにか。スナイパーのスキルここに書くの違和感あるけどしょうがいないかもしれない
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {
         if(event.getHitBlock() == null){
@@ -84,7 +85,7 @@ public class ProjectileHitBlockEvent implements Listener {
                     Job job = manager.getPlayerJobs().get(attacker.getUniqueId());
                     if (job instanceof IronMaiden ironMaiden) {
                         Rapier rapier = ironMaiden.getRapier();
-                        rapier.activate(trident, trident.getLocation());
+                        rapier.activate(trident);
                     }
                 } else if (projectileData.getCustomItemName().equals(ThunderJavelin.id)) {
                     ThunderJavelin.activate(trident);
