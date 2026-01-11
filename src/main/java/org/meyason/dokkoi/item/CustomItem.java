@@ -24,7 +24,7 @@ public abstract class CustomItem implements Cloneable {
 
     public List<Component> description = new ArrayList<>();
     public boolean isUnique = false;
-    public boolean hasSerialNumber = false;
+    protected boolean hasSerialNumber = false;
     public boolean isGun = false;
 
     protected Function<ItemStack, ItemStack> default_setting;
@@ -55,7 +55,7 @@ public abstract class CustomItem implements Cloneable {
         if(meta != null){
             PersistentDataContainer container = meta.getPersistentDataContainer();
             container.set(itemKey, PersistentDataType.STRING, this.id);
-            if(hasSerialNumber){
+            if(hasSerialNumber()){
                 container.set(uniqueItemKey, PersistentDataType.STRING, UUID.randomUUID().toString());
             }
             if(isGun){
@@ -68,6 +68,10 @@ public abstract class CustomItem implements Cloneable {
             return default_setting.apply(item);
         }
         return item;
+    }
+
+    public boolean hasSerialNumber(){
+        return this.hasSerialNumber;
     }
 
     public static CustomItem getItem(ItemStack item){

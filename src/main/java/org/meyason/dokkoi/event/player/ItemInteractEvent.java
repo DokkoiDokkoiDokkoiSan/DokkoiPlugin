@@ -5,7 +5,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.meyason.dokkoi.constants.GameState;
 import org.meyason.dokkoi.game.Game;
-import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
 import org.meyason.dokkoi.item.goalitem.*;
@@ -50,9 +49,9 @@ public class ItemInteractEvent{
                 if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                     return;
                 }
-                if (!customItem.hasSerialNumber && itemSerial != null){
+                if (!customItem.hasSerialNumber() && itemSerial != null){
                     CustomItem serialItem = game.getGameStatesManager().getCustomItemFromSerial(itemSerial);
-                    if (!(serialItem.hasSerialNumber)) {
+                    if (!(serialItem.hasSerialNumber())) {
                         return;
                     }
                 }
