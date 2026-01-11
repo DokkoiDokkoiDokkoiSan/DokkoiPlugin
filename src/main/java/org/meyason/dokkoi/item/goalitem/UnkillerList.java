@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
@@ -21,12 +22,13 @@ import org.meyason.dokkoi.game.Game;
 import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.item.CustomItem;
 import org.meyason.dokkoi.item.GameItem;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class UnkillerList extends CustomItem {
+public class UnkillerList extends CustomItem implements InteractHooker {
 
     public static final String id = "unkiller_list";
 
@@ -123,7 +125,32 @@ public class UnkillerList extends CustomItem {
         this.targetPlayerList = unKillerPlayers;
     }
 
-    public void skill(GameStatesManager gameStatesManager, Player owner){
+    public List<UUID> getTargetPlayerList() {
+        return targetPlayerList;
+    }
+
+
+    private int findUnkillerListSlot(PlayerInventory inventory){
+        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
+        for(int slot = 0; slot < inventory.getSize(); slot++){
+            ItemStack stack = inventory.getItem(slot);
+            if(stack == null) continue;
+            ItemMeta meta = stack.getItemMeta();
+            if(meta == null) continue;
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            if(container.has(itemKey, PersistentDataType.STRING) &&
+                    UnkillerList.id.equals(container.get(itemKey, PersistentDataType.STRING))){
+                return slot;
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+        Player owner = event.getPlayer();
+        GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
+
         UUID uuid = owner.getUniqueId();
         if(gameStatesManager.getItemCoolDownScheduler().containsKey(uuid)){
             owner.sendMessage("§cクールタイム中です");
@@ -153,26 +180,4 @@ public class UnkillerList extends CustomItem {
         gameStatesManager.addItemCoolDownScheduler(uuid, itemInitTask);
         owner.sendMessage("§aひよってる奴らの身体が光りだした！");
     }
-
-    public List<UUID> getTargetPlayerList() {
-        return targetPlayerList;
-    }
-
-
-    private int findUnkillerListSlot(PlayerInventory inventory){
-        NamespacedKey itemKey = new NamespacedKey(Dokkoi.getInstance(), GameItemKeyString.ITEM_NAME);
-        for(int slot = 0; slot < inventory.getSize(); slot++){
-            ItemStack stack = inventory.getItem(slot);
-            if(stack == null) continue;
-            ItemMeta meta = stack.getItemMeta();
-            if(meta == null) continue;
-            PersistentDataContainer container = meta.getPersistentDataContainer();
-            if(container.has(itemKey, PersistentDataType.STRING) &&
-                    UnkillerList.id.equals(container.get(itemKey, PersistentDataType.STRING))){
-                return slot;
-            }
-        }
-        return -1;
-    }
-
 }

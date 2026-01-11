@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -14,10 +15,11 @@ import org.meyason.dokkoi.game.GameStatesManager;
 import org.meyason.dokkoi.goal.Defender;
 import org.meyason.dokkoi.goal.Goal;
 import org.meyason.dokkoi.item.CustomItem;
+import org.meyason.dokkoi.item.itemhooker.InteractHooker;
 
 import java.util.List;
 
-public class BuriBuriGuard extends CustomItem {
+public class BuriBuriGuard extends CustomItem implements InteractHooker {
 
     public static final String id = "buri_buri_guard";
 
@@ -62,7 +64,8 @@ public class BuriBuriGuard extends CustomItem {
         }
     }
 
-    public void skill(){
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
         GameStatesManager gameStatesManager = Game.getInstance().getGameStatesManager();
         if(gameStatesManager.getItemCoolDownScheduler().containsKey(player.getUniqueId())){
             player.sendMessage("§cクールタイム中です");
@@ -89,5 +92,4 @@ public class BuriBuriGuard extends CustomItem {
         itemInitTask.runTaskLater(Dokkoi.getInstance(), 10 * 20L);
         gameStatesManager.addItemCoolDownScheduler(player.getUniqueId(), itemInitTask);
     }
-
 }
