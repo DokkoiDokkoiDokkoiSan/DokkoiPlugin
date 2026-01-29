@@ -58,9 +58,9 @@ public class Lonely extends Job {
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.LASTMAN,
-                GoalList.SHADOW,
-                GoalList.ASSASIN
+                GoalList.createLastMan(),
+                GoalList.createShadow(),
+                GoalList.createAssasin()
         );
     }
 

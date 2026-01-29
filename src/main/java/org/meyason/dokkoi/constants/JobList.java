@@ -45,4 +45,19 @@ public class JobList {
     public static Job getJobByName(String name){
         return jobMap.get(name);
     }
+
+    public static List<Job> createNewJobInstances(){
+        List<Job> newJobList = new ArrayList<>();
+        newJobList.add(new Executor());
+        newJobList.add(new Lonely());
+        newJobList.add(new Bomber());
+        newJobList.add(new IronMaiden());
+        newJobList.add(new Explorer());
+        newJobList.add(new Prayer());
+        newJobList.add(new Photographer());
+        newJobList.add(new DrugStore());
+        newJobList.add(new Summoner());
+        newJobList.add(new Sniper());
+        return newJobList;
+    }
 }

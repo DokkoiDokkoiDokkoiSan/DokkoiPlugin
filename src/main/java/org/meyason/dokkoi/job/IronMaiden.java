@@ -55,9 +55,9 @@ public class IronMaiden extends Job {
         this.game = game;
         this.player = player;
         this.goals = List.of(
-                GoalList.MASSTIERKILLER,
-                GoalList.MAIDENGAZER,
-                GoalList.POLICE
+                GoalList.createMassTierKiller(),
+                GoalList.createMaidenGazer(),
+                GoalList.createPolice()
         );
     }
 

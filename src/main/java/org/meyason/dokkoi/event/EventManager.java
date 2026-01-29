@@ -35,6 +35,7 @@ public class EventManager {
         pm.registerEvents(new CraftProtect(), core);
         pm.registerEvents(new ChairInteractEvent(), core);
         pm.registerEvents(new CommandProtectEvent(), core);
+        pm.registerEvents(new ChickenSpawnProtect(), core);
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new TransferPacketEvent(core));
     }

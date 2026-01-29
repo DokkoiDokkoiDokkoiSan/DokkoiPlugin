@@ -310,8 +310,7 @@ public class GameStatesManager {
     }
 
     public HashMap<UUID, Integer> getDamageCutPercent() {return damageCutPercent;}
-    public void setDamageCutPercent(HashMap<UUID, Integer> damageCutPercent) {this.damageCutPercent = damageCutPercent;}
-    public void addDamageCutPercent(UUID player, int percent) {
+    public void setDamageCutPercent(UUID player, int percent) {
         this.damageCutPercent.put(player, percent);
     }
     public void calcDamageCutPercent(UUID player, int percent) {

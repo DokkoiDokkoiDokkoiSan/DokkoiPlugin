@@ -2,7 +2,6 @@ package org.meyason.dokkoi.game;
 
 import com.comphenix.protocol.events.PacketContainer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -33,7 +32,6 @@ import org.meyason.dokkoi.item.utilitem.Monei;
 import org.meyason.dokkoi.job.*;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenu;
 import org.meyason.dokkoi.menu.goalselectmenu.GoalSelectMenuItem;
-import org.meyason.dokkoi.network.PacketData;
 import org.meyason.dokkoi.network.PacketProcess;
 import org.meyason.dokkoi.network.PacketSender;
 import org.meyason.dokkoi.scheduler.DamageableScheduler;
@@ -169,6 +167,7 @@ public class Game {
     }
 
     public void prepPhase(){
+        ChestProvider.removeAllChests();
         heliLocation = new Vector();
         heliLocation = gameLocation.cloneHeli();
         for(UUID uuid : matchQueue){
@@ -209,7 +208,8 @@ public class Game {
             return;
         }
 
-        List<Job> jobList = new ArrayList<>(JobList.getAllJobs());
+        // ゲームごとに新しいJobインスタンスを生成
+        List<Job> jobList = JobList.createNewJobInstances();
 
         // jobの割り当て
         for(UUID uuid : gameStatesManager.getJoinedPlayers()) {
@@ -218,7 +218,7 @@ public class Game {
                 continue;
             }
             int randomIndex = (int) (Math.random() * jobList.size());
-            Job job = jobList.get(randomIndex).clone();
+            Job job = jobList.get(randomIndex);
             jobList.remove(randomIndex);
             job.setPlayer(this, player);
             gameStatesManager.getPlayerJobs().put(uuid, job);
@@ -281,14 +281,14 @@ public class Game {
 
             gameStatesManager.addKillCount(uuid);
             gameStatesManager.addAdditionalDamage(uuid, 0);
-            gameStatesManager.addDamageCutPercent(uuid, 0);
+            gameStatesManager.setDamageCutPercent(uuid, 0);
             gameStatesManager.addIsDeactivateDamageOnce(uuid, false);
 
             Goal goal = gameStatesManager.getPlayerGoals().get(uuid);
             if(goal == null){
                 Job job = gameStatesManager.getPlayerJobs().get(uuid);
                 int randomGoalIndex = (int) (Math.random() * job.getGoals().size());
-                goal = job.getGoals().get(randomGoalIndex).clone();
+                goal = job.getGoals().get(randomGoalIndex);
                 goal.setGoal(this, player);
                 gameStatesManager.getPlayerGoals().put(uuid, goal);
                 job.attachGoal(goal);
@@ -486,7 +486,9 @@ public class Game {
         }
         matchQueue.clear();
         gameStatesManager.clearAll();
-        gameLocation.revertHeliPort(heliLocation);
+        if(heliLocation != null){
+            gameLocation.revertHeliPort(heliLocation);
+        }
         new Game();
     }
 
